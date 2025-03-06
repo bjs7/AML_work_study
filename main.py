@@ -30,4 +30,3 @@ model = GINe
 
 train_model(model, data, [1])
 
-
