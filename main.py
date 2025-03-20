@@ -24,7 +24,6 @@ def get_parser():
 
 def main():
 
-    
     # get arguments
     parser = get_parser()
     args = parser.parse_args()
