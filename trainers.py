@@ -1,9 +1,15 @@
 from sklearn.metrics import log_loss
 from abc import ABC, abstractmethod
+import json
+import xgboost as xgb
+import trainer_utils as tu
+import trainer_gnn as tgnn
+import torch
+
 
 class BaseTrainer(ABC):
-    def __init__(self, model, data): #, labels
-        self.model = model
+    def __init__(self, args, data): #, labels
+        self.args = args
         self.data = data
         #self.labels = labels
 
@@ -13,12 +19,12 @@ class BaseTrainer(ABC):
 
 class train_gnn_trainer(BaseTrainer):
 
-    def __init__(self, model, data):
-        self.model = model
+    def __init__(self, args, data):
+        self.args = args
         self.data = data
 
     def train(self):
-        self.model = train_gnn(self.data)
+        self.model = tgnn.train_gnn(self.args, self.data)
         return self.model
 
 class model_wrap:
@@ -35,13 +41,20 @@ class model_wrap:
 
 class xgboost_trainer(BaseTrainer):
 
-    def __init__(self, model, data, params, num_rounds):
-        super().__init__(model, data)
+    def __init__(self, args, data):
+        super().__init__(args, data)
+        
+        self.args = args
         self.data = data
+
+        model_configs = tu.get_model_configs(self.args)
+        self.params = model_configs['params']['xgb_parameters']
+        self.num_rounds = model_configs['params']['num_rounds']
         #self.X = data['X']
         #self.y = data['y']
-        self.params = params
-        self.num_rounds = num_rounds
+
+        #self.params = params
+        #self.num_rounds = num_rounds
 
     def train(self):
         dtrain = xgb.DMatrix(self.data['X'], self.data['y'])

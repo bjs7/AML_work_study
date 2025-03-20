@@ -1,26 +1,86 @@
-import xgboost as xgb
+import os
 import joblib
+from datetime import date
+import process_data_type as pdt
+import trainer_utils as tu
+import torch
+from IPython import display
 
-trainer_functions = {
-    "simple_nn_full": simple_nn_trainer,
-    "Booster": xgboost_trainer,
-    'GINe': train_gnn_trainer
-}
 
-data_types = {
-    'GINe': 'graph_data',
-    'Booster': 'regular_data'
-}
 
-data_functions = {
-    'graph_data': process_graph_data,
-    'regular_data': process_regular_data,
-}
+def train_model(args, data, configs, bank = None):
 
-file_types = {
-    'GINe': 'pth',
-    'Booster': 'pkl'
-}
+    #model_type = model_types.get(args.model)
+    model_type = tu.model_types.get(args.model)
+
+    # Filter the data
+    data_processor = tu.data_functions.get(model_type)
+    data_for_indices = data['regular_data']['train_data']['x'][['From Bank', 'To Bank']]
+    data = data[tu.data_types.get(model_type)]['train_data']
+
+    # get class used for training
+    trainer_class = tu.trainer_classes.get(model_type)
+    
+    # process data
+    data_for_indices = pdt.get_bank_indices(data_for_indices, bank) if bank else data_for_indices.index.tolist()
+    train_data = data_processor(data, data_for_indices, args)
+    
+    # train the model
+    trainer = trainer_class(args, train_data)
+    trained_model = trainer.train()
+
+    # save the model
+    #file_name = f'bank_{bank}' if bank else 'full_info'
+    file_name = f'bank_{bank}' if bank else args.scenario
+    save_direc = save_model(trained_model, file_name, args, configs)
+
+    return save_direc
+
+
+def save_model(trained_model, file_name, args, configs):
+
+    # create folders to store the model(s)
+    save_direc = configs.save_direc_training
+    save_direc = os.path.join(save_direc, args.model)
+
+    args.split_perc = configs.split_perc
+    str_folder = f'split_{args.split_perc[0]}_{args.split_perc[1]}-'
+    models_configs = tu.get_model_configs(args)
+
+    if args.model == 'GINe':
+        num_neighbors = models_configs['params']['num_neighbors']
+        mask_indexing = models_configs['model_settings']['index_masking']
+        str_folder += f'num_neighbors_{num_neighbors}-mask_indexing_{mask_indexing}'
+    
+    elif args.model == 'xgboost':
+        #models_configs = tu.get_model_configs(args)
+        num_rounds = models_configs['params']['num_rounds']
+        str_folder += f'num_rounds_{num_rounds}'
+
+    save_direc = os.path.join(save_direc, str_folder)
+    if not os.path.exists(save_direc):
+        os.makedirs(save_direc, exist_ok=True)
+    
+    # save the model
+    model_type = tu.model_types.get(args.model)
+    file_type = tu.file_types.get(model_type)
+    file_name = os.path.join(save_direc, file_name + f'.{file_type}')
+    if model_type == 'graph':
+        torch.save(trained_model.state_dict(), file_name)
+    elif model_type == 'booster':
+        scaler = trained_model.scaler
+        joblib.dump({"model": trained_model, "scaler": scaler}, file_name) if scaler is not None else trained_model.save_model(file_name)
+
+    return save_direc
+
+
+
+
+
+
+
+
+"""
 
 def train_model(model, data, banks = [], **kwargs):
 
@@ -35,7 +95,7 @@ def train_model(model, data, banks = [], **kwargs):
     data_for_indices = data['regular_data']['train_data']['x']
     unfil_data = data[data_type]['train_data']
 
-    save_direc = 'C:\\Users\\u0168001\\OneDrive - KU Leuven\\Desktop\\Courses\\AML_work_study\\pycharm\\models'
+    save_direc = "/home/nam_07/AML_work_study/models"
     file_type = file_types.get(model.__name__)
 
     #bank = 1
@@ -74,3 +134,5 @@ def train_model(model, data, banks = [], **kwargs):
             save_model(trained_models['all_banks'].model, save_direc + f'\\{model.__name__}_all_banks.{file_type}', trained_models['all_banks'].scaler)
 
     return trained_models
+
+"""

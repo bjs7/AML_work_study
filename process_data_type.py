@@ -1,7 +1,11 @@
 import copy
 import numpy as np
+import pandas as pd
 import torch
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from snapml import GraphFeaturePreprocessor
+from gp_params import params
+
 
 def get_bank_indices(df, bank, include_tobank = True):
 
@@ -15,15 +19,26 @@ def get_bank_indices(df, bank, include_tobank = True):
     return bank_indices
 
 
-def process_regular_data(data, bank_indices, single_bank=False):
+def process_regular_data(data, bank_indices, args):
 
     df = copy.copy(data)
     #df = copy.copy(unfil_data)
 
-    data_features = ['from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Payment Format']
+    data_features = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Payment Format']
     X = df['x'].iloc[bank_indices,:].loc[:,data_features]
     X = X.reset_index(drop=True)
     y = df['y'][bank_indices].copy()
+
+    # graph_feature_preprocessing using snapML
+
+    gp = GraphFeaturePreprocessor()
+    gp.set_params(params)
+
+    X_gf = gp.fit_transform(X[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
+    X_gf = X_gf[:,4:]
+    
+    # remove EdgeID as it is no longer needed
+    X = X.drop('EdgeID', axis='columns')
 
     # Count the amount of times an account sends or receives
     for ID in ['from_id', 'to_id']:
@@ -53,15 +68,19 @@ def process_regular_data(data, bank_indices, single_bank=False):
     sin_cos = pd.concat([pd.DataFrame({'sin_component': sin_component.values}), pd.DataFrame({'cos_component': cos_component.values})], axis=1)
     X = pd.concat([X, sin_cos], axis = 1)
 
+    # finally concat X and the graph features
+    X_gf = pd.DataFrame(X_gf, columns=[f'graph_feature_{i + 1}' for i in range(X_gf.shape[1])])
+    X = pd.concat([X, X_gf], axis=1)
+
     return {'X': X, 'y': y, 'bank_indices': bank_indices, 'scaler': scaler}
 
 
-def process_graph_data(data, bank_indices, single_bank=False):
+def process_graph_data(data, bank_indices, args):
 
     df = copy.copy(data)
     #df = copy.copy(unfil_data)
-
-    if single_bank:
+    
+    if args.scenario == 'individual banks':
         df.edge_index = df.edge_index[:,bank_indices].clone()
         df.edge_attr = df.edge_attr[bank_indices,:].clone()
         df.y = df.y[bank_indices].clone()
@@ -88,12 +107,16 @@ def process_graph_data(data, bank_indices, single_bank=False):
     cos_component = torch.cos(2 * np.pi * timestamps / period).unsqueeze(1)
 
     df.edge_attr[:, 0:2] = z_norm(df.edge_attr[:, 0:2])
+    
+    # old code, doesn't seem to work for pytorch 2.5.0, instead 2.6.0 is required. Might be able to run if environment from
+    # AML data generating paper is used.
+    encoder = OneHotEncoder(sparse_output=False, drop='first')
+    #encoded_payment = encoder.fit_transform(np.array(df.edge_attr[:,2]).reshape(-1,1)) # new
+    encoded_payment = encoder.fit_transform(np.array([df.edge_attr[:,2]]).T) # old
 
     encoder = OneHotEncoder(sparse_output=False, drop='first')
-    encoded_payment = encoder.fit_transform(np.array([df.edge_attr[:,2]]).T)
-
-    encoder = OneHotEncoder(sparse_output=False, drop='first')
-    encoded_currency = encoder.fit_transform(np.array([df.edge_attr[:,3]]).T)
+    #encoded_currency = encoder.fit_transform(np.array(df.edge_attr[:,3]).reshape(-1,1)) # new
+    encoded_currency = encoder.fit_transform(np.array([df.edge_attr[:,3]]).T) # old
 
     df.edge_attr = torch.cat([torch.tensor(np.arange(df.edge_attr.shape[0])).unsqueeze(1), df.edge_attr[:, [0, 1]],
                               torch.tensor(encoded_payment), torch.tensor(encoded_currency),
