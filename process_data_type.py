@@ -80,7 +80,7 @@ def process_graph_data(data, bank_indices, args):
     df = copy.copy(data)
     #df = copy.copy(unfil_data)
     
-    if args.scenario == 'individual banks':
+    if args.scenario == 'individual_banks':
         df.edge_index = df.edge_index[:,bank_indices].clone()
         df.edge_attr = df.edge_attr[bank_indices,:].clone()
         df.y = df.y[bank_indices].clone()

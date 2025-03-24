@@ -28,8 +28,17 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
+    # load data
+    df = pd.read_csv("/home/nam_07/AML_work_study/formatted_transactions.csv")
+    data = dp.get_data(df, split_perc = configs.split_perc).
+
+    if args.scenario == 'individual_banks':
+        Banks = list((df.loc[:, 'From Bank'])) + list((df.loc[:, 'To Bank']))
+        unique_banks = list(set(Banks))
+        args.banks = unique_banks
+
     if args.banks:
-        args.scenario = 'individual banks'
+        args.scenario = 'individual_banks'
 
     #args.split_perc = configs.split_perc
     #args_dict = {'arguments': vars(args), 'model_configs': tu.get_model_configs(args)}
@@ -41,19 +50,14 @@ def main():
     #config_hash = hashlib.md5(config_str.encode()).hexdigest()[:8]
 
     # I need to save configs etc. after models have been trained...
-
     
-    # load data
-    df = pd.read_csv("/home/nam_07/AML_work_study/formatted_transactions.csv")
-    data = dp.get_data(df, split_perc = configs.split_perc)
-
     #model = 'GINe'
     #args.model = 'xgboost'
     
     # train the model and get args, configs etc. incase changes, and save direction of save files
     #args, configs, save_direc = tra.train_model(args, data, configs)
 
-    if args.scenario == 'individual banks':
+    if args.scenario == 'individual_banks':
         for index, bank in enumerate(args.banks):
             save_direc = tra.train_model(args, data, configs, bank = bank)
     else:
