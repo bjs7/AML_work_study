@@ -30,7 +30,7 @@ def main():
 
     # load data
     df = pd.read_csv("/home/nam_07/AML_work_study/formatted_transactions.csv")
-    data = dp.get_data(df, split_perc = configs.split_perc).
+    data = dp.get_data(df, split_perc = configs.split_perc)
 
     if args.scenario == 'individual_banks':
         Banks = list((df.loc[:, 'From Bank'])) + list((df.loc[:, 'To Bank']))
