@@ -1,5 +1,4 @@
 import json
-import trainers as trs
 import process_data_type as pdt
 
 def get_model_configs(args):
@@ -12,8 +11,8 @@ def get_model_configs(args):
 #{"params": {"xgb_parameters": {"objective":  "binary:logistic", "eval_metric": "logloss", "max_depth": 6, "learning_rate": 0.01 }, "num_rounds": 100} }
 
 trainer_classes = {
-    'graph': trs.train_gnn_trainer,
-    "booster": trs.xgboost_trainer,
+    #'graph': trs.train_gnn_trainer,
+    #"booster": trs.xgboost_trainer,
     #"simple_nn_full": simple_nn_trainer
 }
 

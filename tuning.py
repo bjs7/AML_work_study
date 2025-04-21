@@ -1,6 +1,5 @@
 import trainer_utils as tu
 import data_functions as data_funcs
-import trainers as trs
 import xgboost as xgb
 from sklearn.metrics import f1_score
 import trainer_gnn as tg
@@ -109,7 +108,7 @@ def tune_booster(args, data, bank_indices = None):
     # need to select data over and over, as the fraction increases for train, 
     # and therefore also effects validation
 
-    models = [trs.xgboost(args, tune_u.hyper_sampler(args)) for _ in range(x_0)]
+    #models = [trs.xgboost(args, tune_u.hyper_sampler(args)) for _ in range(x_0)]
 
     while frac_not_reached:
 
