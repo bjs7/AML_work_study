@@ -5,7 +5,7 @@ import inspect
 #from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import torch
 from torch_geometric.data import Data
-
+import data_utils as du
 
 def get_data(df_edges, **kwargs):
 
@@ -122,6 +122,7 @@ def pack_regular_data(df_edges, y, indices, test_perc):
     return {'train_data': train_data, 'vali_data': vali_data}
 
 
+
 def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
 
     train_indices = indices[0]
@@ -152,15 +153,27 @@ def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
     train_data = Data(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
     vali_data = Data(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
 
+    du.update_nr_nodes(train_data)
+    du.update_nr_nodes(vali_data)
+
+    train_indices = torch.tensor(train_indices)
+    vali_indices = torch.tensor(vali_indices)
+
     if test_perc > 0:
         test_indices = indices[2]
         test_x = x
 
         test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
-        test_data = Data(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
+        test_data = Data(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)   
 
-        test_data.x = train_data.x
+        du.update_nr_nodes(test_data)
+        test_indices = torch.tensor(test_indices)
 
-        return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
+        #return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
+        return {'train_data': {'df': train_data, 'pred_indices': train_indices}, 
+                'vali_data': {'df': vali_data, 'pred_indices': vali_indices}, 
+                'test_data': {'df': test_data, 'pred_indices': test_indices}}
 
-    return {'train_data':train_data, 'vali_data': vali_data}
+    #return {'train_data':train_data, 'vali_data': vali_data}
+    return {'train_data': {'df ': train_data, 'pred_indices': train_indices}, 
+                'vali_data': {'df ': vali_data, 'pred_indices': vali_indices}}

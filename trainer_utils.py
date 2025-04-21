@@ -3,8 +3,10 @@ import trainers as trs
 import process_data_type as pdt
 
 def get_model_configs(args):
+
     with open('model_configs.json', 'r') as file:
         model_parameters = json.load(file)
+
     return model_parameters.get(args.model)
 
 #{"params": {"xgb_parameters": {"objective":  "binary:logistic", "eval_metric": "logloss", "max_depth": 6, "learning_rate": 0.01 }, "num_rounds": 100} }
@@ -26,7 +28,8 @@ file_types = {
 }
 
 data_functions = {
-    'graph': pdt.process_graph_data,
+    #'graph': pdt.process_graph_data,
+    'graph': pdt.feature_engi_graph_data,
     'booster': pdt.process_regular_data,
     #'graph_data': pdt.process_graph_data,
     #'regular_data': pdt.process_regular_data,

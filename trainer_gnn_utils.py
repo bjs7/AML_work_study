@@ -7,20 +7,31 @@ from torch_geometric.loader import LinkNeighborLoader
 from torch_geometric.loader import NeighborLoader
 import gnn_models as gnn_m
 
-def get_model(sample_batch, nn_size):
+def get_model(sample_batch, m_param, m_settings, args):
+
+    e_dim_adjust = 1 if m_settings.get('include_time') else 2
     n_feats = sample_batch.x.shape[1] if not isinstance(sample_batch, HeteroData) else sample_batch['node'].x.shape[1]
-    e_dim = (sample_batch.edge_attr.shape[1] - 1) if not isinstance(sample_batch, HeteroData) else (sample_batch['node', 'to', 'node'].edge_attr.shape[1] - 1)
+    e_dim = (sample_batch.edge_attr.shape[1] - e_dim_adjust) if not isinstance(sample_batch, HeteroData) else (sample_batch['node', 'to', 'node'].edge_attr.shape[1] - e_dim_adjust)
     #e_dim = (sample_batch.edge_attr.shape[1]) if not isinstance(sample_batch, HeteroData) else (sample_batch['node', 'to', 'node'].edge_attr.shape[1] - 1)
 
     model = gnn_m.GINe(
-        num_features=n_feats, num_gnn_layers=nn_size, n_classes=2,
-        n_hidden=round(66.00315515631006), residual=False, edge_updates=True, edge_dim=e_dim,
-        dropout=0.00983468338330501, final_dropout=0.10527690625126304
+        num_features=n_feats, num_gnn_layers=m_param.get('gnn_layers'), n_classes=2,
+        n_hidden=m_param.get('hidden_embedding_size'), residual=False, edge_updates=args.emlps, edge_dim=e_dim,
+        dropout=m_param.get('dropout'), final_dropout=m_param.get('dropout')
     )
 
 
     return model
 
+def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transform = None):
+
+    train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), batch_size=batch_size, shuffle=True, transform=transform)
+    vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), edge_label_index=vali_data.edge_index[:, pred_indices],
+                       batch_size=batch_size, shuffle=False, transform=None)
+    
+    return train_loader, vali_loader
+
+# The loader has an argument called time_attr which could potentially be used to adjust for time?
 def account_for_time(batch, main_data):
 
     max_time = main_data.edge_attr[batch.input_id, 1].max()

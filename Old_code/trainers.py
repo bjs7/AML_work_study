@@ -6,11 +6,32 @@ import trainer_utils as tu
 import trainer_gnn as tgnn
 import torch
 
+class xgboost:
+    def __init__(self, args, model_configs):
+        self.args = args
+        self.model_configs = model_configs
+    
+    def train(self, train_data):
+        dtrain = xgb.DMatrix(train_data['X'], train_data['y'])
+
+        self.model = xgb.train(self.model_configs['params'], dtrain, 
+                               self.model_configs['num_rounds'])
+
+    
+
+
+
+
+
+
+
+# old -------------------------------------------------------------------------------------------------------------
 
 class BaseTrainer(ABC):
-    def __init__(self, args, data): #, labels
+    def __init__(self, args, data, model_configs): #, labels
         self.args = args
         self.data = data
+        self.model_configs = model_configs
         #self.labels = labels
 
     @abstractmethod
@@ -19,20 +40,27 @@ class BaseTrainer(ABC):
 
 class train_gnn_trainer(BaseTrainer):
 
-    def __init__(self, args, data):
+    def __init__(self, args, data, model_configs):
         self.args = args
         self.data = data
+        self.model_configs = model_configs
 
     def train(self):
-        self.model = tgnn.train_gnn(self.args, self.data)
-        return self.model
+        self.model = tgnn.train_gnn(self.args, self.data, self.model_configs)
+        #return self.model
+        #return model_wrap(self.model, {"bank_indices": self.data.get("bank_indices", None), "scaler": self.data.get("scaler", None), "encoder_pay": self.data.get("encoder_pay", None), "encoder_cur": self.data.get("encoder_cur", None)})
+        return model_wrap(self.model, {"pred_indices": self.data.get("pred_indices", None), 'scaler_encoders': self.data.get('scaler_encoders', None)})
 
 class model_wrap:
 
     def __init__(self, model, data):
         self.model = model
         self.bank_indices = data.get('bank_indices')
-        self.scaler = data.get('scaler', None)
+        self.scaler_encoders = data.get('scaler_encoders')
+
+        #self.scaler = data.get('scaler', None)
+        #self.encoder_pay = data.get('encoder_pay', None)
+        #self.encoder_cur = data.get('encoder_cur', None)
 
     def predict(self, X):
         predict_function = predict_functions.get(self.model.__name__)
@@ -41,26 +69,19 @@ class model_wrap:
 
 class xgboost_trainer(BaseTrainer):
 
-    def __init__(self, args, data):
-        super().__init__(args, data)
-        
-        self.args = args
-        self.data = data
+    def __init__(self, args, data, model_configs):
+        super().__init__(args, data, model_configs)
 
-        model_configs = tu.get_model_configs(self.args)
-        self.params = model_configs['params']['xgb_parameters']
-        self.num_rounds = model_configs['params']['num_rounds']
-        #self.X = data['X']
-        #self.y = data['y']
-
-        #self.params = params
-        #self.num_rounds = num_rounds
+        #model_configs = tu.get_model_configs(self.args)
+        self.params = self.model_configs['params']
+        self.num_rounds = self.model_configs['num_rounds']
 
     def train(self):
         dtrain = xgb.DMatrix(self.data['X'], self.data['y'])
         self.model = xgb.train(self.params, dtrain, self.num_rounds)
 
-        return model_wrap(self.model, {"bank_indices": self.data.get("bank_indices"), "scaler": self.data.get("scaler", None)})
+        return model_wrap(self.model, {"bank_indices": self.data.get("bank_indices"), "scaler": self.data.get("scaler", None), "encoder_pay": self.data.get("encoder_pay", None), "encoder_cur": self.data.get("encoder_cur", None)})
+
 
 
 class simple_nn_trainer(BaseTrainer):

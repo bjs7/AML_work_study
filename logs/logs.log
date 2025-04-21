@@ -1,0 +1,633 @@
+2025-04-01 16:14:02,193 [INFO ] load_data
+2025-04-11 13:52:07,072 [INFO ] load_data
+2025-04-11 14:07:39,910 [INFO ] load_data
+2025-04-11 14:12:14,033 [INFO ] load_data
+2025-04-11 14:12:20,953 [INFO ] load_data
+2025-04-11 14:30:35,450 [INFO ] Random seed set as 1
+2025-04-11 15:14:15,222 [INFO ] Random seed set as 1
+2025-04-11 15:14:15,223 [INFO ] load_data
+2025-04-11 15:14:36,802 [INFO ] Random seed set as 1
+2025-04-11 15:14:36,803 [INFO ] load_data
+2025-04-11 15:14:45,152 [INFO ] Random seed set as 1
+2025-04-11 15:14:45,152 [INFO ] load_data
+2025-04-11 15:15:01,731 [INFO ] Random seed set as 1
+2025-04-11 15:15:01,731 [INFO ] load_data
+2025-04-11 15:15:09,072 [INFO ] Random seed set as 1
+2025-04-11 15:15:09,072 [INFO ] load_data
+2025-04-11 17:10:35,240 [INFO ] load_data
+2025-04-11 20:57:21,389 [INFO ] load_data
+2025-04-11 21:00:49,755 [INFO ] Random seed set as 1
+2025-04-11 21:00:49,758 [INFO ] load_data
+2025-04-11 21:06:39,432 [INFO ] Random seed set as 1
+2025-04-11 21:06:39,435 [INFO ] load_data
+2025-04-11 21:16:22,223 [INFO ] Random seed set as 1
+2025-04-11 21:16:22,226 [INFO ] load_data
+2025-04-11 21:16:32,922 [INFO ] Random seed set as 1
+2025-04-11 21:16:32,926 [INFO ] load_data
+2025-04-11 21:17:01,087 [INFO ] Random seed set as 1
+2025-04-11 21:17:01,091 [INFO ] load_data
+2025-04-11 21:41:44,219 [INFO ] Random seed set as 1
+2025-04-11 21:41:44,223 [INFO ] load_data
+2025-04-11 21:42:12,681 [INFO ] Random seed set as 1
+2025-04-11 21:42:12,684 [INFO ] load_data
+2025-04-11 21:43:12,943 [INFO ] Random seed set as 1
+2025-04-11 21:43:12,947 [INFO ] load_data
+2025-04-11 22:46:44,580 [INFO ] Random seed set as 1
+2025-04-11 22:46:44,582 [INFO ] load_data
+2025-04-11 22:50:19,986 [INFO ] Random seed set as 1
+2025-04-11 22:50:19,990 [INFO ] load_data
+2025-04-11 22:50:40,900 [INFO ] Random seed set as 1
+2025-04-11 22:50:40,904 [INFO ] load_data
+2025-04-11 22:51:11,906 [INFO ] Random seed set as 1
+2025-04-11 22:51:11,910 [INFO ] load_data
+2025-04-13 20:43:03,292 [INFO ] Random seed set as 1
+2025-04-13 20:43:03,293 [INFO ] load_data
+2025-04-13 20:44:22,703 [INFO ] Random seed set as 1
+2025-04-13 20:44:22,709 [INFO ] load_data
+2025-04-13 20:45:05,666 [INFO ] Random seed set as 1
+2025-04-13 20:45:05,670 [INFO ] load_data
+2025-04-13 20:45:26,746 [INFO ] Random seed set as 1
+2025-04-13 20:45:26,750 [INFO ] load_data
+2025-04-13 20:45:38,746 [INFO ] Random seed set as 1
+2025-04-13 20:45:38,752 [INFO ] load_data
+2025-04-13 20:46:16,307 [INFO ] Random seed set as 1
+2025-04-13 20:46:16,311 [INFO ] load_data
+2025-04-13 20:47:57,093 [INFO ] Random seed set as 1
+2025-04-13 20:47:57,097 [INFO ] load_data
+2025-04-13 21:18:11,918 [INFO ] Random seed set as 1
+2025-04-13 21:18:11,922 [INFO ] load_data
+2025-04-13 21:24:20,615 [INFO ] Random seed set as 1
+2025-04-13 21:24:20,619 [INFO ] load_data
+2025-04-13 21:25:05,442 [INFO ] Random seed set as 1
+2025-04-13 21:25:05,445 [INFO ] load_data
+2025-04-13 21:27:07,840 [INFO ] Random seed set as 1
+2025-04-13 21:27:07,844 [INFO ] load_data
+2025-04-13 21:29:58,230 [INFO ] Random seed set as 1
+2025-04-13 21:29:58,234 [INFO ] load_data
+2025-04-13 21:30:18,855 [INFO ] Random seed set as 1
+2025-04-13 21:30:18,858 [INFO ] load_data
+2025-04-13 21:35:35,277 [INFO ] Random seed set as 1
+2025-04-13 21:35:35,281 [INFO ] load_data
+2025-04-13 22:11:56,576 [INFO ] Random seed set as 1
+2025-04-13 22:11:56,581 [INFO ] load_data
+2025-04-14 10:51:18,521 [INFO ] Random seed set as 1
+2025-04-14 10:51:18,522 [INFO ] load_data
+2025-04-14 11:50:39,768 [INFO ] Random seed set as 1
+2025-04-14 11:50:39,772 [INFO ] load_data
+2025-04-14 11:52:29,339 [INFO ] Random seed set as 1
+2025-04-14 11:52:29,343 [INFO ] load_data
+2025-04-14 12:15:32,608 [INFO ] Random seed set as 1
+2025-04-14 12:15:32,609 [INFO ] load_data
+2025-04-14 12:18:33,172 [INFO ] Random seed set as 1
+2025-04-14 12:18:33,176 [INFO ] load_data
+2025-04-14 13:10:08,642 [INFO ] Random seed set as 1
+2025-04-14 13:10:08,643 [INFO ] load_data
+2025-04-14 14:18:44,775 [INFO ] Random seed set as 1
+2025-04-14 14:18:44,778 [INFO ] load_data
+2025-04-14 14:19:31,189 [INFO ] Random seed set as 1
+2025-04-14 14:19:31,189 [INFO ] load_data
+2025-04-14 14:21:10,853 [INFO ] Random seed set as 1
+2025-04-14 14:21:10,857 [INFO ] load_data
+2025-04-14 14:23:27,697 [INFO ] Random seed set as 1
+2025-04-14 14:23:27,701 [INFO ] load_data
+2025-04-14 14:24:01,704 [INFO ] Random seed set as 1
+2025-04-14 14:24:01,707 [INFO ] load_data
+2025-04-14 14:26:18,933 [INFO ] Random seed set as 1
+2025-04-14 14:26:18,936 [INFO ] load_data
+2025-04-14 15:10:09,963 [INFO ] Random seed set as 1
+2025-04-14 15:10:09,963 [INFO ] load_data
+2025-04-14 15:18:31,094 [INFO ] Random seed set as 1
+2025-04-14 15:18:31,099 [INFO ] load_data
+2025-04-14 15:19:25,124 [INFO ] Random seed set as 1
+2025-04-14 15:19:25,124 [INFO ] load_data
+2025-04-14 15:28:19,440 [INFO ] Random seed set as 1
+2025-04-14 15:28:19,446 [INFO ] load_data
+2025-04-14 15:30:51,045 [INFO ] Random seed set as 1
+2025-04-14 15:30:51,049 [INFO ] load_data
+2025-04-14 16:55:48,628 [INFO ] Random seed set as 1
+2025-04-14 16:55:48,629 [INFO ] load_data
+2025-04-14 17:38:18,500 [INFO ] Random seed set as 1
+2025-04-14 17:38:18,504 [INFO ] load_data
+2025-04-14 18:14:34,102 [INFO ] Random seed set as 1
+2025-04-14 18:14:34,105 [INFO ] load_data
+2025-04-14 18:29:47,665 [INFO ] Random seed set as 1
+2025-04-14 18:29:47,669 [INFO ] load_data
+2025-04-14 21:21:30,339 [INFO ] Random seed set as 1
+2025-04-14 21:21:30,339 [INFO ] load_data
+2025-04-14 21:52:06,602 [INFO ] Random seed set as 1
+2025-04-14 21:52:06,606 [INFO ] load_data
+2025-04-14 22:01:01,542 [INFO ] Random seed set as 1
+2025-04-14 22:01:01,543 [INFO ] load_data
+2025-04-14 22:18:36,620 [INFO ] Random seed set as 1
+2025-04-14 22:18:36,620 [INFO ] load_data
+2025-04-14 22:35:05,541 [INFO ] Random seed set as 1
+2025-04-14 22:35:05,544 [INFO ] load_data
+2025-04-14 22:35:29,287 [INFO ] Random seed set as 1
+2025-04-14 22:35:29,291 [INFO ] load_data
+2025-04-14 22:36:03,389 [INFO ] Random seed set as 1
+2025-04-14 22:36:03,392 [INFO ] load_data
+2025-04-14 22:37:36,056 [INFO ] Random seed set as 1
+2025-04-14 22:37:36,059 [INFO ] load_data
+2025-04-15 10:47:27,843 [INFO ] Random seed set as 1
+2025-04-15 10:47:27,847 [INFO ] load_data
+2025-04-15 11:26:35,183 [INFO ] Random seed set as 1
+2025-04-15 11:26:35,187 [INFO ] load_data
+2025-04-15 11:28:21,954 [INFO ] Random seed set as 1
+2025-04-15 11:28:21,958 [INFO ] load_data
+2025-04-15 11:32:25,552 [INFO ] Random seed set as 1
+2025-04-15 11:32:25,555 [INFO ] load_data
+2025-04-15 11:37:38,530 [INFO ] Random seed set as 1
+2025-04-15 11:37:38,534 [INFO ] load_data
+2025-04-15 11:48:51,390 [INFO ] Random seed set as 1
+2025-04-15 11:48:51,394 [INFO ] load_data
+2025-04-15 13:13:39,697 [INFO ] Random seed set as 1
+2025-04-15 13:13:39,701 [INFO ] load_data
+2025-04-15 13:32:14,652 [INFO ] Random seed set as 1
+2025-04-15 13:32:14,656 [INFO ] load_data
+2025-04-15 13:32:46,166 [INFO ] Random seed set as 1
+2025-04-15 13:32:46,170 [INFO ] load_data
+2025-04-15 15:24:00,790 [INFO ] Random seed set as 1
+2025-04-15 15:24:00,793 [INFO ] load_data
+2025-04-15 15:25:25,150 [INFO ] Random seed set as 1
+2025-04-15 15:25:25,154 [INFO ] load_data
+2025-04-15 15:27:32,805 [INFO ] Random seed set as 1
+2025-04-15 15:27:32,805 [INFO ] load_data
+2025-04-15 16:21:52,330 [INFO ] Random seed set as 1
+2025-04-15 16:21:52,332 [INFO ] load_data
+2025-04-15 16:34:02,564 [INFO ] load_data
+2025-04-15 16:34:17,097 [INFO ] Random seed set as 1
+2025-04-15 16:34:17,101 [INFO ] load_data
+2025-04-15 17:12:22,899 [INFO ] Random seed set as 1
+2025-04-15 17:12:22,899 [INFO ] load_data
+2025-04-15 17:17:58,274 [INFO ] Random seed set as 1
+2025-04-15 17:17:58,278 [INFO ] load_data
+2025-04-15 17:18:37,982 [INFO ] Random seed set as 1
+2025-04-15 17:18:37,986 [INFO ] load_data
+2025-04-15 17:19:58,442 [INFO ] Random seed set as 1
+2025-04-15 17:19:58,446 [INFO ] load_data
+2025-04-15 17:47:24,766 [INFO ] Random seed set as 1
+2025-04-15 17:47:24,766 [INFO ] load_data
+2025-04-15 17:49:52,773 [INFO ] Random seed set as 1
+2025-04-15 17:49:52,777 [INFO ] load_data
+2025-04-15 17:51:21,268 [INFO ] Random seed set as 1
+2025-04-15 17:51:21,272 [INFO ] load_data
+2025-04-15 18:10:44,757 [INFO ] Random seed set as 1
+2025-04-15 18:10:44,760 [INFO ] load_data
+2025-04-15 18:11:28,295 [INFO ] Random seed set as 1
+2025-04-15 18:11:28,299 [INFO ] load_data
+2025-04-15 18:12:52,008 [INFO ] Random seed set as 1
+2025-04-15 18:12:52,012 [INFO ] load_data
+2025-04-16 10:50:32,364 [INFO ] Random seed set as 1
+2025-04-16 10:50:32,364 [INFO ] load_data
+2025-04-16 10:56:54,091 [INFO ] Random seed set as 1
+2025-04-16 10:56:54,095 [INFO ] load_data
+2025-04-16 10:58:46,257 [INFO ] Random seed set as 1
+2025-04-16 10:58:46,262 [INFO ] load_data
+2025-04-16 11:16:06,686 [INFO ] Random seed set as 1
+2025-04-16 11:16:06,690 [INFO ] load_data
+2025-04-16 11:38:55,849 [INFO ] Random seed set as 1
+2025-04-16 11:38:55,852 [INFO ] load_data
+2025-04-16 11:41:20,257 [INFO ] Random seed set as 1
+2025-04-16 11:41:20,262 [INFO ] load_data
+2025-04-16 12:03:01,602 [INFO ] Random seed set as 1
+2025-04-16 12:03:01,606 [INFO ] load_data
+2025-04-16 12:07:09,814 [INFO ] Random seed set as 1
+2025-04-16 12:07:09,819 [INFO ] load_data
+2025-04-16 12:41:34,478 [INFO ] Random seed set as 1
+2025-04-16 12:41:34,482 [INFO ] load_data
+2025-04-16 12:53:07,585 [INFO ] Random seed set as 1
+2025-04-16 12:53:07,589 [INFO ] load_data
+2025-04-16 13:02:56,034 [INFO ] Random seed set as 1
+2025-04-16 13:02:56,038 [INFO ] load_data
+2025-04-16 13:06:02,429 [INFO ] Random seed set as 1
+2025-04-16 13:06:02,433 [INFO ] load_data
+2025-04-16 13:14:22,955 [INFO ] Random seed set as 1
+2025-04-16 13:14:22,959 [INFO ] load_data
+2025-04-16 13:33:18,639 [INFO ] Random seed set as 1
+2025-04-16 13:33:18,642 [INFO ] load_data
+2025-04-16 13:46:20,687 [INFO ] Random seed set as 1
+2025-04-16 13:46:20,692 [INFO ] load_data
+2025-04-16 14:28:19,138 [INFO ] Random seed set as 1
+2025-04-16 14:28:23,773 [INFO ] load_data
+2025-04-16 14:30:34,993 [INFO ] Random seed set as 1
+2025-04-16 14:30:34,996 [INFO ] load_data
+2025-04-16 14:33:39,007 [INFO ] Random seed set as 1
+2025-04-16 14:33:39,011 [INFO ] load_data
+2025-04-16 14:35:34,244 [INFO ] Random seed set as 1
+2025-04-16 14:35:34,249 [INFO ] load_data
+2025-04-16 14:38:41,499 [INFO ] Random seed set as 1
+2025-04-16 14:38:41,502 [INFO ] load_data
+2025-04-16 16:06:21,668 [INFO ] Random seed set as 1
+2025-04-16 16:06:21,670 [INFO ] load_data
+2025-04-16 16:43:07,956 [INFO ] Random seed set as 1
+2025-04-16 16:43:07,959 [INFO ] load_data
+2025-04-16 17:19:19,399 [INFO ] Random seed set as 1
+2025-04-16 17:19:19,400 [INFO ] load_data
+2025-04-16 17:24:00,378 [INFO ] Random seed set as 1
+2025-04-16 17:24:00,381 [INFO ] load_data
+2025-04-16 17:24:38,437 [INFO ] Random seed set as 1
+2025-04-16 17:24:38,437 [INFO ] load_data
+2025-04-17 11:08:45,387 [INFO ] Random seed set as 1
+2025-04-17 11:08:45,388 [INFO ] load_data
+2025-04-17 11:11:54,086 [INFO ] Random seed set as 1
+2025-04-17 11:11:54,091 [INFO ] load_data
+2025-04-17 11:17:27,589 [INFO ] Random seed set as 1
+2025-04-17 11:17:27,593 [INFO ] load_data
+2025-04-17 12:59:04,846 [INFO ] Random seed set as 1
+2025-04-17 12:59:04,850 [INFO ] load_data
+2025-04-17 13:03:59,021 [INFO ] Random seed set as 1
+2025-04-17 13:03:59,021 [INFO ] load_data
+2025-04-17 13:05:16,477 [INFO ] Random seed set as 1
+2025-04-17 13:05:16,477 [INFO ] load_data
+2025-04-17 13:06:33,831 [INFO ] Random seed set as 1
+2025-04-17 13:06:33,834 [INFO ] load_data
+2025-04-17 13:18:05,698 [INFO ] Random seed set as 1
+2025-04-17 13:18:05,702 [INFO ] load_data
+2025-04-17 14:20:21,111 [INFO ] Random seed set as 1
+2025-04-17 14:20:21,112 [INFO ] load_data
+2025-04-17 14:22:02,724 [INFO ] Random seed set as 1
+2025-04-17 14:22:02,725 [INFO ] load_data
+2025-04-17 14:36:15,543 [INFO ] Random seed set as 1
+2025-04-17 14:36:15,543 [INFO ] load_data
+2025-04-17 14:51:11,721 [INFO ] Random seed set as 1
+2025-04-17 14:51:11,725 [INFO ] load_data
+2025-04-17 15:41:05,499 [INFO ] Random seed set as 0
+2025-04-17 15:41:05,500 [INFO ] load_data
+2025-04-17 15:41:34,562 [INFO ] Random seed set as 0
+2025-04-17 15:41:34,567 [INFO ] load_data
+2025-04-17 15:42:34,907 [INFO ] Random seed set as 0
+2025-04-17 15:42:34,907 [INFO ] load_data
+2025-04-17 15:52:18,832 [INFO ] Random seed set as 0
+2025-04-17 15:52:18,835 [INFO ] load_data
+2025-04-17 15:53:30,779 [INFO ] Random seed set as 0
+2025-04-17 15:53:30,784 [INFO ] load_data
+2025-04-17 15:53:52,430 [INFO ] Random seed set as 0
+2025-04-17 15:53:52,434 [INFO ] load_data
+2025-04-17 15:57:00,918 [INFO ] Random seed set as 0
+2025-04-17 15:57:00,922 [INFO ] load_data
+2025-04-17 16:01:03,987 [INFO ] Random seed set as 0
+2025-04-17 16:01:03,990 [INFO ] load_data
+2025-04-17 16:10:13,060 [INFO ] Random seed set as 0
+2025-04-17 16:10:13,064 [INFO ] load_data
+2025-04-17 16:11:14,951 [INFO ] Random seed set as 0
+2025-04-17 16:11:14,952 [INFO ] load_data
+2025-04-17 16:23:10,804 [INFO ] Random seed set as 1
+2025-04-17 16:24:18,883 [INFO ] Random seed set as 0
+2025-04-17 16:24:18,888 [INFO ] load_data
+2025-04-17 16:28:15,494 [INFO ] Random seed set as 1
+2025-04-17 16:29:35,643 [INFO ] Random seed set as 1
+2025-04-17 16:30:38,693 [INFO ] Random seed set as 2
+2025-04-17 16:31:40,181 [INFO ] Random seed set as 1
+2025-04-17 17:05:57,294 [INFO ] load_data
+2025-04-17 17:06:19,637 [INFO ] Random seed set as 0
+2025-04-17 17:06:19,637 [INFO ] load_data
+2025-04-17 17:23:31,634 [INFO ] Random seed set as 0
+2025-04-17 17:23:31,638 [INFO ] load_data
+2025-04-17 17:30:10,701 [INFO ] Random seed set as 0
+2025-04-17 17:30:10,705 [INFO ] load_data
+2025-04-17 17:41:58,105 [INFO ] Random seed set as 0
+2025-04-17 17:42:32,992 [INFO ] Random seed set as 0
+2025-04-17 17:43:05,968 [INFO ] Random seed set as 0
+2025-04-17 17:43:05,971 [INFO ] load_data
+2025-04-17 17:44:04,146 [INFO ] Random seed set as 0
+2025-04-17 17:44:04,150 [INFO ] load_data
+2025-04-17 17:45:15,036 [INFO ] Random seed set as 0
+2025-04-17 17:45:15,040 [INFO ] load_data
+2025-04-17 18:09:18,820 [INFO ] Random seed set as 0
+2025-04-17 18:09:18,822 [INFO ] load_data
+2025-04-17 18:11:04,225 [INFO ] Random seed set as 0
+2025-04-17 18:11:04,229 [INFO ] load_data
+2025-04-17 18:16:34,187 [INFO ] Random seed set as 0
+2025-04-17 18:16:34,191 [INFO ] load_data
+2025-04-17 20:56:37,615 [INFO ] Random seed set as 0
+2025-04-17 20:56:37,615 [INFO ] load_data
+2025-04-17 21:04:51,740 [INFO ] Random seed set as 0
+2025-04-17 21:04:51,744 [INFO ] load_data
+2025-04-17 21:20:15,480 [INFO ] Random seed set as 0
+2025-04-17 21:20:15,483 [INFO ] load_data
+2025-04-17 21:25:05,130 [INFO ] Random seed set as 0
+2025-04-17 21:25:05,133 [INFO ] load_data
+2025-04-17 21:27:52,046 [INFO ] Random seed set as 0
+2025-04-17 21:27:52,049 [INFO ] load_data
+2025-04-18 11:30:25,793 [INFO ] Random seed set as 0
+2025-04-18 11:30:25,796 [INFO ] load_data
+2025-04-18 12:58:41,806 [INFO ] Random seed set as 0
+2025-04-18 12:58:41,810 [INFO ] load_data
+2025-04-18 13:02:28,395 [INFO ] Random seed set as 0
+2025-04-18 13:02:28,399 [INFO ] load_data
+2025-04-18 13:02:32,532 [INFO ] Random seed set as 0
+2025-04-18 13:02:32,536 [INFO ] load_data
+2025-04-18 13:06:19,355 [INFO ] Random seed set as 0
+2025-04-18 13:06:19,358 [INFO ] load_data
+2025-04-18 13:07:54,384 [INFO ] Random seed set as 0
+2025-04-18 13:07:54,388 [INFO ] load_data
+2025-04-18 13:09:02,431 [INFO ] Random seed set as 0
+2025-04-18 13:09:02,434 [INFO ] load_data
+2025-04-18 13:29:30,624 [INFO ] Random seed set as 0
+2025-04-18 13:29:30,627 [INFO ] load_data
+2025-04-18 13:31:05,851 [INFO ] Random seed set as 0
+2025-04-18 13:31:05,854 [INFO ] load_data
+2025-04-18 13:38:18,877 [INFO ] Random seed set as 0
+2025-04-18 13:38:18,881 [INFO ] load_data
+2025-04-18 13:41:24,510 [INFO ] Random seed set as 0
+2025-04-18 13:41:24,513 [INFO ] load_data
+2025-04-18 13:44:13,011 [INFO ] Random seed set as 1
+2025-04-18 13:45:04,237 [INFO ] Random seed set as 1
+2025-04-18 13:57:51,230 [INFO ] Random seed set as 0
+2025-04-18 13:57:51,234 [INFO ] load_data
+2025-04-18 14:01:12,248 [INFO ] Random seed set as 1
+2025-04-18 14:03:12,175 [INFO ] Random seed set as 0
+2025-04-18 14:03:12,178 [INFO ] load_data
+2025-04-18 14:04:27,580 [INFO ] Random seed set as 1
+2025-04-18 14:06:02,215 [INFO ] Random seed set as 0
+2025-04-18 14:06:02,219 [INFO ] load_data
+2025-04-18 14:07:27,002 [INFO ] Random seed set as 1
+2025-04-18 14:09:58,292 [INFO ] Random seed set as 0
+2025-04-18 14:09:58,295 [INFO ] load_data
+2025-04-18 14:21:59,700 [INFO ] Random seed set as 0
+2025-04-18 14:21:59,704 [INFO ] load_data
+2025-04-18 14:24:43,762 [INFO ] Random seed set as 0
+2025-04-18 14:24:43,767 [INFO ] load_data
+2025-04-18 14:25:50,458 [INFO ] Random seed set as 0
+2025-04-18 14:25:50,462 [INFO ] load_data
+2025-04-18 14:28:05,937 [INFO ] Random seed set as 1
+2025-04-18 14:42:34,842 [INFO ] load_data
+2025-04-18 14:42:51,325 [INFO ] Random seed set as 0
+2025-04-18 14:42:51,328 [INFO ] load_data
+2025-04-18 14:54:23,207 [INFO ] Random seed set as 0
+2025-04-18 14:54:23,212 [INFO ] load_data
+2025-04-18 14:59:47,973 [INFO ] Random seed set as 0
+2025-04-18 14:59:47,978 [INFO ] load_data
+2025-04-18 15:00:31,760 [INFO ] Random seed set as 0
+2025-04-18 15:00:31,765 [INFO ] load_data
+2025-04-18 15:40:27,983 [INFO ] Random seed set as 0
+2025-04-18 15:40:27,986 [INFO ] load_data
+2025-04-18 16:03:45,757 [INFO ] Random seed set as 0
+2025-04-18 16:03:45,761 [INFO ] load_data
+2025-04-18 17:38:42,777 [INFO ] Random seed set as 0
+2025-04-18 17:38:42,778 [INFO ] load_data
+2025-04-18 17:45:59,701 [INFO ] Random seed set as 0
+2025-04-18 17:45:59,705 [INFO ] load_data
+2025-04-18 17:47:57,864 [INFO ] Random seed set as 0
+2025-04-18 17:47:57,868 [INFO ] load_data
+2025-04-18 18:21:12,554 [INFO ] Random seed set as 0
+2025-04-18 18:21:12,558 [INFO ] load_data
+2025-04-18 18:26:27,079 [INFO ] Random seed set as 0
+2025-04-18 18:26:27,083 [INFO ] load_data
+2025-04-18 18:39:57,022 [INFO ] Random seed set as 0
+2025-04-18 18:39:57,026 [INFO ] load_data
+2025-04-18 18:51:43,264 [INFO ] Random seed set as 0
+2025-04-18 18:51:43,268 [INFO ] load_data
+2025-04-19 17:52:16,594 [INFO ] Random seed set as 0
+2025-04-19 17:53:17,666 [INFO ] Random seed set as 0
+2025-04-19 18:26:52,021 [INFO ] load_data
+2025-04-19 21:20:23,267 [INFO ] Random seed set as 0
+2025-04-19 21:20:23,271 [INFO ] load_data
+2025-04-19 21:29:35,631 [INFO ] Random seed set as 0
+2025-04-19 21:29:35,635 [INFO ] load_data
+2025-04-19 21:39:11,366 [INFO ] Random seed set as 0
+2025-04-19 21:39:11,370 [INFO ] load_data
+2025-04-19 21:39:34,599 [INFO ] Random seed set as 0
+2025-04-19 21:39:34,603 [INFO ] load_data
+2025-04-19 21:40:17,394 [INFO ] Random seed set as 0
+2025-04-19 21:40:17,397 [INFO ] load_data
+2025-04-19 21:44:48,813 [INFO ] Random seed set as 0
+2025-04-19 21:44:48,817 [INFO ] load_data
+2025-04-19 21:45:21,420 [INFO ] Random seed set as 0
+2025-04-19 21:45:21,424 [INFO ] load_data
+2025-04-19 21:53:09,944 [INFO ] Random seed set as 0
+2025-04-19 21:53:09,948 [INFO ] load_data
+2025-04-19 21:54:24,422 [INFO ] Random seed set as 0
+2025-04-19 21:54:24,426 [INFO ] load_data
+2025-04-19 21:55:18,204 [INFO ] Random seed set as 0
+2025-04-19 21:55:18,208 [INFO ] load_data
+2025-04-19 22:12:14,334 [INFO ] Random seed set as 0
+2025-04-19 22:12:14,339 [INFO ] load_data
+2025-04-19 22:13:57,396 [INFO ] Random seed set as 0
+2025-04-19 22:13:57,400 [INFO ] load_data
+2025-04-19 22:30:14,242 [INFO ] Random seed set as 0
+2025-04-19 22:30:14,246 [INFO ] load_data
+2025-04-19 22:34:38,874 [INFO ] Random seed set as 0
+2025-04-19 22:34:38,875 [INFO ] load_data
+2025-04-19 22:34:58,524 [INFO ] Random seed set as 0
+2025-04-19 22:34:58,527 [INFO ] load_data
+2025-04-19 22:35:35,637 [INFO ] Random seed set as 0
+2025-04-19 22:35:35,641 [INFO ] load_data
+2025-04-19 22:36:24,718 [INFO ] Random seed set as 0
+2025-04-19 22:36:24,721 [INFO ] load_data
+2025-04-19 23:36:16,117 [INFO ] Random seed set as 0
+2025-04-19 23:36:16,120 [INFO ] load_data
+2025-04-19 23:36:55,179 [INFO ] Random seed set as 0
+2025-04-19 23:36:55,183 [INFO ] load_data
+2025-04-19 23:38:50,043 [INFO ] Random seed set as 0
+2025-04-19 23:38:50,047 [INFO ] load_data
+2025-04-19 23:56:49,966 [INFO ] Random seed set as 0
+2025-04-19 23:56:49,970 [INFO ] load_data
+2025-04-20 00:00:11,302 [INFO ] Random seed set as 0
+2025-04-20 00:00:11,305 [INFO ] load_data
+2025-04-20 00:01:06,726 [INFO ] Random seed set as 0
+2025-04-20 00:01:06,730 [INFO ] load_data
+2025-04-20 15:07:36,624 [INFO ] Random seed set as 0
+2025-04-20 15:07:36,627 [INFO ] load_data
+2025-04-20 15:28:55,576 [INFO ] Random seed set as 0
+2025-04-20 15:28:55,581 [INFO ] load_data
+2025-04-20 15:41:48,964 [INFO ] Random seed set as 0
+2025-04-20 15:41:48,968 [INFO ] load_data
+2025-04-20 15:43:28,126 [INFO ] Random seed set as 0
+2025-04-20 15:43:28,130 [INFO ] load_data
+2025-04-20 15:45:34,252 [INFO ] Random seed set as 0
+2025-04-20 15:45:34,257 [INFO ] load_data
+2025-04-20 15:51:23,859 [INFO ] Random seed set as 0
+2025-04-20 15:51:23,863 [INFO ] load_data
+2025-04-20 15:53:48,049 [INFO ] Random seed set as 0
+2025-04-20 15:53:48,053 [INFO ] load_data
+2025-04-20 15:54:28,930 [INFO ] Random seed set as 0
+2025-04-20 15:54:28,934 [INFO ] load_data
+2025-04-20 16:04:46,127 [INFO ] Random seed set as 0
+2025-04-20 16:04:46,131 [INFO ] load_data
+2025-04-20 16:09:28,574 [INFO ] Random seed set as 0
+2025-04-20 16:09:28,578 [INFO ] load_data
+2025-04-20 16:10:32,305 [INFO ] Random seed set as 0
+2025-04-20 16:10:32,309 [INFO ] load_data
+2025-04-20 16:16:07,868 [INFO ] Random seed set as 0
+2025-04-20 16:16:07,872 [INFO ] load_data
+2025-04-20 16:17:23,975 [INFO ] Random seed set as 0
+2025-04-20 16:17:23,979 [INFO ] load_data
+2025-04-20 16:18:46,370 [INFO ] Random seed set as 0
+2025-04-20 16:18:46,374 [INFO ] load_data
+2025-04-20 16:19:50,891 [INFO ] Random seed set as 0
+2025-04-20 16:19:50,895 [INFO ] load_data
+2025-04-20 16:20:46,415 [INFO ] Random seed set as 0
+2025-04-20 16:20:46,415 [INFO ] load_data
+2025-04-20 16:21:26,460 [INFO ] Random seed set as 0
+2025-04-20 16:21:26,460 [INFO ] load_data
+2025-04-20 16:23:44,438 [INFO ] Random seed set as 0
+2025-04-20 16:23:44,438 [INFO ] load_data
+2025-04-20 16:32:27,215 [INFO ] Random seed set as 0
+2025-04-20 16:32:27,219 [INFO ] load_data
+2025-04-20 16:41:11,190 [INFO ] Random seed set as 0
+2025-04-20 16:41:11,191 [INFO ] load_data
+2025-04-20 16:47:48,765 [INFO ] Random seed set as 0
+2025-04-20 16:47:48,769 [INFO ] load_data
+2025-04-20 16:52:11,075 [INFO ] Random seed set as 0
+2025-04-20 16:52:11,079 [INFO ] load_data
+2025-04-20 17:28:37,362 [INFO ] Random seed set as 0
+2025-04-20 17:28:37,363 [INFO ] load_data
+2025-04-20 17:30:56,417 [INFO ] Random seed set as 0
+2025-04-20 17:30:56,421 [INFO ] load_data
+2025-04-20 17:39:54,460 [INFO ] Random seed set as 0
+2025-04-20 17:39:54,464 [INFO ] load_data
+2025-04-20 19:30:34,097 [INFO ] Random seed set as 0
+2025-04-20 19:30:34,101 [INFO ] load_data
+2025-04-20 20:38:50,208 [INFO ] Random seed set as 0
+2025-04-20 20:38:50,209 [INFO ] load_data
+2025-04-20 20:52:35,836 [INFO ] Random seed set as 0
+2025-04-20 20:52:35,837 [INFO ] load_data
+2025-04-20 20:53:10,816 [INFO ] Random seed set as 0
+2025-04-20 20:53:10,820 [INFO ] load_data
+2025-04-20 21:01:19,994 [INFO ] Random seed set as 0
+2025-04-20 21:01:19,998 [INFO ] load_data
+2025-04-20 21:11:12,564 [INFO ] Random seed set as 0
+2025-04-20 21:11:12,569 [INFO ] load_data
+2025-04-20 21:30:43,448 [INFO ] Random seed set as 0
+2025-04-20 21:30:43,452 [INFO ] load_data
+2025-04-20 21:31:00,246 [INFO ] Random seed set as 1
+2025-04-20 21:31:01,247 [INFO ] Random seed set as 2
+2025-04-20 21:31:02,303 [INFO ] Random seed set as 3
+2025-04-20 21:31:03,410 [INFO ] Random seed set as 4
+2025-04-20 21:32:45,221 [INFO ] Random seed set as 1
+2025-04-20 21:32:46,244 [INFO ] Random seed set as 2
+2025-04-20 21:32:47,355 [INFO ] Random seed set as 3
+2025-04-20 21:32:48,389 [INFO ] Random seed set as 4
+2025-04-20 21:33:23,049 [INFO ] Random seed set as 0
+2025-04-20 21:33:23,053 [INFO ] load_data
+2025-04-20 21:40:48,604 [INFO ] Random seed set as 0
+2025-04-20 21:40:48,608 [INFO ] load_data
+2025-04-20 21:41:28,461 [INFO ] Random seed set as 0
+2025-04-20 21:42:30,099 [INFO ] Random seed set as 0
+2025-04-20 21:42:45,964 [INFO ] Random seed set as 0
+2025-04-20 21:43:06,321 [INFO ] Random seed set as 0
+2025-04-20 21:43:19,448 [INFO ] Random seed set as 0
+2025-04-20 22:09:35,339 [INFO ] Random seed set as 0
+2025-04-20 22:11:21,932 [INFO ] Random seed set as 1
+2025-04-20 22:11:22,907 [INFO ] Random seed set as 2
+2025-04-20 22:11:23,890 [INFO ] Random seed set as 3
+2025-04-20 22:11:24,902 [INFO ] Random seed set as 4
+2025-04-20 22:11:46,028 [INFO ] Random seed set as 1
+2025-04-20 22:11:47,125 [INFO ] Random seed set as 2
+2025-04-20 22:11:48,178 [INFO ] Random seed set as 3
+2025-04-20 22:11:49,234 [INFO ] Random seed set as 4
+2025-04-20 22:12:14,032 [INFO ] Random seed set as 1
+2025-04-20 22:12:15,005 [INFO ] Random seed set as 2
+2025-04-20 22:12:16,071 [INFO ] Random seed set as 3
+2025-04-20 22:12:17,173 [INFO ] Random seed set as 4
+2025-04-20 22:12:58,224 [INFO ] Random seed set as 0
+2025-04-20 22:12:58,228 [INFO ] load_data
+2025-04-20 22:13:12,011 [INFO ] Random seed set as 1
+2025-04-20 22:13:13,033 [INFO ] Random seed set as 2
+2025-04-20 22:13:14,095 [INFO ] Random seed set as 3
+2025-04-20 22:13:15,149 [INFO ] Random seed set as 4
+2025-04-20 22:13:59,852 [INFO ] Random seed set as 0
+2025-04-20 22:13:59,855 [INFO ] load_data
+2025-04-20 22:14:18,711 [INFO ] Random seed set as 0
+2025-04-20 22:14:18,715 [INFO ] load_data
+2025-04-20 22:14:49,946 [INFO ] Random seed set as 1
+2025-04-20 22:14:50,964 [INFO ] Random seed set as 2
+2025-04-20 22:14:52,070 [INFO ] Random seed set as 3
+2025-04-20 22:14:53,094 [INFO ] Random seed set as 4
+2025-04-20 22:15:22,615 [INFO ] Random seed set as 1
+2025-04-20 22:15:23,599 [INFO ] Random seed set as 2
+2025-04-20 22:15:24,692 [INFO ] Random seed set as 3
+2025-04-20 22:15:25,697 [INFO ] Random seed set as 4
+2025-04-20 22:15:36,117 [INFO ] Random seed set as 1
+2025-04-20 22:15:37,126 [INFO ] Random seed set as 2
+2025-04-20 22:15:38,104 [INFO ] Random seed set as 3
+2025-04-20 22:15:39,100 [INFO ] Random seed set as 4
+2025-04-20 22:15:59,693 [INFO ] Random seed set as 0
+2025-04-20 22:15:59,697 [INFO ] load_data
+2025-04-20 22:17:31,617 [INFO ] Random seed set as 0
+2025-04-20 22:17:31,618 [INFO ] load_data
+2025-04-20 22:17:42,139 [INFO ] Random seed set as 1
+2025-04-20 22:17:43,244 [INFO ] Random seed set as 2
+2025-04-20 22:17:44,311 [INFO ] Random seed set as 3
+2025-04-20 22:17:45,341 [INFO ] Random seed set as 4
+2025-04-20 22:18:00,152 [INFO ] Random seed set as 1
+2025-04-20 22:18:01,270 [INFO ] Random seed set as 2
+2025-04-20 22:18:02,356 [INFO ] Random seed set as 3
+2025-04-20 22:18:03,542 [INFO ] Random seed set as 4
+2025-04-20 22:19:12,897 [INFO ] Random seed set as 1
+2025-04-20 22:19:13,963 [INFO ] Random seed set as 2
+2025-04-20 22:19:15,042 [INFO ] Random seed set as 3
+2025-04-20 22:19:16,094 [INFO ] Random seed set as 4
+2025-04-20 22:19:32,608 [INFO ] Random seed set as 1
+2025-04-20 22:19:33,836 [INFO ] Random seed set as 2
+2025-04-20 22:19:35,217 [INFO ] Random seed set as 3
+2025-04-20 22:19:36,452 [INFO ] Random seed set as 4
+2025-04-20 22:30:34,746 [INFO ] Random seed set as 0
+2025-04-20 22:30:34,750 [INFO ] load_data
+2025-04-20 22:50:54,654 [INFO ] Random seed set as 0
+2025-04-20 22:50:54,658 [INFO ] load_data
+2025-04-20 22:54:07,103 [INFO ] Random seed set as 0
+2025-04-20 22:54:07,107 [INFO ] load_data
+2025-04-20 22:55:18,993 [INFO ] Random seed set as 0
+2025-04-20 22:55:18,996 [INFO ] load_data
+2025-04-20 22:56:17,744 [INFO ] Random seed set as 0
+2025-04-20 22:56:17,748 [INFO ] load_data
+2025-04-20 22:56:44,781 [INFO ] Random seed set as 0
+2025-04-20 22:56:44,784 [INFO ] load_data
+2025-04-20 23:01:32,987 [INFO ] Random seed set as 0
+2025-04-20 23:01:32,991 [INFO ] load_data
+2025-04-20 23:06:05,433 [INFO ] Random seed set as 0
+2025-04-20 23:06:05,437 [INFO ] load_data
+2025-04-20 23:16:26,078 [INFO ] Random seed set as 0
+2025-04-20 23:16:26,081 [INFO ] load_data
+2025-04-20 23:19:35,203 [INFO ] Random seed set as 0
+2025-04-20 23:19:35,208 [INFO ] load_data
+2025-04-20 23:26:16,648 [INFO ] Random seed set as 0
+2025-04-20 23:26:16,652 [INFO ] load_data
+2025-04-20 23:33:52,378 [INFO ] Random seed set as 0
+2025-04-20 23:33:52,382 [INFO ] load_data
+2025-04-20 23:35:40,991 [INFO ] Random seed set as 0
+2025-04-20 23:35:40,995 [INFO ] load_data
+2025-04-20 23:36:14,809 [INFO ] Random seed set as 0
+2025-04-20 23:36:14,814 [INFO ] load_data
+2025-04-20 23:36:30,648 [INFO ] Random seed set as 1
+2025-04-20 23:36:33,191 [INFO ] Random seed set as 2
+2025-04-20 23:36:35,888 [INFO ] Random seed set as 3
+2025-04-20 23:36:38,682 [INFO ] Random seed set as 4
+2025-04-21 14:21:52,150 [INFO ] Random seed set as 0
+2025-04-21 15:11:06,632 [INFO ] load_data
+2025-04-21 15:26:10,146 [INFO ] Random seed set as 0
+2025-04-21 15:26:10,150 [INFO ] load_data
+2025-04-21 15:29:04,962 [INFO ] Random seed set as 0
+2025-04-21 15:29:04,962 [INFO ] load_data
+2025-04-21 15:50:47,225 [INFO ] Random seed set as 0
+2025-04-21 15:50:47,229 [INFO ] load_data
+2025-04-21 17:06:58,188 [INFO ] Random seed set as 0
+2025-04-21 17:06:58,192 [INFO ] load_data
+2025-04-21 18:36:22,257 [INFO ] Random seed set as 0
+2025-04-21 18:36:22,261 [INFO ] load_data
+2025-04-21 19:08:16,423 [INFO ] Random seed set as 0
+2025-04-21 19:08:16,427 [INFO ] load_data
+2025-04-21 19:20:11,912 [INFO ] Random seed set as 0
+2025-04-21 19:20:11,916 [INFO ] load_data
+2025-04-21 20:37:22,614 [INFO ] Random seed set as 0
+2025-04-21 20:37:22,614 [INFO ] load_data
+2025-04-21 20:37:40,449 [INFO ] Random seed set as 0
+2025-04-21 20:37:40,453 [INFO ] load_data
+2025-04-21 20:38:35,251 [INFO ] Random seed set as 0
+2025-04-21 20:38:35,255 [INFO ] load_data
+2025-04-21 20:41:52,125 [INFO ] Random seed set as 0
+2025-04-21 20:41:52,129 [INFO ] load_data
+2025-04-21 20:46:31,118 [INFO ] Random seed set as 0
+2025-04-21 20:46:31,122 [INFO ] load_data
+2025-04-21 20:46:46,506 [INFO ] Random seed set as 1
+2025-04-21 20:46:47,848 [INFO ] Random seed set as 2
+2025-04-21 20:46:49,256 [INFO ] Random seed set as 3
+2025-04-21 20:46:50,673 [INFO ] Random seed set as 4
+2025-04-21 20:47:53,880 [INFO ] Random seed set as 0
+2025-04-21 20:47:53,884 [INFO ] load_data
+2025-04-21 20:48:08,363 [INFO ] Random seed set as 1
+2025-04-21 20:48:09,808 [INFO ] Random seed set as 2
+2025-04-21 20:48:11,364 [INFO ] Random seed set as 3
+2025-04-21 20:48:12,897 [INFO ] Random seed set as 4
