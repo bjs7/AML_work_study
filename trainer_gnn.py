@@ -69,7 +69,7 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
 
     for epoch in range(epochs):
 
-        if epoch % 20 == 0:
+        if (epoch+1) % 50 == 0:
             print(f'Epoch number {epoch+1}')
 
         total_loss = total_examples = 0
