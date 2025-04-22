@@ -4,6 +4,8 @@ import xgboost as xgb
 from sklearn.metrics import f1_score
 import trainer_gnn as tg
 import tuning_utils as tune_u
+import utils
+import logging
 
 
 # General tuning functions ------------------------------------------------------------------------------------------------------------
@@ -58,6 +60,7 @@ def tune_gnn(args, train_data, vali_data):
     #################
 
     # set up list of hyperparameters
+    logging.info("first loop tuning")
     model_hyper_params = loop_tuning(args, train_data, vali_data, top = 5)
     
     ##########################################
@@ -87,6 +90,7 @@ def tune_gnn(args, train_data, vali_data):
     #### ROUND 2 ####
     #################
 
+    logging.info("second loop tuning")
     model_hyper_params = loop_tuning(args, train_data, vali_data, sampler_intervals, top = 1)
 
     return model_hyper_params

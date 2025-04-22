@@ -69,7 +69,8 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
 
     for epoch in range(epochs):
 
-        print(f'Epoch number {epoch+1}')
+        if epoch % 20 == 0:
+            print(f'Epoch number {epoch+1}')
 
         total_loss = total_examples = 0
         preds = []
