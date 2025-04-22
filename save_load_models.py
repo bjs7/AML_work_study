@@ -8,7 +8,7 @@ import re
 import pandas as pd
 import torch
 
-def save_model(model, hyper_params, args, folder_name, file_name):
+def save_model(model, hyper_params, args, folder_name, file_name, q):
 
     # create folders to store the model(s)
     save_direc = configs.save_direc_training
@@ -20,7 +20,9 @@ def save_model(model, hyper_params, args, folder_name, file_name):
     if args.model == 'GINe':
         transforming = 'No_transforming_of_time'
         mask_indexing = hyper_params['model_settings']['index_masking']
-        str_folder += f'mask_indexing_{mask_indexing}-{transforming}'  
+        str_folder += f'mask_indexing_{mask_indexing}-{transforming}'
+        hyper_params['model_settings']['emlps'] = args.emlps
+        str_folder += f'-EU_{args.emlps}'
 
     save_direc = os.path.join(os.path.join(save_direc, str_folder), folder_name)
 
@@ -36,6 +38,11 @@ def save_model(model, hyper_params, args, folder_name, file_name):
     elif model_type == 'booster':
         scaler = model.scaler
         joblib.dump({"model": model, "scaler": scaler}, file_name) if scaler is not None else model.save_model(file_name)
+    if q == 1:
+        file_path = os.path.join(save_direc, 'hyper_parameters.json')
+        with open(file_path, 'w') as file:
+            json.dump(hyper_params, file, indent=4)
+
 
 
 def save_configs(args, save_direc):

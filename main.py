@@ -43,11 +43,13 @@ def main():
     df = pd.read_csv("/home/nam_07/AML_work_study/formatted_transactions.csv")
     #df = pd.read_csv("/data/leuven/362/vsc36278/AML_work_study/formatted_transactions.csv")
     raw_data = dp.get_data(df, split_perc = configs.split_perc)
+    logging.info("Obtained data")
     
     if args.scenario == 'individual_banks':
         Banks = list((df.loc[:, 'From Bank'])) + list((df.loc[:, 'To Bank']))
         unique_banks = list(set(Banks))
         args.banks = unique_banks
+        logging.info('')
 
     if args.banks:
         args.scenario = 'individual_banks'
@@ -62,11 +64,14 @@ def main():
         # args.banks
         #range(10)
         for bank in args.banks:
+            
+            if bank % 1000 == 0: logging.info(f'Starting training on bank {bank}')
 
             #bank = 5
             #args.scenario = 'individual_banks'
 
             # first get bank indices
+            if bank % 1000 == 0: logging.info(f'Get indices for bank {bank}')
             bank_indices = data_funcs.get_indices_bdt(raw_data, args, bank = bank)
 
             if not bank_indices['train_data_indices'] or not bank_indices['vali_data_indices'] or not bank_indices['test_data_indices']:
@@ -76,61 +81,85 @@ def main():
                     no_vali_data.append(bank)
                 if not bank_indices['test_data_indices']:
                     no_test_data.append(bank)
+                if bank % 1000 == 0: logging.info(f'Bank skipped as there is no training, validation or training data {bank}')
                 continue
 
             # next the data for training, validatio and testing, no feature engineering applied
+            if bank % 1000 == 0: logging.info(f'Getting data for bank {bank}')
             train_data, vali_data, test_data = data_funcs.get_graph_data(raw_data, args, bank_indices=bank_indices)
             
             # tune
+            if bank % 1000 == 0: logging.info(f'Tuning bank {bank}')
             tuned_hyperparameters = tune.tuning(args, train_data, vali_data, bank_indices)
 
             # train based on tuned hyperparameters
+            if bank % 1000 == 0: logging.info(f'Traning bank {bank}')
             trained_model_f1 = tr_gnn.train_gnn(args, vali_data, test_data, tuned_hyperparameters)
 
             # save the model
+            if bank % 1000 == 0: logging.info(f'Saving bank {bank}')
+
+            q = 0
             folder_name = f'bank_{bank}' if bank else args.scenario
             for seed in trained_model_f1.keys():
-
+                q += 1
                 if trained_model_f1[seed]['f1'] > best_f1:
                     best_hyperparameters = tuned_hyperparameters
                     best_f1 = trained_model_f1[seed]['f1']
+                
+                slm.save_model(trained_model_f1[seed]['model'], tuned_hyperparameters, args, folder_name, file_name = seed, q = q)   
 
-                slm.save_model(trained_model_f1[seed]['model'], tuned_hyperparameters, args, folder_name, file_name = seed)
 
         # banks that still needs to be trained
         banks_to_train = list(set(no_vali_data) - set(no_test_data))
 
+        logging.info(f'Starting training on banks that had not training or validation data')
         for bank in banks_to_train:
 
+            if bank % 1000 == 0: logging.info(f'Starting training on bank {bank}')
+
             # first get bank indices
+            if bank % 1000 == 0: logging.info(f'Get indices for bank {bank}')
             bank_indices = data_funcs.get_indices_bdt(raw_data, args, bank = bank)
 
             # next the data for training, validatio and testing, no feature engineering applied
+            if bank % 1000 == 0: logging.info(f'Getting data for bank {bank}')
             train_data, vali_data, test_data = data_funcs.get_graph_data(raw_data, args, bank_indices=bank_indices)
 
             # tuning here i skipped and go straight to training
+            if bank % 1000 == 0: logging.info(f'Training bank {bank}')
             trained_model_f1 = tr_gnn.train_gnn(args, vali_data, test_data, best_hyperparameters)
 
+            if bank % 1000 == 0: logging.info(f'Saving bank {bank}')
+            q = 0
             folder_name = f'bank_{bank}' if bank else args.scenario
             for seed in trained_model_f1.keys():
-                slm.save_model(trained_model_f1[seed]['model'], best_hyperparameters, args, folder_name, file_name = seed)
+                q += 1
+                slm.save_model(trained_model_f1[seed]['model'], best_hyperparameters, args, folder_name, file_name = seed, q = q)
 
              
     else:
 
+        logging.info('Starting on full information scenario')
         # get data for training, validatio and testing, no feature engineering applied
+        logging.info('Get graph data')
         train_data, vali_data, test_data = data_funcs.get_graph_data(raw_data, args, bank_indices=None)
 
         # tune
+        logging.info('Tuning the model')
         tuned_hyperparameters = tune.tuning(args, train_data, vali_data, None)
 
         # train based on tuned hyperparameters
+        logging.info('Training the model')
         trained_model_f1 = tr_gnn.train_gnn(args, vali_data, test_data, tuned_hyperparameters)
 
         # save the model
+        logging.info('Saving the model')
+        q = 0
         folder_name = f'bank_{bank}' if bank else args.scenario
         for seed in trained_model_f1.keys():
-            slm.save_model(trained_model_f1[seed]['model'], tuned_hyperparameters, args, folder_name, file_name = seed)
+            q += 1
+            slm.save_model(trained_model_f1[seed]['model'], tuned_hyperparameters, args, folder_name, file_name = seed, q = q)
 
 
 if __name__ == '__main__':
