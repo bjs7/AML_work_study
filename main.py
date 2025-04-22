@@ -19,7 +19,7 @@ def get_parser():
     parser.add_argument('--model_configs', default=None, type=str, help='should the hyperparameters be tuned, else provide some')
     parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
 
-    parser.add_argument('--graph_tuning_x_0', default = 2, type=int, help='Amount of models to train on for tuning GNN')
+    parser.add_argument('--graph_tuning_x_0', default = 25, type=int, help='Amount of models to train on for tuning GNN')
     parser.add_argument('--seed', default=0, type=int, help="Select the random seed for reproducability")
     #parser.add_argument("--data", default=None, type=str, help="Select the AML dataset. Needs to be either small or medium.", required=True)
     
