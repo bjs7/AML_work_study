@@ -25,9 +25,11 @@ def get_model(sample_batch, m_param, m_settings, args):
 
 def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transform = None):
 
-    train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), batch_size=batch_size, shuffle=True, transform=transform)
-    vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), edge_label_index=vali_data.edge_index[:, pred_indices],
-                       batch_size=batch_size, shuffle=False, transform=None)
+    train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), edge_label = train_data.y, batch_size=batch_size, shuffle=True, transform=transform)
+    vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), 
+                                     edge_label_index=vali_data.edge_index[:, pred_indices],
+                                     edge_label=vali_data.y[pred_indices],
+                                        batch_size=batch_size, shuffle=False, transform=None)
     
     return train_loader, vali_loader
 

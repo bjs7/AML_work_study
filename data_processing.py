@@ -150,11 +150,13 @@ def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
     train_edge_index, train_edge_attr, train_y, train_edge_times = edge_index[:, edge_train], edge_attr[edge_train], y[edge_train], timestamps[edge_train]
     vali_edge_index, vali_edge_attr, vali_y, vali_edge_times = edge_index[:, edge_vali], edge_attr[edge_vali], y[edge_vali], timestamps[edge_vali]
 
-    train_data = Data(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
-    vali_data = Data(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
+    #train_data = Data(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
+    train_data = du.GraphData(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
+    #vali_data = Data(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
+    vali_data = du.GraphData(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
 
-    du.update_nr_nodes(train_data)
-    du.update_nr_nodes(vali_data)
+    du.update_nr_nodes_for_gd(train_data)
+    du.update_nr_nodes_for_gd(vali_data)
 
     train_indices = torch.tensor(train_indices)
     vali_indices = torch.tensor(vali_indices)
@@ -164,9 +166,10 @@ def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
         test_x = x
 
         test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
-        test_data = Data(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)   
+        #test_data = Data(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
+        test_data = du.GraphData(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
 
-        du.update_nr_nodes(test_data)
+        du.update_nr_nodes_for_gd(test_data)
         test_indices = torch.tensor(test_indices)
 
         #return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}

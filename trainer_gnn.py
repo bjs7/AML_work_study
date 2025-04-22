@@ -76,20 +76,26 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
         ground_truths = []
         for batch in tqdm.tqdm(train_loader):
             optimizer.zero_grad()
+            target_edge_attr = train_data.edge_attr[batch.input_id, :]
 
             if m_settings['index_masking']:
+                #batch = sample_batch
                 mask = torch.isin(batch.edge_attr[:, 0].detach().cpu().to(torch.int), batch.input_id)
                 # remove the unique edge id from the edge features, as it's no longer neededd
                 #batch.edge_attr = batch.edge_attr[:, 1:]
                 batch.edge_attr = batch.edge_attr[:, 1:] if m_settings['include_time'] else batch.edge_attr[:, 2:]
+                target_edge_attr = target_edge_attr[:, 1:] if m_settings['include_time'] else target_edge_attr[:, 2:]
                 batch.to(device)
-                out = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, index_mask = True)
+                out = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr, index_mask = True)
                 pred = out[mask]
                 ground_truth = batch.y[mask]
             else:
                 batch.edge_attr = batch.edge_attr[:, 1:] if m_settings['include_time'] else batch.edge_attr[:, 2:]
-                pred = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, index_mask = False)
-                ground_truth = train_data.y[batch.input_id]
+                target_edge_attr = target_edge_attr[:, 1:] if m_settings['include_time'] else target_edge_attr[:, 2:]
+                batch.to(device)
+                pred = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr, index_mask = False)
+                ground_truth = batch.edge_label
+                #ground_truth = train_data.y[batch.input_id]
 
             preds.append(pred.argmax(dim=-1))
             ground_truths.append(ground_truth)

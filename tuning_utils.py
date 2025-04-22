@@ -54,9 +54,13 @@ def hyper_sampler(args, sample_intervals = None):
             'w_ce2': random.uniform(w_ce2_interval[0], w_ce2_interval[1])
 
             },
-            'model_settings': {'index_masking': True, 'include_time': False}
+            'model_settings': {'index_masking': False, 'include_time': False}
 
         }
-        parameters.get('params')['num_neighbors'] *= parameters.get('params')['gnn_layers']
+        if args.scenario == 'full_info':
+            parameters.get('params')['num_neighbors'] *= parameters.get('params')['gnn_layers']
+        else:
+            num_neighbors = [20, 15, 10, 5]
+            parameters.get('params')['num_neighbors'] = num_neighbors[0:parameters.get('params')['gnn_layers']]
  
     return parameters
