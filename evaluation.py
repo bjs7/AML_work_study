@@ -46,7 +46,7 @@ def eval_func(model, loader, data, inds, args, device, m_settings):
         #remove the unique edge id from the edge features, as it's no longer needed
         #batch.edge_attr = batch.edge_attr[:, 1:]
 
-        target_edge_attr = data.edge_attr[batch_edge_inds, :]
+        target_edge_attr = data.edge_attr[batch_edge_inds, :].to(device)
         batch.edge_attr = batch.edge_attr[:, 1:] if m_settings['include_time'] else batch.edge_attr[:, 2:]
         target_edge_attr = target_edge_attr[:, 1:] if m_settings['include_time'] else target_edge_attr[:, 2:]
         

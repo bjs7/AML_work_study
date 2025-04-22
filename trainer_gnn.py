@@ -76,7 +76,7 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
         ground_truths = []
         for batch in tqdm.tqdm(train_loader):
             optimizer.zero_grad()
-            target_edge_attr = train_data.edge_attr[batch.input_id, :]
+            target_edge_attr = train_data.edge_attr[batch.input_id, :].to(device)
 
             if m_settings['index_masking']:
                 #batch = sample_batch
