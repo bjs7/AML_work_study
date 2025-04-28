@@ -35,10 +35,10 @@ def tuning(args, train_data, vali_data, bank_indices):
 
 
 def loop_tuning(args, train_data, vali_data, sampler_intervals = None, top = 5):
-
+    
     f1s = []
     x_0 = args.graph_tuning_x_0
-    model_hyper_params = [tune_u.hyper_sampler(args, sample_intervals = sampler_intervals) for i in range(x_0)]
+    model_hyper_params = [tune_u.hyper_sampler(args, train_data['df'].num_nodes, sample_intervals = sampler_intervals) for i in range(x_0)]
     models = []
 
     for i in range(x_0):
@@ -60,7 +60,7 @@ def tune_gnn(args, train_data, vali_data):
     #################
 
     # set up list of hyperparameters
-    logging.info("first loop tuning")
+    #logging.info("first loop tuning")
     model_hyper_params = loop_tuning(args, train_data, vali_data, top = 5)
     
     ##########################################
@@ -90,7 +90,7 @@ def tune_gnn(args, train_data, vali_data):
     #### ROUND 2 ####
     #################
 
-    logging.info("second loop tuning")
+    #logging.info("second loop tuning")
     model_hyper_params = loop_tuning(args, train_data, vali_data, sampler_intervals, top = 1)
 
     return model_hyper_params

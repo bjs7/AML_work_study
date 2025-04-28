@@ -7,7 +7,6 @@ import copy
 #model_configs = utils.hyper_sampler(args)
 def eval_func(model, loader, data, inds, args, device, m_settings):
 
-    args.tqdm = True
     args.data = 'Small_J'
 
     preds = []
@@ -68,6 +67,25 @@ def eval_func(model, loader, data, inds, args, device, m_settings):
     pred = torch.cat(preds, dim=0).cpu().numpy()
     ground_truth = torch.cat(ground_truths, dim=0).cpu().numpy()
     f1 = f1_score(ground_truth, pred)
+
+    return f1
+
+
+def eval_func_no_batching(model, data, inds, args, device, m_settings):
+
+    data = copy.deepcopy(data)
+    args.data = 'Small_J'
+    data.edge_attr = data.edge_attr[:, 1:] if m_settings['include_time'] else data.edge_attr[:, 2:]
+
+    with torch.no_grad():
+        data.to(device)
+        out = model(data.x, data.edge_index, data.edge_attr, data.edge_index, data.edge_attr, index_mask = m_settings['include_time'])
+        out = out[inds]
+        pred = out.argmax(dim=-1)
+    
+    preds = pred.cpu().numpy()
+    ground_truth = data.y[inds].cpu().numpy()
+    f1 = f1_score(ground_truth, preds)
 
     return f1
 

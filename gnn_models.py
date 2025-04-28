@@ -3,7 +3,7 @@ from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RG
 import torch.nn.functional as F
 import torch
 import logging
-
+import copy
 
 class GINe(torch.nn.Module):
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
@@ -39,13 +39,16 @@ class GINe(torch.nn.Module):
                                  nn.ReLU(), nn.Dropout(self.final_dropout),
                                  Linear(25, n_classes))
 
-    def forward(self, x, edge_index, edge_attr, edge_label_index, target_edge_attr, index_mask=True):
-        src, dst = edge_index
-        target_src, target_dst = edge_label_index
+    def forward(self, x, edge_index, edge_attr, edge_label_index, target_edge_attr, index_mask=True, no_batching = False):
+        
+        if index_mask:
+            src, dst = edge_index
+        else:
+            target_src, target_dst = edge_label_index
+            target_edge_attr = self.edge_emb(target_edge_attr)
 
         x = self.node_emb(x)
         edge_attr = self.edge_emb(edge_attr)
-        target_edge_attr = self.edge_emb(target_edge_attr)
 
         for i in range(self.num_gnn_layers):
             x = (x + F.relu(self.batch_norms[i](self.convs[i](x, edge_index, edge_attr)))) / 2
@@ -65,6 +68,16 @@ class GINe(torch.nn.Module):
             out = x
 
         return self.mlp(out)
+
+
+
+"""
+        if no_batching:
+            edge_attr = copy.deepcopy(edge_attr)
+            target_edge_attr = copy.deepcopy(target_edge_attr)
+"""
+
+
 
 #seed_src, seed_dst = edge_label_index
 #seed_emb_1 = x[seed_src]

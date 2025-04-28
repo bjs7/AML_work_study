@@ -9,7 +9,7 @@ def operator(param, parameters, j):
 
 
 
-def hyper_sampler(args, sample_intervals = None):
+def hyper_sampler(args, num_nodes, sample_intervals = None):
 
     if args.model == 'xgboost':
         parameters = {
@@ -43,7 +43,7 @@ def hyper_sampler(args, sample_intervals = None):
 
         parameters = {
             'params': {
-            'batch_size': [512, 128],
+            'batch_size': 4096,
             'num_neighbors': [100],
 
             'hidden_embedding_size': random.randint(hid_em_size_interval[0], hid_em_size_interval[1]),
@@ -60,7 +60,50 @@ def hyper_sampler(args, sample_intervals = None):
         if args.scenario == 'full_info':
             parameters.get('params')['num_neighbors'] *= parameters.get('params')['gnn_layers']
         else:
-            num_neighbors = [20, 15, 10, 5]
-            parameters.get('params')['num_neighbors'] = num_neighbors[0:parameters.get('params')['gnn_layers']]
- 
+            if num_nodes >= 25e3:
+                #if plus 25k
+                num_neighbors = [20, 20, 10, 5]
+            elif num_nodes >= 10e3:
+                # if plus 10k
+                num_neighbors = [20, 15, 5, 5]
+            else:
+                num_neighbors = None
+                
+            #num_neighbors = [20, 15, 10, 5]
+
+            if num_neighbors:
+                parameters.get('params')['num_neighbors'] = num_neighbors[0:parameters.get('params')['gnn_layers']]
+            else:
+                parameters.get('params')['num_neighbors'] = num_neighbors
+                parameters.get('params')['batch_size'] = 1
+
     return parameters
+
+
+"""
+
+elif num_nodes >= 7.5e3:
+                # if plus 7.5k
+                num_neighbors = [15, 15, 5, 5]
+            elif num_nodes >= 5e3:
+                # if plus 5k
+                num_neighbors = [15, 10, 5, 5]
+            elif num_nodes >= 4e3:
+                # if plus 4k
+                num_neighbors = [25, 5, 5, 5]
+            elif num_nodes >= 3e3:
+                # if plus 3k
+                num_neighbors = [20, 5, 5, 5]
+            elif num_nodes >= 2e3:
+                # if plus 2k
+                num_neighbors = [15, 5, 5, 5]
+            elif num_nodes >= 1e3:
+                # if plus 1k
+                num_neighbors = [10, 5, 5, 5]
+            else:
+                # if less than 1k
+                num_neighbors = [5, 5, 5, 5]
+
+
+
+"""

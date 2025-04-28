@@ -48,9 +48,9 @@ def get_indices_bdt(data, args, bank = None):
     vali_data_indices = data['regular_data']['vali_data']['x'][['From Bank', 'To Bank']]
     test_data_indices = data['regular_data']['test_data']['x'][['From Bank', 'To Bank']]
     
-    train_data_indices = get_bank_indices(train_data_indices, bank, model_type) if bank else train_data_indices.index.tolist()
-    vali_data_indices = get_bank_indices(vali_data_indices, bank, model_type) if bank else vali_data_indices.index.tolist()
-    test_data_indices = get_bank_indices(test_data_indices, bank, model_type) if bank else test_data_indices.index.tolist()
+    train_data_indices = get_bank_indices(train_data_indices, bank, model_type) if isinstance(bank, int) else train_data_indices.index.tolist()
+    vali_data_indices = get_bank_indices(vali_data_indices, bank, model_type) if isinstance(bank, int) else vali_data_indices.index.tolist()
+    test_data_indices = get_bank_indices(test_data_indices, bank, model_type) if isinstance(bank, int) else test_data_indices.index.tolist()
 
     return {'train_data_indices': train_data_indices, 'vali_data_indices': vali_data_indices, 'test_data_indices': test_data_indices}
 

@@ -4,7 +4,6 @@ from torch_geometric.transforms import BaseTransform
 from typing import Union
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
-from torch_geometric.loader import NeighborLoader
 import gnn_models as gnn_m
 
 def get_model(sample_batch, m_param, m_settings, args):

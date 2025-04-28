@@ -19,7 +19,8 @@ def get_parser():
     parser.add_argument('--model_configs', default=None, type=str, help='should the hyperparameters be tuned, else provide some')
     parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
 
-    parser.add_argument('--graph_tuning_x_0', default = 25, type=int, help='Amount of models to train on for tuning GNN')
+    parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
+    parser.add_argument('--graph_tuning_x_0', default = 10, type=int, help='Amount of models to train on for tuning GNN')
     parser.add_argument('--seed', default=0, type=int, help="Select the random seed for reproducability")
     #parser.add_argument("--data", default=None, type=str, help="Select the AML dataset. Needs to be either small or medium.", required=True)
     
@@ -75,10 +76,13 @@ def main():
             bank_indices = data_funcs.get_indices_bdt(raw_data, args, bank = bank)
 
             if not bank_indices['train_data_indices'] or not bank_indices['vali_data_indices'] or not bank_indices['test_data_indices']:
+                # there are no banks with no data in the trainin split
                 if not bank_indices['train_data_indices']:
                     no_train_data.append(bank)
+                # There are 28720 banks with no data in the validation split
                 if not bank_indices['vali_data_indices']:
                     no_vali_data.append(bank)
+                # there are 14224 banks with no data in the testing split
                 if not bank_indices['test_data_indices']:
                     no_test_data.append(bank)
                 if bank % 1000 == 0: logging.info(f'Bank skipped as there is no training, validation or training data {bank}')
@@ -113,7 +117,7 @@ def main():
         # banks that still needs to be trained
         banks_to_train = list(set(no_vali_data) - set(no_test_data))
 
-        logging.info(f'Starting training on banks that had not training or validation data')
+        logging.info(f'Starting training on banks that had no training or validation data')
         for bank in banks_to_train:
 
             if bank % 1000 == 0: logging.info(f'Starting training on bank {bank}')

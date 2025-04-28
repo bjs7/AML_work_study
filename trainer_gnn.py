@@ -9,12 +9,12 @@ import configs
 import evaluation as eval
 from sklearn.metrics import f1_score
 import tuning_utils as tut
+import warnings
 
 
-#model_configs = tut.hyper_sampler(args)
+#model_configs = tut.hyper_sampler(args, train_data['df'].num_nodes)
 def gnn_trainer(args, train_data, vali_data, model_configs, seed = None):
 
-    args.tqdm = True
     args.data = 'Small_J'
 
     #set device
@@ -26,37 +26,43 @@ def gnn_trainer(args, train_data, vali_data, model_configs, seed = None):
     train_data = train_data['df']
 
     pred_indices = vali_data['pred_indices']
-    vali_data = vali_data['df']  
+    vali_data = vali_data['df']
 
     # parameters
     m_param = model_configs.get('params')
     m_settings = model_configs.get('model_settings')
     
     # might wanna change the batch_size
-    batch_size = m_param.get('batch_size')[0] if train_data.num_nodes < 10000 else m_param.get('batch_size')[1]
+    #batch_size = m_param.get('batch_size')[0] if train_data.num_nodes < 10000 else m_param.get('batch_size')[1]
+    batch_size = m_param.get('batch_size')
 
     # loaders
-
     if seed:
         utils.set_seed(seed)
-    # The loader has an argument called time_attr which could potentially be used to adjust for time?
-    train_loader, vali_loader = tgu.get_loaders(train_data, vali_data, pred_indices, m_param, batch_size)
-    sample_batch = next(iter(train_loader))
-    #batch = next(iter(vali_loader))
-    
+
+    if batch_size > 1:
+        # The loader has an argument called time_attr which could potentially be used to adjust for time?
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            train_loader, vali_loader = tgu.get_loaders(train_data, vali_data, pred_indices, m_param, batch_size)
+        sample_batch = next(iter(train_loader))
+
+
     # from here we switch between train and validation
 
     # train
-    model = tgu.get_model(sample_batch, m_param, m_settings, args)
+    model = tgu.get_model(train_data, m_param, m_settings, args)
 
     # setup
     model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=m_param.get('learning rate'))
-    sample_batch.to(device)
+    #sample_batch.to(device)
     #batch = sample_batch
 
     loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([m_param.get('w_ce1'), m_param.get('w_ce2')]).to(device))
-    model, f1 = train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, pred_indices, model, optimizer, loss_fn, device, m_settings, args)
+    model, f1 = train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, pred_indices, model, optimizer, 
+                           loss_fn, device, m_settings, args) if batch_size > 1 else train_homo_no_batching(train_data, train_indices, vali_data, pred_indices, 
+                                                                                                            model, optimizer, loss_fn, device, m_settings, args)
 
     return model, f1
 
@@ -69,13 +75,11 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
 
     for epoch in range(epochs):
 
-        if (epoch+1) % 50 == 0:
-            print(f'Epoch number {epoch+1}')
-
         total_loss = total_examples = 0
         preds = []
         ground_truths = []
-        for batch in tqdm.tqdm(train_loader):
+        for batch in tqdm.tqdm(train_loader, disable=not args.tqdm):
+            
             optimizer.zero_grad()
             target_edge_attr = train_data.edge_attr[batch.input_id, :].to(device)
 
@@ -83,7 +87,6 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
                 #batch = sample_batch
                 mask = torch.isin(batch.edge_attr[:, 0].detach().cpu().to(torch.int), batch.input_id)
                 # remove the unique edge id from the edge features, as it's no longer neededd
-                #batch.edge_attr = batch.edge_attr[:, 1:]
                 batch.edge_attr = batch.edge_attr[:, 1:] if m_settings['include_time'] else batch.edge_attr[:, 2:]
                 target_edge_attr = target_edge_attr[:, 1:] if m_settings['include_time'] else target_edge_attr[:, 2:]
                 batch.to(device)
@@ -119,3 +122,38 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
             best_model = model
 
     return best_model, best_val_f1
+
+
+# function for running full batch
+
+def train_homo_no_batching(train_data, train_indices, vali_data, pred_indices, model, optimizer, loss_fn, device, m_settings, args):
+    
+    # training
+    epochs = configs.epochs
+    best_val_f1 = -1
+
+    train_data = copy.deepcopy(train_data)
+    #target_edge_attr = train_data.edge_attr[:, 1:] if m_settings['include_time'] else train_data.edge_attr[:, 2:]
+    train_data.edge_attr = train_data.edge_attr[:, 1:] if m_settings['include_time'] else train_data.edge_attr[:, 2:]
+    #target_edge_attr.to(device)
+    train_data.to(device)
+
+    for epoch in range(epochs):
+
+        #----
+        optimizer.zero_grad()
+        
+        pred = model(train_data.x, train_data.edge_index, train_data.edge_attr, train_data.edge_index, train_data.edge_attr, index_mask = m_settings['index_masking'])
+        loss = loss_fn(pred, train_data.y)
+
+        loss.backward()
+        optimizer.step()
+
+        # evaluate model
+        current_f1 = eval.eval_func_no_batching(model, vali_data, pred_indices, args, device, m_settings)
+        if current_f1 > best_val_f1:
+            best_val_f1 = current_f1
+            best_model = model
+
+    return best_model, best_val_f1
+
