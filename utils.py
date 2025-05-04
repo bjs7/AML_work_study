@@ -52,7 +52,7 @@ def parse_data_split(value):
         raise argparse.ArgumentTypeError("Invalid format for --data_split. Use [0.6, 0.2]")
 
 
-def set_seed(seed: int = 0) -> None:
+def set_seed(seed: int = 0, log = False) -> None:
     np.random.seed(seed)
     random.seed(seed)
     torch.manual_seed(seed)
@@ -62,5 +62,6 @@ def set_seed(seed: int = 0) -> None:
     torch.backends.cudnn.benchmark = False
     # Set a fixed value for the hash seed
     os.environ["PYTHONHASHSEED"] = str(seed)
-    logging.info(f"Random seed set as {seed}")
+    if log:
+        logging.info(f"Random seed set as {seed}")
 

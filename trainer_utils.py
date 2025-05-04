@@ -23,13 +23,13 @@ model_types = {
 
 file_types = {
     'graph': 'pth',
-    'booster': 'pkl'
+    'booster': 'ubj' #pkl
 }
 
 data_functions = {
     #'graph': pdt.process_graph_data,
     'graph': pdt.feature_engi_graph_data,
-    'booster': pdt.process_regular_data,
+    'booster': pdt.feature_engi_regular_data,
     #'graph_data': pdt.process_graph_data,
     #'regular_data': pdt.process_regular_data,
 }

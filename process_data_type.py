@@ -8,73 +8,122 @@ from gp_params import params
 from torch_geometric.data import Data
 import data_utils as du
 
-def process_regular_data(data, bank_indices, args, scaler_encoders = None):
 
-    df = copy.copy(data)
+def update_regular_data(df, bank_indices, args):
+    
+    #df = copy.deepcopy(data)
+
+    train_data, vali_data, test_data = [        
+        {
+            'x': df[data_key]['x'].loc[bank_indices[indices_key], :].reset_index(drop=True),
+            'y': df[data_key]['x'].loc[bank_indices[indices_key], 'Is Laundering'].to_numpy()
+        } 
+        for data_key, indices_key in zip(list(df.keys()), list(bank_indices.keys()))
+        ]
+    
+    return train_data, vali_data, test_data
+
+
+# For now no update to the from_id and to_id variables, as these are just id's so the value should be irrelevant
+def feature_engi_regular_data(df, scaler_encoders = None):
+
+    #df = copy.copy(data)
+    #df = train_data
 
     scaler = scaler_encoders.get('scaler') if scaler_encoders else None
     encoder_pay = scaler_encoders.get('encoder_pay') if scaler_encoders else None
     encoder_cur = scaler_encoders.get('encoder_cur') if scaler_encoders else None
+    gp = scaler_encoders.get('gfp') if scaler_encoders else None
 
     data_features = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Payment Format']
-    X = df['x'].iloc[bank_indices,:].loc[:,data_features]
-    X = X.reset_index(drop=True)
-    y = df['y'][bank_indices].copy()
+    x = df['x'].loc[:,data_features]
+    y = df['y']
 
+    # GFP -----------------------------------------------------------------------------------------------------------------
     # graph_feature_preprocessing using snapML
 
-    gp = GraphFeaturePreprocessor()
-    gp.set_params(params)
+    # switch the position of graph feature process and the other features? To include those features in graph features processing?
 
-    X_gf = gp.fit_transform(X[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
-    #gp.fit_transform(X[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
-    X_gf = X_gf[:,5:]
+    if not gp:
+        gp = GraphFeaturePreprocessor()
+        gp.set_params(params)
+        x_gf = gp.fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
+    else:
+        x_gf = gp.transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
+    x_gf = x_gf[:,5:]
     
     # remove EdgeID as it is no longer needed
-    X = X.drop('EdgeID', axis='columns')
+    x = x.drop('EdgeID', axis='columns')
 
     # Count the amount of times an account sends or receives
     for ID in ['from_id', 'to_id']:
-        X.iloc[:, np.where(X.columns == ID)[0][0]] = X.iloc[:, np.where(X.columns == ID)[0][0]].map(X.iloc[:, np.where(X.columns == ID)[0][0]].value_counts())
+        x.iloc[:, np.where(x.columns == ID)[0][0]] = x.iloc[:, np.where(x.columns == ID)[0][0]].map(x.iloc[:, np.where(x.columns == ID)[0][0]].value_counts())
 
-    period = 86400
-    timestamps = X.loc[:, 'Timestamp']
-    sin_component = np.sin(2 * np.pi * timestamps / period)
-    cos_component = np.cos(2 * np.pi * timestamps / period)
+
+    # time periods ---------------------------------------------------------------------------------------------------------
+
+    timestamps = x.loc[:, 'Timestamp']
+
+    hour_period = 60*60
+    sin_component_hour = np.sin(2 * np.pi * timestamps / hour_period)
+    cos_component_hour = np.cos(2 * np.pi * timestamps / hour_period)
+
+    day_period = 60*60*24
+    sin_component_day = np.sin(2 * np.pi * timestamps / day_period)
+    cos_component_day = np.cos(2 * np.pi * timestamps / day_period)
+
+    week_period = 60*60*24*7
+    sin_component_week = np.sin(2 * np.pi * timestamps / week_period)
+    cos_component_week = np.cos(2 * np.pi * timestamps / week_period)
+
+
+    # standardization ------------------------------------------------------------------------------------------------------
 
     if not scaler:
         scaler = StandardScaler()
-        scaled_values = scaler.fit_transform(X.loc[:,['Timestamp', 'Amount Sent']])
+        scaled_values = scaler.fit_transform(x.loc[:,['Amount Sent']])
     else:
-        scaled_values = scaler.transform(X.loc[:,['Timestamp', 'Amount Sent']])
-    X['Timestamp'] = X['Timestamp'].astype(float)
-    X.loc[:,['Timestamp']] = scaled_values[:,0]
-    X.loc[:, ['Amount Sent']] = scaled_values[:,1]
+        scaled_values = scaler.transform(x.loc[:,['Amount Sent']])
+    #x['Timestamp'] = x['Timestamp'].astype(float)
+    #x.loc[:,['Timestamp']] = scaled_values[:,0]
+    x.loc[:, ['Amount Sent']] = scaled_values[:,0]
+
+    # Encoding -------------------------------------------------------------------------------------------------------------
 
     if not encoder_pay:
         encoder_pay = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded = encoder_pay.fit_transform(np.array([X.loc[:, 'Payment Format']]).T)
+        encoded = encoder_pay.fit_transform(np.array([x.loc[:, 'Payment Format']]).T)
     else:
-        encoded = encoder_pay.transform(np.array([X.loc[:, 'Payment Format']]).T)
+        encoded = encoder_pay.transform(np.array([x.loc[:, 'Payment Format']]).T)
     encoded_df = pd.DataFrame(encoded, columns=encoder_pay.get_feature_names_out(["Payment Format"]))
-    X = pd.concat([X.drop(columns = ['Payment Format']), encoded_df], axis=1)
+    x = pd.concat([x.drop(columns = ['Payment Format']), encoded_df], axis=1)
 
     if not encoder_cur:
         encoder_cur = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded = encoder_cur.fit_transform(np.array([X.loc[:, 'Sent Currency']]).T)
+        encoded = encoder_cur.fit_transform(np.array([x.loc[:, 'Sent Currency']]).T)
     else:
-        encoded = encoder_cur.transform(np.array([X.loc[:, 'Sent Currency']]).T)
+        encoded = encoder_cur.transform(np.array([x.loc[:, 'Sent Currency']]).T)
     encoded_df = pd.DataFrame(encoded, columns=encoder_cur.get_feature_names_out(["Sent Currency"]))
-    X = pd.concat([X.drop(columns=['Sent Currency']), encoded_df], axis=1)
+    x = pd.concat([x.drop(columns=['Sent Currency']), encoded_df], axis=1)
 
-    sin_cos = pd.concat([pd.DataFrame({'sin_component': sin_component.values}), pd.DataFrame({'cos_component': cos_component.values})], axis=1)
-    X = pd.concat([X, sin_cos], axis = 1)
+
+    # Pack -----------------------------------------------------------------------------------------------------------------
+
+    sin_cos = pd.concat([
+                         pd.DataFrame({'sin_component_hour': sin_component_hour.values}), 
+                         pd.DataFrame({'cos_component_hour': cos_component_hour.values}),
+                         pd.DataFrame({'sin_component_day': sin_component_day.values}),
+                         pd.DataFrame({'cos_component_day': cos_component_day.values}),
+                         pd.DataFrame({'sin_component_week': sin_component_week.values}),
+                         pd.DataFrame({'cos_component_week': cos_component_week.values}),
+                         ], axis=1)
+    x = pd.concat([x, sin_cos], axis = 1)
 
     # finally concat X and the graph features
-    X_gf = pd.DataFrame(X_gf, columns=[f'graph_feature_{i + 1}' for i in range(X_gf.shape[1])])
-    X = pd.concat([X, X_gf], axis=1)
+    x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
+    x = pd.concat([x, x_gf], axis=1)
 
-    return {'X': X, 'y': y, 'bank_indices': np.array(bank_indices), 'scaler_encoders': {'scaler': scaler, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur}}
+    return {'x': x, 'y': y, 'scaler_encoders': {'scaler': scaler, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur, 'gfp': gp}} #'bank_indices': np.array(bank_indices)
 
 
 # function to first 'update' data
@@ -82,9 +131,9 @@ def process_regular_data(data, bank_indices, args, scaler_encoders = None):
 def get_updated_bank_indices(bank_indices):
 
     #bank_indices = copy.copy(bank_indices)
-    train_indices = bank_indices.get('train_data_indices', None)
-    vali_indices = bank_indices.get('vali_data_indices', None)
-    test_indices = bank_indices.get('test_data_indices', None)
+    train_indices = bank_indices.get('train_indices', None)
+    vali_indices = bank_indices.get('vali_indices', None)
+    test_indices = bank_indices.get('test_indices', None)
     
     # update the indices so they 'match' the bank
     updated_train_indices = np.arange(len(train_indices))
@@ -97,14 +146,9 @@ def get_updated_bank_indices(bank_indices):
     return updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices
 
 
-
-
-
 def update_data(data, bank_indices, args, mode = 'train', scaler_encoders = None, train_plus_vali = False):
 
     df = copy.copy(data)
-    #df = copy.copy(df1['train_data'])
-    #df = copy.copy(df1['test_data']['df'])
 
     # get indices for the bank
     updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices = get_updated_bank_indices(bank_indices)
@@ -203,3 +247,77 @@ def feature_engi_graph_data(data, scaler_encoders = None):
     return data
 
 
+
+
+"""
+def process_regular_data(data, bank_indices, args, scaler_encoders = None):
+
+    df = copy.copy(data)
+
+    scaler = scaler_encoders.get('scaler') if scaler_encoders else None
+    encoder_pay = scaler_encoders.get('encoder_pay') if scaler_encoders else None
+    encoder_cur = scaler_encoders.get('encoder_cur') if scaler_encoders else None
+
+    data_features = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Payment Format']
+    X = df['x'].iloc[bank_indices,:].loc[:,data_features]
+    X = X.reset_index(drop=True)
+    y = df['y'][bank_indices].copy()
+
+    # graph_feature_preprocessing using snapML
+
+    gp = GraphFeaturePreprocessor()
+    gp.set_params(params)
+
+    X_gf = gp.fit_transform(X[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
+    #gp.fit_transform(X[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
+    X_gf = X_gf[:,5:]
+    
+    # remove EdgeID as it is no longer needed
+    X = X.drop('EdgeID', axis='columns')
+
+    # Count the amount of times an account sends or receives
+    for ID in ['from_id', 'to_id']:
+        X.iloc[:, np.where(X.columns == ID)[0][0]] = X.iloc[:, np.where(X.columns == ID)[0][0]].map(X.iloc[:, np.where(X.columns == ID)[0][0]].value_counts())
+
+    period = 86400
+    timestamps = X.loc[:, 'Timestamp']
+    sin_component = np.sin(2 * np.pi * timestamps / period)
+    cos_component = np.cos(2 * np.pi * timestamps / period)
+
+    if not scaler:
+        scaler = StandardScaler()
+        scaled_values = scaler.fit_transform(X.loc[:,['Timestamp', 'Amount Sent']])
+    else:
+        scaled_values = scaler.transform(X.loc[:,['Timestamp', 'Amount Sent']])
+    X['Timestamp'] = X['Timestamp'].astype(float)
+    X.loc[:,['Timestamp']] = scaled_values[:,0]
+    X.loc[:, ['Amount Sent']] = scaled_values[:,1]
+
+    if not encoder_pay:
+        encoder_pay = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
+        encoded = encoder_pay.fit_transform(np.array([X.loc[:, 'Payment Format']]).T)
+    else:
+        encoded = encoder_pay.transform(np.array([X.loc[:, 'Payment Format']]).T)
+    encoded_df = pd.DataFrame(encoded, columns=encoder_pay.get_feature_names_out(["Payment Format"]))
+    X = pd.concat([X.drop(columns = ['Payment Format']), encoded_df], axis=1)
+
+    if not encoder_cur:
+        encoder_cur = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
+        encoded = encoder_cur.fit_transform(np.array([X.loc[:, 'Sent Currency']]).T)
+    else:
+        encoded = encoder_cur.transform(np.array([X.loc[:, 'Sent Currency']]).T)
+    encoded_df = pd.DataFrame(encoded, columns=encoder_cur.get_feature_names_out(["Sent Currency"]))
+    X = pd.concat([X.drop(columns=['Sent Currency']), encoded_df], axis=1)
+
+    sin_cos = pd.concat([pd.DataFrame({'sin_component': sin_component.values}), pd.DataFrame({'cos_component': cos_component.values})], axis=1)
+    X = pd.concat([X, sin_cos], axis = 1)
+
+    # finally concat X and the graph features
+    X_gf = pd.DataFrame(X_gf, columns=[f'graph_feature_{i + 1}' for i in range(X_gf.shape[1])])
+    X = pd.concat([X, X_gf], axis=1)
+
+    return {'X': X, 'y': y, 'bank_indices': np.array(bank_indices), 'scaler_encoders': {'scaler': scaler, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur}}
+
+
+
+"""

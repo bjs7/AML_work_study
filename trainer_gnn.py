@@ -8,11 +8,16 @@ import trainer_gnn_utils as tgu
 import configs
 import evaluation as eval
 from sklearn.metrics import f1_score
-import tuning_utils as tut
+import tuning_utils as tune_u
 import warnings
+
+#args.model = 'GINe'
+#tuning_configs = tune_u.get_tuning_configs(args)
+#.get(args.scenario).get(args.size).get('x_0')
 
 
 #model_configs = tut.hyper_sampler(args, train_data['df'].num_nodes)
+#model_configs = tuned_hyperparameters
 def gnn_trainer(args, train_data, vali_data, model_configs, seed = None):
 
     args.data = 'Small_J'
@@ -30,7 +35,8 @@ def gnn_trainer(args, train_data, vali_data, model_configs, seed = None):
 
     # parameters
     m_param = model_configs.get('params')
-    m_settings = model_configs.get('model_settings')
+    #m_settings = model_configs.get('model_settings')
+    m_settings = tune_u.get_tuning_configs(args).get('model_settings')
     
     # might wanna change the batch_size
     #batch_size = m_param.get('batch_size')[0] if train_data.num_nodes < 10000 else m_param.get('batch_size')[1]
@@ -74,6 +80,9 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
     best_val_f1 = -1
 
     for epoch in range(epochs):
+
+        #set the model to training mode
+        model.train()
 
         total_loss = total_examples = 0
         preds = []
@@ -119,7 +128,8 @@ def train_homo(train_loader, train_data, train_indices, vali_loader, vali_data, 
         current_f1 = eval.eval_func(model, vali_loader, vali_data, pred_indices, args, device, m_settings)
         if current_f1 > best_val_f1:
             best_val_f1 = current_f1
-            best_model = model
+            #best_model = model
+            best_model = copy.deepcopy(model.state_dict())
 
     return best_model, best_val_f1
 
@@ -140,9 +150,11 @@ def train_homo_no_batching(train_data, train_indices, vali_data, pred_indices, m
 
     for epoch in range(epochs):
 
-        #----
+        #set the model to training mode
+        model.train()
+
+        # training step
         optimizer.zero_grad()
-        
         pred = model(train_data.x, train_data.edge_index, train_data.edge_attr, train_data.edge_index, train_data.edge_attr, index_mask = m_settings['index_masking'])
         loss = loss_fn(pred, train_data.y)
 
@@ -153,7 +165,7 @@ def train_homo_no_batching(train_data, train_indices, vali_data, pred_indices, m
         current_f1 = eval.eval_func_no_batching(model, vali_data, pred_indices, args, device, m_settings)
         if current_f1 > best_val_f1:
             best_val_f1 = current_f1
-            best_model = model
+            best_model = copy.deepcopy(model.state_dict())
 
     return best_model, best_val_f1
 

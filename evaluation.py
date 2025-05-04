@@ -3,6 +3,7 @@ import trainer_gnn_utils as tgu
 import torch
 import tqdm
 import copy
+import numpy as np
 
 #model_configs = utils.hyper_sampler(args)
 def eval_func(model, loader, data, inds, args, device, m_settings):
@@ -14,6 +15,7 @@ def eval_func(model, loader, data, inds, args, device, m_settings):
     #inds = pred_indices
     #loader = vali_loader
     #batch = next(iter(loader))
+    model.eval()
 
     for batch in tqdm.tqdm(loader, disable=not args.tqdm):
         
@@ -66,7 +68,7 @@ def eval_func(model, loader, data, inds, args, device, m_settings):
 
     pred = torch.cat(preds, dim=0).cpu().numpy()
     ground_truth = torch.cat(ground_truths, dim=0).cpu().numpy()
-    f1 = f1_score(ground_truth, pred)
+    f1 = f1_score(ground_truth, pred, average='binary', zero_division=0)
 
     return f1
 
@@ -77,6 +79,7 @@ def eval_func_no_batching(model, data, inds, args, device, m_settings):
     args.data = 'Small_J'
     data.edge_attr = data.edge_attr[:, 1:] if m_settings['include_time'] else data.edge_attr[:, 2:]
 
+    model.eval()
     with torch.no_grad():
         data.to(device)
         out = model(data.x, data.edge_index, data.edge_attr, data.edge_index, data.edge_attr, index_mask = m_settings['include_time'])
@@ -85,7 +88,7 @@ def eval_func_no_batching(model, data, inds, args, device, m_settings):
     
     preds = pred.cpu().numpy()
     ground_truth = data.y[inds].cpu().numpy()
-    f1 = f1_score(ground_truth, preds)
+    f1 = f1_score(ground_truth, preds, average='binary', zero_division=0)
 
     return f1
 

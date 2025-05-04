@@ -1,4 +1,12 @@
 import random
+import json
+
+def get_tuning_configs(args):
+
+    with open('tuning_configs.json', 'r') as file:
+        model_parameters = json.load(file)
+
+    return model_parameters.get(args.model)
 
 
 def operator(param, parameters, j):
@@ -9,7 +17,7 @@ def operator(param, parameters, j):
 
 
 
-def hyper_sampler(args, num_nodes, sample_intervals = None):
+def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
     if args.model == 'xgboost':
         parameters = {
@@ -53,8 +61,8 @@ def hyper_sampler(args, num_nodes, sample_intervals = None):
             'w_ce1': 1.0000182882773443,
             'w_ce2': random.uniform(w_ce2_interval[0], w_ce2_interval[1])
 
-            },
-            'model_settings': {'index_masking': False, 'include_time': False}
+            }
+            #,'model_settings': {'index_masking': False, 'include_time': False}
 
         }
         if args.scenario == 'full_info':
