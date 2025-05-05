@@ -77,7 +77,7 @@ def main():
             if index % log_every == 0: logging.info(f'Starting training on bank {bank}, index: {index}')
 
             #bank = 6
-            #bank = 0 
+            #bank = 5
             #bank = 3
             #args.scenario = 'individual_banks'
             #args.model = 'xgboost'

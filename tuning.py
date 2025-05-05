@@ -44,6 +44,7 @@ def loop_tuning(args, train_data, vali_data, sampler_intervals = None, top = 5):
     models = []
 
     for i in range(x_0):
+        utils.set_seed(args.seed + 1)
         model, f1 = tg.gnn_trainer(args, train_data, vali_data, model_hyper_params[i])
         models.append(model)
         f1s.append(f1)
@@ -111,9 +112,6 @@ def tune_booster(args, train_data, vali_data):
     x_0, eta, r_0 = tuning_configs.get(args.scenario).get(args.size).get('x_0'), tuning_configs.get(args.scenario).get(args.size).get('eta'), tuning_configs.get(args.scenario).get(args.size).get('r_0')
     #x_0, eta, r_0 = tuning_configs.get('Small').get('x_0'), tuning_configs.get('Small').get('eta'), tuning_configs.get('Small').get('r_0')
     
-    #x_0 = 10
-    #r_0 = 0.4
-    #eta = 1.5
     frac_not_reached = True
 
     # need to select data over and over, as the fraction increases for train, 

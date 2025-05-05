@@ -23,7 +23,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
         parameters = {
             "num_rounds": random.randint(10, 1000),
             "params": {
-                "objective":  "binary:logistic", 
+                "objective":  "binary:logistic",
                 "eval_metric": "logloss",
                 
                 "max_depth": random.randint(1, 15), 
@@ -31,7 +31,8 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 "lambda": random.uniform(10**(-2), 10**(2)),
                 "scale_pos_weight": random.uniform(1, 10),
                 "colsample_bytree": random.uniform(0.5, 1.0),
-                "subsample": random.uniform(0.5, 1.0)
+                "subsample": random.uniform(0.5, 1.0),
+                "random_state": 1
                 }
             }
     elif args.model == 'GINe':
