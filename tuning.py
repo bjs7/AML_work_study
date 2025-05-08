@@ -139,14 +139,15 @@ def tune_booster(args, train_data, vali_data):
                 preds = model.predict(xgb.DMatrix(tune_vali_data['x']))
                 f1s.append(f1_eval(preds, tune_vali_data))
 
-        get_top = 1 if r_0 == 1 else round(x_0/eta)
+        #get_top = 1 if r_0 == 1 else round(x_0/eta)
+        get_top = max(1, round(round(x_0/eta))) if r_0 != 0 else 1
         params_to_keep = sorted(range(len(f1s)), key=lambda i: f1s[i], reverse=True)[:get_top]
         model_hyper_params = [model_hyper_params[i] for i in params_to_keep]
 
-        if r_0 >= 1:
+        if r_0 >= 1 or get_top == 1:
             frac_not_reached = False
 
-        x_0 = round(x_0/eta)
+        x_0 = max(1, round(round(x_0/eta)))
         r_0 *= eta
     
     return model_hyper_params

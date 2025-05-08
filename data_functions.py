@@ -22,7 +22,7 @@ def get_graph_data(data, args, bank_indices = None):
 
     model_type = tu.model_types.get(args.model)
     df = data[tu.data_types.get(model_type)]
-    #data = raw_data[tu.data_types.get(model_type)]
+    #df = raw_data[tu.data_types.get(model_type)]
 
     if model_type == 'graph':
         if args.scenario == 'individual_banks':
@@ -36,6 +36,9 @@ def get_graph_data(data, args, bank_indices = None):
         if args.scenario == 'individual_banks':
             train_data, vali_data, test_data = pdt.update_regular_data(df, bank_indices, args)
         else:
+            df['vali_data']['x'] = df['vali_data']['x'].reset_index(drop=True)
+            df['test_data']['x'] = df['test_data']['x'].reset_index(drop=True)
+
             train_data, vali_data, test_data = df['train_data'], df['vali_data'], df['test_data']
 
         #train_data, vali_data, test_data = pdt.update_regular_data(data, bank_indices, args)

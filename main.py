@@ -48,8 +48,8 @@ def main():
     # load data
     logging.info("load_data")
     # also remember to change x_0 etc.
-    #df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
-    df = pd.read_csv('/data/leuven/362/vsc36278/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
+    df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
+    #df = pd.read_csv('/data/leuven/362/vsc36278/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
     raw_data = dp.get_data(df, split_perc = configs.split_perc)
     logging.info("Obtained data")
 
@@ -72,16 +72,9 @@ def main():
         log_every = (round(len(fr_banks) / 10))
         #(round(len(fr_banks) / round(len(fr_banks) * 0.1)))
         
-        for index, bank in enumerate(fr_banks[0:5]):
+        for index, bank in enumerate(fr_banks[0:3]):
             
             if index % log_every == 0: logging.info(f'Starting training on bank {bank}, index: {index}')
-
-            #bank = 6
-            #bank = 5
-            #bank = 3
-            #args.scenario = 'individual_banks'
-            #args.model = 'xgboost'
-            #args.model = 'GINe'
 
             # first get bank indices
             if index % 1000 == 0: logging.info(f'Get indices for bank {bank}, index: {index}')
@@ -146,6 +139,7 @@ def main():
         logging.info('Starting on full information scenario')
         # get data for training, validatio and testing, no feature engineering applied
         logging.info('Get graph data')
+        #args.model = 'xgboost'
         train_data, vali_data, test_data = data_funcs.get_graph_data(raw_data, args, bank_indices=None)
 
         # tune
@@ -154,7 +148,7 @@ def main():
 
         # train based on tuned hyperparameters
         logging.info('Training the model')
-        trained_model_f1 = tr_models.train_model(args, vali_data, test_data, tuned_hyperparameters)
+        trained_model_f1 = tr_models.train_model(args, train_data, vali_data, test_data, tuned_hyperparameters)
 
         # save the model
         logging.info('Saving the model')

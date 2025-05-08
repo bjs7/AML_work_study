@@ -2,7 +2,7 @@ import random
 import json
 
 def get_tuning_configs(args):
-
+    #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/tuning_configs.json
     with open('tuning_configs.json', 'r') as file:
         model_parameters = json.load(file)
 
@@ -32,6 +32,8 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 "scale_pos_weight": random.uniform(1, 10),
                 "colsample_bytree": random.uniform(0.5, 1.0),
                 "subsample": random.uniform(0.5, 1.0),
+                #"tree_method": "hist",
+                #"device": "cuda", 
                 "random_state": 1
                 }
             }
