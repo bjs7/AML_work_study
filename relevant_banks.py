@@ -93,9 +93,10 @@ def filter_banks(args):
     fr_laundering_in_train = set(fr_banks) & set(laundering_in_train_data)
     fr_laundering_in_vali = set(fr_banks) & set(laundering_in_vali_data)
     fr_laundering_in_test = set(fr_banks) & set(laundering_in_test_data)
-    #fr_laundering_in_train_test = sorted(list(fr_laundering_in_train & fr_laundering_in_test))
+    fr_laundering_in_train_test = sorted(list(fr_laundering_in_train & fr_laundering_in_test))
     #fr_laund_in_train_vali_test = sorted(list(set(list(fr_laundering_in_train) + list(fr_laundering_in_vali)) & fr_laundering_in_test))
     fr_laund_in_train_vali = sorted(list(set(fr_banks) & set(laundering_in_train_data + laundering_in_vali_data)))
+    pass_to_sr = (set(list(fr_laundering_in_train) + list(fr_laundering_in_vali)) & fr_laundering_in_test) - (fr_laundering_in_train & fr_laundering_in_test)
 
     #
     fr_laundering_in_train_no_test = fr_laundering_in_train - fr_laundering_in_test
@@ -105,7 +106,8 @@ def filter_banks(args):
     sr_laundering_in_train = set(sr_banks) & set(laundering_in_train_data)
     sr_laundering_in_vali = set(sr_banks) & set(laundering_in_vali_data)
     sr_laundering_in_test = set(sr_banks) & set(laundering_in_test_data)
-    #sr_laundering_in_train_test = sorted(list(sr_laundering_in_train & sr_laundering_in_test))
+    sr_laundering_in_train_test = sorted(list(sr_laundering_in_train & sr_laundering_in_test))
+    sr_laundering_in_train_test = sorted(set(sr_laundering_in_train_test + sorted(pass_to_sr)))
     #sr_laund_in_train_vali_test = sorted(list(set(list(sr_laundering_in_train) + list(sr_laundering_in_vali)) & sr_laundering_in_test))
     sr_laund_in_train_vali = sorted(list(set(sr_banks) & set(laundering_in_train_data + laundering_in_vali_data)))
 
@@ -123,7 +125,8 @@ def filter_banks(args):
     obs_ava_fr_sr = len(set(all_indices_fr_sr))
 
     # Get number of observations available for banks with only laundering
-    banks = fr_laund_in_train_vali + sr_laund_in_train_vali
+    #banks = fr_laund_in_train_vali + sr_laund_in_train_vali
+    banks = fr_laundering_in_train_test + sr_laundering_in_train_test
     all_indices = []
     for bank in banks:
         bank_indices = data_funcs.get_indices_bdt(raw_data, args, bank = bank)
@@ -135,8 +138,10 @@ def filter_banks(args):
     relevant_banks = {
         'total_observations': df.shape[0],
         'full_first_second': {'fr_banks': fr_banks, 'sr_banks': sr_banks, 'obs_ava': obs_ava_fr_sr, 'percentage': obs_ava_fr_sr/df.shape[0]},
-        'only_launderings': {'fr_banks': fr_laund_in_train_vali, 
-                                        'sr_banks': sr_laund_in_train_vali, 'obs_ava': obs_ava, 'percentage': obs_ava/df.shape[0]},
+        'only_launderings': {'fr_banks': fr_laundering_in_train_test, 
+                                        'sr_banks': sr_laundering_in_train_test, 'obs_ava': obs_ava, 'percentage': obs_ava/df.shape[0]},
+        #'only_launderings': {'fr_banks': fr_laund_in_train_vali, 
+        #                                'sr_banks': sr_laund_in_train_vali, 'obs_ava': obs_ava, 'percentage': obs_ava/df.shape[0]},
         'extras': {'no_data': {'no_train_data': no_train_data, 
                                'no_vali_data': no_vali_data, 
                                'no_test_data': no_test_data},
