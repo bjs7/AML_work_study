@@ -6,9 +6,42 @@ import sys
 import numpy as np
 import torch
 import random
+import json
 
 #logging.basicConfig(level=logging.INFO)
 #logger = logging.getLogger("MyApp")
+
+
+model_types = {
+    'GINe': 'graph',
+    'xgboost': 'booster',
+    'light_gbm': 'booster'
+}
+
+data_types = {
+    'graph': 'graph_data',
+    'booster': 'regular_data'
+}
+
+file_types = {
+    'graph': 'pth',
+    'booster': 'ubj' #pkl
+}
+
+def get_model_configs(args):
+
+    with open('model_configs.json', 'r') as file:
+        model_parameters = json.load(file)
+
+    return model_parameters.get(args.model)
+
+def get_tuning_configs(args):
+    #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/tuning_configs.json
+    with open('configs/tuning_configs.json', 'r') as file:
+        model_parameters = json.load(file)
+
+    return model_parameters.get(args.model_type)
+
 
 def logger_setup():
     # Setup logging
@@ -23,6 +56,29 @@ def logger_setup():
             logging.StreamHandler(sys.stdout)          ## log also to stdout (i.e., print to screen)
         ]
     )
+
+
+
+def get_parser():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', default='GINe', type=str, help='Select the type of model to train')
+    parser.add_argument('--scenario', default='full_info', type=str, help='Select the scenario to study')
+    parser.add_argument('--model_configs', default=None, type=str, help='should the hyperparameters be tuned, else provide some')
+    parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
+    parser.add_argument("--ports", action='store_true')
+
+    parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
+    parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
+
+    # Data configs
+    parser.add_argument('--size', default='small', type=str, help="Select the dataset size")
+    parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
+    parser.add_argument('--banks', default='only_launderings', type=str)
+    parser.add_argument('--specific_banks', default=[], type=parse_banks, help='Used if specific banks are to be studied')
+    
+    return parser
+
 
 def parse_banks(value):
 

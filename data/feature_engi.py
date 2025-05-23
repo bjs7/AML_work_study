@@ -4,9 +4,25 @@ import pandas as pd
 import torch
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from snapml import GraphFeaturePreprocessor
-from gp_params import params
+#from gp_params import params
+#from training.tuning_utils import gfpparams
+import training.hyperparams as tu
 from torch_geometric.data import Data
-import data_utils as du
+import data.data_utils as du
+
+
+# Function for feature engineering, GNN and Booster --------------------------------------------------------------------------------------------
+
+def general_feature_engineering(model_type, train_data, vali_data):
+
+    if model_type == 'graph':
+        train_data = feature_engi_graph_data(train_data)
+        vali_data = feature_engi_graph_data(vali_data, scaler_encoders = train_data.get('scaler_encoders'))
+    elif model_type == 'booster':
+        train_data = feature_engi_regular_data(train_data)
+        vali_data = feature_engi_regular_data(vali_data, scaler_encoders = train_data.get('scaler_encoders'))
+    
+    return train_data, vali_data
 
 
 def update_regular_data(df, bank_indices, args):
@@ -46,7 +62,7 @@ def feature_engi_regular_data(df, scaler_encoders = None):
 
     if not gp:
         gp = GraphFeaturePreprocessor()
-        gp.set_params(params)
+        gp.set_params(tu.gfpparams)
         x_gf = gp.fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))
     else:
         x_gf = gp.transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent']].astype("float64"))

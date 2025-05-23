@@ -1,10 +1,18 @@
 import torch
-import tqdm
 from torch_geometric.transforms import BaseTransform
 from typing import Union
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
-import gnn_models as gnn_m
+import models.gnn_models as gnn_m
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Util functions for the gnn models -----------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# function that selects the model from gnn_models script --------------------------------------------------------------------------------
 
 def get_model(sample_batch, m_param, m_settings, args):
 
@@ -22,6 +30,10 @@ def get_model(sample_batch, m_param, m_settings, args):
 
     return model
 
+
+
+# select loader for sampling edges ---------------------------------------------------------------------------------------------------------
+
 def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transform = None):
 
     train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), edge_label = train_data.y, batch_size=batch_size, shuffle=True, transform=transform)
@@ -31,6 +43,10 @@ def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transf
                                         batch_size=batch_size, shuffle=False, transform=None)
     
     return train_loader, vali_loader
+
+
+
+# function that put rescritions on which edges that can be sampled according to time ------------------------------------------------------
 
 # The loader has an argument called time_attr which could potentially be used to adjust for time?
 def account_for_time(batch, main_data):

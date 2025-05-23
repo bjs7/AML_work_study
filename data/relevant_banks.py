@@ -1,13 +1,9 @@
 import utils
-import logging
 import argparse
 import pandas as pd
-import data_processing as dp
-import configs
-import data_functions as data_funcs
-import tuning as tune
-import train_models as tr_models
-import save_load_models as slm
+from data.raw_data_processing import get_data
+import configs.configs as config
+import data.get_indices_type_data as data_funcs
 import numpy as np
 import os
 from pathlib import Path
@@ -22,7 +18,6 @@ def get_parser():
     parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
 
     parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
-    #parser.add_argument('--graph_tuning_x_0', default = 10, type=int, help='Amount of models to train on for tuning GNN')
     parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
     
     # Data configs
@@ -37,11 +32,9 @@ def get_parser():
 
 def filter_banks(args):
 
-    #parser = get_parser()
-    #args = parser.parse_args()
 
     df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
-    raw_data = dp.get_data(df, split_perc = configs.split_perc)
+    raw_data = get_data(df, split_perc = config.split_perc)
 
     Banks = list((df.loc[:, 'From Bank'])) + list((df.loc[:, 'To Bank']))
     unique_banks = list(set(Banks))
@@ -159,12 +152,12 @@ def filter_banks(args):
     }   
 
     # save the data
-    save_direc = configs.save_direc_training
+    save_direc = config.save_direc_training
     save_direc = os.path.join(save_direc, 'relevant_banks')
     folder_path = Path(save_direc)
 
     #save_direc = os.path.join(save_direc, f'{args.size}_' + args.ir)
-    args.split_perc = configs.split_perc[0:2]
+    args.split_perc = config.split_perc[0:2]
     str_folder = f'{args.size}_' + args.ir + f'__split_{args.split_perc[0]}_{args.split_perc[1]}.json'
     file_path = folder_path / str_folder
     folder_path.mkdir(parents=True, exist_ok=True)
@@ -175,10 +168,10 @@ def filter_banks(args):
 
 def load_relevant_banks(args):
 
-    save_direc = configs.save_direc_training
+    save_direc = config.save_direc_training
     save_direc = os.path.join(save_direc, 'relevant_banks')
     
-    split = configs.split_perc[0:2]
+    split = config.split_perc[0:2]
     str_folder = f'{args.size}_' + args.ir + f'__split_{split[0]}_{split[1]}.json'
     file_location = os.path.join(save_direc, str_folder)
 
@@ -198,10 +191,10 @@ class BanksManager:
         self.args = args
 
     def load_create_file(self):
-        save_direc = configs.save_direc_training
+        save_direc = config.save_direc_training
         save_direc = os.path.join(save_direc, 'relevant_banks')
         
-        split = configs.split_perc[0:2]
+        split = config.split_perc[0:2]
         str_folder = f'{self.args.size}_' + self.args.ir + f'__split_{split[0]}_{split[1]}.json'
         file_location = os.path.join(save_direc, str_folder)
 
@@ -248,3 +241,59 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+
+"""
+
+    # relevant indices where y = 1
+    #relevant_indices = laundering_values.iloc[np.where(laundering_values['true y'] == 1)[0],:]['indices']
+
+
+
+from data.get_indices_type_data import get_indices_bdt
+
+# Get relevant banks
+fr_banks, sr_banks = get_relevant_banks(args)
+banks = fr_banks + sr_banks
+all_test_indices = []
+for bank in banks:
+    bank_indices = get_indices_bdt(raw_data, bank = bank)
+    tmp_indices =  bank_indices.get('test_indices')
+    all_test_indices += tmp_indices
+
+laund_indices = len(set(all_test_indices) & set(relevant_indices))
+amount_launderings = len(relevant_indices)
+percent = laund_indices / amount_launderings
+print(f'{laund_indices} observations with laundering in test split out of {amount_launderings}, {percent}')
+
+
+#/home/nam_07/miniconda3/envs/multignn/lib/python3.9/site-packages/sklearn/metrics/_classification.py:1757: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no true nor predicted samples. Use `zero_division` parameter to control this behavior.
+#  _warn_prf(average, "true nor predicted", "F-score is", len(true_sum))
+
+
+for bank in [0,2,4,5,7]:
+
+    main_folder, model_settings = pu.get_main_folder(args)
+    tmp_folder, model_parameters = pu.get_indi_para(main_folder, bank=bank)
+
+    if not model_parameters:
+        continue
+
+    # get data
+    test_data, test_indices = pu.get_indices_feat_data(args, raw_data, bank = bank)
+
+    # Import the model
+    model = pu.get_model(args, test_data, model_parameters, model_settings, tmp_folder)
+
+    # make predictions
+    predictions, f1_values = pu.get_predictions(args, model, test_data, model_settings, tmp_folder, f1_values)
+
+    # create dataframe with predictions and indices    
+    tmp_preidctions = pd.DataFrame({'original_indices': test_indices, 'predictions': predictions})
+
+    # join with main dataframe
+    indices_to_update = tmp_preidctions['original_indices'][np.where(tmp_preidctions['predictions'] == 1)[0]]
+    laundering_values.loc[indices_to_update,'predicted_individual_banks'] = 1
+
+
+"""

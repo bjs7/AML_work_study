@@ -2,12 +2,23 @@ import pandas as pd
 import numpy as np
 import itertools
 import inspect
-#from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import torch
 from torch_geometric.data import Data
-import data_utils as du
+import data.data_utils as du
 
-def get_data(df_edges, **kwargs):
+
+#from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+# --------------------------------------------------------------------------------------------------------------------------
+# functions for processing the 'raw' data, splitting it into training, validation, and testing. ----------------------------
+# packing it into 'regular' data and graph data. ---------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------
+
+
+
+# main function for extracting the data, used in main scripth -------------------------------------
+
+def get_data(df_edges, model_args, **kwargs):
 
     df_edges['Timestamp'] = df_edges['Timestamp'] - df_edges['Timestamp'].min()
 
@@ -23,25 +34,26 @@ def get_data(df_edges, **kwargs):
 
     train_indices = np.concatenate(split_inds[0])
     vali_indices = np.concatenate(split_inds[1])
-    indices = [train_indices, vali_indices]
-
-    if (test_perc > 0):
-        test_indices = np.concatenate(split_inds[2])
-        indices.append(test_indices)
+    test_indices = np.concatenate(split_inds[2])
+    indices = [train_indices, vali_indices, test_indices]
 
     packed_data = {}
 
     # pack graph data
-    packed_data['graph_data'] = pack_graph_data(df_edges, y, timestamps, indices, test_perc)
+    if model_args.model_type == 'graph':
+        packed_data['graph_data'] = pack_graph_data(df_edges, y, timestamps, model_args, indices)
 
     # pack non-graph data
-    packed_data['regular_data'] = pack_regular_data(df_edges, y, indices, test_perc)
+    packed_data['regular_data'] = pack_regular_data(df_edges, y, indices)
 
     return packed_data
 
 
 
+# function for splitting the data into training, validation and testing -------------------------------------
+
 def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
+
     # Obtained indices for train, validation and testing
     n_days = int(timestamps.max() / (3600 * 24) + 1)
     n_samples = y.shape[0]
@@ -102,31 +114,33 @@ def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
     return split_inds, test_perc
 
 
-def pack_regular_data(df_edges, y, indices, test_perc):
+
+# pack regular data function -------------------------------------
+
+def pack_regular_data(df_edges, y, indices):
 
     if isinstance(y, torch.Tensor):
         y = np.array(y)
 
     train_indices = indices[0]
     vali_indices = indices[1]
+    test_indices = indices[2]
 
     train_data = {'x': df_edges.iloc[train_indices,:], 'y': y[train_indices]}
     vali_data = {'x': df_edges.iloc[vali_indices, :], 'y': y[vali_indices]}
+    test_data = {'x': df_edges.iloc[test_indices, :], 'y': y[test_indices]}
 
-    if test_perc > 0:
-        test_indices = indices[2]
-        test_data = {'x': df_edges.iloc[test_indices, :], 'y': y[test_indices]}
-
-        return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
-
-    return {'train_data': train_data, 'vali_data': vali_data}
+    return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
 
 
 
-def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
+# pack graph data function -------------------------------------
+
+def pack_graph_data(df_edges, y, timestamps, args, indices):
 
     train_indices = indices[0]
     vali_indices = indices[1]
+    test_indices = indices[2]
 
     max_n_id = df_edges.loc[:, ['from_id', 'to_id']].to_numpy().max() + 1
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
@@ -143,40 +157,32 @@ def pack_graph_data(df_edges, y, timestamps, indices, test_perc = 0):
     edge_index = torch.LongTensor(df_edges.loc[:, ['from_id', 'to_id']].to_numpy().T)
     edge_attr = torch.tensor(df_edges.loc[:, edge_features].to_numpy()).float()
 
-    train_x, vali_x = x, x
+    train_x, vali_x, test_x = x, x, x
     edge_train = train_indices
     edge_vali = np.concatenate([train_indices, vali_indices])
 
     train_edge_index, train_edge_attr, train_y, train_edge_times = edge_index[:, edge_train], edge_attr[edge_train], y[edge_train], timestamps[edge_train]
     vali_edge_index, vali_edge_attr, vali_y, vali_edge_times = edge_index[:, edge_vali], edge_attr[edge_vali], y[edge_vali], timestamps[edge_vali]
+    test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
 
-    #train_data = Data(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
     train_data = du.GraphData(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
-    #vali_data = Data(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
     vali_data = du.GraphData(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
+    test_data = du.GraphData(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
+
+
+    if args.ports:
+        train_data.add_ports()
+        vali_data.add_ports()
 
     du.update_nr_nodes_for_gd(train_data)
     du.update_nr_nodes_for_gd(vali_data)
+    du.update_nr_nodes_for_gd(test_data)
 
     train_indices = torch.tensor(train_indices)
     vali_indices = torch.tensor(vali_indices)
+    test_indices = torch.tensor(test_indices)
 
-    if test_perc > 0:
-        test_indices = indices[2]
-        test_x = x
-
-        test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
-        #test_data = Data(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
-        test_data = du.GraphData(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
-
-        du.update_nr_nodes_for_gd(test_data)
-        test_indices = torch.tensor(test_indices)
-
-        #return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
-        return {'train_data': {'df': train_data, 'pred_indices': train_indices}, 
+    
+    return {'train_data': {'df': train_data, 'pred_indices': train_indices}, 
                 'vali_data': {'df': vali_data, 'pred_indices': vali_indices}, 
                 'test_data': {'df': test_data, 'pred_indices': test_indices}}
-
-    #return {'train_data':train_data, 'vali_data': vali_data}
-    return {'train_data': {'df ': train_data, 'pred_indices': train_indices}, 
-                'vali_data': {'df ': vali_data, 'pred_indices': vali_indices}}
