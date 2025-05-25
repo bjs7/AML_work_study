@@ -96,9 +96,13 @@ class Boostertune(ABC):
             booster_data = self.pred_data(tune_train_data)
             
             for hp in model_hyper_params:
-                model = self.train_model(hp['params'], booster_data, hp['num_rounds'])
-                preds = self.predict(model, tune_vali_data)
-                f1s.append(f1_eval(preds, tune_vali_data))
+                try: 
+                    model = self.train_model(hp['params'], booster_data, hp['num_rounds'])
+                    preds = self.predict(model, tune_vali_data)
+                    f1s.append(f1_eval(preds, tune_vali_data))
+                except Exception as e:
+                    print(f"Error with hyperparameters {hp}: {str(e)}")
+                    f1s.append(0)  # Append 0 for F1 score if training or prediction fails
 
             self.x_0 = max(1, round(self.x_0/self.eta))
             params_to_keep = sorted(range(len(f1s)), key=lambda i: f1s[i], reverse=True)[:self.x_0]

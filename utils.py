@@ -28,6 +28,19 @@ file_types = {
     'booster': 'ubj' #pkl
 }
 
+def get_data_path():
+    local_path = "/home/nam_07"
+    hpc_path = "/data/leuven/362/vsc36278"
+    
+    # Check which path exists
+    if os.path.exists(local_path):
+        return local_path
+    elif os.path.exists(hpc_path):
+        return hpc_path
+    else:
+        raise FileNotFoundError("Neither data path exists: local_path or hpc_path")
+
+
 def get_model_configs(args):
 
     with open('model_configs.json', 'r') as file:
@@ -36,7 +49,7 @@ def get_model_configs(args):
     return model_parameters.get(args.model)
 
 def get_tuning_configs(args):
-    #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/tuning_configs.json
+    #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json.json
     with open('configs/tuning_configs.json', 'r') as file:
         model_parameters = json.load(file)
 

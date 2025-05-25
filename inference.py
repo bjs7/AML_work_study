@@ -31,7 +31,10 @@ def main():
 
     logging.info("load_data")
     model = Model.from_model_type(args)
-    df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
+    
+    df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
+    #df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
+    #df = pd.read_csv('/data/leuven/362/vsc36278/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
     raw_data = get_data(df, model.args, split_perc = split_perc)
     raw_data_copy = copy.deepcopy(raw_data)
 
@@ -61,7 +64,7 @@ def main():
 
     args.scenario = 'individual_banks'
     bank = None
-    #bank = 4
+    bank = 4
 
     # get inferencer
     infer = InferenceModel.from_model_type(args)
@@ -102,19 +105,20 @@ def main():
         laundering_values.loc[get_list,'predicted_individual_banks'] = 1
 
 
-    logging.info("get f1 values")
-    f1_score_full_info = f1_score(laundering_values['true y'], laundering_values['predicted_full_info'], average='binary')
-    f1_score_individual_banks = f1_score(laundering_values['true y'], laundering_values['predicted_individual_banks'], average='binary')
-    results = {'f1_score_full_info': f1_score_full_info, 'f1_score_individual_banks': f1_score_individual_banks, 'f1_values': f1_values.to_dict()}
-
-
     logging.info("save the results")
     save_direc = infer.main_folder
     folder_path = Path(save_direc)
-    file_path = folder_path / 'inference_results.json'
     folder_path.mkdir(parents=True, exist_ok=True)
+
+    results = {
+        'laundering_values': laundering_values.to_dict(orient='split'),
+        'f1_values': f1_values.to_dict(orient='split')
+    }
+
+    file_path = folder_path / 'inference_results.json'
     with open(file_path, 'w') as f:
-        json.dump(results, f, indent=4)
+        json.dump(results, f)
+    logging.info(f"Saved results to {file_path}")
 
 
 
@@ -122,6 +126,12 @@ if __name__ == '__main__':
     main()
 
 
+
+
+    #logging.info("get f1 values")
+    #f1_score_full_info = f1_score(laundering_values['true y'], laundering_values['predicted_full_info'], average='binary')
+    #f1_score_individual_banks = f1_score(laundering_values['true y'], laundering_values['predicted_individual_banks'], average='binary')
+    #results = {'f1_score_full_info': f1_score_full_info, 'f1_score_individual_banks': f1_score_individual_banks, 'f1_values': f1_values.to_dict()}
 
 
 

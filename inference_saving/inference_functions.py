@@ -15,7 +15,10 @@ def get_folder_path_gnn(args, split = config.split_perc):
     m_settings = utils.get_tuning_configs(args)
     m_settings['model_settings']['emlps'] = args.emlps
     mask_indexing, transforming = m_settings.get('model_settings').get('index_masking'), m_settings.get('model_settings').get('transforming_of_time')
-    main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
+    utils.get_data_path()
+    main_folder = f'{utils.get_data_path()}/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
+    #main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
+    #main_folder = f'/data/leuven/362/vsc36278/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
 
     with open(os.path.join(main_folder, 'model_settings.json'), 'r') as file:
         model_settings = json.load(file)
@@ -26,7 +29,9 @@ def get_folder_path_booster(args, split = config.split_perc):
     m_settings = utils.get_tuning_configs(args)
     x_0_fi, r_0_fi = m_settings.get('full_info').get(args.size).get('x_0'), m_settings.get('full_info').get(args.size).get('r_0')
     x_0_in, r_0_in = m_settings.get('individual_banks').get(args.size).get('x_0'), m_settings.get('individual_banks').get(args.size).get('r_0')
-    main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
+    main_folder = f'{utils.get_data_path()}/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
+    #main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
+    #main_folder = f'/data/leuven/362/vsc36278/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
 
     with open(os.path.join(main_folder, 'model_settings.json'), 'r') as file:
         model_settings = json.load(file)
@@ -192,7 +197,7 @@ def get_preditcions_booster(preds, test_data, tmp_folder, f1_values=None):
     preds = (preds >= 0.5).astype(int)
     f1 = f1_score(test_data['y'], preds, average='binary', zero_division=0)
 
-    f1_values = pd.DataFrame(columns=['bank', 'f1']) if not f1_values else f1_values
+    f1_values = pd.DataFrame(columns=['bank', 'f1']) if (f1_values is None) else f1_values #not isinstance(f1_values, pd.DataFrame)
     f1_values.loc[len(f1_values)] = [tmp_folder.split("/")[-1], f1]
 
     return preds, f1_values

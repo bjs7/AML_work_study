@@ -1,4 +1,5 @@
 import random
+import utils
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
@@ -30,6 +31,11 @@ def update_interval(param, interval):
 def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
     if args.model == 'xgboost':
+        
+        device = None
+        if utils.get_data_path == "/data/leuven/362/vsc36278":
+            device = "cuda"
+
         parameters = {
             "num_rounds": random.randint(10, 1000),
             "params": {
@@ -43,7 +49,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 "colsample_bytree": random.uniform(0.5, 1.0),
                 "subsample": random.uniform(0.5, 1.0),
                 "tree_method": "hist",
-                "device": "cuda", 
+                "device": device,
                 "random_state": 1
                 }
             }
@@ -66,7 +72,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 'scale_pos_weight': random.uniform(1,10),
                 'lambda_l1': random.uniform(10**(0.01), 10**(0.5)),
                 "tree_method": "hist",
-                "device": "cuda", 
+                "device": "gpu", 
                 'random_state': 1,
                 'verbose': -1
                 }
@@ -87,7 +93,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 'scale_pos_weight': random.uniform(1,10),
                 'lambda_l1': random.uniform(10**(0.01), 10**(0.5)),
                 "tree_method": "hist",
-                "device": "cuda",
+                "device": "gpu",
                 'random_state': 1,
                 'verbose': -1
                 }
