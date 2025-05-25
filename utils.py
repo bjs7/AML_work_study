@@ -49,8 +49,14 @@ def get_model_configs(args):
     return model_parameters.get(args.model)
 
 def get_tuning_configs(args):
+
+    if get_data_path() == '/data/leuven/362/vsc36278':
+        folder = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json'
+    else:
+        folder = 'configs/tuning_configs.json'
+
     #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json.json
-    with open('configs/tuning_configs.json', 'r') as file:
+    with open(folder, 'r') as file:
         model_parameters = json.load(file)
 
     return model_parameters.get(args.model_type)
