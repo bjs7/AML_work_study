@@ -16,6 +16,7 @@ from utils import get_parser
 from sklearn.metrics import f1_score
 from pathlib import Path
 import json
+import torch
 
 
 def main():
@@ -33,10 +34,9 @@ def main():
     model = Model.from_model_type(args)
     
     df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
-    #df = pd.read_csv('/home/nam_07/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
-    #df = pd.read_csv('/data/leuven/362/vsc36278/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
     raw_data = get_data(df, model.args, split_perc = split_perc)
     raw_data_copy = copy.deepcopy(raw_data)
+    raw_data_indi = copy.deepcopy(raw_data)
 
     logging.info("get dataframe with true values")
     save_model_arg = args.model
@@ -62,9 +62,9 @@ def main():
 
     logging.info("get predictions from full info")
 
-    args.scenario = 'individual_banks'
+    #args.scenario = 'individual_banks'
     bank = None
-    bank = 4
+    #bank = 4
 
     # get inferencer
     infer = InferenceModel.from_model_type(args)
@@ -81,20 +81,29 @@ def main():
     # individual banks --------------------------------------------------------------------------------------------------------------------
     # -------------------------------------------------------------------------------------------------------------------------------------
 
+    sum(laundering_values['true y'] == 1)
 
     logging.info("get predictions from individual bank")
     args.scenario = 'individual_banks'
     fr_banks, sr_banks = get_relevant_banks(args)
     banks = fr_banks + sr_banks
+    args.model = 'xgboost'
+    f1_values = None
+    #bank = 4
 
-    for bank in [0,2,4,5,7]: # banks
+    for bank in banks: # banks [0,2,4,5,7,10]
 
         infer = InferenceModel.from_model_type(args)
         tmp_folder, model_parameters = infer.get_folder_params(bank)
-        test_data, test_indices = infer.get_test_indices_data(raw_data, bank)
+        test_data, test_indices = infer.get_test_indices_data(raw_data_indi, bank)
 
         model = infer.get_model(test_data, model_parameters, tmp_folder)
         predictions, f1_values = infer.get_predictions(model, test_data, model_parameters, tmp_folder, f1_values)
+
+        if infer.args.model_type == 'graph':
+            predictions = predictions.detach().cpu().numpy() if isinstance(predictions, torch.Tensor) else predictions
+            test_indices = test_indices.cpu().numpy() if isinstance(test_indices, torch.Tensor) else test_indices  # Handle test_indices if it's a tensor
+
         tmp_preidctions = pd.DataFrame({'original_indices': test_indices, 'predictions': predictions})
 
         if sum(tmp_preidctions['predictions'] == 1) == 0:
@@ -103,6 +112,12 @@ def main():
         indices_to_update = tmp_preidctions['original_indices'][np.where(tmp_preidctions['predictions'] == 1)[0]]
         get_list = np.where(np.isin(laundering_values['indices'], indices_to_update))[0]
         laundering_values.loc[get_list,'predicted_individual_banks'] = 1
+
+
+        if np.any(laundering_values['predicted_individual_banks'] == 1):
+            print('values = 1 \n')
+        else:
+            print('no values = 1 \n')
 
 
     logging.info("save the results")
@@ -120,6 +135,18 @@ def main():
         json.dump(results, f)
     logging.info(f"Saved results to {file_path}")
 
+
+"""
+    indices_with_one = laundering_values['indices'][(laundering_values['true y'] == 1)]
+    indices_in_split = []
+    from data.get_indices_type_data import get_indices_bdt
+    for bank in banks:
+        infer = InferenceModel.from_model_type(args)
+        bank_indices = get_indices_bdt(raw_data_indi, bank)
+        indices_in_split += list(set(indices_with_one) & set(bank_indices['test_indices']))
+        
+    len(set(indices_in_split))
+"""
 
 
 if __name__ == '__main__':

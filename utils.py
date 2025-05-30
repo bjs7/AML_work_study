@@ -29,7 +29,7 @@ file_types = {
 }
 
 def get_data_path():
-    local_path = "/home/nam_07"
+    local_path = "/home/nam_07/projects"
     hpc_path = "/data/leuven/362/vsc36278"
     
     # Check which path exists
@@ -50,10 +50,12 @@ def get_model_configs(args):
 
 def get_tuning_configs(args):
 
+    tuning_configs = 'tuning_configs_for_testing' if args.testing else 'tuning_configs'
+
     if get_data_path() == '/data/leuven/362/vsc36278':
-        folder = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json'
+        folder = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/' + tuning_configs + '.json'
     else:
-        folder = 'configs/tuning_configs.json'
+        folder = 'configs/' + tuning_configs + '.json'
 
     #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json.json
     with open(folder, 'r') as file:
@@ -95,6 +97,7 @@ def get_parser():
     parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
     parser.add_argument('--banks', default='only_launderings', type=str)
     parser.add_argument('--specific_banks', default=[], type=parse_banks, help='Used if specific banks are to be studied')
+    parser.add_argument('--testing', action='store_true')
     
     return parser
 
