@@ -78,14 +78,3 @@ def save_configs(args, save_direc):
         file_path.write_text(json.dumps(args_dict, indent=4))
     
 
-
-
-
-"""
-
-    if not os.path.isfile(save_direc + '/m_settings.json'):
-        with open(save_direc + '/m_settings.json', 'w') as file:
-            json.dump(m_settings, file, indent=4)
-
-
-"""

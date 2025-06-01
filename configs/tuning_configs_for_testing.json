@@ -1,0 +1,34 @@
+{    
+    "booster": {
+        "full_info": {
+                "small": {"x_0": 1, "eta": 2, "r_0": 0.1}, 
+                "medium": {"x_0": 1, "eta": 2, "r_0": 0.1},
+                "large": {"x_0": 16, "eta": 2, "r_0": 0.2}
+            },
+        "individual_banks": {
+            "small": {"x_0": 5, "eta": 2, "r_0": 0.4},
+            "medium": {"x_0": 5, "eta": 2, "r_0": 0.3},
+            "large": {"x_0": 1, "eta": 2, "r_0": 0.1}
+        }
+    },
+
+    "graph": {
+        "full_info": {
+            "small": {"x_0": 1},
+            "medium": {"x_0": 1},
+            "large": {"x_0": 1}
+        },
+
+        "individual_banks": {
+            "small": {"x_0": 5},
+            "medium": {"x_0": 5},
+            "large": {"x_0": 5}
+        },
+
+        "model_settings": {
+            "index_masking": false, "include_time": false, "transforming_of_time": false
+        }
+    }
+    
+}
+    

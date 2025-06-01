@@ -17,8 +17,6 @@ def get_folder_path_gnn(args, split = config.split_perc):
     mask_indexing, transforming = m_settings.get('model_settings').get('index_masking'), m_settings.get('model_settings').get('transforming_of_time')
     utils.get_data_path()
     main_folder = f'{utils.get_data_path()}/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
-    #main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
-    #main_folder = f'/data/leuven/362/vsc36278/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__EU_{args.emlps}__transforming_of_time_{transforming}__mask_indexing_{mask_indexing}'
 
     with open(os.path.join(main_folder, 'model_settings.json'), 'r') as file:
         model_settings = json.load(file)
@@ -30,8 +28,6 @@ def get_folder_path_booster(args, split = config.split_perc):
     x_0_fi, r_0_fi = m_settings.get('full_info').get(args.size).get('x_0'), m_settings.get('full_info').get(args.size).get('r_0')
     x_0_in, r_0_in = m_settings.get('individual_banks').get(args.size).get('x_0'), m_settings.get('individual_banks').get(args.size).get('r_0')
     main_folder = f'{utils.get_data_path()}/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
-    #main_folder = f'/home/nam_07/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
-    #main_folder = f'/data/leuven/362/vsc36278/AML_work_study/models/{args.model}/{args.size}_{args.ir}/split_{split[0]}_{split[1]}__full_info_x0_{x_0_fi}_r0_{r_0_fi}__individual_x0_{x_0_in}_r0_{r_0_in}'
 
     with open(os.path.join(main_folder, 'model_settings.json'), 'r') as file:
         model_settings = json.load(file)
@@ -113,8 +109,6 @@ class GNNpredictions:
         ave_f1 = np.mean(ave_f1)
         return max_f1_index, max_f1, ave_f1
 
-    #import torch
-    #seed = self.seeds[0]
     
     def _predictions_batching(self, model, seed):
         
@@ -165,8 +159,6 @@ class GNNpredictions:
         return pred, f1
 
 
-    #import torch
-    #seed = self.seeds[0]
     def _predictions_no_batching(self, model, seed):
         
         test_data = copy.deepcopy(self.test_data)
@@ -187,7 +179,6 @@ class GNNpredictions:
             preds = out.argmax(dim=-1)
 
         f1 = f1_score(self.true_y, preds.cpu().numpy(), average='binary')
-        #self.models_predictions[seed] = {'preds': preds, 'f1': f1}
 
         return preds, f1
 

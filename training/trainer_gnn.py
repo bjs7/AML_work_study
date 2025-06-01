@@ -1,11 +1,9 @@
 import copy
 import tqdm
 import torch
-#from torch_geometric.nn.models.metapath2vec import sample
 import training.gnn_utils as tgu
 import configs.configs as config
 from sklearn.metrics import f1_score
-#import training.hyperparams as tune_u
 import warnings
 import utils
 from data.feature_engi import general_feature_engineering
@@ -33,7 +31,7 @@ class GNNTrain(ABC):
         self.pred_indices = test_data['pred_indices']
         self.train_data = train_data['df']
         self.test_data = test_data['df']
-        self.epochs = config.epochs
+        self.epochs = 2 if args.testing else config.epochs
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model_configs = model_configs
@@ -75,36 +73,23 @@ class GNNTrain(ABC):
         for epoch in range(self.epochs):
 
             self.model.train()
-            #total_loss = total_examples = 0
-            #preds, ground_truths = [], []
 
             for batch in tqdm.tqdm(train_loader, disable=not self.args.tqdm):
                 
                 self.optimizer.zero_grad()
                 target_edge_attr = self.train_data.edge_attr[batch.input_id, :].to(self.device)
-
-                mask = torch.isin(batch.edge_attr[:, 0].detach().cpu().to(torch.int), batch.input_id) if self.m_settings['index_masking'] else None
                 batch.edge_attr = batch.edge_attr[:, 1:] if self.m_settings['include_time'] else batch.edge_attr[:, 2:]
                 target_edge_attr = target_edge_attr[:, 1:] if self.m_settings['include_time'] else target_edge_attr[:, 2:]
                 batch.to(self.device)
 
-                out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr, index_mask = self.m_settings['index_masking'])
-                pred = out[mask] if mask is not None else out
-                ground_truth = batch.y[mask] if mask is not None else batch.edge_label
+                out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr)
+                pred = out
+                ground_truth = batch.edge_label
 
                 loss = self.loss_fn(pred, ground_truth)
                 loss.backward()
                 self.optimizer.step()
 
-                #preds.append(pred.argmax(dim=-1))
-                #ground_truths.append(ground_truth)
-
-                #total_loss += float(loss) * pred.numel()
-                #total_examples += pred.numel()
-
-            #pred = torch.cat(preds, dim=0).detach().cpu().numpy()
-            #ground_truth = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
-            #f1 = f1_score(ground_truth, pred)
             
             current_f1 = GNNEval.eval_batched(self, test_loader)
             if current_f1 > best_val_f1:
@@ -127,7 +112,7 @@ class GNNTrain(ABC):
             self.model.train()
 
             self.optimizer.zero_grad()
-            pred = self.model(train_data.x, train_data.edge_index, train_data.edge_attr, train_data.edge_index, train_data.edge_attr, index_mask = self.m_settings['index_masking'])
+            pred = self.model(train_data.x, train_data.edge_index, train_data.edge_attr, train_data.edge_index, train_data.edge_attr)
             loss = self.loss_fn(pred, train_data.y)
 
             loss.backward()
@@ -165,25 +150,6 @@ class GNNEval:
             #select the seed edges from which the batch was created
             inds = inds.detach().cpu()
             batch_edge_inds = inds[batch.input_id.detach().cpu()]
-
-            batch_edge_ids = loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
-            mask = torch.isin(batch.edge_attr[:, 0].detach().cpu().to(torch.int), batch_edge_ids) if m_settings.get('index_masking') else None
-
-            #add the seed edges that have not been sampled to the batch
-            missing = ~torch.isin(batch_edge_ids, batch.edge_attr[:, 0].detach().cpu())
-            if m_settings.get('index_masking') and missing.sum() != 0 and (args.size == 'small'):
-                missing_ids = batch_edge_ids[missing].int()
-                n_ids = batch.n_id
-                add_edge_index = data.edge_index[:, missing_ids].detach().clone()
-                node_mapping = {value.item(): idx for idx, value in enumerate(n_ids)}
-                add_edge_index = torch.tensor([[node_mapping[val.item()] for val in row] for row in add_edge_index])
-                add_edge_attr = data.edge_attr[missing_ids, :].detach().clone()
-                add_y = data.y[missing_ids].detach().clone()
-            
-                batch.edge_index = torch.cat((batch.edge_index, add_edge_index), 1)
-                batch.edge_attr = torch.cat((batch.edge_attr, add_edge_attr), 0)
-                batch.y = torch.cat((batch.y, add_y), 0)
-                mask = torch.cat((mask, torch.ones(add_y.shape[0], dtype=torch.bool)))
  
             # as in the training function
             target_edge_attr = data.edge_attr[batch_edge_inds, :].to(device)
@@ -192,9 +158,9 @@ class GNNEval:
             
             with torch.no_grad():
                 batch.to(device)
-                out = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr, index_mask = m_settings.get('index_masking'))
-                out = out[mask] if mask is not None else out
-                ground_truth = batch.y[mask] if mask is not None else batch.edge_label
+                out = model(batch.x, batch.edge_index, batch.edge_attr, batch.edge_label_index, target_edge_attr)
+                #out = out
+                ground_truth = batch.edge_label
                     
                 pred = out.argmax(dim=-1)
                 preds.append(pred)
@@ -221,7 +187,7 @@ class GNNEval:
         model.eval()
         with torch.no_grad():
             data.to(device)
-            out = model(data.x, data.edge_index, data.edge_attr, data.edge_index, data.edge_attr, index_mask = m_settings['include_time'])
+            out = model(data.x, data.edge_index, data.edge_attr, data.edge_index, data.edge_attr)
             out = out[inds]
             pred = out.argmax(dim=-1)
         

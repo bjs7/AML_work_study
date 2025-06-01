@@ -8,9 +8,6 @@ import torch
 import random
 import json
 
-#logging.basicConfig(level=logging.INFO)
-#logger = logging.getLogger("MyApp")
-
 
 model_types = {
     'GINe': 'graph',
@@ -57,7 +54,6 @@ def get_tuning_configs(args):
     else:
         folder = 'configs/' + tuning_configs + '.json'
 
-    #/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuning_configs.json.json
     with open(folder, 'r') as file:
         model_parameters = json.load(file)
 
@@ -98,6 +94,7 @@ def get_parser():
     parser.add_argument('--banks', default='only_launderings', type=str)
     parser.add_argument('--specific_banks', default=[], type=parse_banks, help='Used if specific banks are to be studied')
     parser.add_argument('--testing', action='store_true')
+    parser.add_argument('--overwrite', action='store_true')
     
     return parser
 

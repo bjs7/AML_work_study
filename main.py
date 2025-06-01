@@ -7,10 +7,10 @@ from models import booster, gnn
 from data.raw_data_processing import get_data
 from configs.configs import split_perc
 import inference_saving.save_load_models as slm
-from data.relevant_banks import get_relevant_banks
+from relevant_banks import get_relevant_banks
 
 
-# for booster, in tuning, the fraction used, select it randomly?
+
 def main():
 
     # Logging, seeding, data args passing --------------------------------------------------------------------------------------------------
@@ -23,7 +23,6 @@ def main():
     model = Model.from_model_type(args)
 
     logging.info("load_data")
-    # also remember to change x_0 etc.
     df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
     raw_data = get_data(df, model.args, split_perc = split_perc)
     logging.info("Obtained data")
@@ -141,6 +140,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 

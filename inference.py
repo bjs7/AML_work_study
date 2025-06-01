@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import numpy as np
 import copy
-from data.relevant_banks import get_relevant_banks
+from relevant_banks import get_relevant_banks
 import pandas as pd
 from data.raw_data_processing import get_data
 from models import booster, gnn
@@ -73,22 +73,20 @@ def main():
 
     model = infer.get_model(test_data, model_parameters, tmp_folder)
     predictions, f1_values = infer.get_predictions(model, test_data, model_parameters, tmp_folder)
-    laundering_values['predicted_full_info'] = 1
-    #laundering_values['predicted_full_info'] = predictions
+    #laundering_values['predicted_full_info'] = 1
+    laundering_values['predicted_full_info'] = predictions
 
 
     # -------------------------------------------------------------------------------------------------------------------------------------
     # individual banks --------------------------------------------------------------------------------------------------------------------
     # -------------------------------------------------------------------------------------------------------------------------------------
 
-    sum(laundering_values['true y'] == 1)
-
     logging.info("get predictions from individual bank")
     args.scenario = 'individual_banks'
     fr_banks, sr_banks = get_relevant_banks(args)
     banks = fr_banks + sr_banks
-    args.model = 'xgboost'
-    f1_values = None
+    #args.model = 'xgboost'
+    #f1_values = None
     #bank = 4
 
     for bank in banks: # banks [0,2,4,5,7,10]
@@ -112,12 +110,6 @@ def main():
         indices_to_update = tmp_preidctions['original_indices'][np.where(tmp_preidctions['predictions'] == 1)[0]]
         get_list = np.where(np.isin(laundering_values['indices'], indices_to_update))[0]
         laundering_values.loc[get_list,'predicted_individual_banks'] = 1
-
-
-        if np.any(laundering_values['predicted_individual_banks'] == 1):
-            print('values = 1 \n')
-        else:
-            print('no values = 1 \n')
 
 
     logging.info("save the results")
@@ -146,19 +138,18 @@ def main():
         indices_in_split += list(set(indices_with_one) & set(bank_indices['test_indices']))
         
     len(set(indices_in_split))
+    
+
+    if np.any(laundering_values['predicted_individual_banks'] == 1):
+        print('values = 1 \n')
+    else:
+        print('no values = 1 \n')
+
+
 """
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
-    #logging.info("get f1 values")
-    #f1_score_full_info = f1_score(laundering_values['true y'], laundering_values['predicted_full_info'], average='binary')
-    #f1_score_individual_banks = f1_score(laundering_values['true y'], laundering_values['predicted_individual_banks'], average='binary')
-    #results = {'f1_score_full_info': f1_score_full_info, 'f1_score_individual_banks': f1_score_individual_banks, 'f1_values': f1_values.to_dict()}
-
 
 
