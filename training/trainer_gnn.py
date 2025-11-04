@@ -63,9 +63,14 @@ class GNNTrain(ABC):
 
     def _train_with_batches(self):
 
+        if self.args.ego:
+            transform = tgu.AddEgoIds()
+        else:
+            transform = None
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            train_loader, test_loader = tgu.get_loaders(self.train_data, self.test_data, self.pred_indices, self.m_param, self.batch_size)
+            train_loader, test_loader = tgu.get_loaders(self.train_data, self.test_data, self.pred_indices, self.m_param, self.batch_size, transform = transform)
 
         best_val_f1 = -1
         best_model_state = None
@@ -74,7 +79,13 @@ class GNNTrain(ABC):
 
             self.model.train()
 
+            if args.testing:
+                print(f'Number of nodes in original set: {self.train_data.x.shape[0]}, num_nodes: {self.train_data.num_nodes} \n')
+
             for batch in tqdm.tqdm(train_loader, disable=not self.args.tqdm):
+
+                if args.testing:
+                    print(f'Number of nodes in x: {batch.x.shape[0]}, num_nodes: {batch.num_nodes} \n')
                 
                 self.optimizer.zero_grad()
                 target_edge_attr = self.train_data.edge_attr[batch.input_id, :].to(self.device)

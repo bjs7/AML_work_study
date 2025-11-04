@@ -1,0 +1,11 @@
+{
+    "limits": {
+        "high": 25e3,
+        "medium": 10e3
+    },
+
+    "num_neighbors": {
+        "high": [20, 15, 10, 5],
+        "medium": [20, 15, 5, 5]
+    }
+}

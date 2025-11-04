@@ -6,15 +6,15 @@
                 "large": {"x_0": 16, "eta": 2, "r_0": 0.2}
             },
         "individual_banks": {
-            "small": {"x_0": 500, "eta": 2, "r_0": 0.4},
-            "medium": {"x_0": 500, "eta": 2, "r_0": 0.3},
+            "small": {"x_0": 250, "eta": 2, "r_0": 0.4},
+            "medium": {"x_0": 100, "eta": 2, "r_0": 0.3},
             "large": {"x_0": 100, "eta": 2, "r_0": 0.1}
         }
     },
 
     "graph": {
         "full_info": {
-            "small": {"x_0": 20},
+            "small": {"x_0": 15},
             "medium": {"x_0": 10},
             "large": {"x_0": 10}
         },

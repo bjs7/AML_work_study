@@ -134,7 +134,7 @@ class GraphData(Data):
         self.num_nodes = int(self.x.shape[0])
         self.node_timestamps = node_timestamps
         if timestamps is not None:
-            self.timestamps = timestamps  
+            self.timestamps = timestamps
         elif edge_attr is not None:
             self.timestamps = edge_attr[:,0].clone()
         else:
@@ -157,30 +157,61 @@ class GraphData(Data):
         out_tds = [time_deltas(self, adj_list_out)] if reverse_tds else []
         self.edge_attr = torch.cat([self.edge_attr, in_tds] + out_tds, dim=1)
         return self
+    
 
-"""
 
-class GraphData(Data):
-    '''This is the homogenous graph object we use for GNN training if reverse MP is not enabled'''
+class HeteroGraphData(HeteroData):
+    '''This is the heterogenous graph object we use for GNN training if reverse MP is enabled'''
     def __init__(
-        self, x: OptTensor = None, edge_index: OptTensor = None, edge_attr: OptTensor = None, y: OptTensor = None, pos: OptTensor = None,
+        self,
         readout: str = 'edge',
-        num_nodes: int = None,
-        timestamps: OptTensor = None,
-        node_timestamps: OptTensor = None,
         **kwargs
         ):
-        super().__init__(x, edge_index, edge_attr, y, pos, **kwargs)
+        super().__init__(**kwargs)
         self.readout = readout
-        self.loss_fn = 'ce'
-        self.num_nodes = int(self.x.shape[0])
-        self.node_timestamps = node_timestamps
-        if timestamps is not None:
-            self.timestamps = timestamps
-        elif edge_attr is not None:
-            self.timestamps = edge_attr[:,0].clone()
-        else:
-            self.timestamps = None
 
-"""
+    @property
+    def num_nodes(self):
+        return self['node'].x.shape[0]
+        
+    @property
+    def timestamps(self):
+        return self['node', 'to', 'node'].timestamps
+
+    def add_ports(self):
+        '''Adds port numberings to the edge features'''
+        adj_list_in, adj_list_out = to_adj_nodes_with_times(self)
+        in_ports = ports(self['node', 'to', 'node'].edge_index, adj_list_in)
+        out_ports = ports(self['node', 'rev_to', 'node'].edge_index, adj_list_out)
+        self['node', 'to', 'node'].edge_attr = torch.cat([self['node', 'to', 'node'].edge_attr, in_ports], dim=1)
+        self['node', 'rev_to', 'node'].edge_attr = torch.cat([self['node', 'rev_to', 'node'].edge_attr, out_ports], dim=1)
+        return self
+
+    def add_time_deltas(self):
+        '''Adds time deltas (i.e. the time between subsequent transactions) to the edge features'''
+        adj_list_in, adj_list_out = to_adj_edges_with_times(self)
+        in_tds = time_deltas(self, adj_list_in)
+        out_tds = time_deltas(self, adj_list_out)
+        self['node', 'to', 'node'].edge_attr = torch.cat([self['node', 'to', 'node'].edge_attr, in_tds], dim=1)
+        self['node', 'rev_to', 'node'].edge_attr = torch.cat([self['node', 'rev_to', 'node'].edge_attr, out_tds], dim=1)
+        return self
+    
+
+def create_hetero_obj(x,  y,  edge_index,  edge_attr, timestamps, args):
+    '''Creates a heterogenous graph object for reverse message passing'''
+    data = HeteroGraphData()
+
+    data['node'].x = x
+    data['node', 'to', 'node'].edge_index = edge_index
+    data['node', 'rev_to', 'node'].edge_index = edge_index.flipud()
+    data['node', 'to', 'node'].edge_attr = edge_attr
+    data['node', 'rev_to', 'node'].edge_attr = edge_attr
+    #if args.ports:
+        #swap the in- and outgoing port numberings for the reverse edges
+        #data['node', 'rev_to', 'node'].edge_attr[:, [-1, -2]] = data['node', 'rev_to', 'node'].edge_attr[:, [-2, -1]]
+    data['node', 'to', 'node'].y = y
+    data['node', 'to', 'node'].timestamps = timestamps
+    
+    return data
+
 

@@ -1,0 +1,11 @@
+{
+"GINe": {"params":
+	{"batch_size": [512, 128], "lr": 0.006213266113989207,  "num_neighbors": [100,100], 
+		"w_ce1": 1.0000182882773443, "w_ce2": 6.275014431494497 },
+"model_settings": {"index_masking": true} },
+
+
+"xgboost": {"params":{
+	"xgb_parameters": {"objective":  "binary:logistic", "eval_metric": "logloss", "max_depth": 6, "learning_rate": 0.01 },
+	"num_rounds": 100} }
+}

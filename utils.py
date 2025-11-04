@@ -17,7 +17,8 @@ model_types = {
 
 data_types = {
     'graph': 'graph_data',
-    'booster': 'regular_data'
+    'booster': 'regular_data',
+    'reg': 'regular_data'
 }
 
 file_types = {
@@ -84,6 +85,8 @@ def get_parser():
     parser.add_argument('--model_configs', default=None, type=str, help='should the hyperparameters be tuned, else provide some')
     parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
     parser.add_argument("--ports", action='store_true')
+    parser.add_argument("--tds", action='store_true', help="Use time deltas (i.e. the time between subsequent transactions) in GNN training")
+    parser.add_argument("--reverse_mp", action='store_true', help="Use reverse MP in GNN training")
 
     parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
     parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
@@ -95,6 +98,10 @@ def get_parser():
     parser.add_argument('--specific_banks', default=[], type=parse_banks, help='Used if specific banks are to be studied')
     parser.add_argument('--testing', action='store_true')
     parser.add_argument('--overwrite', action='store_true')
+
+    # FL configs
+
+    parser.add_argument('--flmethod', default='fedavg', type=str)
     
     return parser
 

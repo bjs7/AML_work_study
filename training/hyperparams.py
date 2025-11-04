@@ -100,7 +100,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
             }
 
-
+    #args.model
     elif args.model == 'GINe':
 
         if not sample_intervals:
@@ -118,7 +118,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
         parameters = {
             'params': {
-            'batch_size': 4096,
+            'batch_size': 8192, #4096,
             'num_neighbors': [100],
 
             'hidden_embedding_size': random.randint(hid_em_size_interval[0], hid_em_size_interval[1]),
@@ -137,7 +137,8 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
         else:
             if num_nodes >= 25e3:
                 #if plus 25k
-                num_neighbors = [20, 20, 10, 5]
+                #num_neighbors = [20, 20, 10, 5]
+                num_neighbors = [20, 15, 5, 5]
             elif num_nodes >= 10e3:
                 # if plus 10k
                 num_neighbors = [20, 15, 5, 5]
@@ -167,7 +168,7 @@ gfpparams = {
     #"time_window": 86400,
 
     "vertex_stats": True,         # produce vertex statistics
-    "vertex_stats_cols": [3,4],     # produce vertex statistics using the selected input columns
+    "vertex_stats_cols": [3],     # produce vertex statistics using the selected input columns
     
     # features: 0:fan,1:deg,2:ratio,3:avg,4:sum,5:min,6:max,7:median,8:var,9:skew,10:kurtosis
     "vertex_stats_feats": [0, 1, 2, 3, 4, 8, 9, 10],  # fan,deg,ratio,avg,sum,var,skew,kurtosis

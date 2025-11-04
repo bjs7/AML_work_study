@@ -46,8 +46,9 @@ def regi_booster(name):
 class XGBoosttrain(mcls.XGBoostMixin, BoosterTrain):
     pass
 
+#class XGBoosttrain(mcls.LightGBMMixin, BoosterTrain):
 @regi_booster('light_gbm')
-class XGBoosttrain(mcls.LightGBMMixin, BoosterTrain):
+class LGBBoosttrain(mcls.LightGBMMixin, BoosterTrain):
     pass
 
 

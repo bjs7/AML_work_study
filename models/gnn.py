@@ -20,7 +20,7 @@ class GNNMixing(MethodMixing):
         return get_graph_data(self.args, df, bank_indices)
 
     def _feature_engi(self, data, **kwargs):
-        return feature_engi_graph_data(data, **kwargs)
+        return feature_engi_graph_data(data, args = self.args, **kwargs)
     
     def _prep_helper(self, train, vali):
         return train

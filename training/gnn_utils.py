@@ -40,7 +40,7 @@ def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transf
     vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), 
                                      edge_label_index=vali_data.edge_index[:, pred_indices],
                                      edge_label=vali_data.y[pred_indices],
-                                        batch_size=batch_size, shuffle=False, transform=None)
+                                        batch_size=batch_size, shuffle=False, transform=transform)
     
     return train_loader, vali_loader
 
@@ -70,5 +70,44 @@ def account_for_time(batch, main_data):
     return batch
 
 
+
+class AddEgoIds(BaseTransform):
+    r"""Add IDs to the centre nodes of the batch.
+    """
+    def __init__(self):
+        pass
+
+    def __call__(self, data: Union[Data, HeteroData]):
+        x = data.x if not isinstance(data, HeteroData) else data['node'].x
+        device = x.device
+        ids = torch.zeros((x.shape[0], 1), device=device)
+        if not isinstance(data, HeteroData):
+            nodes = torch.unique(data.edge_label_index.view(-1)).to(device)
+        else:
+            nodes = torch.unique(data['node', 'to', 'node'].edge_label_index.view(-1)).to(device)
+        ids[nodes] = 1
+        if not isinstance(data, HeteroData):
+            data.x = torch.cat([x, ids], dim=1)
+        else: 
+            data['node'].x = torch.cat([x, ids], dim=1)
+        
+        return data
+
+
+
+def add_arange_ids(data_list):
+    '''
+    Add the index as an id to the edge features to find seed edges in training, validation and testing.
+
+    Args:
+    - data_list (str): List of tr_data, val_data and te_data.
+    '''
+    for data in data_list:
+        if isinstance(data, HeteroData):
+            data['node', 'to', 'node'].edge_attr = torch.cat([torch.arange(data['node', 'to', 'node'].edge_attr.shape[0]).view(-1, 1), data['node', 'to', 'node'].edge_attr], dim=1)
+            offset = data['node', 'to', 'node'].edge_attr.shape[0]
+            data['node', 'rev_to', 'node'].edge_attr = torch.cat([torch.arange(offset, data['node', 'rev_to', 'node'].edge_attr.shape[0] + offset).view(-1, 1), data['node', 'rev_to', 'node'].edge_attr], dim=1)
+        else:
+            data.edge_attr = torch.cat([torch.arange(data.edge_attr.shape[0]).view(-1, 1), data.edge_attr], dim=1)
 
 

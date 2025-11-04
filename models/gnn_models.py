@@ -3,6 +3,17 @@ from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RG
 import torch.nn.functional as F
 import torch
 
+from federated_learning.registry import register_gnn
+
+#############################################################################################
+# IMPORTANT !!!!!!!
+# WHEN ADDING NEW MODELS CHECK IF THEY HAVE MORE/DIFFERENT ARGUMENTS/PARAMETERS THAN THE GINE
+# IF SO THEN THEY NEED TO BE ADDED TO THE SAMPLING OF SAMPLING HYPERPARAMETERS!!
+#############################################################################################
+# ALSO NEED TO CHANGE THE ELIF CONDITION TO MODEL.TYPE
+# Or whether another type of data (holder) for the graph data is needed
+
+@register_gnn('GINe')
 class GINe(torch.nn.Module):
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
                  n_hidden=66, edge_updates=True, residual=True,

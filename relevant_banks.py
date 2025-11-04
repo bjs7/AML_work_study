@@ -15,6 +15,11 @@ from configs.configs import split_perc
 
 def filter_banks(args):
 
+    #parser = utils.get_parser()
+    #args = parser.parse_args()
+    #args.ir = 'LI'
+    #args.size = 'medium'
+
     model = Model.from_model_type(args)
     df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
     raw_data = get_data(df, model.args, split_perc = split_perc)
@@ -221,6 +226,7 @@ def main():
     args = parser.parse_args()
 
     #args.size = 'medium'
+    #args.ir = 'HI'
     manager = BanksManager(args)
 
     manager.load_create_file()

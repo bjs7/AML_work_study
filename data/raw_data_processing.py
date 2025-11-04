@@ -169,11 +169,6 @@ def pack_graph_data(df_edges, y, timestamps, args, indices):
     vali_data = du.GraphData(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
     test_data = du.GraphData(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
 
-
-    if args.ports:
-        train_data.add_ports()
-        vali_data.add_ports()
-
     du.update_nr_nodes_for_gd(train_data)
     du.update_nr_nodes_for_gd(vali_data)
     du.update_nr_nodes_for_gd(test_data)
@@ -181,7 +176,6 @@ def pack_graph_data(df_edges, y, timestamps, args, indices):
     train_indices = torch.tensor(train_indices)
     vali_indices = torch.tensor(vali_indices)
     test_indices = torch.tensor(test_indices)
-
     
     return {'train_data': {'df': train_data, 'pred_indices': train_indices}, 
                 'vali_data': {'df': vali_data, 'pred_indices': vali_indices}, 
