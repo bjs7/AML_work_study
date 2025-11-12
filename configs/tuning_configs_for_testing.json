@@ -12,7 +12,7 @@
         }
     },
 
-    "graph": {
+    "gnn": {
         "full_info": {
             "small": {"x_0": 1},
             "medium": {"x_0": 1},
@@ -23,12 +23,7 @@
             "small": {"x_0": 5},
             "medium": {"x_0": 5},
             "large": {"x_0": 5}
-        },
-
-        "model_settings": {
-            "index_masking": false, "include_time": false, "transforming_of_time": false
         }
     }
-    
 }
     

@@ -20,14 +20,14 @@ import numpy as np
 # dictionary holders
 
 model_types = {
-    'GINe': 'graph',
+    'GINe': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
     'regression': 'regression'
 }
 
 data_types = {
-    'graph': 'graph_data',
+    'gnn': 'graph_data',
     'booster': 'regular_data',
     'regression': 'regular_data'
 }
@@ -47,24 +47,25 @@ def parser_all():
     ]
 
     remaining_args = sys.argv[1:]
-    results = {}
+    all_parsers = {}
 
     for name, parser in parsers:
         try:
             parsed, remaining_args = parser.parse_known_args(remaining_args)
-            results[name.lower()] = parsed
+            all_parsers[name.lower()] = parsed
         except Exception as e:
-            results[name.lower()] = None
+            all_parsers[name.lower()] = None
 
     if remaining_args:
         print(f"Unparsed arguments: {remaining_args}")
 
-    results['fl_parser'].model_type = model_types.get(results['fl_parser'].model)
-    results['fl_parser'].data_type = data_types.get(results['fl_parser'].model_type)
-    results['data_parser'].data_type = data_types.get(results['fl_parser'].model_type)
-    results['data_parser'].scenario = 'individual_banks'
+    all_parsers['fl_parser'].model_type = model_types.get(all_parsers['fl_parser'].model)
+    all_parsers['fl_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
+    all_parsers['data_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
 
-    return results
+    all_parsers['data_parser'].scenario = 'individual_banks' if all_parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+
+    return all_parsers
 
 
 # fl parser
@@ -72,7 +73,7 @@ def fl_parser():
 
     parser = argparse.ArgumentParser(description="main args for fl")
     parser.add_argument('--fl_algo', default='FedGD', type=str)
-    parser.add_argument('--model', default='regression', type=str)
+    parser.add_argument('--model', default='GINe', type=str) # regression
     #parser.add_argument('--regu', default=)
     
     return parser
@@ -115,7 +116,7 @@ def gnn_parser():
 
 def get_smallest_bank(parsers, train_data, bank, smallest_bank, smallest_dim):
 
-    if parsers['fl_parser'].data_type == 'graph_data':
+    if parsers['data_parser'].data_type == 'graph_data':
         bank_dim = train_data['df']['x'].shape[0]
     else:
         bank_dim = train_data['x'].shape[0]
@@ -165,7 +166,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
     if args.model == 'xgboost':
         
         device = None
-        if utils.get_data_path == "/data/leuven/362/vsc36278":
+        if get_data_path == "/data/leuven/362/vsc36278":
             device = "cuda"
 
         parameters = {
@@ -249,20 +250,12 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
             w_ce2_interval = sample_intervals.get('w_ce2_interval')
 
         parameters = {
-            'params': {
-            #'batch_size': 1, #8192, #4096,
-            #'num_neighbors': None, #[100],
-
             'hidden_embedding_size': random.randint(hid_em_size_interval[0], hid_em_size_interval[1]),
             'learning rate': random.uniform(lr_interval[0], lr_interval[1]),
             'gnn_layers': random.randint(gnn_layer_interval[0], gnn_layer_interval[1]),
             'dropout': random.uniform(dropout_interval[0], dropout_interval[1]),
             'w_ce1': 1.0000182882773443,
             'w_ce2': random.uniform(w_ce2_interval[0], w_ce2_interval[1])
-
-            }
-            #,'model_settings': {'index_masking': False, 'include_time': False}
-
         }
 
     return parameters

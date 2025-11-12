@@ -111,6 +111,26 @@ import FL_message as FLm
 # If making changes here, make sure that it is calculates correctly
 
 
+# Use full batch for all cases? Also for full info? Like check/ask claude if that is possible,
+# if enough compuation power is available.
+
+# double check the fe.update_regular_data function
+
+# need to plot the ammount values, and potentially take log. Need to check if it is skewed
+
+
+# WRITE LOGISTIC AS MATRIX / CONVEX FUNCTION FORM?
+
+
+# double check the index_masking for the GNN model. Wanna avoid that method, but make sure that it works
+# with batching without it.
+# also the transforming of time?
+
+
+
+# for now only learnable parameters are being shared, using non-learnable
+# can potentially be done once encryption is started to being applied
+
 
 def main():
 

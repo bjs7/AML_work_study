@@ -41,6 +41,8 @@ import federated_learning.fl_algos
 # check om der skal der skal samples 2 droprates?
 # residuals i gnn model?
 
+# still missing to put a lot of the stuff / data on CUDA
+
 # setup -----------------------------------------------
 
 parsers = fl_utils.parser_all()
@@ -53,25 +55,21 @@ utils.set_seed(data_parser.seed, True)
 
 # -------------
 
-# I would like to change to gnn instead of graph, but for now need to stick
-# to graph, because too much to change
+# need to check that individual saves predictions/laundering values correct
 
-# for graph. just tmp
-
-parsers['fl_parser'].model_type = 'graph'
-parsers['fl_parser'].model = 'GINe'
-parsers['fl_parser'].scenario = 'individual_banks'
-parsers['fl_parser'].data_type = 'graph_data'
-parsers['data_parser'].data_type = 'graph_data'
-parsers['gnn_parser'].scenario = 'individual_banks'
-
+#parsers['fl_parser'].fl_algo = 'individual'
 
 # -------------
 
 # Get data ---------------------------------------------------------------------------------------
+# is it actually necessary to carry bank indices with the graph data? Or can one just use only graph data
+# for gnn models? Think I can, or only have the indices with one, reset of columns can be dropped
 df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{data_parser.size}' + f'_{data_parser.ir}' + '.csv')
-raw_data = get_data(df, fl_parser, split_perc = split_perc)
-scalar_encoders = dfn.extract_enc_cats(df)
+raw_data = get_data(df, data_parser, split_perc = split_perc)
+scaler_encoders = dfn.extract_enc_cats(df)
+
+
+# check get_relevant_banks functions etc. to make sure everything works as intended
 fr_banks, sr_banks = get_relevant_banks(data_parser)
 # bank 7 does not have any 1's in validation set, therefore might wanna remove it? But
 # then would also be need for first calculations? Like full/individual calculations
@@ -79,11 +77,8 @@ relevant_banks = fr_banks #+ sr_banks
 relevant_banks = relevant_banks[0:4] + relevant_banks[5:10]
 
 
-# WRITE LOGISTIC AS MATRIX / CONVEX FUNCTION FORM?
-
-
 # ------------------------------------------------------------------------------------------------
-# laundering values ------------------------------
+# laundering values ------------------------------ 
 laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(data_parser, copy.deepcopy(raw_data))
 
 # -------------------------------------------------------------------------------------------------
@@ -97,24 +92,70 @@ smallest_bank = None
 smallest_dim = 1e10
 
 
+
+# one can split the GNNMixingParty up, or keep it, but part of it into
+# seperate parts, one for FL and one for individual
+
+# there are several functions that could be simplified. Check from top to bottom to find them
+
+# still missing to include more of the features, like sent/received, currency and amount.
+# though need to figure out how to deal with it, when applying feature engineering
+
+
+# optimize, fl_get_data function and the two functions that it uses?
+
 # 39735 is max number of nodes, with 271928 edges, 371380 edges, and 452751 edges, bank 68
 # Get the parties, and their data
 for bank in relevant_banks:
 
     bank_indices = get_indices_bdt(raw_data, bank=bank)
     train_data, vali_data, test_data = dfn.fl_get_data(parsers, raw_data, bank_indices)
-
-    smallest_bank, smallest_dim = fl_utils.get_smallest_bank(parsers, train_data, bank, smallest_bank, smallest_dim)
-
     tmp_data = {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
     Party.get_algo_class(parsers = parsers, bank_id=bank, data=tmp_data, 
                          indices=bank_indices, manager=manager, 
-                         scalar_encoders=scalar_encoders)
+                         scaler_encoders=scaler_encoders)
 
 
 manager._num_parties = len(manager.parties)
-manager._smallest_bank = smallest_bank
 
+#smallest_bank, smallest_dim = fl_utils.get_smallest_bank(parsers, train_data, bank, smallest_bank, smallest_dim)
+#manager._smallest_bank = smallest_bank
+
+# check that up_data / update_nodes is not used after feature engineering
+# Need to check how to "extract" the right indices from GNN when batching. 
+# Does having target edges make sense?
+
+# -------------------------------------------------------------------------------------------------
+
+# design for no FL
+manager.set_mode('tuning')
+self = manager
+manager.mode
+
+laundering_values = laundering_values_vali
+tuned_values = manager.tuning(laundering_values_vali)
+
+list(tuned_values)
+tuned_values['best_hyperparameters']
+
+#manager.__mro__
+
+
+# train
+
+tuned_values = results
+laundering_values = laundering_values_test
+self.set_mode('training')
+
+test_values = self.train(tuned_values, laundering_values_test)
+
+# once training is done for individual, one needs to combine values and run inference
+
+
+
+
+
+# ---------------------------------------
 
 
 # -------------------------------------------------------------------------------------------------
@@ -131,6 +172,7 @@ laundering_values = laundering_values_vali
 
 tuned_values = manager.tuning(laundering_values_vali)
 
+list(tuned_values[14])
 
 
 # after tuning, there should be 'cleaned out' in the different variables, dataframe, etc.
@@ -158,50 +200,91 @@ laundering_values = laundering_values_test
 results = manager.train(tuned_values, laundering_values)
 
 
-list(results)
-
-results['w']
 
 
-type(manager.parties[0].model.gnn.state_dict())
+
+
+# -------------------------------------------------------------------------------------------------
+
+manager.parties[14].model.gnn.state_dict()
+#save_direc = config.save_direc_training
+#save_direc = os.path.join(config.save_direc_training, manager.args['fl_parser'].model)
+
 
 
 # save the model, and results, also inference
 
+# might not need to attached split_perc to parser?
+
 import configs.configs as config
 import os
 import json
+from pathlib import Path
 
-folder_name = f'bank_{manager.parties[0].bank_id}'
+str_testing = 'testing' if manager.args['data_parser'].testing else ''
+save_direc = os.path.join(config.save_direc_training, str_testing,
+                          manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
+                          f'split_{config.split_perc[0]}_{config.split_perc[1]}',
+                          manager.args['fl_parser'].fl_algo)
 
-#save_direc = config.save_direc_training
-save_direc = os.path.join(config.save_direc_training, manager.args['fl_parser'].model)
-save_direc = os.path.join(save_direc, manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir)
 
-# might not need to attached split_perc to parser?
-str_folder = f'split_{config.split_perc[0]}_{config.split_perc[1]}__'
+str_folder = manager.args['fl_parser'].model
+model_tuning_configs = fl_utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
 
-# Need to include time?
-m_settings = fl_utils.get_tuning_configs(manager.args)
-
-if manager.args['fl_parser'].model_type == 'graph':
-
-    empls_boolean = manager.args['gnn_parser'].emlps
-    m_settings['emlps'] = empls_boolean
-    mask_indexing, transforming = m_settings.get('model_settings').get('index_masking'), m_settings.get('model_settings').get('transforming_of_time')
-    str_folder += f'EU_{empls_boolean}__' + f'transforming_of_time_{transforming}__' + f'mask_indexing_{mask_indexing}'
-
+if manager.args['fl_parser'].model_type == 'gnn':
+    for key, value in vars(manager.args['gnn_parser']).items():
+        if value:
+            model_tuning_configs[key] = value
+            str_folder += f'__{key}'
 
 elif manager.args['fl_parser'].model_type == 'booster':
-    x_0_fi, r_0_fi = m_settings.get('full_info').get(manager.args['data_parser'].size).get('x_0'), m_settings.get('full_info').get(manager.args['data_parser'].size).get('r_0')
+    x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
 
 
 save_direc = os.path.join(save_direc, str_folder)
-if manager.args['fl_parser'].scenario == 'full_info':
+folder_path = Path(save_direc)
+file_path = folder_path / 'model_tuning_configs.json'
+folder_path.mkdir(parents=True, exist_ok=True)
+if not file_path.exists():
+    file_path.write_text(json.dumps(model_tuning_configs, indent=4))
+
+
+
+manager.parties[14].get_eval_data()
+manager.parties[14].get_eval_indices()
+
+
+
+for key, value in results.items():
+    print(key)
+
+
+for bank_id, party in manager.parties.items():
+    print(bank_id)
+
+
+
+
+
+
+
+
+
+
+
+
+folder_name = f'bank_{manager.parties[0].bank_id}'
+
+
+
+save_direc = os.path.join(save_direc, str_folder)
+if manager.args['fl_parser'].fl_algo == 'full_info':
     folder_path = Path(save_direc)
     file_path = folder_path / 'model_settings.json'
     folder_path.mkdir(parents=True, exist_ok=True)
     file_path.write_text(json.dumps(m_settings, indent=4))
+
+
 
 
 save_direc = os.path.join(save_direc, folder_name)

@@ -1,3 +1,49 @@
+def tuning(self, laundering_values_vali):
+
+    # when tuning / training gnn I need to remember to test 4 different seeds
+
+
+    # --------------------------------
+    
+    # for boost it would want it inside the hyperparameter loop.
+    # however, if spliting and processing several datapoints at once, then
+    # maybe it could be avoided, however too much memory usage?
+    # So don't do that, find solution to only do once for reg and gnn?
+    # will see at booster trees
+
+    # preferable this should be a 'reuseable loop' for all the models
+    for bank_id, party in self.parties.items():
+        party.prep_data_tuning()
+
+    # probably need to first init hyparameters here
+
+    # need to do this several times for -gnn
+    hyperparameters_tuning = self.init_hyperparams()
+
+
+    # this part here is only needed for gnn --------------------------
+
+    _, scores = self.tuning_loop(hyperparameters_tuning, laundering_values_vali)
+    params_to_keep = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:5]
+    top_parameters = [hyperparameters_tuning[i] for i in params_to_keep]
+    sample_space = self._get_search_space(top_parameters)
+
+    #init_hp = self.init_hyperparams(sample_space)
+    #hyperparameters_tuning = init_hp['hp_list']
+    hyperparameters_tuning = self.init_hyperparams(sample_space)
+
+    # ------------------
+
+    results, _ = self.tuning_loop(hyperparameters_tuning, laundering_values_vali)
+
+    return results
+
+
+
+
+
+
+
 # place this inside the GNNMxiingManager? Probably. And maybe not actually
 def get_gnn(manager, m_param):
 

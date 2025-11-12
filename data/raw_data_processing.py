@@ -18,7 +18,7 @@ import data.data_utils as du
 
 # main function for extracting the data, used in main scripth -------------------------------------
 
-def get_data(df_edges, model_args, **kwargs):
+def get_data(df_edges, data_args, **kwargs):
 
     df_edges['Timestamp'] = df_edges['Timestamp'] - df_edges['Timestamp'].min()
 
@@ -40,8 +40,8 @@ def get_data(df_edges, model_args, **kwargs):
     packed_data = {}
 
     # pack graph data
-    if model_args.model_type == 'graph':
-        packed_data['graph_data'] = pack_graph_data(df_edges, y, timestamps, model_args, indices)
+    if data_args.data_type == 'graph_data':
+        packed_data['graph_data'] = pack_graph_data(df_edges, y, timestamps, indices)
 
     # pack non-graph data
     packed_data['regular_data'] = pack_regular_data(df_edges, y, indices)
@@ -136,7 +136,7 @@ def pack_regular_data(df_edges, y, indices):
 
 # pack graph data function -------------------------------------
 
-def pack_graph_data(df_edges, y, timestamps, args, indices):
+def pack_graph_data(df_edges, y, timestamps, indices):
 
     train_indices = indices[0]
     vali_indices = indices[1]

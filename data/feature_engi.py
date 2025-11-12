@@ -25,7 +25,7 @@ def general_feature_engineering(model_type, train_data, vali_data):
     return train_data, vali_data
 
 
-def update_regular_data(df, bank_indices, args):
+def update_regular_data(df, bank_indices):
     
     #df = copy.deepcopy(data)
 
@@ -161,7 +161,7 @@ def get_updated_bank_indices(bank_indices):
     return updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices
 
 
-def update_data(data, bank_indices, args):
+def update_data(data, bank_indices):
 
     df = copy.copy(data)
 
@@ -184,9 +184,6 @@ def update_data(data, bank_indices, args):
     train_edges, train_attr, train_y, train_ts = df.edge_index[:,updated_train_indices], df.edge_attr[updated_train_indices,:], df.y[updated_train_indices], df.timestamps[updated_train_indices]
     vali_edges, vali_attr, vali_y, vali_ts = df.edge_index[:,el_vali], df.edge_attr[el_vali,:], df.y[el_vali], df.timestamps[el_vali]
 
-    #train_data = Data(x = df.x, edge_index=train_edges, edge_attr=train_attr, y=train_y, timestamps=train_ts)
-    #vali_data = Data(x = df.x, edge_index=vali_edges, edge_attr=vali_attr, y=vali_y, timestamps=vali_ts)
-
     train_data = du.GraphData(x = df.x, y=train_y, edge_index=train_edges, edge_attr=train_attr, timestamps=train_ts)
     vali_data = du.GraphData(x = df.x, y=vali_y, edge_index=vali_edges, edge_attr=vali_attr, timestamps=vali_ts)
     test_data = df
@@ -205,82 +202,74 @@ def update_data(data, bank_indices, args):
 
 # function to process it, standardize etc.
 
+from configs import configs
 
 def feature_engi_graph_data(data, args, scaler_encoders = None):
 
     data = copy.deepcopy(data)
-    #data = copy.deepcopy(train_data)
     df = data['df']
 
-    scaler_amt = scaler_encoders.get('scaler_amt') if scaler_encoders else None
-    scaler_ports_tds = scaler_encoders.get('scaler_ports_tds') if scaler_encoders else None
-    encoder_cur = scaler_encoders.get('encoder_cur') if scaler_encoders else None
-    encoder_pay = scaler_encoders.get('encoder_pay') if scaler_encoders else None
+    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt', 'scaler_ports_tds', 'encoder_currency', 'encoder_payment_format')}
 
-    # time periods ---------------------------------------------------------------------------------------------------------
+    # time periods ---------------------------------------------------------------------------------------------------------    
 
     timestamps = df.edge_attr[:, 0]
 
-    hour_period = 60*60
-    sin_component_hour = torch.sin(2 * np.pi * timestamps / hour_period).unsqueeze(1)
-    cos_component_hour = torch.cos(2 * np.pi * timestamps / hour_period).unsqueeze(1)
+    time_freqs = {'hour': 60*60, 'day': 60*60*24, 'week': 60*60*24*7}
 
-    day_period = 60*60*24
-    sin_component_day = torch.sin(2 * np.pi * timestamps / day_period).unsqueeze(1)
-    cos_component_day = torch.cos(2 * np.pi * timestamps / day_period).unsqueeze(1)
-
-    week_period = 60*60*24*7
-    sin_component_week = torch.sin(2 * np.pi * timestamps / week_period).unsqueeze(1)
-    cos_component_week = torch.cos(2 * np.pi * timestamps / week_period).unsqueeze(1)
-
-    # FOR NOW TIME IS NOT KEPT!
+    sin_comp = {key: torch.sin(2 * np.pi * timestamps / val).unsqueeze(1) 
+                for key, val in time_freqs.items()}
+    cos_comp = {key: torch.cos(2 * np.pi * timestamps / val).unsqueeze(1) 
+                for key, val in time_freqs.items()}
+    
     # standardization ------------------------------------------------------------------------------------------------------
-    if not scaler_amt:
-        scaler_amt = StandardScaler()
-        #scaled_values = scaler.fit_transform(df.edge_attr[:,0:2])
-        scaler_amt_values = scaler_amt.fit_transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
+
+    if not scl_enc['scaler_amt']:
+        scl_enc['scaler_amt'] = StandardScaler()
+        scaler_amt_values = scl_enc['scaler_amt'].fit_transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
     else:
-        #scaled_values = scaler.transform(df.edge_attr[:,0:2])
-        scaler_amt_values = scaler_amt.transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
-    #df.edge_attr[:,0:2] = torch.tensor(scaled_values)
+        scaler_amt_values = scl_enc['scaler_amt'].transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
     df.edge_attr[:,1] = torch.reshape(torch.tensor(scaler_amt_values), (-1,))
 
     df.x = du.z_norm(df.x)
 
     if args.ports or args.tds:
 
-        if not scaler_ports_tds:
-            scaler_ports_tds = StandardScaler()        
-            scaler_ports_tds_values = scaler_ports_tds.fit_transform(df.edge_attr[:,4:])
+        if not scl_enc['scaler_ports_tds']:
+            scl_enc['scaler_ports_tds'] = StandardScaler()        
+            scaler_ports_tds_values = scl_enc['scaler_ports_tds'].fit_transform(df.edge_attr[:,4:])
         else:
-            scaler_ports_tds_values = scaler_ports_tds.transform(df.edge_attr[:,4:])
+            scaler_ports_tds_values = scl_enc['scaler_ports_tds'].transform(df.edge_attr[:,4:])
         
         df.edge_attr[:,4:] = torch.tensor(scaler_ports_tds_values)
 
     # Encoding -------------------------------------------------------------------------------------------------------------
 
-    if not encoder_cur:
-        encoder_cur = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded_currency = encoder_cur.fit_transform(np.array([df.edge_attr[:,2]]).T)
-    else:
-        encoded_currency = encoder_cur.transform(np.array([df.edge_attr[:,2]]).T)
+    column_encoders = {'currency': 2, 'payment_format': 3}
+    encoded = {}
 
-    if not encoder_pay:
-        encoder_pay = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded_payment = encoder_pay.fit_transform(np.array([df.edge_attr[:,3]]).T)
-    else:
-        encoded_payment = encoder_pay.transform(np.array([df.edge_attr[:,3]]).T)
-    
-    cols_to_exclude = [2,3]
-    cols_to_keep = [i for i in range(df.edge_attr.shape[1]) if i not in cols_to_exclude]
+    for feature, col_idx in column_encoders.items():
+        encoder_key = f'encoder_{feature}'
+
+        column_data = df.edge_attr[:, col_idx].reshape(-1, 1)
+        if not scl_enc[encoder_key]: #hasattr(scl_enc[encoder_key], 'categories_')
+            scl_enc[encoder_key] = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
+            encoded[feature] = scl_enc[encoder_key].fit_transform(column_data)
+            raise ValueError('Encoders not predefined')
+        else:
+            encoded[feature] = scl_enc[encoder_key].transform(column_data)
 
     # Pack -----------------------------------------------------------------------------------------------------------------
-    df.edge_attr = torch.cat([torch.tensor(np.arange(df.edge_attr.shape[0])).unsqueeze(1), df.edge_attr[:, cols_to_keep],
-                            torch.tensor(encoded_payment), torch.tensor(encoded_currency),
-                            sin_component_day, cos_component_day, sin_component_hour, cos_component_hour, sin_component_week, cos_component_week], axis=1).float()
+
+    cols_to_keep = [1]
+    if configs.include_time:
+        cols_to_keep.append(0)
+
+    df.edge_attr = torch.cat([df.edge_attr[:, cols_to_keep], 
+                            *[torch.tensor(encoded_val) for encoded_val in encoded.values()],
+                            *sin_comp.values(), *cos_comp.values()], axis=1).float()
     
-    
-    data['scaler_encoders'] = {'scaler_amt': scaler_amt, 'scaler_ports_tds': scaler_ports_tds, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur}
+    data['scaler_encoders'] = scl_enc
 
     return data
 

@@ -44,7 +44,7 @@ class Party(BaseFL):
 
     """Individual computation node that can send/receive messages"""
     
-    def __init__(self, args, bank_id, data, indices, manager, scalar_encoders) -> None:
+    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders) -> None:
         super().__init__(args)
         self.bank_id = bank_id
         self.inbox = queue.Queue()
@@ -54,15 +54,9 @@ class Party(BaseFL):
         self.indices = indices
         self.data = data
         self.manager = manager
-        # for model, scaler etc. and also global parameters, I might
-        # wanna keep it all in a dict, so they are collected together,
-        # also it would make dir of manager smaller
-        self.scalar_encoders = scalar_encoders
+        self.scaler_encoders = scaler_encoders
         self.model = None
-        self.tr_configs = {}
-        
-        # for now it is fine that I use train data right away,
-        # but I should do such that it is easily adjusted for tuning/training etc.        
+        self.tr_configs = {}  
 
         if self.manager:
             self.manager.add_party(self)
@@ -159,75 +153,9 @@ class Manager(BaseFL):
 
     def get_global_w(self):
         pass
-
-    def tuning_loop(self, hyperparameters_tuning, laundering_values_vali):
-
-        best_f1 = -1
-        best_hyperparameters = None
-        best_w = None
-        best_metrics = None
-        best_preditcions = None
-        scores = []
-
-        #hyperparams = hyperparameters_tuning[0]
-        # preferable this should be a 'reuseable loop' for all the models
-        for hyperparams in hyperparameters_tuning:
-            
-            # initiate models:
-            self.init_models(hyperparams)
-
-            # set initi parameters
-            self.get_global_w()
-            #manager.global_w = init_w
-
-            # training set initial parameters and get relevant data
-            self.send_global_w_params()
-
-            # if reg or graph epochs is used. Or also is for decision trees, yes?
-            # just update in one, and then another for sending to manager?
-            #laundering_values = laundering_values_vali
-            results = fl_tr.fl_training(self, laundering_values_vali)
-            
-            if results['metrics']['f1'] > best_f1:
-                best_hyperparameters = hyperparams
-                best_w = results['w']
-                best_metrics = results['metrics']
-                best_preditcions = copy.deepcopy(results['laundering_values'])
-                best_f1 = results['metrics']['f1']
-            
-            scores.append(results['metrics']['f1'])
-
-        return [{'best_hyperparameters': best_hyperparameters, 
-                'best_w': best_w, 'best_metrics': best_metrics,
-                'best_preditcions': best_preditcions}, scores]
     
-
-    def train(self, tuned_values, laundering_values):
-
-        self.set_mode('training')
-
-        # init -------------
-        hyper_parameteres_training = tuned_values['best_hyperparameters']
-
-        # initiate models: this would be here the, hyperparameters would be used
-        self.init_models(hyper_parameteres_training)
-
-        # set initi parameters
-        self.get_global_w()
-
-        # here one should do such that the parties find the data they will be using
-        # training set initial parameters and get relevant data
-        self.send_global_w_params()
-
-        # One could keep the processed data outside the parties in a dict
-        # But for fl settings, they probably need to hold it themselves anyway.
-        # need this to be training, but tuning data
-        for bank_id, party in self.parties.items():
-            party.prep_data_training()
-
-        results = fl_tr.fl_training(self, laundering_values)
-
-        return results
+    def train(self):
+        pass
         
 
     

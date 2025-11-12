@@ -197,7 +197,9 @@ class HeteroGraphData(HeteroData):
         return self
     
 
-def create_hetero_obj(x,  y,  edge_index,  edge_attr, timestamps, args):
+
+# The if args.ports here, is that necessary? Need to double check before implementing/using it
+def create_hetero_obj(x,  y,  edge_index,  edge_attr, timestamps):
     '''Creates a heterogenous graph object for reverse message passing'''
     data = HeteroGraphData()
 
