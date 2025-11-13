@@ -180,9 +180,8 @@ def update_data(data, bank_indices):
     du.update_nr_nodes(vali_data)
     du.update_nr_nodes(test_data)
 
-    train_data.num_nodes = int(train_data.x.shape[0])
-    vali_data.num_nodes = int(vali_data.x.shape[0])
-    test_data.num_nodes = int(test_data.x.shape[0])
+    for data in [train_data, vali_data, test_data]:
+        data.num_nodes = int(data.x.shape[0])
 
     return {'df': train_data, 'pred_indices': torch.tensor(updated_train_indices)}, {'df': vali_data, 'pred_indices': torch.tensor(updated_vali_indices)}, {'df': test_data, 'pred_indices': torch.tensor(updated_test_indices)}
 
