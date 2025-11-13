@@ -59,7 +59,6 @@ def feature_engi_regular_data(df, scaler_encoders = None):
     # graph_feature_preprocessing using snapML
 
     # switch the position of graph feature process and the other features? To include those features in graph features processing?
-
     if not scl_enc['gfp']:
         scl_enc['gfp'] = GraphFeaturePreprocessor()
         scl_enc['gfp'].set_params(tu.gfpparams)
@@ -88,13 +87,11 @@ def feature_engi_regular_data(df, scaler_encoders = None):
 
     # standardization ------------------------------------------------------------------------------------------------------
 
-    if not scaler:
-        scaler = StandardScaler()
-        scaled_values = scaler.fit_transform(x.loc[:,['Amount Received']])
+    if not scl_enc['scaler_amt']:
+        scl_enc['scaler_amt'] = StandardScaler()
+        scaled_values = scl_enc['scaler_amt'].fit_transform(x.loc[:,['Amount Received']])
     else:
-        scaled_values = scaler.transform(x.loc[:,['Amount Received']])
-    #x['Timestamp'] = x['Timestamp'].astype(float)
-    #x.loc[:,['Timestamp']] = scaled_values[:,0]
+        scaled_values = scl_enc['scaler_amt'].transform(x.loc[:,['Amount Received']])
     x.loc[:, ['Amount Received']] = scaled_values[:,0]
 
     # Encoding -------------------------------------------------------------------------------------------------------------
