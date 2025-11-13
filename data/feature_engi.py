@@ -46,10 +46,10 @@ def feature_engi_regular_data(df, scaler_encoders = None):
     #df = copy.copy(data)
     #df = train_data
 
-    scaler = scaler_encoders.get('scaler') if scaler_encoders else None
-    encoder_pay = scaler_encoders.get('encoder_pay') if scaler_encoders else None
-    encoder_cur = scaler_encoders.get('encoder_cur') if scaler_encoders else None
-    gp = scaler_encoders.get('gfp') if scaler_encoders else None
+    data = copy.deepcopy(data)
+    df = data['df']
+
+    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt', 'encoder_currency', 'encoder_payment_format', 'gfp')}
 
     data_features = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
     x = df['x'].loc[:,data_features]
@@ -60,12 +60,12 @@ def feature_engi_regular_data(df, scaler_encoders = None):
 
     # switch the position of graph feature process and the other features? To include those features in graph features processing?
 
-    if not gp:
-        gp = GraphFeaturePreprocessor()
-        gp.set_params(tu.gfpparams)
-        x_gf = gp.fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
+    if not scl_enc['gfp']:
+        scl_enc['gfp'] = GraphFeaturePreprocessor()
+        scl_enc['gfp'].set_params(tu.gfpparams)
+        x_gf = scl_enc['gfp'].fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
     else:
-        x_gf = gp.transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
+        x_gf = scl_enc['gfp'].transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
     x_gf = x_gf[:,5:]
     
     # remove EdgeID as it is no longer needed
@@ -79,19 +79,12 @@ def feature_engi_regular_data(df, scaler_encoders = None):
     # time periods ---------------------------------------------------------------------------------------------------------
 
     timestamps = x.loc[:, 'Timestamp']
+    time_freqs = {'hour': 60*60, 'day': 60*60*24, 'week': 60*60*24*7}
 
-    hour_period = 60*60
-    sin_component_hour = np.sin(2 * np.pi * timestamps / hour_period)
-    cos_component_hour = np.cos(2 * np.pi * timestamps / hour_period)
-
-    day_period = 60*60*24
-    sin_component_day = np.sin(2 * np.pi * timestamps / day_period)
-    cos_component_day = np.cos(2 * np.pi * timestamps / day_period)
-
-    week_period = 60*60*24*7
-    sin_component_week = np.sin(2 * np.pi * timestamps / week_period)
-    cos_component_week = np.cos(2 * np.pi * timestamps / week_period)
-
+    sin_comp = {key: torch.sin(2 * np.pi * timestamps / val) 
+            for key, val in time_freqs.items()}
+    cos_comp = {key: torch.cos(2 * np.pi * timestamps / val) 
+                for key, val in time_freqs.items()}
 
     # standardization ------------------------------------------------------------------------------------------------------
 
@@ -142,7 +135,6 @@ def feature_engi_regular_data(df, scaler_encoders = None):
 
 
 # function to first 'update' data
-
 def get_updated_bank_indices(bank_indices):
 
     #bank_indices = copy.copy(bank_indices)
@@ -155,7 +147,6 @@ def get_updated_bank_indices(bank_indices):
     updated_vali_indices = np.arange(len(vali_indices)) + len(train_indices)
     updated_test_indices = np.arange(len(test_indices)) + len(train_indices) + len(vali_indices)
     
-    # indices for the whole bank
     bank_indices = train_indices + vali_indices + test_indices
 
     return updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices
@@ -196,7 +187,6 @@ def update_data(data, bank_indices):
     vali_data.num_nodes = int(vali_data.x.shape[0])
     test_data.num_nodes = int(test_data.x.shape[0])
 
-    #{'df': df, 'pred_indices': torch.tensor(pred_indices),'scaler_encoders': {'scaler': scaler, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur}}
     return {'df': train_data, 'pred_indices': torch.tensor(updated_train_indices)}, {'df': vali_data, 'pred_indices': torch.tensor(updated_vali_indices)}, {'df': test_data, 'pred_indices': torch.tensor(updated_test_indices)}
 
 
@@ -214,7 +204,6 @@ def feature_engi_graph_data(data, args, scaler_encoders = None):
     # time periods ---------------------------------------------------------------------------------------------------------    
 
     timestamps = df.edge_attr[:, 0]
-
     time_freqs = {'hour': 60*60, 'day': 60*60*24, 'week': 60*60*24*7}
 
     sin_comp = {key: torch.sin(2 * np.pi * timestamps / val).unsqueeze(1) 

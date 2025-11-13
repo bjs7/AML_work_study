@@ -23,7 +23,7 @@ data_types = {
 
 file_types = {
     'graph': 'pth',
-    'booster': 'ubj' #pkl
+    'booster': 'ubj'
 }
 
 def get_data_path():

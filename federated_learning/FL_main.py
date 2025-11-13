@@ -132,6 +132,10 @@ import FL_message as FLm
 # can potentially be done once encryption is started to being applied
 
 
+# if reg or graph epochs is used. Or also is for decision trees, yes?
+# just update in one, and then another for sending to manager?
+
+
 def main():
 
 

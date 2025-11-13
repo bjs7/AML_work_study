@@ -57,7 +57,7 @@ utils.set_seed(data_parser.seed, True)
 
 # need to check that individual saves predictions/laundering values correct
 
-#parsers['fl_parser'].fl_algo = 'individual'
+parsers['fl_parser'].fl_algo = 'individual'
 
 # -------------
 
@@ -127,81 +127,38 @@ manager._num_parties = len(manager.parties)
 
 # -------------------------------------------------------------------------------------------------
 
+# after tuning, there should be 'cleaned out' in the different variables, dataframe, etc.
+# in order to save space
+# and just to make sure the stuff from tuning that shouldn't be carried over, isn't carried over
+# reset global_w etc.
+
 # design for no FL
 manager.set_mode('tuning')
 self = manager
 manager.mode
 
 laundering_values = laundering_values_vali
-tuned_values = manager.tuning(laundering_values_vali)
+tuned_hp = manager.tuning(laundering_values_vali)
 
-list(tuned_values)
-tuned_values['best_hyperparameters']
 
 #manager.__mro__
 
 
 # train
-
-tuned_values = results
 laundering_values = laundering_values_test
 self.set_mode('training')
 
-test_values = self.train(tuned_values, laundering_values_test)
+hyperparameters = tuned_hp[14]
+party = manager.parties[14]
+
+party.model
+manager.parties[0].model
+
+
+results = self.train(tuned_hp, laundering_values_test)
+
 
 # once training is done for individual, one needs to combine values and run inference
-
-
-
-
-
-# ---------------------------------------
-
-
-# -------------------------------------------------------------------------------------------------
-
-manager.set_mode('tuning')
-manager.mode
-
-self = manager
-
-laundering_values = laundering_values_vali
-
-# -------------------------------------------------------------------------------
-
-
-tuned_values = manager.tuning(laundering_values_vali)
-
-list(tuned_values[14])
-
-
-# after tuning, there should be 'cleaned out' in the different variables, dataframe, etc.
-# in order to save space
-# and just to make sure the stuff from tuning that shouldn't be carried over, isn't carried over
-# reset global_w etc.
-
-# tuning for gnn
-manager.set_mode('tuning')
-
-
-
-# -------------------------------------------------------------------------------------------------
-# training --------------------------------------------------------
-
-# when training gnn, I also need to "seed", 4 or 5 different seeds and then pick the best model
-
-manager.set_mode('training')
-manager.mode
-
-# training
-laundering_values = laundering_values_test
-#hf.fl_training(Manager, laundering_values)
-
-results = manager.train(tuned_values, laundering_values)
-
-
-
-
 
 
 # -------------------------------------------------------------------------------------------------
@@ -211,42 +168,140 @@ manager.parties[14].model.gnn.state_dict()
 #save_direc = os.path.join(config.save_direc_training, manager.args['fl_parser'].model)
 
 
-
-# save the model, and results, also inference
-
 # might not need to attached split_perc to parser?
 
 import configs.configs as config
 import os
 import json
 from pathlib import Path
-
-str_testing = 'testing' if manager.args['data_parser'].testing else ''
-save_direc = os.path.join(config.save_direc_training, str_testing,
-                          manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
-                          f'split_{config.split_perc[0]}_{config.split_perc[1]}',
-                          manager.args['fl_parser'].fl_algo)
+import torch
+import pickle
 
 
-str_folder = manager.args['fl_parser'].model
-model_tuning_configs = fl_utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
+def save_results(results, hyperparams, manager):
 
-if manager.args['fl_parser'].model_type == 'gnn':
-    for key, value in vars(manager.args['gnn_parser']).items():
-        if value:
-            model_tuning_configs[key] = value
-            str_folder += f'__{key}'
+    str_testing = 'testing' if manager.args['data_parser'].testing else ''
+    save_direc = os.path.join(config.save_direc_training, str_testing,
+                            manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
+                            f'split_{config.split_perc[0]}_{config.split_perc[1]}',
+                            manager.args['fl_parser'].fl_algo)
 
-elif manager.args['fl_parser'].model_type == 'booster':
-    x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
+    str_folder = manager.args['fl_parser'].model
+    model_tuning_configs = fl_utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
 
+    if manager.args['fl_parser'].model_type == 'gnn':
+        for key, value in vars(manager.args['gnn_parser']).items():
+            if value:
+                model_tuning_configs[key] = value
+                str_folder += f'__{key}'
 
-save_direc = os.path.join(save_direc, str_folder)
-folder_path = Path(save_direc)
-file_path = folder_path / 'model_tuning_configs.json'
-folder_path.mkdir(parents=True, exist_ok=True)
-if not file_path.exists():
+    elif manager.args['fl_parser'].model_type == 'booster':
+        x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
+
+    save_direc = os.path.join(save_direc, str_folder)
+    folder_path = Path(save_direc)
+    file_path = folder_path / 'model_tuning_configs.json'
+    folder_path.mkdir(parents=True, exist_ok=True)
     file_path.write_text(json.dumps(model_tuning_configs, indent=4))
+
+
+    if manager.args['fl_parser'].fl_algo != 'individual':
+        save_FL(save_direc, results, hyperparams, manager)
+    else:
+        save_individual(save_direc, results, manager)
+
+
+def save_FL(save_direc, results, hyperparams, manager):
+
+    with open(save_direc + '/metrics_laundering_values.pkl', 'wb') as f:
+        pickle.dump({'metrics': results['metrics'], 'laundering_values': results['laundering_values']}, f)
+
+    if manager.args['fl_parser'].model_type == 'gnn':
+        torch.save(results['w'], save_direc + '/model.pth')
+    elif manager.args['fl_parser'].model_type == 'booster':
+        print('save booster')
+
+    if manager.args['fl_parser'].fl_algo != 'individual':
+        file_path = os.path.join(save_direc, 'hyper_parameters.json')
+        with open(file_path, 'w') as file:
+            json.dump(hyperparams, file, indent=4)
+
+
+def save_individual(save_direc, results, manager):
+
+    with open(save_direc + '/metrics.pkl', 'wb') as f:
+        pickle.dump({'metrics': results['metrics']}, f)
+
+    with open(save_direc + '/models_hyperparameters.pkl', 'wb') as f:
+        pickle.dump({'models_hyperparameters': results['models']}, f)
+
+
+
+
+
+
+
+
+# need to get the right save direction. Need to find out if it should be saved pth or something else
+# and need to check that I can load the parameters
+# I am not saving the whole
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Load back
+with open(save_direc + '/metrics_laundering_values.pkl', 'rb') as f:
+    data = pickle.load(f)
+    test1 = data['metrics']
+    test2 = data['laundering_values']
+
+
+
+
+
+
+
+file_path = folder_path / 'laundering_values.json'
+with open(file_path, 'w') as f:
+    json.dump(results, f)
+
+
+
+gnn_params = torch.load('test.pth')
+checkpoint = torch.load('test.pth')
+
+
+
+gnn_params = {name: param.data for name, param in manager.parties[0].model.gnn.named_parameters()}
+torch.save(gnn_params, 'gnn_only.pth')
+
+# Loading them back
+gnn_params = torch.load('gnn_only.pth')
+gnn.load_state_dict(gnn_params, strict=False)
+
+
+list(test_values['w'])
+
+type(test_values['w'])
+
+type(manager.parties[0].model.gnn.state_dict())
+
+manager.parties[0].model.gnn.load_state_dict(test_values['w'])
+
+list(manager.parties[0].model.gnn.state_dict())
+
+names = []
+for t, params in manager.parties[0].model.gnn.named_parameters():
+    names.append(t)
 
 
 
