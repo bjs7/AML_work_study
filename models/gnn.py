@@ -1,74 +1,133 @@
-from models.base import Model, InferenceModel, MethodMixing
-from data.get_indices_type_data import get_graph_data #get_indices_bdt, 
-from data.data_utils import prep_helper
-from data.feature_engi import feature_engi_graph_data
-#from training.tuning import tune_gnn
-from training.trainer_gnn import train_gnn
-import inference_saving.inference_functions as pu
-from training.tuning import GNNTune
-import training.gnn_utils as tgu
-from inference_saving.inference_functions import GNNpredictions
 
-from models.registry import regi_model_types, regi_infer_types
+# packages for FL
 
-# GNN class ---------------------------------------------------------------------------------------------------------------------
+from abc import ABC, abstractmethod
+import utils as fl_utils
+import torch
+from federated_learning.registry import GNN_REGISTRY
 
-class GNNMixing(MethodMixing):
+import torch
+from torch_geometric.transforms import BaseTransform
+from typing import Union
+from torch_geometric.data import Data, HeteroData
+from torch_geometric.loader import LinkNeighborLoader
 
-    def get_data(self, data, bank_indices):
-        df = data[self.args.data_type]
-        return get_graph_data(self.args, df, bank_indices)
 
-    def _feature_engi(self, data, **kwargs):
-        return feature_engi_graph_data(data, args = self.args, **kwargs)
-    
-    def _prep_helper(self, train, vali):
-        return train
+
+# potentially split this up, so that it is in two, like one where parameters are extracted once
+# and then used to get the model in the register.
+# need to sort how to init about parties and whether they need batching or not, and
+# also how to adjust the data set size, such that copy can be avoided.
+
+# maybe move get_gnn out of GNN, and into manager 100%, and then send to parties?
+class GNN(ABC):
+
+    def __init__(self, manager, hyperparams, node_features, edge_dim):
+        super().__init__()
+        self._get_gnn_loss_optimizer(manager, hyperparams, node_features, edge_dim)
+        # I could potentially also ahve the data in here, if it is just pointers
+        # but keep it out for now
+
+    @staticmethod
+    def _create_gnn_model(manager, hyperparams, node_features, edge_dim):
+        # add the GNN_REGISTRY as an attribute to the manager?
+        model_name = manager.args['fl_parser'].model
+        if model_name not in GNN_REGISTRY:
+            raise ValueError(f"Unknown algo type: {model_name}")
+        gnn_init = GNN_REGISTRY[model_name]
+
+        arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('gnn_layers'),
+                    'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),
+                    'residual': False, 'edge_updates': manager.args['gnn_parser'].emlps, 
+                    'edge_dim': edge_dim, 'dropout': hyperparams.get('dropout'), 
+                    'final_dropout': hyperparams.get('dropout')}
         
+        return gnn_init(**arguments)
 
+    def _init_model_configs(self):
+        return 0
 
-@regi_model_types('graph')
-class GNN(GNNMixing, Model):
+    def _get_gnn_loss_optimizer(self, manager, hyperparams, node_features, edge_dim):
+        self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
+        self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning rate'))
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')])) 
 
-    def __init__(self, args):
-        super().__init__(args)
+    def update_w(self, df):
+
+        self.gnn.train()
+        self.optimizer.zero_grad()
+
+        pred = self.gnn(df.x, df.edge_index, df.edge_attr)
+        loss = self.loss_fn(pred, df.y)
+
+        loss.backward()
+        self.optimizer.step()
     
-    def tuning(self, train_data, vali_data):
-        train_data, vali_data = self.feature_engineering(train_data, vali_data)
-        tuner = GNNTune(self.args, train_data, vali_data)
-        return tuner.tune()
+    def predict_binary(self, graph_data):
 
-    def train(self, train_data, vali_data, test_data, hype_params, seeds = 4):
-        vali_data, test_data = self.feature_engineering(vali_data, test_data)
-        return train_gnn(self.args, vali_data, test_data, hype_params, seeds)
-    
-    @staticmethod
-    def from_model_type(args):
-        return GNN(args)
-    
+        df = graph_data.get('df')
+        pred_indices = graph_data.get('pred_indices')
 
-@regi_infer_types('graph')
-class GNNInf(GNNMixing, InferenceModel):
+        self.gnn.eval()
+        with torch.no_grad():
+            #data.to(device)
+            pred = self.gnn(df.x, df.edge_index, df.edge_attr)
+            pred = pred[pred_indices] if pred_indices is not None else pred
 
-    def __init__(self, args):
-        super().__init__(args)
-        self.main_folder, self.model_settings = pu.get_folder_path_gnn(self.args)
+        return pred.argmax(dim=-1)
 
-    def get_test_indices_data(self, raw_data, bank = None):
-        train_data, vali_data, test_data, bank_indices = self.get_indices_data(raw_data, bank)
-        train_data, test_data = self.feature_engineering(vali_data, test_data)
-        return test_data, bank_indices['test_indices']
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Util functions for the gnn models -----------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_model(self, test_data, model_parameters, tmp_folder):
-        return tgu.get_model(test_data['df'], model_parameters['params'], self.model_settings['model_settings'], self.args)
+# select loader for sampling edges ---------------------------------------------------------------------------------------------------------
+
+def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transform = None):
+
+    train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), edge_label = train_data.y, batch_size=batch_size, shuffle=True, transform=transform)
+    vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), 
+                                     edge_label_index=vali_data.edge_index[:, pred_indices],
+                                     edge_label=vali_data.y[pred_indices],
+                                        batch_size=batch_size, shuffle=False, transform=transform)
     
-    def get_predictions(self, model, test_data, model_parameters, tmp_folder, f1_values = None):
-        predictor = GNNpredictions(test_data, self.model_settings, model_parameters, tmp_folder)
-        return predictor.get_predictions(model, f1_values)
-    
-    @staticmethod
-    def from_model_type(args):
-        return GNNInf(args)
-    
-    
+    return train_loader, vali_loader
+
+class AddEgoIds(BaseTransform):
+    r"""Add IDs to the centre nodes of the batch.
+    """
+    def __init__(self):
+        pass
+
+    def __call__(self, data: Union[Data, HeteroData]):
+        x = data.x if not isinstance(data, HeteroData) else data['node'].x
+        device = x.device
+        ids = torch.zeros((x.shape[0], 1), device=device)
+        if not isinstance(data, HeteroData):
+            nodes = torch.unique(data.edge_label_index.view(-1)).to(device)
+        else:
+            nodes = torch.unique(data['node', 'to', 'node'].edge_label_index.view(-1)).to(device)
+        ids[nodes] = 1
+        if not isinstance(data, HeteroData):
+            data.x = torch.cat([x, ids], dim=1)
+        else: 
+            data['node'].x = torch.cat([x, ids], dim=1)
+        
+        return data
+
+def add_arange_ids(data_list):
+    '''
+    Add the index as an id to the edge features to find seed edges in training, validation and testing.
+
+    Args:
+    - data_list (str): List of tr_data, val_data and te_data.
+    '''
+    for data in data_list:
+        if isinstance(data, HeteroData):
+            data['node', 'to', 'node'].edge_attr = torch.cat([torch.arange(data['node', 'to', 'node'].edge_attr.shape[0]).view(-1, 1), data['node', 'to', 'node'].edge_attr], dim=1)
+            offset = data['node', 'to', 'node'].edge_attr.shape[0]
+            data['node', 'rev_to', 'node'].edge_attr = torch.cat([torch.arange(offset, data['node', 'rev_to', 'node'].edge_attr.shape[0] + offset).view(-1, 1), data['node', 'rev_to', 'node'].edge_attr], dim=1)
+        else:
+            data.edge_attr = torch.cat([torch.arange(data.edge_attr.shape[0]).view(-1, 1), data.edge_attr], dim=1)
+
+
 

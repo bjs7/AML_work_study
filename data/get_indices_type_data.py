@@ -80,31 +80,3 @@ def get_booster_data(args, df, bank_indices = None):
         df['vali_data']['x'] = df['vali_data']['x'].reset_index(drop=True)
         df['test_data']['x'] = df['test_data']['x'].reset_index(drop=True)
         return df['train_data'], df['vali_data'], df['test_data']
-
-
-"""
-
-    test123 = du.create_hetero_obj(train_data['df'].x,  train_data['df'].y,  train_data['df'].edge_index,  train_data['df'].edge_attr, train_data['df'].timestamps, args)
-    test123.add_ports()
-
-    test123
-    
-    train_data['df'].edge_attr
-
-    test123['node']
-    test123['node', 'to', 'node'].edge_index
-    test123['node', 'rev_to', 'node'].edge_index
-
-    test123['node', 'to', 'node'].edge_attr
-    test123['node', 'rev_to', 'node'].edge_attr
-
-    test123['node', 'rev_to', 'node'].edge_attr[:, [-1, -2]]
-    test123['node', 'rev_to', 'node'].edge_attr[:, [-2, -1]]
-
-    test123['node', 'rev_to', 'node'].edge_attr[:, [-1, -2]] = test123['node', 'rev_to', 'node'].edge_attr[:, [-2, -1]]
-
-    test123['node', 'rev_to', 'node'].edge_attr[:, [5]] = test123['node', 'rev_to', 'node'].edge_attr[:, [4]]
-
-    test123['node', 'rev_to', 'node'].edge_attr[:, [4, 5]] = test123['node', 'rev_to', 'node'].edge_attr[:, [5, 4]]
-
-"""

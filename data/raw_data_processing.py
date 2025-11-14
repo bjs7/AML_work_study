@@ -15,7 +15,6 @@ import data.data_utils as du
 # --------------------------------------------------------------------------------------------------------------------------
 
 
-
 # main function for extracting the data, used in main scripth -------------------------------------
 
 def get_data(df_edges, data_args, **kwargs):

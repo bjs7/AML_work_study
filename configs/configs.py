@@ -1,5 +1,5 @@
 # configs.py
-import utils
+import utils as utils
 
 include_time = False
 split_perc=[0.60, 0.20]

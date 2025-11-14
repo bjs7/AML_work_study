@@ -1,34 +1,24 @@
 
 # packages
-import utils
-import logging
-import argparse
-import warnings
 import pandas as pd
 from data.feature_engi import feature_engi_regular_data, feature_engi_graph_data
-
 # packages for FL
-import threading
-import queue
-import time
-import random
 from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-from datetime import datetime
-from abc import ABC, abstractmethod
-import federated_learning.FL_utils as fl_utils
-
+import utils
 from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
 from federated_learning.registry import regi_algo_manager, regi_algo_party
 from data.get_indices_type_data import get_indices_bdt
 from data.get_indices_type_data import get_booster_data
 import torch
-
-
 import numpy as np
-
 from federated_learning.fl_base import Manager, Party
-
+import training.utils as tr_utils
+from federated_learning.registry import GNN_REGISTRY
+import configs.configs as configs
+from inference import metrics
+import copy
+import inference as flin
+from models.gnn import GNN
 
 
 # -------------------------------------------
@@ -36,8 +26,6 @@ from federated_learning.fl_base import Manager, Party
 # -------------------------------------------
 
 # FedAVG ------------------------------------------------------
-
-
 
 
 # FedGD -------------------------------------------------------
@@ -115,9 +103,6 @@ class RegressionMixinParty:
         return self.procs_data['vali_data']['x'] if self.mode == 'tuning' else self.procs_data['test_data']['x']
     
 
-
-
-
 # regression might also be viable for boosting trees. Will see
 class RegressionMixinManager:
 
@@ -182,7 +167,7 @@ class RegressionMixinManager:
 
         # --------------------------------
         for bank_id, party in self.parties.items():
-            party.prep_data_tuning()
+            party.prep_data()
         
         results, _ = self.tuning_loop(hyperparameters_tuning, laundering_values_vali)
 
@@ -193,21 +178,10 @@ class RegressionMixinManager:
 
 # ----------------------------------------------------------------------------------------------------
 
-from training.gnn_utils import gnn_m
-import training.hyperparams as tune_u
-from federated_learning.registry import GNN_REGISTRY
-import configs.configs as configs
-from federated_learning.inference import metrics
-import copy
-import federated_learning.fl_training as fl_tr
-import federated_learning.inference as flin
-from federated_learning.gnn_model import GNN
-
-
 # GNN -------------------------------------------------------------------
 
 
-class GNNMixingParty:
+class GNNMixinParty:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -232,7 +206,6 @@ class GNNMixingParty:
 
 
     def feature_engineering(self, train_data, eval_data):
-        # I need to double check that it process the data right, that it makes a copy etc.
         train_data = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
         eval_data = feature_engi_graph_data(eval_data, self.args['gnn_parser'], scaler_encoders = train_data.get('scaler_encoders'))
 
@@ -262,49 +235,13 @@ class GNNMixingParty:
         manager.parties_w[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
     
     def get_eval_data(self):
-        return {'gd_data': self.procs_data['eval_data']['df'], 
+        return {'df': self.procs_data['eval_data']['df'], 
                 'pred_indices': self.procs_data['eval_data']['pred_indices']}
     
 
-
-
-class GNNMixingManager:
-
-    def init_hyperparams(self, sample_intervals = None):
-        x_0 = fl_utils.get_tuning_configs(self.args)['individual_banks']['small']['x_0']
-        hp_list = [fl_utils.hyper_sampler(self.args['fl_parser'], None, sample_intervals) for i in range(x_0)]
-
-        return hp_list
-    
-    def init_models(self, hyperparams, bank_id = None):
-
-        sample_party = next(iter(self.parties.values()))
-        node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
-        edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
-   
-        if bank_id:
-            self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
-        else:
-            # when init here, one also have to assign whether the party needs batching or not
-            for bank_id, party in self.parties.items():
-                party.model = GNN(self, hyperparams, node_features, edge_dim)
-
-        # Currently no register for gnn models
-        # should potentially make that, just as there is for reg
-
-        # need to 'save' parameters from model 1 as starting, or not, because the models will vary
-        # Here get the relevant parameters etc. or it can be placed in get_global_w
-
-    def _get_relevant_parameters(self):
-
-        self.params_update = []
-        _, bank_0 = next(iter(self.parties.items()))
-
-        for name, param in bank_0.model.gnn.named_parameters():
-            self.params_update.append(name)
+class GNNCommunicationMixin:
 
     def send_global_w(self, condition = None):
-        # reconsider if this should be done more similar to update_w, like in terms of indexing etc.
         for bank_id, party in self.parties.items():
             if condition and not condition(bank_id): continue
             for param, value in party.model.gnn.named_parameters():
@@ -329,49 +266,72 @@ class GNNMixingManager:
                     self.global_w[param].data += value.data.clone() / self._num_parties
 
 
+
+
+class GNNMixinManager:
+
+    def init_hyperparams(self, sample_intervals = None):
+        x_0 = tr_utils.get_tuning_configs(self.args)['individual_banks']['small']['x_0']
+        hp_list = [tr_utils.hyper_sampler(self.args['fl_parser'], None, sample_intervals) for i in range(x_0)]
+
+        return hp_list
+    
+    def init_models(self, hyperparams, bank_id = None):
+
+        sample_party = next(iter(self.parties.values()))
+        node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
+        edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
+   
+        if bank_id:
+            self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
+        else:
+            for bank_id, party in self.parties.items():
+                party.model = GNN(self, hyperparams, node_features, edge_dim)
+
+        # need to 'save' parameters from model 1 as starting, or not, because the models will vary
+        # Here get the relevant parameters etc. or it can be placed in get_global_w
+
     def _gnn_tuning(self, laundering_values, **kwargs):
-
+        
+        # first loop
         hyperparameters_tuning = self.init_hyperparams()
-
         _, scores = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
+
+        # get top 5 of parameters and set sample space
         params_to_keep = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:5]
         top_parameters = [hyperparameters_tuning[i] for i in params_to_keep]
         sample_space = self._get_search_space(top_parameters)
 
+        # second loop
         hyperparameters_tuning = self.init_hyperparams(sample_space)
-        results, _ = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
+        tuned_hyparameters, _ = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
 
-        return results
+        return tuned_hyparameters
 
 
     def _get_search_space(self, hyperparameters_tuning):
 
         intervals = {
-            'hid_em_size_interval': [1e9, -1e9],
-            'lr_interval': [1e9, -1e9],
-            'gnn_layer_interval': [1e9, -1e9],
-            'dropout_interval': [1e9, -1e9],
-            'w_ce2_interval': [1e9, -1e9],
+            'hid_em_size_interval': [float('inf'), float('-inf')],
+            'lr_interval': [float('inf'), float('-inf')],
+            'gnn_layer_interval': [float('inf'), float('-inf')],
+            'dropout_interval': [float('inf'), float('-inf')],
+            'w_ce2_interval': [float('inf'), float('-inf')],
         }
 
         for params in hyperparameters_tuning:
-            intervals['hid_em_size_interval'] = tune_u.update_interval(params['hidden_embedding_size'], intervals['hid_em_size_interval'])
-            intervals['lr_interval'] = tune_u.update_interval(params['learning rate'], intervals['lr_interval'])
-            intervals['gnn_layer_interval'] = tune_u.update_interval(params['gnn_layers'], intervals['gnn_layer_interval'])
-            intervals['dropout_interval'] = tune_u.update_interval(params['dropout'], intervals['dropout_interval'])
-            intervals['w_ce2_interval'] = tune_u.update_interval(params['w_ce2'], intervals['w_ce2_interval'])
+            intervals['hid_em_size_interval'] = tr_utils.update_interval(params['hidden_embedding_size'], intervals['hid_em_size_interval'])
+            intervals['lr_interval'] = tr_utils.update_interval(params['learning rate'], intervals['lr_interval'])
+            intervals['gnn_layer_interval'] = tr_utils.update_interval(params['gnn_layers'], intervals['gnn_layer_interval'])
+            intervals['dropout_interval'] = tr_utils.update_interval(params['dropout'], intervals['dropout_interval'])
+            intervals['w_ce2_interval'] = tr_utils.update_interval(params['w_ce2'], intervals['w_ce2_interval'])
 
         return intervals
 
 
-
-# still need to add these two to the registry
-
-class FLGNNManager(GNNMixingManager):
+class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
     def tuning(self, laundering_values):
-
-        # when tuning / training gnn I need to remember to test 4 different seeds
 
         # --------------------------------
 
@@ -386,9 +346,6 @@ class FLGNNManager(GNNMixingManager):
 
         best_f1 = -1
         best_hyperparameters = None
-        best_w = None
-        best_metrics = None
-        best_preditcions = None
         scores = []
 
         for hyperparams in hyperparameters_tuning:
@@ -399,50 +356,45 @@ class FLGNNManager(GNNMixingManager):
 
             # if reg or graph epochs is used. Or also is for decision trees, yes?
             # just update in one, and then another for sending to manager?
-            results = fl_tr.fl_training(self, laundering_values)
+            results = self.fl_training(laundering_values)
             
             if results['metrics']['f1'] > best_f1:
                 best_hyperparameters = hyperparams
-                best_w = results['w']
-                best_metrics = results['metrics']
-                best_preditcions = copy.deepcopy(results['laundering_values'])
                 best_f1 = results['metrics']['f1']
             
             scores.append(results['metrics']['f1'])
 
-        return [{'best_hyperparameters': best_hyperparameters, 
-                'best_w': best_w, 'best_metrics': best_metrics,
-                'best_preditcions': best_preditcions}, scores]
+        return best_hyperparameters, scores
     
-    
-    def train(self, tuned_values, laundering_values):
+    def train(self, hyperparameters, laundering_values, seeds = 4):
 
         self.set_mode('training')
+        best_f1 = -1; best_model = None
 
-        # init -------------
-        hyper_parameteres_training = tuned_values['best_hyperparameters']
-
-        # initiate models: this would be here the, hyperparameters would be used
-        self.init_models(hyper_parameteres_training)
-        self.get_global_w()
-
-        # here one should do such that the parties find the data they will be using
-        # training set initial parameters and get relevant data
-        self.send_global_w_params()
-
-        # One could keep the processed data outside the parties in a dict
-        # But for fl settings, they probably need to hold it themselves anyway.
-        # need this to be training, but tuning data
+        # Currenlt placed outside the _train function, such that 
+        # feature engineering aint done 4 times
         for bank_id, party in self.parties.items():
             party.prep_data()
 
-        results = fl_tr.fl_training(self, laundering_values)
+        for seed in range(seeds):
+            utils.set_seed(seed + 1)
+            current_model = self._train(hyperparameters, laundering_values)
 
-        return results
+            if current_model['metrics']['f1'] > best_f1:
+                best_model = copy.deepcopy(current_model)
+                best_f1 = current_model['metrics']['f1']
+        
+        return best_model
+    
+    def _train(self, hyperparameters, laundering_values):
+
+        self.init_models(hyperparameters)
+        self.get_global_w()
+        self.send_global_w_params()
+
+        return self.fl_training(laundering_values)
     
     def fl_training(self, laundering_values):
-
-        # maybe include hyperparameters here, like as input to the function here
 
         best_w = None
         best_metrics = None
@@ -489,15 +441,7 @@ class FLGNNManager(GNNMixingManager):
 
 
 
-
-
-
-
-
-
-
-
-class IndividualGNNManager(GNNMixingManager):
+class IndividualGNNManager(GNNMixinManager):
 
     def _helper_party_tuning(self, party, laundering_values):
         mask = np.isin(laundering_values['indices'], party.get_eval_indices())
@@ -517,30 +461,20 @@ class IndividualGNNManager(GNNMixingManager):
 
         best_f1 = -1
         best_hyperparameters = None
-        best_metrics = None
-        best_preditcions = None
         scores = []
 
-        # preferable this should be a 'reuseable loop' for all the models
         for hyperparams in hyperparameters_tuning:
             
-            # initiate models:
             self.init_models(hyperparams, bank_id)
-
-            # if reg or graph epochs is used. Or also is for decision trees, yes?
-            # just update in one, and then another for sending to manager?
             results = self.party_train(self.parties[bank_id], party_laundering_values)
             
             if results['metrics']['f1'] > best_f1:
                 best_hyperparameters = hyperparams
-                best_metrics = results['metrics']
-                best_preditcions = copy.deepcopy(results['laundering_values'])
                 best_f1 = results['metrics']['f1']
-            
+
             scores.append(results['metrics']['f1'])
 
-        return [{'best_hyperparameters': best_hyperparameters, 
-                'best_metrics': best_metrics, 'best_preditcions': best_preditcions}, scores]
+        return best_hyperparameters, scores
     
 
     def party_train(self, party, party_laundering_values):
@@ -569,99 +503,54 @@ class IndividualGNNManager(GNNMixingManager):
                     best_model = copy.deepcopy(party.model.gnn.state_dict())
 
         party_laundering_values['predictions_fl'] = best_preditcions
-
-        if best_model is not None:
-            party.model.gnn.load_state_dict(best_model)
         
-        return {'metrics': best_metrics, 'laundering_values': party_laundering_values}
-    
+        return {'model': best_model, 'metrics': best_metrics, 'laundering_values': party_laundering_values}
 
-    def _train(self, tuned_values, laundering_values):
+
+    def train(self, hyperparameters, laundering_values):
 
         self.set_mode('training')
-        results = {}
+        results, models_hyperparameters = {}, {}
 
         for bank_id, party in self.parties.items():
             party.prep_data()
+            self.init_models(hyperparameters[bank_id], bank_id)
             party_laundering_values = self._helper_party_tuning(party, laundering_values)
-            self.init_models(tuned_values[bank_id]['best_hyperparameters'], bank_id)
-            results[bank_id] = self.party_train(self.parties[bank_id], party_laundering_values)
+
+            tmp_model = self._train(party, party_laundering_values)
+            models_hyperparameters[bank_id] = {'model': tmp_model, 
+                                               'hyperparameters': hyperparameters[bank_id]}
 
         for bank_id, party in self.parties.items():
             flin.update_laundering_values(party, laundering_values)
+
+        results['metrics'] = metrics(laundering_values['true_y'], laundering_values['predictions_fl'])
+        results['laundering_values'] = laundering_values
+        results['models'] = models_hyperparameters
 
         return results
     
-    def train(self, tuned_values, laundering_values):
+    def _train(self, party, party_laundering_values, seeds = 4):
 
-        self._train(tuned_values, laundering_values)
-        self.inference()
-    
-    def inference():
+        best_f1 = -1; best_model = None
 
-        for bank_id, party in self.parties.items():
-            flin.update_laundering_values(party, laundering_values)
-        
+        for seed in range(seeds):
+            utils.set_seed(seed + 1) # make seed random?
+            current_model = self.party_train(party, party_laundering_values)
 
-        return 0
-        
-        
+            if current_model['metrics']['f1'] > best_f1:
+                best_model = copy.deepcopy(current_model['model'])
+                best_f1 = current_model['metrics']['f1']
+
+        if best_model is not None:
+            party.model.gnn.load_state_dict(best_model)
+
+        return best_model
 
 
 
     
 # ------------------------------------------------------------------------------------------
-
-
-# Booster -------------------------------------------------------------------------------------------
-
-
-class BoosterMixingParty:
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-
-
-class BoosterMixingManager:
-
-
-    def init_hyperparams(self):
-        pass
-
-    def _get_relevant_parameters(self):
-        pass
-
-
-
-class FLBoosterManager(BoosterMixingManager):
-
-    def tuning_loop(self):
-        pass
-
-
-    def tuning(self):
-        # for boost it would want it inside the hyperparameter loop.
-        # however, if spliting and processing several datapoints at once, then
-        # maybe it could be avoided, however too much memory usage?
-        # So don't do that, find solution to only do once for reg and gnn?
-        # will see at booster trees
-        pass
-
-
-class IndividualBoosterManager(BoosterMixingManager):
-
-    def tuning(self):
-        pass
-
-    def tuning_loop(self):
-        pass
-
-
-
-
-# ------------------------------------------------------------------------------------------
-
 
 # -------------------------------------------
 # Combiners ---------------------------------
@@ -693,7 +582,7 @@ class FedGD_Regression_Manager(RegressionMixinManager, FedGD_manager):
 # Party --------------------------
 
 @regi_algo_party("FedGD_gnn")
-class FedGD_GNN_Party(GNNMixingParty, FedGD_party):
+class FedGD_GNN_Party(GNNMixinParty, FedGD_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -704,7 +593,7 @@ class FedGD_GNN_Party(GNNMixingParty, FedGD_party):
 
 
 @regi_algo_party("individual_gnn")
-class Individual_GNN_Party(GNNMixingParty, Party):
+class Individual_GNN_Party(GNNMixinParty, Party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -718,7 +607,7 @@ class Individual_GNN_Party(GNNMixingParty, Party):
 # Manager --------------------------
 
 @regi_algo_manager("FedGD_gnn")
-class FedGD_GNN_Manager(FLGNNManager, FedGD_manager): #FLGNNManager #GNNMixingManager
+class FedGD_GNN_Manager(FLGNNManager, FedGD_manager): #FLGNNManager #GNNMixinManager
 
     @staticmethod
     def return_class(args):
@@ -726,11 +615,67 @@ class FedGD_GNN_Manager(FLGNNManager, FedGD_manager): #FLGNNManager #GNNMixingMa
 
 
 @regi_algo_manager("individual_gnn")
-class Individual_GNN_Manager(IndividualGNNManager, Manager): #FLGNNManager #GNNMixingManager
+class Individual_GNN_Manager(IndividualGNNManager, Manager): #FLGNNManager #GNNMixinManager
 
     @staticmethod
     def return_class(args):
         return Individual_GNN_Manager(args)
 
 
+
+
+# Booster -------------------------------------------------------------------------------------------
+
+
+class BoosterMixinParty:
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+
+class BoosterMixinManager:
+
+
+    def init_hyperparams(self):
+        pass
+
+    def _get_relevant_parameters(self):
+        pass
+
+
+
+class FLBoosterManager(BoosterMixinManager):
+
+    def tuning_loop(self):
+        pass
+
+
+    def tuning(self):
+        # for boost it would want it inside the hyperparameter loop.
+        # however, if spliting and processing several datapoints at once, then
+        # maybe it could be avoided, however too much memory usage?
+        # So don't do that, find solution to only do once for reg and gnn?
+        # will see at booster trees
+        pass
+
+
+class IndividualBoosterManager(BoosterMixinManager):
+
+    def tuning(self):
+        pass
+
+    def tuning_loop(self):
+        pass
+
+
+"""
+    def _get_relevant_parameters(self):
+
+        self.params_update = []
+        _, bank_0 = next(iter(self.parties.items()))
+
+        for name, param in bank_0.model.gnn.named_parameters():
+            self.params_update.append(name)
+"""
 

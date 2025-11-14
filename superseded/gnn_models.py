@@ -2,6 +2,7 @@ import torch.nn as nn
 from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RGCNConv
 import torch.nn.functional as F
 import torch
+
 from federated_learning.registry import register_gnn
 
 #############################################################################################
@@ -37,8 +38,10 @@ class GINe(torch.nn.Module):
 
         self.mlp = nn.Sequential(Linear(n_hidden * 3, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))
 
-    def forward(self, x, edge_index, edge_attr):
-        src, dst = edge_index
+    def forward(self, x, edge_index, edge_attr, edge_label_index, target_edge_attr):
+        
+        target_src, target_dst = edge_label_index
+        target_edge_attr = self.edge_emb(target_edge_attr)
 
         x = self.node_emb(x)
         edge_attr = self.edge_emb(edge_attr)
@@ -46,10 +49,10 @@ class GINe(torch.nn.Module):
         for i in range(self.num_gnn_layers):
             x = (x + F.relu(self.batch_norms[i](self.convs[i](x, edge_index, edge_attr)))) / 2
             if self.edge_updates:
-                edge_attr = edge_attr + self.emlps[i](torch.cat([x[src], x[dst], edge_attr], dim=-1)) / 2
+                target_edge_attr = target_edge_attr + self.emlps[i](torch.cat([x[target_src], x[target_dst], target_edge_attr], dim=-1)) / 2
 
-        x = x[edge_index.T].reshape(-1, 2 * self.n_hidden).relu()
-        x = torch.cat((x, edge_attr.view(-1, edge_attr.shape[1])), 1)
+        x = x[edge_label_index.T].reshape(-1, 2 * self.n_hidden).relu()
+        x = torch.cat((x, target_edge_attr.view(-1, target_edge_attr.shape[1])), 1)
         out = x
 
         return self.mlp(out)
@@ -86,8 +89,10 @@ class GATe(torch.nn.Module):
                 
         self.mlp = nn.Sequential(Linear(n_hidden*3, 50), nn.ReLU(), nn.Dropout(self.final_dropout),Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout),Linear(25, n_classes))
             
-    def forward(self, x, edge_index, edge_attr):
-        src, dst = edge_index
+    def forward(self, x, edge_index, edge_attr, edge_label_index, target_edge_attr):
+        
+        target_src, target_dst = edge_label_index
+        target_edge_attr = self.edge_emb(target_edge_attr)
 
         x = self.node_emb(x)
         edge_attr = self.edge_emb(edge_attr)
@@ -95,10 +100,10 @@ class GATe(torch.nn.Module):
         for i in range(self.num_gnn_layers):
             x = (x + F.relu(self.batch_norms[i](self.convs[i](x, edge_index, edge_attr)))) / 2
             if self.edge_updates:
-                edge_attr = edge_attr + self.emlps[i](torch.cat([x[src], x[dst], edge_attr], dim=-1)) / 2
+                target_edge_attr = target_edge_attr + self.emlps[i](torch.cat([x[target_src], x[target_dst], target_edge_attr], dim=-1)) / 2
 
-        x = x[edge_index.T].reshape(-1, 2 * self.n_hidden).relu()
-        x = torch.cat((x, edge_attr.view(-1, edge_attr.shape[1])), 1)
+        x = x[edge_label_index.T].reshape(-1, 2 * self.n_hidden).relu()
+        x = torch.cat((x, target_edge_attr.view(-1, target_edge_attr.shape[1])), 1)
         out = x
 
         return self.mlp(out)

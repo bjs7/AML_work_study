@@ -1,32 +1,9 @@
 # packages
-import utils
-import logging
 import argparse
-import pandas as pd
-from models.base import Model
-from data.raw_data_processing import get_data
-from configs.configs import split_perc
-from relevant_banks import get_relevant_banks
-from relevant_banks import load_relevant_banks
-import xgboost as xgb
-from data.feature_engi import feature_engi_regular_data
-
-# packages for FL
-import threading
 import queue
-import time
-import random
 from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-from datetime import datetime
-from abc import ABC, abstractmethod
-import federated_learning.FL_utils as fl_utils
-
 from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
-
-#from federated_learning.fl_algos import FedGB_Regression_Manager, FedGB_Regression_Party
-
-import federated_learning.fl_training as fl_tr
+from abc import ABC, abstractmethod
 
 
 class BaseFL:
@@ -37,7 +14,7 @@ class BaseFL:
         self.mode = None
 
 
-# add current_w also to the actual party?
+
 class Party(BaseFL):
 
     REGISTRY = FL_ALGO_REGISTRY_PARTY
@@ -47,10 +24,6 @@ class Party(BaseFL):
     def __init__(self, args, bank_id, data, indices, manager, scaler_encoders) -> None:
         super().__init__(args)
         self.bank_id = bank_id
-        self.inbox = queue.Queue()
-        self.peers: Dict[str, 'Party'] = {}
-        self.running = False
-        self.thread = None
         self.indices = indices
         self.data = data
         self.manager = manager
@@ -69,22 +42,23 @@ class Party(BaseFL):
             raise ValueError(f"Unknown algo type: {algo_class}")
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(args = parsers, **kwargs)
-
-    def get_train_data(self):
-        return 0
-
+    
     def get_eval_indices(self):
         return self.indices['vali_indices'] if self.mode == 'tuning' else self.indices['test_indices']
-    
+
+    @abstractmethod
     def get_eval_data(self):
         pass
-    
+
+    @abstractmethod
+    def update_local_w(self):
+        pass
+
+    @abstractmethod
+    def feature_engineering(self):
+        pass
 
 
-import copy
-
-    
-# some of the attributes should be changed to indicate or only be for internal usage
 class Manager(BaseFL):
     REGISTRY = FL_ALGO_REGISTRY_MANAGER
 
@@ -92,9 +66,6 @@ class Manager(BaseFL):
         super().__init__(args)
         self.parties: Dict[int, Party] = {}
         self.parties_w: Dict[int, Any] = {}
-        self.message_queue = queue.Queue()
-        self.running = False
-        self.thread = None
         self.global_w = None
         # for model, scaler etc. and also global parameters, I might
         # wanna keep it all in a dict, so they are collected together,
@@ -119,47 +90,7 @@ class Manager(BaseFL):
         for _, party in self.parties.items():
             party.mode = mode
 
-    def update_global_w(self):
-        pass
-        
-
-    def send_global_w(self):
-
-        if self.args['fl_parser'].model_type == 'regression':
-            for bank_id, party in self.parties.items():
-                party.model.current_w = self.global_w
-        
-        if self.args['fl_parser'].model_type == 'graph':
-            return 0
-
-    # similar to the one above, but here I also need it to give the relevant hyperparameters
-    # to the parties. At least I think, not sure if necessary. Doesn't seem to be for reg, but
-    # might be for GNN and decision trees
-    def send_global_w_params(self):
-        
-        if self.args['fl_parser'].model_type == 'regression':
-            self.send_global_w()
-        
-        if self.args['fl_parser'].model_type == 'graph':
-            return 0
-
-    def send_parameters(self, parameters):
-        for bank_id, party in self.parties.items():
-            party.inbox.put(parameters)
-
-    #@abstractmethod
+    @abstractmethod
     def init_models(self):
         pass
-
-    def get_global_w(self):
-        pass
-    
-    def train(self):
-        pass
-        
-
-    
-    
-        
-
 

@@ -6,8 +6,8 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from snapml import GraphFeaturePreprocessor
 #from gp_params import params
 #from training.tuning_utils import gfpparams
-import training.hyperparams as tu
-from torch_geometric.data import Data
+import training.utils as tu
+#from torch_geometric.data import Data
 import data.data_utils as du
 
 

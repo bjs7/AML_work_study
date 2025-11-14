@@ -5,26 +5,58 @@ import os
 import sys
 import numpy as np
 import torch
-import random
 import json
+import random
 
+
+# --------------------------------------------------------------------------------------------------
+# dictionary holders
 
 model_types = {
-    'GINe': 'graph',
+    'GINe': 'gnn',
     'xgboost': 'booster',
-    'light_gbm': 'booster'
+    'light_gbm': 'booster',
+    'regression': 'regression'
 }
 
 data_types = {
-    'graph': 'graph_data',
+    'gnn': 'graph_data',
     'booster': 'regular_data',
-    'reg': 'regular_data'
+    'regression': 'regular_data'
 }
 
 file_types = {
-    'graph': 'pth',
+    'gnn': 'pth',
     'booster': 'ubj'
 }
+
+# --------------------------------------------------------------------------------------------------
+# kept here tmp. Gonna need to update relevant banks file later.
+
+import configs.configs as config
+
+def load_relevant_banks(args):
+
+    save_direc = config.save_direc_training
+    save_direc = os.path.join(save_direc, 'relevant_banks')
+    
+    split = config.split_perc[0:2]
+    str_folder = f'{args.size}_' + args.ir + f'__split_{split[0]}_{split[1]}.json'
+    file_location = os.path.join(save_direc, str_folder)
+
+    with open(file_location, 'r') as file:
+        relevant_banks = json.load(file)
+
+    return relevant_banks
+
+def get_relevant_banks(args):
+    relevant_banks = load_relevant_banks(args).get(args.banks)
+    return relevant_banks.get('fr_banks'), relevant_banks.get('sr_banks')
+
+
+
+# --------------------------------------------------------------------------------------------------
+# util functions
 
 def get_data_path():
     local_path = "/home/nam_07/projects"
@@ -46,9 +78,10 @@ def get_model_configs(args):
 
     return model_parameters.get(args.model)
 
-def get_tuning_configs(args):
 
-    tuning_configs = 'tuning_configs_for_testing' if args.testing else 'tuning_configs'
+def get_tuning_configs(parsers):
+
+    tuning_configs = 'tuning_configs_for_testing' if parsers['data_parser'].testing else 'tuning_configs'
 
     if get_data_path() == '/data/leuven/362/vsc36278':
         folder = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/' + tuning_configs + '.json'
@@ -58,7 +91,7 @@ def get_tuning_configs(args):
     with open(folder, 'r') as file:
         model_parameters = json.load(file)
 
-    return model_parameters.get(args.model_type)
+    return model_parameters.get(parsers['fl_parser'].model_type)
 
 
 def logger_setup():
@@ -76,64 +109,6 @@ def logger_setup():
     )
 
 
-
-def get_parser():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='GINe', type=str, help='Select the type of model to train')
-    parser.add_argument('--scenario', default='full_info', type=str, help='Select the scenario to study')
-    parser.add_argument('--model_configs', default=None, type=str, help='should the hyperparameters be tuned, else provide some')
-    parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
-    parser.add_argument("--ports", action='store_true')
-    parser.add_argument("--tds", action='store_true', help="Use time deltas (i.e. the time between subsequent transactions) in GNN training")
-    parser.add_argument("--reverse_mp", action='store_true', help="Use reverse MP in GNN training")
-
-    parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
-    parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
-
-    # Data configs
-    parser.add_argument('--size', default='small', type=str, help="Select the dataset size")
-    parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
-    parser.add_argument('--banks', default='only_launderings', type=str)
-    parser.add_argument('--specific_banks', default=[], type=parse_banks, help='Used if specific banks are to be studied')
-    parser.add_argument('--testing', action='store_true')
-    parser.add_argument('--overwrite', action='store_true')
-
-    # FL configs
-
-    parser.add_argument('--flmethod', default='fedavg', type=str)
-    
-    return parser
-
-
-def parse_banks(value):
-
-    value = value.strip()
-
-    if value.startswith('[') and value.endswith(']') and ':' in value:
-        start, end = value[1:-1].split(':')
-        return list(range(int(start), int(end)))
-
-    try:
-        return ast.literal_eval(value)
-    except (ValueError, SyntaxError):
-        raise argparse.ArgumentTypeError('Invalid format')
-
-
-def parse_data_split(value):
-    
-    value = value.strip()
-
-    try:
-        parsed_value = ast.literal_eval(value)
-        if isinstance(parsed_value, list) and all(isinstance(i, (int, float)) for i in parsed_value):
-            return parsed_value
-        else:
-            raise ValueError
-    except (ValueError, SyntaxError):
-        raise argparse.ArgumentTypeError("Invalid format for --data_split. Use [0.6, 0.2]")
-
-
 def set_seed(seed: int = 0, log = False) -> None:
     np.random.seed(seed)
     random.seed(seed)
@@ -147,3 +122,88 @@ def set_seed(seed: int = 0, log = False) -> None:
     if log:
         logging.info(f"Random seed set as {seed}")
 
+
+def get_smallest_bank(parsers, train_data, bank, smallest_bank, smallest_dim):
+
+    if parsers['data_parser'].data_type == 'graph_data':
+        bank_dim = train_data['df']['x'].shape[0]
+    else:
+        bank_dim = train_data['x'].shape[0]
+
+    if bank_dim < smallest_dim:
+        smallest_bank = bank
+        smallest_dim = bank_dim
+
+    return smallest_bank, smallest_dim
+
+# --------------------------------------------------------------------------------------------------
+# parser function for all the parsers
+
+def parser_all():
+
+    parsers = [
+        ("fl_parser", fl_parser()),
+        ("data_parser", data_parser()),
+        ("gnn_parser", gnn_parser())
+    ]
+
+    remaining_args = sys.argv[1:]
+    all_parsers = {}
+
+    for name, parser in parsers:
+        try:
+            parsed, remaining_args = parser.parse_known_args(remaining_args)
+            all_parsers[name.lower()] = parsed
+        except Exception as e:
+            all_parsers[name.lower()] = None
+
+    if remaining_args:
+        print(f"Unparsed arguments: {remaining_args}")
+
+    all_parsers['fl_parser'].model_type = model_types.get(all_parsers['fl_parser'].model)
+    all_parsers['fl_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
+    all_parsers['data_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
+
+    all_parsers['data_parser'].scenario = 'individual_banks' if all_parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+
+    return all_parsers
+
+
+# fl parser
+def fl_parser():
+
+    parser = argparse.ArgumentParser(description="main args for fl")
+    parser.add_argument('--fl_algo', default='FedGD', type=str)
+    parser.add_argument('--model', default='GINe', type=str)
+    #parser.add_argument('--regu', default=)
+    
+    return parser
+
+# data parser
+def data_parser():
+
+    parser = argparse.ArgumentParser(description="args for data configs and utils")
+
+    # Data configs
+    parser.add_argument('--size', default='small', type=str, help="Select the dataset size")
+    parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
+    parser.add_argument('--banks', default='only_launderings', type=str)
+    parser.add_argument('--overwrite', action='store_true')
+
+    # utils
+    parser.add_argument('--testing', action='store_true')
+    parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
+    parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
+
+    return parser
+
+# gnn parser
+def gnn_parser():
+
+    parser = argparse.ArgumentParser(description="args for gnn models")
+    parser.add_argument("--emlps", action='store_true', help="Use emlps in GNN training")
+    parser.add_argument("--ports", action='store_true')
+    parser.add_argument("--tds", action='store_true', help="Use time deltas (i.e. the time between subsequent transactions) in GNN training")
+    parser.add_argument("--reverse_mp", action='store_true', help="Use reverse MP in GNN training")
+
+    return parser
