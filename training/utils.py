@@ -127,19 +127,22 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
             lr_interval = [0.005, 0.05]
             gnn_layer_interval = [2, 4]
             dropout_interval = [0, 0.5]
+            final_dropout_interval = [0, 0.5]
             w_ce2_interval = [6,8]
         else:
             hid_em_size_interval = sample_intervals.get('hid_em_size_interval')
             lr_interval = sample_intervals.get('lr_interval')
             gnn_layer_interval = sample_intervals.get('gnn_layer_interval')
             dropout_interval = sample_intervals.get('dropout_interval')
+            final_dropout_interval = sample_intervals.get('final_dropout_interval')
             w_ce2_interval = sample_intervals.get('w_ce2_interval')
 
         parameters = {
             'hidden_embedding_size': random.randint(hid_em_size_interval[0], hid_em_size_interval[1]),
-            'learning rate': random.uniform(lr_interval[0], lr_interval[1]),
-            'gnn_layers': random.randint(gnn_layer_interval[0], gnn_layer_interval[1]),
+            'learning_rate': random.uniform(lr_interval[0], lr_interval[1]),
+            'num_gnn_layers': random.randint(gnn_layer_interval[0], gnn_layer_interval[1]),
             'dropout': random.uniform(dropout_interval[0], dropout_interval[1]),
+            'final_dropout': random.uniform(final_dropout_interval[0], final_dropout_interval[1]),
             'w_ce1': 1.0000182882773443,
             'w_ce2': random.uniform(w_ce2_interval[0], w_ce2_interval[1])
         }
@@ -184,5 +187,12 @@ gfpparams = {
     "temp-cycle_tw": 86400,
     "temp-cycle_bins": [y+2 for y in range(2)],
 }
+
+
+
+# IBM Setting
+
+ibm_gnn = {"learning_rate": 0.006213266113989207, "hidden_embedding_size": 66, "n_mlp_layers": 1, "num_gnn_layers": 2, "loss": "ce",
+      "w_ce1": 1.0000182882773443, "w_ce2": 6.275014431494497, "norm_method": "z_normalize", "dropout": 0.00983468338330501, "final_dropout": 0.10527690625126304}
 
 

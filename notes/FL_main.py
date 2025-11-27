@@ -13,6 +13,23 @@ from mix.relevant_banks import get_relevant_banks
 
 import FL_message as FLm
 
+# difference in f1_score with different amount of banks?
+
+# is it actually necessary to carry bank indices with the graph data? Or can one just use only graph data
+# for gnn models? Think I can, or only have the indices with one, reset of columns can be dropped
+# need to account for 1:1 with IBM, then it just all columns/feature
+
+# residuals i gnn model?
+
+# IMPLEMENT FINETUNING? LIKE FOR THE DATASETS MEDIUM OR HIGHER, THERE I SHOULD USE
+# THE PARAMETERS FOUND FOR THE SMALL SIZED DATASET? LIKE TRAIN ON SMALL DATASET, AND USE THIS TO TUNE
+# MEDIUM/LARGE DATA SET MODELS? THEY DO THAT IN THE PAPER!
+
+# Ask claude about this, like how to implement the no tuning? Like what is the best approach
+# Use the split indices or where should one set those settings and conditions?
+
+# also consider that if under IBM setting if one should only train on the train set, and not include validation.
+# Might have to write and ask them about that.
 
 # Check GFP parameters igen? Fra "vertex_stats_cols": [3,4], til "vertex_stats_cols": [3],
 
@@ -122,6 +139,13 @@ import FL_message as FLm
 
 # need to add to the final dropout. Like the two dropouts in the model, I need to ensure that they
 # have different values or at least values are sampled for both
+
+
+
+#
+
+
+
 
 
 def main():

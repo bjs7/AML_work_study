@@ -1,159 +1,78 @@
 import os
-from superseded import gnn
-import superseded.utils as utils
-import argparse
+import utils
 import pandas as pd
-from data.raw_data_processing import get_data
 import configs.configs as config
-import data.get_indices_type_data as data_funcs
+from data.raw_data_processing import get_data
 import numpy as np
 from pathlib import Path
 import json
-from models import booster
-#from holder_models.base import Model, InferenceModel
 from configs.configs import split_perc
+from data.get_indices_type_data import get_bank_indices
+from data.get_indices_type_data import get_indices_bdt, get_booster_data, get_graph_data
+import data.data_functions as dfn
+#from superseded import gnn
+#from models import booster
+#from holder_models.base import Model, InferenceModel
+#import data.get_indices_type_data as data_funcs
+#import argparse
 
 
-def filter_banks(args):
 
-    #parser = utils.get_parser()
-    #args = parser.parse_args()
-    #args.ir = 'LI'
-    #args.size = 'medium'
+def filter_banks(parsers):
 
-    model = Model.from_model_type(args)
-    df = pd.read_csv(utils.get_data_path() + '/AML_work_study/formatted_transactions' + f'_{args.size}' + f'_{args.ir}' + '.csv')
-    raw_data = get_data(df, model.args, split_perc = split_perc)
+    # set up ----------------------------------------------------------------------------------------
+    #parsers = utils.parser_all()
+    parsers['data_parser'].ibm_fe = True
+    parsers['data_parser'].scenario = 'individual_banks'
 
-    Banks = list((df.loc[:, 'From Bank'])) + list((df.loc[:, 'To Bank'])) 
-    unique_banks = list(set(Banks)) # before update to data, 30470, after update 30528
-    args.banks = unique_banks
-    args.scenario = 'individual_banks'
-    args.model = 'xgboost'
+    # data ----------------------------------------------------------------------------------------
+    df = pd.read_csv(utils.get_data_path() + f"/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+    df_length = df.shape[0]
+    unique_banks = sorted(pd.concat([df['From Bank'], df['To Bank']]).unique().tolist())
+    df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
-    no_train_data = []
-    no_vali_data = []
-    no_test_data = []
-    laundering_in_test_data = []
-    laundering_in_vali_data = []
-    laundering_in_train_data = []
-    first_round_banks = []
+    # set lists ----------------------------------------------------------------------------------------
+    laundering_in_test_data, laundering_in_vali_data, laundering_in_train_data = [], [], []
 
-    for bank in args.banks:
-
-        model = Model.from_model_type(args)
+    for bank in unique_banks:
 
         if bank % 1000 == 0: print(bank)
 
-        bank_indices = model.get_indices(raw_data, bank=bank)
-        train_data, vali_data, test_data = model.get_data(raw_data, bank_indices)
+        bank_indices = get_indices_bdt(df, bank = bank)
+        train_data, vali_data, test_data = get_booster_data(parsers['data_parser'], df['regular_data'], bank_indices)
 
-        if np.any(train_data['y'] == 1):
+        # check for laundering in each split
+        if np.any(train_data['x']['Is Laundering'] == 1):
             laundering_in_train_data.append(bank)
-
-        if np.any(vali_data['y'] == 1):
+        if np.any(vali_data['x']['Is Laundering'] == 1):
             laundering_in_vali_data.append(bank)
-
-        if np.any(test_data['y'] == 1):
+        if np.any(test_data['x']['Is Laundering'] == 1):
             laundering_in_test_data.append(bank)
-        
-        if not bank_indices['train_indices'] or not bank_indices['vali_indices'] or not bank_indices['test_indices']:
-            # there are no banks with no data in the trainin split, after update still none
-            if not bank_indices['train_indices']:
-                no_train_data.append(bank)
-            # There are 28720 banks with no data in the validation split, after update 28772
-            if not bank_indices['vali_indices']:
-                no_vali_data.append(bank)
-            # there are 14224 banks with no data in the testing split, after update 14274
-            if not bank_indices['test_indices']:
-                no_test_data.append(bank)
-        else:
-            first_round_banks.append(bank)
 
-
-    fr_banks = list(set(unique_banks) - set(no_train_data) - set(no_vali_data) - set(no_test_data))
-    sr_banks = list(set(no_train_data + no_vali_data) - set(no_test_data))
-
-    # first round banks
-
-    fr_laundering_in_train = set(fr_banks) & set(laundering_in_train_data)
-    fr_laundering_in_vali = set(fr_banks) & set(laundering_in_vali_data)
-    fr_laundering_in_test = set(fr_banks) & set(laundering_in_test_data)
-    fr_laundering_in_train_test = sorted(list(fr_laundering_in_train & fr_laundering_in_test))
-    #fr_laund_in_train_vali_test = sorted(list(set(list(fr_laundering_in_train) + list(fr_laundering_in_vali)) & fr_laundering_in_test))
-    fr_laund_in_train_vali = sorted(list(set(fr_banks) & set(laundering_in_train_data + laundering_in_vali_data)))
-    pass_to_sr = (set(list(fr_laundering_in_train) + list(fr_laundering_in_vali)) & fr_laundering_in_test) - (fr_laundering_in_train & fr_laundering_in_test)
-
-    #
-    fr_laundering_in_train_no_test = fr_laundering_in_train - fr_laundering_in_test
-    fr_laundering_in_test_no_train = fr_laundering_in_test - fr_laundering_in_train
-
-    # second round banks
-    sr_laundering_in_train = set(sr_banks) & set(laundering_in_train_data)
-    sr_laundering_in_vali = set(sr_banks) & set(laundering_in_vali_data)
-    sr_laundering_in_test = set(sr_banks) & set(laundering_in_test_data)
-    sr_laundering_in_train_test = sorted(list(sr_laundering_in_train & sr_laundering_in_test))
-    sr_laundering_in_train_test = sorted(set(sr_laundering_in_train_test + sorted(pass_to_sr)))
-    #sr_laund_in_train_vali_test = sorted(list(set(list(sr_laundering_in_train) + list(sr_laundering_in_vali)) & sr_laundering_in_test))
-    sr_laund_in_train_vali = sorted(list(set(sr_banks) & set(laundering_in_train_data + laundering_in_vali_data)))
-
-    #
-    sr_laundering_in_train_no_test = sr_laundering_in_train - sr_laundering_in_test
-    sr_laundering_in_test_no_train = sr_laundering_in_test - sr_laundering_in_train
-
-    # Get number of observations available for banks with train and test data available
-    banks = fr_banks + sr_banks
-    all_indices_fr_sr = []
-    for bank in banks:
-        model = Model.from_model_type(args)
-        bank_indices = model.get_indices(raw_data, bank=bank)
-        tmp_indices = bank_indices.get('train_indices') + bank_indices.get('vali_indices') + bank_indices.get('test_indices')
-        all_indices_fr_sr += tmp_indices
-    obs_ava_fr_sr = len(set(all_indices_fr_sr))
+    fr_laundering_banks = sorted(list(set(laundering_in_train_data) & set(laundering_in_vali_data) & set(laundering_in_test_data)))
+    sr_laundering_banks = sorted(list((set(laundering_in_train_data) | set(laundering_in_vali_data)) & set(laundering_in_test_data) - set(fr_laundering_banks)))
 
     # Get number of observations available for banks with only laundering
-    #banks = fr_laund_in_train_vali + sr_laund_in_train_vali
-    banks = fr_laundering_in_train_test + sr_laundering_in_train_test
     all_indices = []
-    for bank in banks:
-        model = Model.from_model_type(args)
-        bank_indices = model.get_indices(raw_data, bank=bank)
-        tmp_indices = bank_indices.get('train_indices') + bank_indices.get('vali_indices') + bank_indices.get('test_indices')
-        all_indices += tmp_indices
-    obs_ava = len(set(all_indices))
+    for bank in (fr_laundering_banks + sr_laundering_banks):
+        bank_indices = get_indices_bdt(df, bank = bank)
+        all_indices.extend(bank_indices['train_indices'] + bank_indices['vali_indices'] + bank_indices['test_indices'])
 
+    obs_available_for_laundering_banks = len(set(all_indices))
 
     relevant_banks = {
-        'total_observations': df.shape[0],
-        'full_first_second': {'fr_banks': fr_banks, 'sr_banks': sr_banks, 'obs_ava': obs_ava_fr_sr, 'percentage': obs_ava_fr_sr/df.shape[0]},
-        'only_launderings': {'fr_banks': fr_laundering_in_train_test, 
-                                        'sr_banks': sr_laundering_in_train_test, 'obs_ava': obs_ava, 'percentage': obs_ava/df.shape[0]},
-        #'only_launderings': {'fr_banks': fr_laund_in_train_vali, 
-        #                                'sr_banks': sr_laund_in_train_vali, 'obs_ava': obs_ava, 'percentage': obs_ava/df.shape[0]},
-        'extras': {'no_data': {'no_train_data': no_train_data, 
-                               'no_vali_data': no_vali_data, 
-                               'no_test_data': no_test_data},
-
-                    'first_round': {'fr_laundering_in_train': list(fr_laundering_in_train), 
-                                    'fr_laundering_in_test': list(fr_laundering_in_test), 
-                                    'fr_laundering_in_train_no_test': list(fr_laundering_in_train_no_test),
-                                    'fr_laundering_in_test_no_train': list(fr_laundering_in_test_no_train)},
-                
-                    'second_round': {'sr_laundering_in_train': list(sr_laundering_in_train),
-                                    'sr_laundering_in_test': list(sr_laundering_in_test),
-                                    'sr_laundering_in_train_no_test': list(sr_laundering_in_train_no_test),
-                                    'sr_laundering_in_test_no_train': list(sr_laundering_in_test_no_train)}  
-                }
-    }   
+        'total_observations': df_length,
+        #'full_first_second': {'fr_banks': fr_banks, 'sr_banks': sr_banks, 'obs_ava': obs_ava_fr_sr, 'percentage': obs_ava_fr_sr/df.shape[0]},
+        'only_launderings': {'fr_banks': fr_laundering_banks, 
+                                        'sr_banks': sr_laundering_banks, 'obs_ava': obs_available_for_laundering_banks, 'percentage': obs_available_for_laundering_banks/df_length},
+    }
 
     # save the data
     save_direc = config.save_direc_training
     save_direc = os.path.join(save_direc, 'relevant_banks')
     folder_path = Path(save_direc)
 
-    #save_direc = os.path.join(save_direc, f'{args.size}_' + args.ir)
-    args.split_perc = config.split_perc[0:2]
-    str_folder = f'{args.size}_' + args.ir + f'__split_{args.split_perc[0]}_{args.split_perc[1]}.json'
+    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
     file_path = folder_path / str_folder
     folder_path.mkdir(parents=True, exist_ok=True)
     file_path.write_text(json.dumps(relevant_banks, indent=4))
@@ -161,13 +80,12 @@ def filter_banks(args):
     return relevant_banks
 
 
-def load_relevant_banks(args):
+def load_relevant_banks(parsers):
 
     save_direc = config.save_direc_training
     save_direc = os.path.join(save_direc, 'relevant_banks')
+    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
     
-    split = config.split_perc[0:2]
-    str_folder = f'{args.size}_' + args.ir + f'__split_{split[0]}_{split[1]}.json'
     file_location = os.path.join(save_direc, str_folder)
 
     with open(file_location, 'r') as file:
@@ -175,36 +93,29 @@ def load_relevant_banks(args):
 
     return relevant_banks
 
-def get_relevant_banks(args):
-    relevant_banks = load_relevant_banks(args).get(args.banks)
+def get_relevant_banks(parsers):
+    relevant_banks = load_relevant_banks(parsers).get(parsers['data_parser'].banks)
     return relevant_banks.get('fr_banks'), relevant_banks.get('sr_banks')
 
 
 class BanksManager:
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, parsers):
+        self.parsers = parsers
 
     def load_create_file(self):
         save_direc = config.save_direc_training
         save_direc = os.path.join(save_direc, 'relevant_banks')
         
-        split = config.split_perc[0:2]
-        str_folder = f'{self.args.size}_' + self.args.ir + f'__split_{split[0]}_{split[1]}.json'
+        str_folder = f"{self.parsers['data_parser'].size}_{self.parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
         file_location = os.path.join(save_direc, str_folder)
 
-        if not os.path.isfile(file_location) or self.args.overwrite:
-            self.relvant_banks = filter_banks(self.args)
+        if not os.path.isfile(file_location) or self.parsers['data_parser'].overwrite:
+            self.relvant_banks = filter_banks(self.parsers)
         else:
-            self.relevant_banks = load_relevant_banks(self.args)
+            self.relevant_banks = load_relevant_banks(self.parsers)
 
     def print_numbers(self):
-        fr_banks = len(self.relevant_banks.get('full_first_second').get('fr_banks'))
-        sr_banks = len(self.relevant_banks.get('full_first_second').get('sr_banks'))
-        obs = self.relevant_banks.get('full_first_second').get('obs_ava')
-        perc = self.relevant_banks.get('full_first_second').get('percentage')
-        print(f'In the case of training on all possible banks: \nFirst round: {fr_banks} \nSecond round: {sr_banks}')
-        print(f'Resulting in a total of {obs} observations, {perc} percentage of the data\n')
 
         fr_banks = len(self.relevant_banks.get('only_launderings').get('fr_banks'))
         sr_banks = len(self.relevant_banks.get('only_launderings').get('sr_banks'))
@@ -213,20 +124,14 @@ class BanksManager:
         print(f'In case of training on banks with laundering there are \nFirst round: {fr_banks} \nSecond round: {sr_banks}')
         print(f'Resulting in a total of {obs} observations, {perc} percentage of the data\n')
 
-        no_train_data = len(self.relevant_banks.get('extras').get('no_data').get('no_train_data'))
-        no_vali_data = len(self.relevant_banks.get('extras').get('no_data').get('no_vali_data'))
-        no_test_data = len(self.relevant_banks.get('extras').get('no_data').get('no_test_data'))
-
-        print(f'Banks with no data in: \nTrain split: {no_train_data} \nVali split: {no_vali_data} \nTest split: {no_test_data}\n')
 
 
 
 def main():
 
-    parser = utils.get_parser()
-    args = parser.parse_args()
+    parsers = utils.parser_all()
 
-    manager = BanksManager(args)
+    manager = BanksManager(parsers)
 
     manager.load_create_file()
 

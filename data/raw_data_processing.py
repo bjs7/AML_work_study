@@ -5,6 +5,8 @@ import inspect
 import torch
 from torch_geometric.data import Data
 import data.data_utils as du
+import data.feature_engi as fe
+import data.data_functions as dfn
 
 
 #from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -17,13 +19,25 @@ import data.data_utils as du
 
 # main function for extracting the data, used in main scripth -------------------------------------
 
-def get_data(df_edges, data_args, **kwargs):
+def get_data(df, data_paser, **kwargs):
 
-    df_edges['Timestamp'] = df_edges['Timestamp'] - df_edges['Timestamp'].min()
+    if not data_paser.ibm_fe:
+        df = fe.universal_feature_engi(df)
+        scaler_encoders = dfn.extract_enc_cats(df)
+        edge_features = ['Timestamp', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
+                        'Sent Currency', 'Received Currency', 'Payment Format', 
+                        'Amount_Difference_Pct', 'is_currency_exchange']
+    else:
+        scaler_encoders = None
+        edge_features = ['Timestamp', 'Amount Sent', 'Sent Currency', 
+                         'Amount Received', 'Received Currency', 'Payment Format']
+        
+
+    df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()
 
     # get timestamps and labels
-    timestamps = torch.Tensor(df_edges['Timestamp'].to_numpy())
-    y = torch.LongTensor(df_edges['Is Laundering'].to_numpy())
+    timestamps = torch.Tensor(df['Timestamp'].to_numpy())
+    y = torch.LongTensor(df['Is Laundering'].to_numpy())
 
     valid_keys = inspect.signature(split_indices).parameters.keys()
     args = {key: kwargs[key] for key in valid_keys if key in kwargs}
@@ -31,21 +45,18 @@ def get_data(df_edges, data_args, **kwargs):
     split_inds, test_perc = split_indices(timestamps, y, **args)
     #split_inds, test_perc = split_indices(timestamps, y, [0.6, 0.2])
 
-    train_indices = np.concatenate(split_inds[0])
-    vali_indices = np.concatenate(split_inds[1])
-    test_indices = np.concatenate(split_inds[2])
-    indices = [train_indices, vali_indices, test_indices]
+    indices = [np.concatenate(split_inds[i]) for i in range(0,3)]
 
     packed_data = {}
 
     # pack graph data
-    if data_args.data_type == 'graph_data':
-        packed_data['graph_data'] = pack_graph_data(df_edges, y, timestamps, indices)
+    if data_paser.data_type == 'graph_data':
+        packed_data['graph_data'] = pack_graph_data(df, y, timestamps, indices, edge_features)
 
     # pack non-graph data
-    packed_data['regular_data'] = pack_regular_data(df_edges, y, indices)
+    packed_data['regular_data'] = pack_regular_data(df, y, indices)
 
-    return packed_data
+    return packed_data, scaler_encoders
 
 
 
@@ -116,36 +127,29 @@ def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
 
 # pack regular data function -------------------------------------
 
-def pack_regular_data(df_edges, y, indices):
+def pack_regular_data(df, y, indices):
 
     if isinstance(y, torch.Tensor):
         y = np.array(y)
 
-    train_indices = indices[0]
-    vali_indices = indices[1]
-    test_indices = indices[2]
+    packed_data = {}
+    for idx, data  in enumerate(['train_data', 'vali_data', 'test_data']):
+        packed_data[data] = {'x': df.iloc[indices[idx],:], 'y': y[indices[idx]]}
 
-    train_data = {'x': df_edges.iloc[train_indices,:], 'y': y[train_indices]}
-    vali_data = {'x': df_edges.iloc[vali_indices, :], 'y': y[vali_indices]}
-    test_data = {'x': df_edges.iloc[test_indices, :], 'y': y[test_indices]}
-
-    return {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
+    return packed_data
 
 
 
 # pack graph data function -------------------------------------
 
-def pack_graph_data(df_edges, y, timestamps, indices):
+def pack_graph_data(df_edges, y, timestamps, indices, edge_features):
 
-    train_indices = indices[0]
-    vali_indices = indices[1]
-    test_indices = indices[2]
+    train_indices, vali_indices,test_indices = indices
 
     max_n_id = df_edges.loc[:, ['from_id', 'to_id']].to_numpy().max() + 1
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
 
     # set edge and node features
-    edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
     node_features = ['Feature']
 
     # Extract node features from nodes, without their ID
@@ -168,14 +172,31 @@ def pack_graph_data(df_edges, y, timestamps, indices):
     vali_data = du.GraphData(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
     test_data = du.GraphData(x=test_x, y=test_y, edge_index=test_edge_index, edge_attr=test_edge_attr, timestamps=test_edge_times)
 
-    du.update_nr_nodes_for_gd(train_data)
-    du.update_nr_nodes_for_gd(vali_data)
-    du.update_nr_nodes_for_gd(test_data)
+    for data in [train_data, vali_data, test_data]:
+        du.update_nr_nodes_for_gd(data)
 
-    train_indices = torch.tensor(train_indices)
-    vali_indices = torch.tensor(vali_indices)
-    test_indices = torch.tensor(test_indices)
+    packed_data = {'train_data': {'df': train_data}, 
+                'vali_data': {'df': vali_data},
+                'test_data': {'df': test_data}}
+
+    for index, name in zip([train_indices, vali_indices, test_indices], list(packed_data)):
+        packed_data[name]['pred_indices'] = torch.tensor(index)
+
+    return packed_data
+
     
-    return {'train_data': {'df': train_data, 'pred_indices': train_indices}, 
-                'vali_data': {'df': vali_data, 'pred_indices': vali_indices}, 
-                'test_data': {'df': test_data, 'pred_indices': test_indices}}
+    
+
+
+
+
+
+
+
+
+
+
+    #edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+    #edge_features = ['Timestamp', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
+                     #'Sent Currency', 'Received Currency', 'Payment Format', 
+                     #'Amount_Difference_Pct', 'is_currency_exchange']

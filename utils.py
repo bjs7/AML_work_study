@@ -7,7 +7,14 @@ import numpy as np
 import torch
 import json
 import random
+import pandas as pd
+import copy
 
+from data.get_indices_type_data import get_indices_bdt
+from federated_learning.fl_base import Manager, Party
+import data.data_functions as dfn
+from data.raw_data_processing import get_data
+from configs.configs import split_perc
 
 # --------------------------------------------------------------------------------------------------
 # dictionary holders
@@ -31,32 +38,24 @@ file_types = {
 }
 
 # --------------------------------------------------------------------------------------------------
-# kept here tmp. Gonna need to update relevant banks file later.
-
-import configs.configs as config
-
-def load_relevant_banks(args):
-
-    save_direc = config.save_direc_training
-    save_direc = os.path.join(save_direc, 'relevant_banks')
-    
-    split = config.split_perc[0:2]
-    str_folder = f'{args.size}_' + args.ir + f'__split_{split[0]}_{split[1]}.json'
-    file_location = os.path.join(save_direc, str_folder)
-
-    with open(file_location, 'r') as file:
-        relevant_banks = json.load(file)
-
-    return relevant_banks
-
-def get_relevant_banks(args):
-    relevant_banks = load_relevant_banks(args).get(args.banks)
-    return relevant_banks.get('fr_banks'), relevant_banks.get('sr_banks')
-
-
-
-# --------------------------------------------------------------------------------------------------
 # util functions
+
+
+def setup_get_data():
+
+    parsers = parser_all()
+    set_seed(parsers['data_parser'].seed, True)
+    
+    df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+
+    if parsers['fl_parser'].fl_algo == 'full_info':
+        print('set set of data')
+        df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
+
+    df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
+
+    return parsers, df, scaler_encoders
+
 
 def get_data_path():
     local_path = "/home/nam_07/projects"
@@ -175,6 +174,7 @@ def fl_parser():
     parser = argparse.ArgumentParser(description="main args for fl")
     parser.add_argument('--fl_algo', default='FedGD', type=str)
     parser.add_argument('--model', default='GINe', type=str)
+    #parser.add_argument('--model', default='xgboost', type=str)
     #parser.add_argument('--regu', default=)
     
     return parser
@@ -189,6 +189,9 @@ def data_parser():
     parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
     parser.add_argument('--banks', default='only_launderings', type=str)
     parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--train_for_final', action='store_true', help='Use train data for final training instead of vali')
+    parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
+    parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
 
     # utils
     parser.add_argument('--testing', action='store_true')
@@ -207,3 +210,51 @@ def gnn_parser():
     parser.add_argument("--reverse_mp", action='store_true', help="Use reverse MP in GNN training")
 
     return parser
+
+
+def init_parties(df, parsers, manager, scaler_encoders = None):
+
+    if parsers['fl_parser'].fl_algo == 'full_info':
+
+        bank_indices = get_indices_bdt(df, bank=None)
+        train_data, vali_data, test_data = dfn.fl_get_data(parsers, df, bank_indices)
+        tmp_data = {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
+        Party.get_algo_class(parsers = parsers, bank_id=None, data=tmp_data, 
+                                indices=bank_indices, manager=manager, 
+                                scaler_encoders=scaler_encoders)
+    else:           
+        fr_banks, sr_banks = get_relevant_banks(data_parser)
+        relevant_banks = fr_banks #+ sr_banks
+        relevant_banks = relevant_banks[0:4] + relevant_banks[5:10]
+
+        for bank in relevant_banks:
+
+            bank_indices = get_indices_bdt(df, bank=bank)
+            train_data, vali_data, test_data = dfn.fl_get_data(parsers, df, bank_indices)
+            tmp_data = {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
+            Party.get_algo_class(parsers = parsers, bank_id=bank, data=tmp_data, 
+                                indices=bank_indices, manager=manager, 
+                                scaler_encoders=scaler_encoders)
+
+        manager._num_parties = len(manager.parties)
+
+
+
+def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None):
+
+    # this part here is only used for individual banks settings
+    if tuned_hp is not None:
+        best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']
+        tuned_hp = {bank_id: entry['hyperparameters'] for bank_id, entry in tuned_hp.items()}
+
+    for bank in banks:
+        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders))
+        
+        if tuned_hp is not None:
+            tuned_hp[bank] = best_tuned_hp
+    
+    manager._num_parties = len(manager.parties)
+
+    return tuned_hp
+
+

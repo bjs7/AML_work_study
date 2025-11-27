@@ -20,6 +20,9 @@ from torch_geometric.loader import LinkNeighborLoader
 # also how to adjust the data set size, such that copy can be avoided.
 
 # maybe move get_gnn out of GNN, and into manager 100%, and then send to parties?
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class GNN(ABC):
 
     def __init__(self, manager, hyperparams, node_features, edge_dim):
@@ -36,11 +39,11 @@ class GNN(ABC):
             raise ValueError(f"Unknown algo type: {model_name}")
         gnn_init = GNN_REGISTRY[model_name]
 
-        arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('gnn_layers'),
+        arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('num_gnn_layers'),
                     'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),
-                    'residual': False, 'edge_updates': manager.args['gnn_parser'].emlps, 
-                    'edge_dim': edge_dim, 'dropout': hyperparams.get('dropout'), 
-                    'final_dropout': hyperparams.get('dropout')}
+                    'residual': False, 'edge_updates': manager.args['gnn_parser'].emlps,
+                    'edge_dim': edge_dim, 'dropout': hyperparams.get('dropout'),
+                    'final_dropout': hyperparams.get('final_dropout')}
         
         return gnn_init(**arguments)
 
@@ -49,13 +52,17 @@ class GNN(ABC):
 
     def _get_gnn_loss_optimizer(self, manager, hyperparams, node_features, edge_dim):
         self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
-        self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning rate'))
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')])) 
+        self.gnn.to(device)  # Move model to GPU
+        self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')]).to(device)) 
 
     def update_w(self, df):
 
         self.gnn.train()
         self.optimizer.zero_grad()
+
+        # Move data to device
+        df = df.to(device)
 
         pred = self.gnn(df.x, df.edge_index, df.edge_attr)
         loss = self.loss_fn(pred, df.y)
@@ -70,11 +77,12 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            #data.to(device)
+            # Move data to device
+            df = df.to(device)
             pred = self.gnn(df.x, df.edge_index, df.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
 
-        return pred.argmax(dim=-1)
+        return pred.argmax(dim=-1).cpu().numpy()  # Move predictions back to CPU and convert to numpy
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 # Util functions for the gnn models -----------------------------------------------------------------------------------------------------

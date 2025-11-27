@@ -9,7 +9,7 @@ from snapml import GraphFeaturePreprocessor
 import training.utils as tu
 #from torch_geometric.data import Data
 import data.data_utils as du
-
+from configs import configs
 
 # Function for feature engineering, GNN and Booster --------------------------------------------------------------------------------------------
 
@@ -51,7 +51,9 @@ def feature_engi_regular_data(df, scaler_encoders = None):
 
     scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt', 'encoder_currency', 'encoder_payment_format', 'gfp')}
 
-    data_features = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+    data_features = ['EdgeID', 'from_id', 'to_id', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
+                     'Sent Currency', 'Received Currency', 'Payment Format', 
+                     'Amount_Difference_Pct', 'is_currency_exchange']
     x = df['x'].loc[:,data_features]
     y = df['y']
 
@@ -188,14 +190,13 @@ def update_data(data, bank_indices):
 
 # function to process it, standardize etc.
 
-from configs import configs
-
 def feature_engi_graph_data(data, args, scaler_encoders = None):
 
     data = copy.deepcopy(data)
     df = data['df']
 
-    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt', 'scaler_ports_tds', 'encoder_currency', 'encoder_payment_format')}
+    # the names in this one also have to change accordingly
+    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt_sent', 'scaler_amt_rec', 'scaler_ports_tds', 'encoder_currency', 'encoder_payment_format')} if scaler_encoders else {}
 
     # time periods ---------------------------------------------------------------------------------------------------------    
 
@@ -208,19 +209,20 @@ def feature_engi_graph_data(data, args, scaler_encoders = None):
                 for key, val in time_freqs.items()}
     
     # standardization ------------------------------------------------------------------------------------------------------
-
-    if not scl_enc['scaler_amt']:
-        scl_enc['scaler_amt'] = StandardScaler()
-        scaler_amt_values = scl_enc['scaler_amt'].fit_transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
-    else:
-        scaler_amt_values = scl_enc['scaler_amt'].transform(torch.reshape(df.edge_attr[:,1], (df.edge_attr[:,1].shape[0],1)))
-    df.edge_attr[:,1] = torch.reshape(torch.tensor(scaler_amt_values), (-1,))
+    
+    for feat, index in zip(['scaler_amt_sent', 'scaler_amt_rec'], [1,2]):
+        if not scl_enc.get(feat):
+            scl_enc[feat] = StandardScaler()
+            scaler_amt_values = scl_enc[feat].fit_transform(torch.reshape(df.edge_attr[:,index], (df.edge_attr[:,index].shape[0],1)))
+        else:
+            scaler_amt_values = scl_enc[feat].transform(torch.reshape(df.edge_attr[:,index], (df.edge_attr[:,index].shape[0],1)))
+        df.edge_attr[:,index] = torch.reshape(torch.tensor(scaler_amt_values), (-1,))
 
     df.x = du.z_norm(df.x)
 
     if args.ports or args.tds:
 
-        if not scl_enc['scaler_ports_tds']:
+        if not scl_enc.get('scaler_ports_tds'):
             scl_enc['scaler_ports_tds'] = StandardScaler()        
             scaler_ports_tds_values = scl_enc['scaler_ports_tds'].fit_transform(df.edge_attr[:,4:])
         else:
@@ -230,23 +232,23 @@ def feature_engi_graph_data(data, args, scaler_encoders = None):
 
     # Encoding -------------------------------------------------------------------------------------------------------------
 
-    column_encoders = {'currency': 2, 'payment_format': 3}
+    column_encoders = {'currency': 3, 'currency': 4, 'payment_format': 5}
     encoded = {}
 
     for feature, col_idx in column_encoders.items():
         encoder_key = f'encoder_{feature}'
 
         column_data = df.edge_attr[:, col_idx].reshape(-1, 1)
-        if not scl_enc[encoder_key]: #hasattr(scl_enc[encoder_key], 'categories_')
+        if not scl_enc.get(encoder_key): #hasattr(scl_enc[encoder_key], 'categories_')
             scl_enc[encoder_key] = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
             encoded[feature] = scl_enc[encoder_key].fit_transform(column_data)
-            raise ValueError('Encoders not predefined')
+            #raise ValueError('Encoders not predefined')
         else:
             encoded[feature] = scl_enc[encoder_key].transform(column_data)
 
     # Pack -----------------------------------------------------------------------------------------------------------------
 
-    cols_to_keep = [1]
+    cols_to_keep = [0,1,2,6,7]
     if configs.include_time:
         cols_to_keep.append(0)
 
@@ -257,5 +259,114 @@ def feature_engi_graph_data(data, args, scaler_encoders = None):
     data['scaler_encoders'] = scl_enc
 
     return data
+
+
+
+# Functions for data analysis ------------------------------------------------------------------------------------------------
+
+
+def get_exchange_rates(df, reference_currency = 0):
+
+    # first check that both columns hold the same type of currencies.
+    currency_symmetric_diff = set(df['Sent Currency']) ^ set(df['Received Currency'])
+    if currency_symmetric_diff != set():
+        raise('There is a difference in currencies in the two currency columns')
+
+    #{'US Dollar': 0, 'Bitcoin': 1, 'Euro': 2, 'Australian Dollar': 3, 'Yuan': 4, 
+    # 'Rupee': 5, 'Yen': 6, 'Mexican Peso': 7, 
+    # 'UK Pound': 8, 'Ruble': 9, 'Canadian Dollar': 10, 
+    # 'Swiss Franc': 11, 'Brazil Real': 12, 'Saudi Riyal': 13, 'Shekel': 14}
+    currencies = df['Sent Currency'].unique()
+    exchange_rates = {}
+
+    for curr in currencies:
+
+        if curr == reference_currency:
+            exchange_rates[curr] = 1.0
+            continue
+
+        mask1 = (df['Sent Currency'] == reference_currency) & (df['Received Currency'] == curr)
+        if mask1.sum() > 0:
+            rate1 = (df.loc[mask1, 'Amount Received'] / df.loc[mask1, 'Amount Sent']).median()
+        else:
+            rate1 = None
+
+        mask2 = (df['Sent Currency'] == curr) & (df['Received Currency'] == reference_currency)
+        if mask2.sum() > 0:
+            rate2 = (1 / (df.loc[mask2, 'Amount Received'] / df.loc[mask2, 'Amount Sent'])).median()
+        else:
+            rate2 = None
+
+        if rate1 is not None and rate2 is not None:
+            exchange_rates[curr] = (rate1 + rate2) / 2  # Average both directions
+        elif rate1 is not None:
+            exchange_rates[curr] = rate1
+        elif rate2 is not None:
+            exchange_rates[curr] = rate2
+        else:
+            # Fallback: No direct conversion found
+            # Could use 1.0 or try to infer from indirect conversions
+            exchange_rates[curr] = 1.0
+            print(f"Warning: No conversion data found for currency {curr}")
+
+    return exchange_rates
+
+
+def normalize_amounts(df, exchange_rates):
+
+    df['Amount_Sent_Normalized'] = df.apply(
+        lambda row: row['Amount Sent'] / exchange_rates[row['Sent Currency']], 
+        axis=1
+    )
+
+    df['Amount_Received_Normalized'] = df.apply(
+        lambda row: row['Amount Received'] / exchange_rates[row['Received Currency']], 
+        axis=1
+    )
+
+    return df
+
+
+def log_transformer(df):
+
+    any_zeros = (df['Amount_Sent_Normalized'] <= 0).any() or (df['Amount_Received_Normalized'] <= 0).any()
+    log_func = np.log1p if any_zeros else np.log
+
+    df[['Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log']] = df[['Amount_Sent_Normalized', 
+                                                                    'Amount_Received_Normalized']].apply(lambda x: log_func(x))
+    
+    return df
+
+def universal_features_restructure(df):
+
+    # Apply feature engineering and add more features
+
+    # Include the percentage difference between sent and received, for the non-log transformed values
+    df['Amount_Difference_Pct'] = (df['Amount_Sent_Normalized'] - df['Amount_Received_Normalized']) / df['Amount_Sent_Normalized']
+
+    # Boolean to check whether the currency sent is the same as the received one.
+    df['is_currency_exchange'] = (df['Sent Currency'] != df['Received Currency']).astype(int)
+
+    # One could include currency but different amounts (suspicious), but there are not such 
+    # observations, so this is not included as it would just result in a column of 0's
+
+    # restructure the dataframe
+    df = df[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent',
+        'Sent Currency', 'Amount Received', 'Received Currency',
+        'Payment Format', 'Amount_Sent_Normalized', 'Amount_Received_Normalized',
+        'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
+        'Amount_Difference_Pct', 'is_currency_exchange',
+        'From Bank', 'To Bank', 'Is Laundering']]
+    
+    return df
+
+
+def universal_feature_engi(df):
+
+    exchange_rates = get_exchange_rates(df)
+    df = normalize_amounts(df, exchange_rates)
+    df = log_transformer(df)
+    df = universal_features_restructure(df)
+    return df
 
 

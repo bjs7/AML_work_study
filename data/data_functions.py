@@ -59,7 +59,7 @@ def prep_laundering_dfs(data_parser, data_copy):
 
 
 
-def fl_get_data(parsers, raw_data, bank_indices):
+def fl_get_data(parsers, df, bank_indices = None):
     """Get data for federated learning based on data type.
 
     Args:
@@ -74,8 +74,8 @@ def fl_get_data(parsers, raw_data, bank_indices):
     data_type = data_parser.data_type
 
     if data_type == 'graph_data':
-        return get_graph_data(parsers, raw_data[data_type], bank_indices)
+        return get_graph_data(parsers, df[data_type], bank_indices)
     elif data_type == 'regular_data':
-        return get_booster_data(data_parser, raw_data[data_type], bank_indices)
+        return get_booster_data(data_parser, df[data_type], bank_indices)
 
 

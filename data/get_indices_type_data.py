@@ -9,30 +9,18 @@ import data.data_utils as du
 # --------------------------------------------------------------------------------------------------------------------------
 
 def get_bank_indices(df, bank):
-
-    listwith_frombank = [int(toint) for toint in list(np.where(df.loc[:, 'From Bank'] == bank)[0])]
-    listwith_tobank = [int(toint) for toint in list(np.where(df.loc[:, 'To Bank'] == bank)[0])]
-    
-    listwith_frombank = list(df.index[listwith_frombank])
-    listwith_tobank = list(df.index[listwith_tobank])
-    indices_to_get = list(set(listwith_frombank + listwith_tobank))
-    bank_indices = sorted(indices_to_get)
-
-    return bank_indices
+    mask = (df.loc[:, 'From Bank'] == bank) | (df.loc[:, 'To Bank'] == bank)
+    return sorted(df[mask].index.tolist())
 
 def get_indices_bdt(data, bank = None):
 
-    train_data_indices = data['regular_data']['train_data']['x'][['From Bank', 'To Bank']]
-    vali_data_indices = data['regular_data']['vali_data']['x'][['From Bank', 'To Bank']]
-    test_data_indices = data['regular_data']['test_data']['x'][['From Bank', 'To Bank']]
-    
-    train_data_indices = get_bank_indices(train_data_indices, bank) if isinstance(bank, int) else train_data_indices.index.tolist()
-    vali_data_indices = get_bank_indices(vali_data_indices, bank) if isinstance(bank, int) else vali_data_indices.index.tolist()
-    test_data_indices = get_bank_indices(test_data_indices, bank) if isinstance(bank, int) else test_data_indices.index.tolist()
+    df = {}
 
-    return {'train_indices': train_data_indices, 'vali_indices': vali_data_indices, 'test_indices': test_data_indices}
+    for split in ['train', 'vali', 'test']:
+        split_indices = data['regular_data'][f'{split}_data']['x'][['From Bank', 'To Bank']]
+        df[f'{split}_indices'] = get_bank_indices(split_indices, bank) if isinstance(bank, int) else split_indices.index.tolist()
 
-
+    return df
 
 
 # --------------------------------------------------------------------------------------------------------------------------

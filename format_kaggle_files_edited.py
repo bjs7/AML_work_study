@@ -28,7 +28,7 @@ currency = dict()
 paymentFormat = dict()
 bankAcc = dict()
 account = dict()
-frombank = dict()
+banks = dict()
 tobank = dict()
 
 def get_dict_val(name, collection):
@@ -79,8 +79,8 @@ with open(outPath, 'w') as writer:
         amountReceivedOrig = float(raw[i,"Amount Received"])
         amountPaidOrig = float(raw[i,"Amount Paid"])
 
-        bank_from = get_dict_val(raw[i,"From Bank"], frombank)
-        bank_to = get_dict_val(raw[i,"To Bank"], frombank)
+        bank_from = get_dict_val(raw[i,"From Bank"], banks)
+        bank_to = get_dict_val(raw[i,"To Bank"], banks)
 
         isl = int(raw[i,"Is Laundering"])
 
