@@ -36,9 +36,6 @@ def main():
     # Laudering values -------
     laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
 
-
-    
-
     # Setup manager and parties ----------------------------------------------------------------------------------------
 
     # Manager

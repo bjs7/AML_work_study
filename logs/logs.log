@@ -1021,3 +1021,27 @@
 2025-11-29 19:50:29,900 [INFO ] root                 - Random seed set as 0
 2025-11-29 19:50:33,023 [INFO ] root                 - Parsers, data and scalers loaded
 2025-11-29 19:50:33,023 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 20:03:26,178 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:03:28,815 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 20:03:28,816 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 20:03:48,182 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:03:51,172 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 20:03:51,172 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 20:03:51,991 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 20:03:52,072 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 20:03:52,073 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 20:03:52,144 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 20:03:59,849 [WARNI] models.gnn           - Very high loss value: 66706.1875 - may indicate learning issues
+2025-11-29 20:04:14,018 [WARNI] models.gnn           - Very high loss value: 20097.1641 - may indicate learning issues
+2025-11-29 20:04:27,484 [WARNI] models.gnn           - Very high loss value: 49891.6484 - may indicate learning issues
+2025-11-29 20:04:41,010 [WARNI] models.gnn           - Very high loss value: 28353.8672 - may indicate learning issues
+2025-11-29 20:04:54,494 [WARNI] models.gnn           - Very high loss value: 32065.9531 - may indicate learning issues
+2025-11-29 20:05:07,836 [WARNI] models.gnn           - Very high loss value: 23870.4121 - may indicate learning issues

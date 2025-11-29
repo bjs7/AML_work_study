@@ -120,22 +120,22 @@ class FullInfoGNNManager(GNNMixinManager):
         for epoch in range(epochs):
             self._party.update_local_w()
 
-            if (epoch + 1) % 20 == 0:
+            #if (epoch + 1) % 20 == 0:
 
-                pred_probabilities = self._party.model.predict(self._party.get_eval_data())
-                tmp_metrics = metrics(y_true = laundering_values['true_y'],
-                                      y_pred_probabilities = pred_probabilities)
+            pred_probabilities = self._party.model.predict(self._party.get_eval_data())
+            tmp_metrics = metrics(y_true = laundering_values['true_y'],
+                                    y_pred_probabilities = pred_probabilities)
 
-                logger.debug("Epoch %d/%d - F1: %.4f, ROC-AUC: %.4f",
-                            epoch + 1, epochs, tmp_metrics['f1'], tmp_metrics['roc_auc'])
+            logger.debug("Epoch %d/%d - F1: %.4f, ROC-AUC: %.4f",
+                        epoch + 1, epochs, tmp_metrics['f1'], tmp_metrics['roc_auc'])
 
-                if tmp_metrics['f1'] > best_f1:
-                    best_metrics = tmp_metrics
-                    best_pred_label = predictions_helper(pred_probabilities)
-                    best_pred_probabilities = copy.deepcopy(pred_probabilities)
-                    best_model = copy.deepcopy(self._party.model.gnn.state_dict())
-                    best_f1 = tmp_metrics['f1']
-                    logger.debug("New best F1: %.4f at epoch %d", best_f1, epoch + 1)
+            if tmp_metrics['f1'] > best_f1:
+                best_metrics = tmp_metrics
+                best_pred_label = predictions_helper(pred_probabilities)
+                best_pred_probabilities = copy.deepcopy(pred_probabilities)
+                best_model = copy.deepcopy(self._party.model.gnn.state_dict())
+                best_f1 = tmp_metrics['f1']
+                logger.debug("New best F1: %.4f at epoch %d", best_f1, epoch + 1)
 
         if best_model is None:
             logger.error("No evaluation occurred during training (epochs=%d). Check evaluation frequency.", epochs)
