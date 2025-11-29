@@ -193,6 +193,8 @@ gfpparams = {
 # IBM Setting
 
 ibm_gnn = {"learning_rate": 0.006213266113989207, "hidden_embedding_size": 66, "n_mlp_layers": 1, "num_gnn_layers": 2, "loss": "ce",
-      "w_ce1": 1.0000182882773443, "w_ce2": 6.275014431494497, "norm_method": "z_normalize", "dropout": 0.00983468338330501, "final_dropout": 0.10527690625126304}
+      "w_ce1": 1.0000182882773443, "w_ce2": 1.0000182882773443, "norm_method": "z_normalize", "dropout": 0.00983468338330501, "final_dropout": 0.10527690625126304}
+
+#6.275014431494497
 
 
