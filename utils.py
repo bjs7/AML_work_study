@@ -48,7 +48,7 @@ def setup_get_data():
     
     df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
-    if parsers['fl_parser'].fl_algo == 'full_info':
+    if parsers['data_parser'].testing and parsers['fl_parser'].fl_algo == 'full_info':
         print('set set of data')
         df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
 
