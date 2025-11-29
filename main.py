@@ -49,11 +49,11 @@ def main():
 
     # Train the model ----------------------------------------------------------------------------------------
 
-    #results = manager.train(tuned_hp, laundering_values_test)
+    results = manager.train(tuned_hp, laundering_values_test)
 
     # Save restuls ----------------------------------------------------------------------------------------
 
-    #save_results(results, tuned_hp, manager)
+    save_results(results, tuned_hp, manager)
 
     #print(parsers['data_parser'].testing)
     #print(parsers['data_parser'].ibm_fe)
