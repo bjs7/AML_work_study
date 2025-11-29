@@ -29,9 +29,6 @@ def main():
 
     logging.info('Parsers, data and scalers loaded')
     logging.info(f"train size: {df['regular_data']['train_data']['x'].shape[0]}, validation size: {df['regular_data']['vali_data']['x'].shape[0]}, test size: {df['regular_data']['test_data']['x'].shape[0]}")
-
-    # df['regular_data']['train_data']['x'].shape[0]
-
     
     # Laudering values -------
     laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
@@ -54,11 +51,6 @@ def main():
 
     #print(parsers['data_parser'].testing)
     #print(parsers['data_parser'].ibm_fe)
-
-
-    
-
-
 
 
 if __name__ == '__main__':

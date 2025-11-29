@@ -1045,3 +1045,90 @@
 2025-11-29 20:04:41,010 [WARNI] models.gnn           - Very high loss value: 28353.8672 - may indicate learning issues
 2025-11-29 20:04:54,494 [WARNI] models.gnn           - Very high loss value: 32065.9531 - may indicate learning issues
 2025-11-29 20:05:07,836 [WARNI] models.gnn           - Very high loss value: 23870.4121 - may indicate learning issues
+2025-11-29 20:25:23,313 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:31:42,673 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:39:45,190 [WARNI] models.gnn           - Very high loss value: 99939.8750 - may indicate learning issues
+2025-11-29 20:40:21,579 [WARNI] models.gnn           - Very high loss value: 193089.0000 - may indicate learning issues
+2025-11-29 20:40:40,557 [WARNI] models.gnn           - Very high loss value: 76138.2578 - may indicate learning issues
+2025-11-29 20:40:49,441 [WARNI] models.gnn           - Very high loss value: 70140.0391 - may indicate learning issues
+2025-11-29 20:40:55,710 [WARNI] models.gnn           - Very high loss value: 40312.3594 - may indicate learning issues
+2025-11-29 20:41:21,977 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 20:42:33,617 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 20:58:33,663 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:58:36,451 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 20:58:36,451 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 20:58:37,276 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 20:58:37,351 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 20:58:37,352 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 20:58:37,429 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 20:59:01,940 [INFO ] root                 - Random seed set as 0
+2025-11-29 20:59:06,299 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 20:59:06,299 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 20:59:07,332 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 20:59:07,493 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 20:59:07,494 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 20:59:07,494 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 20:59:07,494 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 20:59:07,579 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 21:01:53,900 [INFO ] root                 - Random seed set as 0
+2025-11-29 21:01:56,987 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 21:01:56,988 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 21:01:57,656 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 21:01:57,729 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 21:01:57,730 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 21:01:57,730 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 21:01:57,730 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 21:01:57,802 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 22:24:33,826 [INFO ] root                 - Random seed set as 0
+2025-11-29 22:24:37,044 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 22:24:37,044 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 22:24:37,887 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 22:24:37,959 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 22:24:38,028 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 22:25:21,114 [INFO ] root                 - Random seed set as 0
+2025-11-29 22:25:24,324 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 22:25:24,324 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 22:25:24,987 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 22:25:25,059 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 22:25:25,060 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 22:25:25,133 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 22:25:29,460 [WARNI] models.gnn           - Very high loss value: 66706.1875 - may indicate learning issues
+2025-11-29 22:25:44,372 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:25:52,053 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions

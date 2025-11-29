@@ -35,7 +35,7 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 utils.logger_setup()
 parsers = utils.parser_all()
-parsers['data_parser'].testing = True
+#parsers['data_parser'].testing = True
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
@@ -46,17 +46,16 @@ parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
 
-#parsers['fl_parser'].fl_algo = 'full_info'
-#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+parsers['fl_parser'].fl_algo = 'full_info'
+parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
-
-parsers['fl_parser'].fl_algo = 'individual'
+#parsers['fl_parser'].fl_algo = 'individual'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
-if parsers['fl_parser'].fl_algo == 'full_info':
-    df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
+#if parsers['fl_parser'].fl_algo == 'full_info':
+    #df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
 
 df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
@@ -69,13 +68,17 @@ laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers
 # Get the manager
 manager = Manager.get_algo_class(parsers)
 
+self = manager
+laundering_values = laundering_values_vali
+
+
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
 
 self = manager
-#laundering_values = laundering_values_vali
-laundering_values = laundering_values_test
+laundering_values = laundering_values_vali
+#laundering_values = laundering_values_test
 hyperparameters = tuned_hp
 
 
