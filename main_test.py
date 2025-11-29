@@ -19,11 +19,25 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 # setup -----------------------------------------------
 
 # caching in managers?
-# add more metrics? which one is possible?
 # check the way seeds are set
 
 # NEED TO CHANGE NAME OF FEDGD. I AM USING AVERAGE CURRENTLY
 # Be sure that it is a 0.5 threshold that is used for f1 score etc.
+
+# ALSO NEED TO ADD MORE LOGGING AND SAVE THE LOGGING IN THE EXPERIEMENTS FOLDER!
+
+# smart way for how to handle / sort folders on hpc and how to set "algos" etc. in the .sh file
+
+# be sure that gpu is used on hpc
+
+# if parsers['data_parser'].train_for_final = True skip second round banks
+
+# in tuning, most of the metrics calcuations can be skipped
+# conditino that only adds max_prob, avg_prob etc. if not full info?
+
+# add wwarnings different places. Do this with logging etc.
+
+
 
 utils.logger_setup()
 parsers = utils.parser_all()
@@ -38,11 +52,11 @@ parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
 
-parsers['fl_parser'].fl_algo = 'full_info'
-parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+#parsers['fl_parser'].fl_algo = 'full_info'
+#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
 
-#parsers['fl_parser'].fl_algo = 'individual'
+parsers['fl_parser'].fl_algo = 'individual'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -64,6 +78,13 @@ manager = Manager.get_algo_class(parsers)
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
+
+self = manager
+#laundering_values = laundering_values_vali
+laundering_values = laundering_values_test
+hyperparameters = tuned_hp
+
+
 results = manager.train(tuned_hp, laundering_values_test)
 
 
@@ -71,8 +92,6 @@ results = manager.train(tuned_hp, laundering_values_test)
 save_results(results, tuned_hp, manager)
 
 
-self = manager
-laundering_values = laundering_values_vali
 
 
 

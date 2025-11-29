@@ -178,7 +178,7 @@ def create_experiment_config(manager):
 def aggregate_seed_results(results_by_seed):
 
     """Aggregate metrics across all seeds."""
-    metric_names = ['f1', 'accuracy']  # Add all metrics you track
+    metric_names = ['f1', 'precision', 'recall', 'accuracy', 'roc_auc', 'pr_auc']  # Add all metrics you track
     aggregated = {}
     
     for metric in metric_names:

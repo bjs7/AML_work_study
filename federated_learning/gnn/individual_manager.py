@@ -4,7 +4,7 @@ import copy
 import numpy as np
 import utils
 import configs.configs as configs
-from inference import metrics
+from inference import metrics, predictions_helper
 import inference as flin
 from .manager_mixin import GNNMixinManager
 from relbanks_saving_analysis.relevant_banks import get_relevant_banks
@@ -26,6 +26,8 @@ class IndividualGNNManager(GNNMixinManager):
         tuned_hp = self.tuning(laundering_values)
         
         # Add sr_banks with best hyperparameters
+        if self.args['data_parser'].train_for_final:
+            sr_banks = []
         tuned_hp = utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders, tuned_hp)
         
         return tuned_hp
@@ -75,10 +77,17 @@ class IndividualGNNManager(GNNMixinManager):
     def party_train(self, party, party_laundering_values):
 
         best_metrics = None
-        best_preditcions = None
+        #best_preditcions = None
+
+        best_pred_label = None
+        best_pred_probabilities = None
+
         best_f1 = -1
         best_model = None
-        party_laundering_values['predictions_fl'] = 0
+
+        party_laundering_values['pred_label'] = 0
+        party_laundering_values['pred_probabilities'] = 0
+
 
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
 
@@ -87,16 +96,18 @@ class IndividualGNNManager(GNNMixinManager):
 
             if (i+1) % 20 == 0:  
 
-                predictions = party.model.predict_binary(party.get_eval_data())
-                tmp_metrics = metrics(party_laundering_values['true_y'], predictions)
+                pred_probabilities = party.model.predict(party.get_eval_data())
+                tmp_metrics = metrics(party_laundering_values['true_y'], pred_probabilities)
                 
                 if tmp_metrics['f1'] > best_f1:
                     best_metrics = tmp_metrics
-                    best_preditcions = copy.deepcopy(predictions)
+                    best_pred_label = predictions_helper(pred_probabilities)
+                    best_pred_probabilities = copy.deepcopy(pred_probabilities)
                     best_model = copy.deepcopy(party.model.gnn.state_dict())
                     best_f1 = tmp_metrics['f1']
 
-        party_laundering_values['predictions_fl'] = best_preditcions
+        party_laundering_values['pred_label'] = best_pred_label
+        party_laundering_values['pred_probabilities'] = best_pred_probabilities
         
         return {'model': best_model, 'metrics': best_metrics, 'laundering_values': party_laundering_values}
 
@@ -129,14 +140,16 @@ class IndividualGNNManager(GNNMixinManager):
             models_hyperparameters[bank_id] = {'model': tmp_model['model'], 
                                                'hyperparameters': hyperparameters[bank_id]}
             
-            party_predictions[bank_id] = tmp_model['laundering_values']['predictions_fl']
+            party_predictions[bank_id] = tmp_model['laundering_values']['pred_probabilities']
         
 
         for bank_id, party in self.parties.items():
             party.model.gnn.load_state_dict(models_hyperparameters[bank_id]['model'])
-            flin.update_laundering_values(party, laundering_values, predictions=party_predictions[bank_id])
+            flin.update_laundering_values(party, laundering_values, pred_probabilities=party_predictions[bank_id])
 
-        collective_metrics = metrics(laundering_values['true_y'], laundering_values['predictions_fl'])
+        collective_metrics = metrics(y_true = laundering_values['true_y'], 
+                                     y_pred_probabilities = laundering_values['avg_prob'],
+                                     y_pred_binary = laundering_values['pred_label'])
 
         return {
             'metrics': collective_metrics,

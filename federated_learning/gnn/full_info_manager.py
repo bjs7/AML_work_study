@@ -2,7 +2,7 @@ from .manager_mixin import GNNMixinManager
 import copy
 import utils
 import configs.configs as configs
-from inference import metrics
+from inference import metrics, predictions_helper
 import inference as flin
 from training.utils import ibm_gnn
 
@@ -74,10 +74,14 @@ class FullInfoGNNManager(GNNMixinManager):
     def _train(self, laundering_values):
         """Training loop for single party - no loops over parties."""
         best_metrics = None
-        best_predictions = None
+        best_pred_label = None
+        best_pred_probabilities = None
         best_f1 = -1
         best_model = None
-        laundering_values['predictions_fl'] = 0
+
+        # reset predictions
+        laundering_values['pred_probabilities'] = 0
+        laundering_values['pred_label'] = 0
         
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
         
@@ -85,12 +89,15 @@ class FullInfoGNNManager(GNNMixinManager):
             self._party.update_local_w()
             
             if (epoch + 1) % 20 == 0:
-                predictions = self._party.model.predict_binary(self._party.get_eval_data())
-                tmp_metrics = metrics(laundering_values['true_y'], predictions)
+
+                pred_probabilities = self._party.model.predict(self._party.get_eval_data())
+                tmp_metrics = metrics(y_true = laundering_values['true_y'], 
+                                      y_pred_probabilities = pred_probabilities)
                 
                 if tmp_metrics['f1'] > best_f1:
                     best_metrics = tmp_metrics
-                    best_predictions = copy.deepcopy(predictions)
+                    best_pred_label = predictions_helper(pred_probabilities)
+                    best_pred_probabilities = copy.deepcopy(pred_probabilities)
                     best_model = copy.deepcopy(self._party.model.gnn.state_dict())
                     best_f1 = tmp_metrics['f1']
         
@@ -98,7 +105,8 @@ class FullInfoGNNManager(GNNMixinManager):
             raise ValueError(f"No evaluation occurred during training (epochs={epochs}). Check evaluation frequency.")
     
         # Update laundering values with best predictions
-        laundering_values['predictions_fl'] = best_predictions
+        laundering_values['pred_probabilities'] = best_pred_probabilities
+        laundering_values['pred_label'] = best_pred_label
         
         return {'metrics': best_metrics, 
                 'laundering_values': copy.deepcopy(laundering_values), 

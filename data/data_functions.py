@@ -22,7 +22,6 @@ def extract_enc_cats(df):
 
     return {'encoder_currency': encoder_cur, 'encoder_payment_format': encoder_pay}
 
-
 def prep_laundering_dfs(data_parser, data_copy):
     """Prepare validation and test laundering value dataframes.
 
@@ -41,7 +40,11 @@ def prep_laundering_dfs(data_parser, data_copy):
     laundering_values_vali = pd.DataFrame({
         'indices': bank_indices['vali_indices'],
         'true_y': vali_y,
-        'predictions_fl': np.zeros(len(vali_y))
+        'pred_probabilities': np.zeros(len(vali_y)),
+        'pred_label': np.zeros(len(vali_y)),
+        'num_prob': np.zeros(len(vali_y)),
+        'avg_prob': np.zeros(len(vali_y)),
+        'max_prob': np.zeros(len(vali_y))
     })
 
     # Create test laundering values dataframe
@@ -49,7 +52,11 @@ def prep_laundering_dfs(data_parser, data_copy):
     laundering_values_test = pd.DataFrame({
         'indices': bank_indices['test_indices'],
         'true_y': test_y,
-        'predictions_fl': np.zeros(len(test_y))
+        'pred_probabilities': np.zeros(len(test_y)),
+        'pred_label': np.zeros(len(test_y)),
+        'num_prob': np.zeros(len(test_y)),
+        'avg_prob': np.zeros(len(test_y)),
+        'max_prob': np.zeros(len(test_y))
     })
 
     # Restore original scenario

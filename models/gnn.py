@@ -69,7 +69,21 @@ class GNN(ABC):
 
         loss.backward()
         self.optimizer.step()
-    
+
+    def predict(self, graph_data):
+
+        df = graph_data.get('df')
+        pred_indices = graph_data.get('pred_indices')
+
+        self.gnn.eval()
+        with torch.no_grad():
+            # Move data to device
+            df = df.to(device)
+            pred = self.gnn(df.x, df.edge_index, df.edge_attr)
+            pred = pred[pred_indices] if pred_indices is not None else pred
+        
+        return pred.softmax(dim=1)[:,1].cpu().numpy()
+
     def predict_binary(self, graph_data):
 
         df = graph_data.get('df')
@@ -83,6 +97,33 @@ class GNN(ABC):
             pred = pred[pred_indices] if pred_indices is not None else pred
 
         return pred.argmax(dim=-1).cpu().numpy()  # Move predictions back to CPU and convert to numpy
+
+
+
+#torch.randn(3, 5).softmax(dim=0)
+#torch.randn(10, 2).softmax(dim=1)
+
+#pred.softmax(dim=1)[:,1]
+#pred.argmax(dim=-1)
+
+#assert ((pred.softmax(dim=1)[:,1] > 0.5) == (pred.argmax(dim=-1) == 1)).all()
+
+#self = manager._party.model
+#graph_data = manager._party.get_eval_data()
+#pred = self.predict(graph_data)
+
+#pred.softmax(dim=1)
+
+#self = party.model
+#graph_data = party.get_eval_data()
+#pred = self.predict(graph_data)
+
+#pred.softmax(dim=1)
+
+#self.predict_binary(graph_data)
+
+#torch.exp(pred[0,:])/sum(torch.exp(pred[0,:]))
+#torch.exp(torch.tensor(100))
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 # Util functions for the gnn models -----------------------------------------------------------------------------------------------------

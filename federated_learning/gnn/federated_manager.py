@@ -26,6 +26,8 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         tuned_hp, _ = self.tuning(laundering_values)
 
         # Add sr_banks
+        if self.args['data_parser'].train_for_final:
+            sr_banks = []
         utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders)
 
         return tuned_hp
@@ -79,7 +81,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         for seed in range(seeds):
             utils.set_seed(seed + 1)
-            results_by_seed[(seed + 1)] = self._train(hyperparameters, laundering_values)
+            results_by_seed[(seed + 1)] = self._train(hyperparameters, copy.deepcopy(laundering_values))
         
         return results_by_seed
     
@@ -95,7 +97,6 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         best_w = None
         best_metrics = None
-        best_preditcions = None
         best_f1 = -1
 
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
@@ -117,20 +118,21 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             if (i+1) % 20 == 0:
 
                 # reset preditcions
-                laundering_values['predictions_fl'] = 0
+                for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
+                    laundering_values[col] = 0
                 
                 for bank_id, party in self.parties.items():
                     flin.update_laundering_values(party, laundering_values)
 
-                tmp_metrics = metrics(laundering_values['true_y'], laundering_values['predictions_fl'])
+                tmp_metrics = metrics(y_true = laundering_values['true_y'], 
+                                      y_pred_probabilities = laundering_values['avg_prob'], 
+                                      y_pred_binary = laundering_values['pred_label'])
 
                 if tmp_metrics['f1'] > best_f1:
-                    best_w = self.global_w
                     best_metrics = tmp_metrics
-                    best_preditcions = copy.copy(laundering_values['predictions_fl'])
+                    best_laundering_values = copy.deepcopy(laundering_values)
+                    best_w = copy.deepcopy(self.global_w)
                     best_f1 = tmp_metrics['f1']
-                    
-        laundering_values['predictions_fl'] = best_preditcions
 
-        return {'w': best_w, 'metrics': best_metrics, 'laundering_values': laundering_values}
-    
+        return {'w': best_w, 'metrics': best_metrics, 'laundering_values': best_laundering_values}
+
