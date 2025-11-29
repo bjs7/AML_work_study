@@ -1,6 +1,7 @@
 from .manager_mixin import GNNMixinManager
 import copy
 import logging
+import numpy as np
 import utils
 import configs.configs as configs
 from inference import metrics, predictions_helper
@@ -118,7 +119,7 @@ class FullInfoGNNManager(GNNMixinManager):
         logger.info("Training for %d epochs (evaluating every 20 epochs)", epochs)
 
         for epoch in range(epochs):
-            self._party.update_local_w()
+            loss = self._party.update_local_w()
 
             #if (epoch + 1) % 20 == 0:
 
@@ -126,8 +127,18 @@ class FullInfoGNNManager(GNNMixinManager):
             tmp_metrics = metrics(y_true = laundering_values['true_y'],
                                     y_pred_probabilities = pred_probabilities)
 
-            logger.debug("Epoch %d/%d - F1: %.4f, ROC-AUC: %.4f",
-                        epoch + 1, epochs, tmp_metrics['f1'], tmp_metrics['roc_auc'])
+            # Debug logging every 20 epochs
+            if (epoch + 1) % 20 == 0:
+                logger.info("Epoch %d/%d - Loss: %.4f, F1: %.4f, Precision: %.4f, Recall: %.4f, ROC-AUC: %.4f",
+                           epoch + 1, epochs, loss, tmp_metrics['f1'], tmp_metrics['precision'],
+                           tmp_metrics['recall'], tmp_metrics['roc_auc'])
+                logger.debug("  Prediction stats - Min: %.4f, Max: %.4f, Mean: %.4f, Median: %.4f",
+                            pred_probabilities.min(), pred_probabilities.max(),
+                            pred_probabilities.mean(), np.median(pred_probabilities))
+                logger.debug("  True label distribution - Positives: %d (%.2f%%), Negatives: %d",
+                            laundering_values['true_y'].sum(),
+                            100 * laundering_values['true_y'].mean(),
+                            len(laundering_values['true_y']) - laundering_values['true_y'].sum())
 
             if tmp_metrics['f1'] > best_f1:
                 best_metrics = tmp_metrics

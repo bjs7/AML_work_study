@@ -56,8 +56,10 @@ class GNNMixinParty:
 
         tr_data = self.procs_data['train_data']['df']
         # can add FL-specifics here
+        loss = None
         for epoch in range(num_local_epochs):
-            self.model.update_w(tr_data)
+            loss = self.model.update_w(tr_data)
+        return loss
 
     def send_local_w(self, manager):
         # in theory this functions could be dropped and the manager could just collect the parameters itself

@@ -1132,3 +1132,100 @@
 2025-11-29 22:25:29,460 [WARNI] models.gnn           - Very high loss value: 66706.1875 - may indicate learning issues
 2025-11-29 22:25:44,372 [WARNI] models.gnn           - All predictions are zero - model may not be learning
 2025-11-29 22:25:52,053 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:37:19,901 [INFO ] root                 - Random seed set as 0
+2025-11-29 22:37:22,505 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 22:37:22,505 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 22:37:23,178 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-29 22:37:23,250 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-29 22:37:23,315 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-29 22:37:27,393 [WARNI] models.gnn           - Very high loss value: 66706.1875 - may indicate learning issues
+2025-11-29 22:37:42,694 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:37:49,029 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:37:53,060 [WARNI] models.gnn           - Very high loss value: 20091.1289 - may indicate learning issues
+2025-11-29 22:38:11,447 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:38:19,613 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:38:24,118 [WARNI] models.gnn           - Very high loss value: 49892.9453 - may indicate learning issues
+2025-11-29 22:38:40,381 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:38:48,140 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:38:52,640 [WARNI] models.gnn           - Very high loss value: 28346.1504 - may indicate learning issues
+2025-11-29 22:39:08,207 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:39:14,490 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:39:18,387 [WARNI] models.gnn           - Very high loss value: 32069.3809 - may indicate learning issues
+2025-11-29 22:39:33,050 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:39:39,220 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:39:43,009 [WARNI] models.gnn           - Very high loss value: 23992.5840 - may indicate learning issues
+2025-11-29 22:39:57,568 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:40:04,209 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:40:08,172 [WARNI] models.gnn           - Very high loss value: 27030.7852 - may indicate learning issues
+2025-11-29 22:40:22,783 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:40:29,875 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:40:34,009 [WARNI] models.gnn           - Very high loss value: 36663.0703 - may indicate learning issues
+2025-11-29 22:40:50,108 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:40:55,348 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:40:59,235 [WARNI] models.gnn           - Very high loss value: 36996.4102 - may indicate learning issues
+2025-11-29 22:41:15,578 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:41:20,852 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:41:25,085 [WARNI] models.gnn           - Very high loss value: 26998.4629 - may indicate learning issues
+2025-11-29 22:41:42,045 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:41:48,402 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:41:52,303 [WARNI] models.gnn           - Very high loss value: 32990.9609 - may indicate learning issues
+2025-11-29 22:42:07,067 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:42:13,196 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:42:17,303 [WARNI] models.gnn           - Very high loss value: 29063.3574 - may indicate learning issues
+2025-11-29 22:42:33,245 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:42:39,785 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:42:43,654 [WARNI] models.gnn           - Very high loss value: 39358.1250 - may indicate learning issues
+2025-11-29 22:42:58,542 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:43:05,773 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:43:09,856 [WARNI] models.gnn           - Very high loss value: 16228.3271 - may indicate learning issues
+2025-11-29 22:43:35,051 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:43:35,051 [WARNI] inference            - ROC-AUC < 0.5 (0.5000) - model performs worse than random
+2025-11-29 22:43:39,164 [WARNI] models.gnn           - Very high loss value: 26891.6934 - may indicate learning issues
+2025-11-29 22:44:03,180 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:44:03,180 [WARNI] inference            - ROC-AUC < 0.5 (0.4999) - model performs worse than random
+2025-11-29 22:44:07,163 [WARNI] models.gnn           - Very high loss value: 16868.9160 - may indicate learning issues
+2025-11-29 22:44:25,236 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:44:33,016 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:44:37,149 [WARNI] models.gnn           - Very high loss value: 11348.1641 - may indicate learning issues
+2025-11-29 22:44:55,372 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:45:02,609 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:45:06,588 [WARNI] models.gnn           - Very high loss value: 16973.3652 - may indicate learning issues
+2025-11-29 22:45:24,825 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:45:32,109 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:45:36,054 [WARNI] models.gnn           - Very high loss value: 24833.5664 - may indicate learning issues
+2025-11-29 22:45:54,370 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:45:59,553 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:46:03,452 [WARNI] models.gnn           - Very high loss value: 15209.3682 - may indicate learning issues
+2025-11-29 22:46:21,130 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:46:28,321 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:46:32,245 [WARNI] models.gnn           - Very high loss value: 12987.9688 - may indicate learning issues
+2025-11-29 22:46:50,140 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:46:57,137 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:47:01,051 [WARNI] models.gnn           - Very high loss value: 15734.5312 - may indicate learning issues
+2025-11-29 22:47:17,939 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:47:23,285 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:47:27,261 [WARNI] models.gnn           - Very high loss value: 9818.6611 - may indicate learning issues
+2025-11-29 22:47:41,941 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:47:47,231 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:47:51,363 [WARNI] models.gnn           - Very high loss value: 6486.5073 - may indicate learning issues
+2025-11-29 22:48:07,725 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:48:13,364 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:48:17,364 [WARNI] models.gnn           - Very high loss value: 10364.4229 - may indicate learning issues
+2025-11-29 22:48:32,848 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:48:41,313 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:48:45,533 [WARNI] models.gnn           - Very high loss value: 8816.5654 - may indicate learning issues
+2025-11-29 22:49:00,307 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:49:05,767 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:49:09,812 [WARNI] models.gnn           - Very high loss value: 7156.3091 - may indicate learning issues
+2025-11-29 22:49:26,959 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 22:49:33,384 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 22:49:37,283 [WARNI] models.gnn           - Very high loss value: 10387.6504 - may indicate learning issues

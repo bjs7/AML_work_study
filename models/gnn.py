@@ -81,6 +81,8 @@ class GNN(ABC):
         loss.backward()
         self.optimizer.step()
 
+        return loss.item()
+
     def predict(self, graph_data):
 
         df = graph_data.get('df')
