@@ -11,14 +11,6 @@ import superseded.save_load_models as slm
 from mix.relevant_banks import get_relevant_banks
 
 
-import FL_message as FLm
-
-# difference in f1_score with different amount of banks?
-
-# is it actually necessary to carry bank indices with the graph data? Or can one just use only graph data
-# for gnn models? Think I can, or only have the indices with one, reset of columns can be dropped
-# need to account for 1:1 with IBM, then it just all columns/feature
-
 # residuals i gnn model?
 
 # IMPLEMENT FINETUNING? LIKE FOR THE DATASETS MEDIUM OR HIGHER, THERE I SHOULD USE
@@ -28,8 +20,6 @@ import FL_message as FLm
 # Ask claude about this, like how to implement the no tuning? Like what is the best approach
 # Use the split indices or where should one set those settings and conditions?
 
-# also consider that if under IBM setting if one should only train on the train set, and not include validation.
-# Might have to write and ask them about that.
 
 # Check GFP parameters igen? Fra "vertex_stats_cols": [3,4], til "vertex_stats_cols": [3],
 
@@ -71,61 +61,9 @@ import FL_message as FLm
 # onehot encoding
 # https://chatgpt.com/c/68cc667e-053c-8330-af41-b707bf27d7a7
 
-# needs to prep data
-
 
 # https://chatgpt.com/c/68434731-9634-8012-904c-c7e7856e4f04
 # https://chatgpt.com/c/68442d4a-4398-8012-9670-b91e7034c591
-
-
-
-# Need to check nodes/edge sampling again. Need to be more sure on this
-
-
-# Though one can probably run full sample for all the banks, it might be worth
-# to consider to apply sampling to the larger once, just to potentially replicate more realistic
-# settings, and see the impact.
-
-
-# ----------------------------------------------------------------------
-# CHECK FOR DUBLICATES? 
-# NEED TO MAKE MORE FEATURE ENGINEERING? LIKE CHECK TIMESTAMP PATTERNS?
-# ----------------------------------------------------------------------
-
-# CRITICAL ERROR!!!
-# NEED TO CHECK DOUBLE CHECK THE VALEUS OF RECEIVING AMOUNT/CURRENCY!
-# THERE ARE VARIATIONS IN THESE ON SOME TRANSACTIONS! BOTH AMOUNT AND CURRENCY!
-
-
-# Maybe also keep timestamp? It is at least relevant for hetereo graphs. So maybe just keep for all?
-# Though questionable what the point is for homo-grahps, because then it just becomes a feature that
-# increases in value over time
-# Like timestamp could potentially allow the GNN to see time between transactions
-# that might be suspicious, and see if that is relevant. Then also use it in decision tree and other models?
-
-
-# Also still find some of the stuff in the AML paper, or at least the code in the github
-# a bit strange. For example how they standardize the edge features.
-
-
-# Might wanna go back to "simple" GNN's with just 3 inputs, and then filter in them after?
-# If making changes here, make sure that it is calculates correctly
-
-
-# Use full batch for all cases? Also for full info? Like check/ask claude if that is possible,
-# if enough compuation power is available.
-
-# double check the fe.update_regular_data function
-
-# need to plot the ammount values, and potentially take log. Need to check if it is skewed
-
-
-# WRITE LOGISTIC AS MATRIX / CONVEX FUNCTION FORM?
-
-
-# double check the index_masking for the GNN model. Wanna avoid that method, but make sure that it works
-# with batching without it.
-# also the transforming of time?
 
 
 
@@ -136,9 +74,6 @@ import FL_message as FLm
 # if reg or graph epochs is used. Or also is for decision trees, yes?
 # just update in one, and then another for sending to manager?
 
-
-# need to add to the final dropout. Like the two dropouts in the model, I need to ensure that they
-# have different values or at least values are sampled for both
 
 
 

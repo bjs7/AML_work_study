@@ -24,19 +24,19 @@ class RegressionMixinManager:
 # FedAVG ------------------------------------------------------
 
 
-# FedGD -------------------------------------------------------
+# FedAvg -------------------------------------------------------
 
-# this is just for FedGD, but right now I have built for fedavg?
-class FedGD_party(Party):
+# FedAvg (Federated Averaging) implementation
+class FedAvg_party(Party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     def send_messages(self, recipient, content):
         return super().send_messages(recipient, content)
-    
 
-class FedGD_manager(Manager):
+
+class FedAvg_manager(Manager):
 
     def get_adjacency_matrix(self):
         return 0
@@ -50,23 +50,23 @@ class FedGD_manager(Manager):
 
 # Regression ---------------------------------------------------------------
 
-@regi_algo_party('FedGD_regression')
-class FedGD_Regression_Party(RegressionMixinParty, FedGD_party):
+@regi_algo_party('FedAvg_regression')
+class FedAvg_Regression_Party(RegressionMixinParty, FedAvg_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     @staticmethod
     def return_class(**kwargs):
-        return FedGD_Regression_Party(**kwargs)
+        return FedAvg_Regression_Party(**kwargs)
 
 
-@regi_algo_manager("FedGD_regression")
-class FedGD_Regression_Manager(RegressionMixinManager, FedGD_manager):
+@regi_algo_manager("FedAvg_regression")
+class FedAvg_Regression_Manager(RegressionMixinManager, FedAvg_manager):
 
     @staticmethod
     def return_class(args):
-        return FedGD_Regression_Manager(args)
+        return FedAvg_Regression_Manager(args)
     
 
 # GNN ---------------------------------------------------------------------
@@ -95,15 +95,15 @@ class Individual_GNN_Party(GNNMixinParty, Party):
         return Individual_GNN_Party(**kwargs)
 
 
-@regi_algo_party("FedGD_gnn")
-class FedGD_GNN_Party(GNNMixinParty, FedGD_party):
+@regi_algo_party("FedAvg_gnn")
+class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     @staticmethod
     def return_class(**kwargs):
-        return FedGD_GNN_Party(**kwargs)
+        return FedAvg_GNN_Party(**kwargs)
 
 
 # Manager --------------------------
@@ -124,12 +124,12 @@ class Individual_GNN_Manager(IndividualGNNManager, Manager): #FLGNNManager #GNNM
         return Individual_GNN_Manager(args)
 
 
-@regi_algo_manager("FedGD_gnn")
-class FedGD_GNN_Manager(FLGNNManager, FedGD_manager): #FLGNNManager #GNNMixinManager
+@regi_algo_manager("FedAvg_gnn")
+class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager): #FLGNNManager #GNNMixinManager
 
     @staticmethod
     def return_class(args):
-        return FedGD_GNN_Manager(args)
+        return FedAvg_GNN_Manager(args)
 
 
 

@@ -188,3 +188,836 @@
 2025-11-29 01:52:27,069 [INFO ] Random seed set as 0
 2025-11-29 02:03:00,677 [INFO ] Random seed set as 0
 2025-11-29 02:19:23,393 [INFO ] Random seed set as 0
+2025-11-29 17:03:43,440 [INFO ] Random seed set as 0
+2025-11-29 18:02:40,687 [INFO ] Random seed set as 0
+2025-11-29 18:02:48,734 [WARNI] Very high loss value: 4894.0249 - may indicate learning issues
+2025-11-29 18:02:48,888 [WARNI] Very high loss value: 51660.3633 - may indicate learning issues
+2025-11-29 18:02:49,030 [WARNI] Very high loss value: 53679.4102 - may indicate learning issues
+2025-11-29 18:02:49,157 [WARNI] Very high loss value: 4769.2402 - may indicate learning issues
+2025-11-29 18:02:49,186 [WARNI] Very high loss value: 64110.0781 - may indicate learning issues
+2025-11-29 18:02:49,564 [WARNI] Very high loss value: 210.4382 - may indicate learning issues
+2025-11-29 18:02:49,705 [WARNI] Very high loss value: 20629.8906 - may indicate learning issues
+2025-11-29 18:02:49,903 [WARNI] Very high loss value: 141.7929 - may indicate learning issues
+2025-11-29 18:02:50,054 [WARNI] Very high loss value: 303.9193 - may indicate learning issues
+2025-11-29 18:02:50,201 [WARNI] Very high loss value: 22652.1875 - may indicate learning issues
+2025-11-29 18:02:50,409 [WARNI] Very high loss value: 171.9674 - may indicate learning issues
+2025-11-29 18:02:50,556 [WARNI] Very high loss value: 402.3918 - may indicate learning issues
+2025-11-29 18:02:50,704 [WARNI] Very high loss value: 36788.3516 - may indicate learning issues
+2025-11-29 18:02:50,902 [WARNI] Very high loss value: 175.3812 - may indicate learning issues
+2025-11-29 18:02:51,045 [WARNI] Very high loss value: 526.0737 - may indicate learning issues
+2025-11-29 18:02:51,181 [WARNI] Very high loss value: 43952.4609 - may indicate learning issues
+2025-11-29 18:02:51,379 [WARNI] Very high loss value: 187.9892 - may indicate learning issues
+2025-11-29 18:02:51,528 [WARNI] Very high loss value: 444.1972 - may indicate learning issues
+2025-11-29 18:02:51,682 [WARNI] Very high loss value: 42257.3477 - may indicate learning issues
+2025-11-29 18:02:51,887 [WARNI] Very high loss value: 118.1220 - may indicate learning issues
+2025-11-29 18:02:52,036 [WARNI] Very high loss value: 578.6686 - may indicate learning issues
+2025-11-29 18:02:52,181 [WARNI] Very high loss value: 25843.8945 - may indicate learning issues
+2025-11-29 18:02:52,400 [WARNI] Very high loss value: 150.6938 - may indicate learning issues
+2025-11-29 18:02:52,551 [WARNI] Very high loss value: 578.9643 - may indicate learning issues
+2025-11-29 18:02:52,699 [WARNI] Very high loss value: 34767.5898 - may indicate learning issues
+2025-11-29 18:02:52,902 [WARNI] Very high loss value: 178.5303 - may indicate learning issues
+2025-11-29 18:02:53,049 [WARNI] Very high loss value: 741.3295 - may indicate learning issues
+2025-11-29 18:02:53,188 [WARNI] Very high loss value: 38286.0352 - may indicate learning issues
+2025-11-29 18:02:53,398 [WARNI] Very high loss value: 152.1966 - may indicate learning issues
+2025-11-29 18:02:53,548 [WARNI] Very high loss value: 512.3832 - may indicate learning issues
+2025-11-29 18:02:53,696 [WARNI] Very high loss value: 34639.0820 - may indicate learning issues
+2025-11-29 18:02:53,902 [WARNI] Very high loss value: 110.5542 - may indicate learning issues
+2025-11-29 18:02:54,055 [WARNI] Very high loss value: 510.2542 - may indicate learning issues
+2025-11-29 18:02:54,195 [WARNI] Very high loss value: 50668.4180 - may indicate learning issues
+2025-11-29 18:02:54,401 [WARNI] Very high loss value: 132.5774 - may indicate learning issues
+2025-11-29 18:02:54,546 [WARNI] Very high loss value: 397.6766 - may indicate learning issues
+2025-11-29 18:02:54,689 [WARNI] Very high loss value: 46540.4219 - may indicate learning issues
+2025-11-29 18:02:54,887 [WARNI] Very high loss value: 116.5897 - may indicate learning issues
+2025-11-29 18:02:55,041 [WARNI] Very high loss value: 395.3928 - may indicate learning issues
+2025-11-29 18:02:55,186 [WARNI] Very high loss value: 40235.9102 - may indicate learning issues
+2025-11-29 18:02:55,380 [WARNI] Very high loss value: 113.7618 - may indicate learning issues
+2025-11-29 18:02:55,524 [WARNI] Very high loss value: 4365.4951 - may indicate learning issues
+2025-11-29 18:02:55,671 [WARNI] Very high loss value: 40784.2266 - may indicate learning issues
+2025-11-29 18:02:55,871 [WARNI] Very high loss value: 110.9156 - may indicate learning issues
+2025-11-29 18:02:56,011 [WARNI] Very high loss value: 388.6239 - may indicate learning issues
+2025-11-29 18:02:56,150 [WARNI] Very high loss value: 48619.8281 - may indicate learning issues
+2025-11-29 18:02:56,505 [WARNI] Very high loss value: 484.6242 - may indicate learning issues
+2025-11-29 18:02:56,641 [WARNI] Very high loss value: 43949.1875 - may indicate learning issues
+2025-11-29 18:02:56,972 [WARNI] Very high loss value: 300.6395 - may indicate learning issues
+2025-11-29 18:02:57,116 [WARNI] Very high loss value: 33782.2969 - may indicate learning issues
+2025-11-29 18:02:57,445 [WARNI] Very high loss value: 296.6033 - may indicate learning issues
+2025-11-29 18:02:57,599 [WARNI] Very high loss value: 39760.3242 - may indicate learning issues
+2025-11-29 18:02:57,954 [WARNI] Very high loss value: 311.3858 - may indicate learning issues
+2025-11-29 18:02:58,103 [WARNI] Very high loss value: 12031.3916 - may indicate learning issues
+2025-11-29 18:02:58,449 [WARNI] Very high loss value: 244.8754 - may indicate learning issues
+2025-11-29 18:02:58,595 [WARNI] Very high loss value: 16553.1699 - may indicate learning issues
+2025-11-29 18:02:58,691 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:02:58,691 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:02:58,790 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:02:58,790 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:02:58,898 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:02:58,898 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:02:58,947 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:02:58,947 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:02:58,983 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:02:58,984 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:03,996 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:03:04,408 [WARNI] Very high loss value: 406.2150 - may indicate learning issues
+2025-11-29 18:03:04,573 [WARNI] Very high loss value: 10131.2178 - may indicate learning issues
+2025-11-29 18:03:04,928 [WARNI] Very high loss value: 167.1206 - may indicate learning issues
+2025-11-29 18:03:05,071 [WARNI] Very high loss value: 16456.1816 - may indicate learning issues
+2025-11-29 18:03:05,140 [WARNI] Very high loss value: 190.8264 - may indicate learning issues
+2025-11-29 18:03:05,274 [WARNI] Very high loss value: 218.8617 - may indicate learning issues
+2025-11-29 18:03:05,420 [WARNI] Very high loss value: 281.1191 - may indicate learning issues
+2025-11-29 18:03:05,550 [WARNI] Very high loss value: 185.6948 - may indicate learning issues
+2025-11-29 18:03:05,578 [WARNI] Very high loss value: 8244.1914 - may indicate learning issues
+2025-11-29 18:03:05,920 [WARNI] Very high loss value: 178.2406 - may indicate learning issues
+2025-11-29 18:03:06,072 [WARNI] Very high loss value: 14083.8691 - may indicate learning issues
+2025-11-29 18:03:06,422 [WARNI] Very high loss value: 184.1691 - may indicate learning issues
+2025-11-29 18:03:06,579 [WARNI] Very high loss value: 18957.0742 - may indicate learning issues
+2025-11-29 18:03:06,936 [WARNI] Very high loss value: 235.5219 - may indicate learning issues
+2025-11-29 18:03:07,081 [WARNI] Very high loss value: 12789.4170 - may indicate learning issues
+2025-11-29 18:03:07,413 [WARNI] Very high loss value: 238.6513 - may indicate learning issues
+2025-11-29 18:03:07,553 [WARNI] Very high loss value: 10218.4590 - may indicate learning issues
+2025-11-29 18:03:07,897 [WARNI] Very high loss value: 227.3409 - may indicate learning issues
+2025-11-29 18:03:08,046 [WARNI] Very high loss value: 10098.0254 - may indicate learning issues
+2025-11-29 18:03:08,395 [WARNI] Very high loss value: 174.2283 - may indicate learning issues
+2025-11-29 18:03:08,556 [WARNI] Very high loss value: 10784.0254 - may indicate learning issues
+2025-11-29 18:03:08,898 [WARNI] Very high loss value: 186.6259 - may indicate learning issues
+2025-11-29 18:03:09,043 [WARNI] Very high loss value: 6537.4438 - may indicate learning issues
+2025-11-29 18:03:09,373 [WARNI] Very high loss value: 167.8694 - may indicate learning issues
+2025-11-29 18:03:09,520 [WARNI] Very high loss value: 6058.5195 - may indicate learning issues
+2025-11-29 18:03:09,869 [WARNI] Very high loss value: 153.0473 - may indicate learning issues
+2025-11-29 18:03:10,016 [WARNI] Very high loss value: 4725.4097 - may indicate learning issues
+2025-11-29 18:03:10,361 [WARNI] Very high loss value: 126.8471 - may indicate learning issues
+2025-11-29 18:03:10,509 [WARNI] Very high loss value: 3646.7556 - may indicate learning issues
+2025-11-29 18:03:10,859 [WARNI] Very high loss value: 101.8220 - may indicate learning issues
+2025-11-29 18:03:11,012 [WARNI] Very high loss value: 3033.8359 - may indicate learning issues
+2025-11-29 18:03:11,345 [WARNI] Very high loss value: 131.8315 - may indicate learning issues
+2025-11-29 18:03:11,492 [WARNI] Very high loss value: 2356.6843 - may indicate learning issues
+2025-11-29 18:03:11,700 [WARNI] Very high loss value: 404.8479 - may indicate learning issues
+2025-11-29 18:03:11,857 [WARNI] Very high loss value: 139.5574 - may indicate learning issues
+2025-11-29 18:03:12,007 [WARNI] Very high loss value: 1717.7461 - may indicate learning issues
+2025-11-29 18:03:12,545 [WARNI] Very high loss value: 2292.3735 - may indicate learning issues
+2025-11-29 18:03:13,084 [WARNI] Very high loss value: 2488.0928 - may indicate learning issues
+2025-11-29 18:03:13,636 [WARNI] Very high loss value: 2891.0784 - may indicate learning issues
+2025-11-29 18:03:14,137 [WARNI] Very high loss value: 3812.4609 - may indicate learning issues
+2025-11-29 18:03:14,229 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:14,230 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:14,327 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:14,327 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:14,437 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:14,438 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:14,487 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:14,488 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:14,528 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:14,529 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:20,589 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:03:20,687 [WARNI] Very high loss value: 3681.6614 - may indicate learning issues
+2025-11-29 18:03:20,838 [WARNI] Very high loss value: 17738.4863 - may indicate learning issues
+2025-11-29 18:03:20,984 [WARNI] Very high loss value: 18077.7109 - may indicate learning issues
+2025-11-29 18:03:21,104 [WARNI] Very high loss value: 2816.7073 - may indicate learning issues
+2025-11-29 18:03:21,133 [WARNI] Very high loss value: 6421.7026 - may indicate learning issues
+2025-11-29 18:03:21,489 [WARNI] Very high loss value: 210.9511 - may indicate learning issues
+2025-11-29 18:03:21,635 [WARNI] Very high loss value: 21481.3848 - may indicate learning issues
+2025-11-29 18:03:21,841 [WARNI] Very high loss value: 115.5401 - may indicate learning issues
+2025-11-29 18:03:21,986 [WARNI] Very high loss value: 363.9489 - may indicate learning issues
+2025-11-29 18:03:22,138 [WARNI] Very high loss value: 19808.2852 - may indicate learning issues
+2025-11-29 18:03:22,345 [WARNI] Very high loss value: 154.1569 - may indicate learning issues
+2025-11-29 18:03:22,494 [WARNI] Very high loss value: 491.9068 - may indicate learning issues
+2025-11-29 18:03:22,633 [WARNI] Very high loss value: 34177.7656 - may indicate learning issues
+2025-11-29 18:03:22,846 [WARNI] Very high loss value: 168.8803 - may indicate learning issues
+2025-11-29 18:03:22,993 [WARNI] Very high loss value: 497.3773 - may indicate learning issues
+2025-11-29 18:03:23,172 [WARNI] Very high loss value: 28758.1582 - may indicate learning issues
+2025-11-29 18:03:23,429 [WARNI] Very high loss value: 178.8554 - may indicate learning issues
+2025-11-29 18:03:23,590 [WARNI] Very high loss value: 465.3894 - may indicate learning issues
+2025-11-29 18:03:23,732 [WARNI] Very high loss value: 49625.5664 - may indicate learning issues
+2025-11-29 18:03:23,947 [WARNI] Very high loss value: 160.1657 - may indicate learning issues
+2025-11-29 18:03:24,098 [WARNI] Very high loss value: 450.7770 - may indicate learning issues
+2025-11-29 18:03:24,250 [WARNI] Very high loss value: 38066.2500 - may indicate learning issues
+2025-11-29 18:03:24,457 [WARNI] Very high loss value: 171.7452 - may indicate learning issues
+2025-11-29 18:03:24,604 [WARNI] Very high loss value: 470.4283 - may indicate learning issues
+2025-11-29 18:03:24,747 [WARNI] Very high loss value: 46787.1953 - may indicate learning issues
+2025-11-29 18:03:24,961 [WARNI] Very high loss value: 166.1270 - may indicate learning issues
+2025-11-29 18:03:25,117 [WARNI] Very high loss value: 355.5613 - may indicate learning issues
+2025-11-29 18:03:25,260 [WARNI] Very high loss value: 27825.1992 - may indicate learning issues
+2025-11-29 18:03:25,470 [WARNI] Very high loss value: 153.6805 - may indicate learning issues
+2025-11-29 18:03:25,632 [WARNI] Very high loss value: 461.4593 - may indicate learning issues
+2025-11-29 18:03:25,767 [WARNI] Very high loss value: 45961.0352 - may indicate learning issues
+2025-11-29 18:03:25,835 [WARNI] Very high loss value: 111.5267 - may indicate learning issues
+2025-11-29 18:03:25,977 [WARNI] Very high loss value: 244.0170 - may indicate learning issues
+2025-11-29 18:03:26,133 [WARNI] Very high loss value: 456.8093 - may indicate learning issues
+2025-11-29 18:03:26,290 [WARNI] Very high loss value: 37267.2031 - may indicate learning issues
+2025-11-29 18:03:26,498 [WARNI] Very high loss value: 154.8082 - may indicate learning issues
+2025-11-29 18:03:26,637 [WARNI] Very high loss value: 595.4103 - may indicate learning issues
+2025-11-29 18:03:26,787 [WARNI] Very high loss value: 34598.8086 - may indicate learning issues
+2025-11-29 18:03:26,991 [WARNI] Very high loss value: 135.4397 - may indicate learning issues
+2025-11-29 18:03:27,132 [WARNI] Very high loss value: 362.4754 - may indicate learning issues
+2025-11-29 18:03:27,281 [WARNI] Very high loss value: 20661.4980 - may indicate learning issues
+2025-11-29 18:03:27,482 [WARNI] Very high loss value: 134.4801 - may indicate learning issues
+2025-11-29 18:03:27,629 [WARNI] Very high loss value: 403.4545 - may indicate learning issues
+2025-11-29 18:03:27,778 [WARNI] Very high loss value: 34438.5938 - may indicate learning issues
+2025-11-29 18:03:27,987 [WARNI] Very high loss value: 145.2787 - may indicate learning issues
+2025-11-29 18:03:28,140 [WARNI] Very high loss value: 311.3459 - may indicate learning issues
+2025-11-29 18:03:28,310 [WARNI] Very high loss value: 20588.5977 - may indicate learning issues
+2025-11-29 18:03:28,540 [WARNI] Very high loss value: 512.0078 - may indicate learning issues
+2025-11-29 18:03:28,696 [WARNI] Very high loss value: 468.4177 - may indicate learning issues
+2025-11-29 18:03:28,878 [WARNI] Very high loss value: 19820.2773 - may indicate learning issues
+2025-11-29 18:03:29,102 [WARNI] Very high loss value: 136.3315 - may indicate learning issues
+2025-11-29 18:03:29,269 [WARNI] Very high loss value: 1107.7480 - may indicate learning issues
+2025-11-29 18:03:29,429 [WARNI] Very high loss value: 32685.1016 - may indicate learning issues
+2025-11-29 18:03:29,665 [WARNI] Very high loss value: 103.5874 - may indicate learning issues
+2025-11-29 18:03:29,818 [WARNI] Very high loss value: 310.3079 - may indicate learning issues
+2025-11-29 18:03:29,990 [WARNI] Very high loss value: 6637.4014 - may indicate learning issues
+2025-11-29 18:03:30,383 [WARNI] Very high loss value: 359.2491 - may indicate learning issues
+2025-11-29 18:03:30,538 [WARNI] Very high loss value: 36934.7305 - may indicate learning issues
+2025-11-29 18:03:30,742 [WARNI] Very high loss value: 102.8174 - may indicate learning issues
+2025-11-29 18:03:30,893 [WARNI] Very high loss value: 260.4724 - may indicate learning issues
+2025-11-29 18:03:31,062 [WARNI] Very high loss value: 28672.3887 - may indicate learning issues
+2025-11-29 18:03:31,165 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:31,165 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:31,270 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:31,271 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:31,384 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:31,384 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:31,440 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:31,440 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:31,482 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:31,482 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:36,854 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:03:36,973 [WARNI] Very high loss value: 199.0968 - may indicate learning issues
+2025-11-29 18:03:37,137 [WARNI] Very high loss value: 2029.2473 - may indicate learning issues
+2025-11-29 18:03:37,294 [WARNI] Very high loss value: 1755.5098 - may indicate learning issues
+2025-11-29 18:03:37,422 [WARNI] Very high loss value: 106.7990 - may indicate learning issues
+2025-11-29 18:03:37,451 [WARNI] Very high loss value: 4879.9038 - may indicate learning issues
+2025-11-29 18:03:37,667 [WARNI] Very high loss value: 114.6767 - may indicate learning issues
+2025-11-29 18:03:37,812 [WARNI] Very high loss value: 249.9942 - may indicate learning issues
+2025-11-29 18:03:37,963 [WARNI] Very high loss value: 13832.5107 - may indicate learning issues
+2025-11-29 18:03:38,325 [WARNI] Very high loss value: 225.7051 - may indicate learning issues
+2025-11-29 18:03:38,486 [WARNI] Very high loss value: 7650.3672 - may indicate learning issues
+2025-11-29 18:03:38,871 [WARNI] Very high loss value: 168.8881 - may indicate learning issues
+2025-11-29 18:03:39,023 [WARNI] Very high loss value: 13316.7344 - may indicate learning issues
+2025-11-29 18:03:39,428 [WARNI] Very high loss value: 167.6967 - may indicate learning issues
+2025-11-29 18:03:39,598 [WARNI] Very high loss value: 15353.0791 - may indicate learning issues
+2025-11-29 18:03:39,944 [WARNI] Very high loss value: 163.8849 - may indicate learning issues
+2025-11-29 18:03:40,098 [WARNI] Very high loss value: 15008.5703 - may indicate learning issues
+2025-11-29 18:03:40,501 [WARNI] Very high loss value: 117.8644 - may indicate learning issues
+2025-11-29 18:03:40,674 [WARNI] Very high loss value: 15220.1055 - may indicate learning issues
+2025-11-29 18:03:41,046 [WARNI] Very high loss value: 131.2112 - may indicate learning issues
+2025-11-29 18:03:41,188 [WARNI] Very high loss value: 17464.3555 - may indicate learning issues
+2025-11-29 18:03:41,544 [WARNI] Very high loss value: 125.1801 - may indicate learning issues
+2025-11-29 18:03:41,689 [WARNI] Very high loss value: 12100.5508 - may indicate learning issues
+2025-11-29 18:03:42,046 [WARNI] Very high loss value: 101.7664 - may indicate learning issues
+2025-11-29 18:03:42,189 [WARNI] Very high loss value: 9896.8926 - may indicate learning issues
+2025-11-29 18:03:42,550 [WARNI] Very high loss value: 203.8062 - may indicate learning issues
+2025-11-29 18:03:42,728 [WARNI] Very high loss value: 11195.5117 - may indicate learning issues
+2025-11-29 18:03:43,284 [WARNI] Very high loss value: 7582.6694 - may indicate learning issues
+2025-11-29 18:03:43,652 [WARNI] Very high loss value: 101.7695 - may indicate learning issues
+2025-11-29 18:03:43,789 [WARNI] Very high loss value: 12171.3311 - may indicate learning issues
+2025-11-29 18:03:44,282 [WARNI] Very high loss value: 11094.6172 - may indicate learning issues
+2025-11-29 18:03:44,769 [WARNI] Very high loss value: 6123.5649 - may indicate learning issues
+2025-11-29 18:03:45,258 [WARNI] Very high loss value: 7422.5420 - may indicate learning issues
+2025-11-29 18:03:45,482 [WARNI] Very high loss value: 1750.2747 - may indicate learning issues
+2025-11-29 18:03:45,800 [WARNI] Very high loss value: 4435.0566 - may indicate learning issues
+2025-11-29 18:03:46,318 [WARNI] Very high loss value: 10316.8203 - may indicate learning issues
+2025-11-29 18:03:46,895 [WARNI] Very high loss value: 3005.1294 - may indicate learning issues
+2025-11-29 18:03:47,459 [WARNI] Very high loss value: 1746.2437 - may indicate learning issues
+2025-11-29 18:03:47,563 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:47,563 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:47,662 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:47,662 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:47,781 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:47,781 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:47,828 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:47,829 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:47,866 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:03:47,866 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:03:53,071 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:03:53,101 [INFO ] ================================================================================
+2025-11-29 18:03:53,101 [INFO ] Saving experiment results
+2025-11-29 18:03:53,101 [INFO ] ================================================================================
+2025-11-29 18:03:53,101 [INFO ] Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:03:53,102 [INFO ] Data settings: ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:03:53,102 [INFO ] Saving Federated Learning results
+2025-11-29 18:03:53,806 [INFO ] Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:03:53,806 [INFO ] ================================================================================
+2025-11-29 18:04:32,418 [INFO ] Random seed set as 0
+2025-11-29 18:10:24,879 [INFO ] Random seed set as 0
+2025-11-29 18:11:45,137 [INFO ] Random seed set as 0
+2025-11-29 18:11:58,718 [INFO ] Random seed set as 0
+2025-11-29 18:12:07,947 [WARNI] Very high loss value: 4894.0249 - may indicate learning issues
+2025-11-29 18:12:08,115 [WARNI] Very high loss value: 51660.3633 - may indicate learning issues
+2025-11-29 18:12:08,288 [WARNI] Very high loss value: 53679.4102 - may indicate learning issues
+2025-11-29 18:12:08,473 [WARNI] Very high loss value: 4769.2402 - may indicate learning issues
+2025-11-29 18:12:08,510 [WARNI] Very high loss value: 64110.0781 - may indicate learning issues
+2025-11-29 18:12:09,202 [WARNI] Very high loss value: 210.4382 - may indicate learning issues
+2025-11-29 18:12:09,426 [WARNI] Very high loss value: 20629.8906 - may indicate learning issues
+2025-11-29 18:12:09,694 [WARNI] Very high loss value: 141.7929 - may indicate learning issues
+2025-11-29 18:12:09,866 [WARNI] Very high loss value: 303.9193 - may indicate learning issues
+2025-11-29 18:12:10,044 [WARNI] Very high loss value: 22652.1875 - may indicate learning issues
+2025-11-29 18:12:10,327 [WARNI] Very high loss value: 171.9674 - may indicate learning issues
+2025-11-29 18:12:10,530 [WARNI] Very high loss value: 402.3918 - may indicate learning issues
+2025-11-29 18:12:10,713 [WARNI] Very high loss value: 36788.3516 - may indicate learning issues
+2025-11-29 18:12:11,005 [WARNI] Very high loss value: 175.3812 - may indicate learning issues
+2025-11-29 18:12:11,182 [WARNI] Very high loss value: 526.0737 - may indicate learning issues
+2025-11-29 18:12:11,368 [WARNI] Very high loss value: 43952.4609 - may indicate learning issues
+2025-11-29 18:12:11,615 [WARNI] Very high loss value: 187.9892 - may indicate learning issues
+2025-11-29 18:12:11,802 [WARNI] Very high loss value: 444.1972 - may indicate learning issues
+2025-11-29 18:12:11,980 [WARNI] Very high loss value: 42257.3477 - may indicate learning issues
+2025-11-29 18:12:12,219 [WARNI] Very high loss value: 118.1220 - may indicate learning issues
+2025-11-29 18:12:12,445 [WARNI] Very high loss value: 578.6686 - may indicate learning issues
+2025-11-29 18:12:12,647 [WARNI] Very high loss value: 25843.8945 - may indicate learning issues
+2025-11-29 18:12:12,889 [WARNI] Very high loss value: 150.6938 - may indicate learning issues
+2025-11-29 18:12:13,048 [WARNI] Very high loss value: 578.9643 - may indicate learning issues
+2025-11-29 18:12:13,211 [WARNI] Very high loss value: 34767.5898 - may indicate learning issues
+2025-11-29 18:12:13,440 [WARNI] Very high loss value: 178.5303 - may indicate learning issues
+2025-11-29 18:12:13,592 [WARNI] Very high loss value: 741.3295 - may indicate learning issues
+2025-11-29 18:12:13,743 [WARNI] Very high loss value: 38286.0391 - may indicate learning issues
+2025-11-29 18:12:13,969 [WARNI] Very high loss value: 152.1966 - may indicate learning issues
+2025-11-29 18:12:14,124 [WARNI] Very high loss value: 512.3832 - may indicate learning issues
+2025-11-29 18:12:14,275 [WARNI] Very high loss value: 34639.0820 - may indicate learning issues
+2025-11-29 18:12:14,537 [WARNI] Very high loss value: 110.5542 - may indicate learning issues
+2025-11-29 18:12:14,709 [WARNI] Very high loss value: 510.2542 - may indicate learning issues
+2025-11-29 18:12:14,872 [WARNI] Very high loss value: 50668.4180 - may indicate learning issues
+2025-11-29 18:12:15,097 [WARNI] Very high loss value: 132.5774 - may indicate learning issues
+2025-11-29 18:12:15,253 [WARNI] Very high loss value: 397.6766 - may indicate learning issues
+2025-11-29 18:12:15,403 [WARNI] Very high loss value: 46540.4219 - may indicate learning issues
+2025-11-29 18:12:15,612 [WARNI] Very high loss value: 116.5897 - may indicate learning issues
+2025-11-29 18:12:15,760 [WARNI] Very high loss value: 395.3928 - may indicate learning issues
+2025-11-29 18:12:15,917 [WARNI] Very high loss value: 40235.9180 - may indicate learning issues
+2025-11-29 18:12:16,138 [WARNI] Very high loss value: 113.7618 - may indicate learning issues
+2025-11-29 18:12:16,295 [WARNI] Very high loss value: 4365.4956 - may indicate learning issues
+2025-11-29 18:12:16,458 [WARNI] Very high loss value: 40784.2344 - may indicate learning issues
+2025-11-29 18:12:16,684 [WARNI] Very high loss value: 110.9156 - may indicate learning issues
+2025-11-29 18:12:16,854 [WARNI] Very high loss value: 388.6240 - may indicate learning issues
+2025-11-29 18:12:17,020 [WARNI] Very high loss value: 48619.8320 - may indicate learning issues
+2025-11-29 18:12:17,414 [WARNI] Very high loss value: 484.6241 - may indicate learning issues
+2025-11-29 18:12:17,583 [WARNI] Very high loss value: 43949.1602 - may indicate learning issues
+2025-11-29 18:12:17,977 [WARNI] Very high loss value: 300.6395 - may indicate learning issues
+2025-11-29 18:12:18,136 [WARNI] Very high loss value: 33782.2695 - may indicate learning issues
+2025-11-29 18:12:18,566 [WARNI] Very high loss value: 296.6029 - may indicate learning issues
+2025-11-29 18:12:18,747 [WARNI] Very high loss value: 39760.3320 - may indicate learning issues
+2025-11-29 18:12:19,126 [WARNI] Very high loss value: 311.3854 - may indicate learning issues
+2025-11-29 18:12:19,283 [WARNI] Very high loss value: 12031.3633 - may indicate learning issues
+2025-11-29 18:12:19,643 [WARNI] Very high loss value: 244.8750 - may indicate learning issues
+2025-11-29 18:12:19,813 [WARNI] Very high loss value: 16553.0957 - may indicate learning issues
+2025-11-29 18:12:19,911 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:19,911 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:20,009 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:20,009 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:20,119 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:20,120 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:20,172 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:20,172 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:20,209 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:20,209 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:25,998 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:12:26,376 [WARNI] Very high loss value: 406.2150 - may indicate learning issues
+2025-11-29 18:12:26,529 [WARNI] Very high loss value: 10131.2178 - may indicate learning issues
+2025-11-29 18:12:26,951 [WARNI] Very high loss value: 167.1206 - may indicate learning issues
+2025-11-29 18:12:27,125 [WARNI] Very high loss value: 16456.1816 - may indicate learning issues
+2025-11-29 18:12:27,201 [WARNI] Very high loss value: 190.8264 - may indicate learning issues
+2025-11-29 18:12:27,367 [WARNI] Very high loss value: 218.8617 - may indicate learning issues
+2025-11-29 18:12:27,528 [WARNI] Very high loss value: 281.1191 - may indicate learning issues
+2025-11-29 18:12:27,664 [WARNI] Very high loss value: 185.6948 - may indicate learning issues
+2025-11-29 18:12:27,691 [WARNI] Very high loss value: 8244.1914 - may indicate learning issues
+2025-11-29 18:12:28,064 [WARNI] Very high loss value: 178.2406 - may indicate learning issues
+2025-11-29 18:12:28,296 [WARNI] Very high loss value: 14083.8691 - may indicate learning issues
+2025-11-29 18:12:28,716 [WARNI] Very high loss value: 184.1691 - may indicate learning issues
+2025-11-29 18:12:28,952 [WARNI] Very high loss value: 18957.0742 - may indicate learning issues
+2025-11-29 18:12:29,329 [WARNI] Very high loss value: 235.5219 - may indicate learning issues
+2025-11-29 18:12:29,498 [WARNI] Very high loss value: 12789.4170 - may indicate learning issues
+2025-11-29 18:12:29,864 [WARNI] Very high loss value: 238.6513 - may indicate learning issues
+2025-11-29 18:12:30,019 [WARNI] Very high loss value: 10218.4590 - may indicate learning issues
+2025-11-29 18:12:30,443 [WARNI] Very high loss value: 227.3409 - may indicate learning issues
+2025-11-29 18:12:30,609 [WARNI] Very high loss value: 10098.0254 - may indicate learning issues
+2025-11-29 18:12:31,011 [WARNI] Very high loss value: 174.2283 - may indicate learning issues
+2025-11-29 18:12:31,182 [WARNI] Very high loss value: 10784.0254 - may indicate learning issues
+2025-11-29 18:12:31,574 [WARNI] Very high loss value: 186.6259 - may indicate learning issues
+2025-11-29 18:12:31,730 [WARNI] Very high loss value: 6537.4438 - may indicate learning issues
+2025-11-29 18:12:32,123 [WARNI] Very high loss value: 167.8694 - may indicate learning issues
+2025-11-29 18:12:32,282 [WARNI] Very high loss value: 6058.5195 - may indicate learning issues
+2025-11-29 18:12:32,653 [WARNI] Very high loss value: 153.0473 - may indicate learning issues
+2025-11-29 18:12:32,807 [WARNI] Very high loss value: 4725.4097 - may indicate learning issues
+2025-11-29 18:12:33,212 [WARNI] Very high loss value: 126.8471 - may indicate learning issues
+2025-11-29 18:12:33,375 [WARNI] Very high loss value: 3646.7559 - may indicate learning issues
+2025-11-29 18:12:33,753 [WARNI] Very high loss value: 101.8220 - may indicate learning issues
+2025-11-29 18:12:33,921 [WARNI] Very high loss value: 3033.8359 - may indicate learning issues
+2025-11-29 18:12:34,322 [WARNI] Very high loss value: 131.8315 - may indicate learning issues
+2025-11-29 18:12:34,493 [WARNI] Very high loss value: 2356.6846 - may indicate learning issues
+2025-11-29 18:12:34,699 [WARNI] Very high loss value: 404.8471 - may indicate learning issues
+2025-11-29 18:12:34,855 [WARNI] Very high loss value: 139.5574 - may indicate learning issues
+2025-11-29 18:12:35,024 [WARNI] Very high loss value: 1717.7467 - may indicate learning issues
+2025-11-29 18:12:35,609 [WARNI] Very high loss value: 2292.3750 - may indicate learning issues
+2025-11-29 18:12:36,142 [WARNI] Very high loss value: 2488.0938 - may indicate learning issues
+2025-11-29 18:12:36,653 [WARNI] Very high loss value: 2891.0793 - may indicate learning issues
+2025-11-29 18:12:37,190 [WARNI] Very high loss value: 3812.4609 - may indicate learning issues
+2025-11-29 18:12:37,293 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:37,293 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:37,398 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:37,398 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:37,527 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:37,527 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:37,575 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:37,575 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:37,612 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:37,612 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:44,121 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:12:44,219 [WARNI] Very high loss value: 3681.6614 - may indicate learning issues
+2025-11-29 18:12:44,354 [WARNI] Very high loss value: 17738.4863 - may indicate learning issues
+2025-11-29 18:12:44,501 [WARNI] Very high loss value: 18077.7109 - may indicate learning issues
+2025-11-29 18:12:44,639 [WARNI] Very high loss value: 2816.7073 - may indicate learning issues
+2025-11-29 18:12:44,665 [WARNI] Very high loss value: 6421.7026 - may indicate learning issues
+2025-11-29 18:12:45,038 [WARNI] Very high loss value: 210.9511 - may indicate learning issues
+2025-11-29 18:12:45,193 [WARNI] Very high loss value: 21481.3848 - may indicate learning issues
+2025-11-29 18:12:45,405 [WARNI] Very high loss value: 115.5401 - may indicate learning issues
+2025-11-29 18:12:45,546 [WARNI] Very high loss value: 363.9489 - may indicate learning issues
+2025-11-29 18:12:45,692 [WARNI] Very high loss value: 19808.2852 - may indicate learning issues
+2025-11-29 18:12:45,923 [WARNI] Very high loss value: 154.1569 - may indicate learning issues
+2025-11-29 18:12:46,067 [WARNI] Very high loss value: 491.9068 - may indicate learning issues
+2025-11-29 18:12:46,207 [WARNI] Very high loss value: 34177.7656 - may indicate learning issues
+2025-11-29 18:12:46,423 [WARNI] Very high loss value: 168.8803 - may indicate learning issues
+2025-11-29 18:12:46,572 [WARNI] Very high loss value: 497.3773 - may indicate learning issues
+2025-11-29 18:12:46,715 [WARNI] Very high loss value: 28758.1582 - may indicate learning issues
+2025-11-29 18:12:46,925 [WARNI] Very high loss value: 178.8554 - may indicate learning issues
+2025-11-29 18:12:47,076 [WARNI] Very high loss value: 465.3894 - may indicate learning issues
+2025-11-29 18:12:47,213 [WARNI] Very high loss value: 49625.5664 - may indicate learning issues
+2025-11-29 18:12:47,437 [WARNI] Very high loss value: 160.1657 - may indicate learning issues
+2025-11-29 18:12:47,593 [WARNI] Very high loss value: 450.7770 - may indicate learning issues
+2025-11-29 18:12:47,740 [WARNI] Very high loss value: 38066.2500 - may indicate learning issues
+2025-11-29 18:12:47,954 [WARNI] Very high loss value: 171.7452 - may indicate learning issues
+2025-11-29 18:12:48,092 [WARNI] Very high loss value: 470.4283 - may indicate learning issues
+2025-11-29 18:12:48,235 [WARNI] Very high loss value: 46787.1953 - may indicate learning issues
+2025-11-29 18:12:48,474 [WARNI] Very high loss value: 166.1270 - may indicate learning issues
+2025-11-29 18:12:48,620 [WARNI] Very high loss value: 355.5613 - may indicate learning issues
+2025-11-29 18:12:48,766 [WARNI] Very high loss value: 27825.1992 - may indicate learning issues
+2025-11-29 18:12:48,971 [WARNI] Very high loss value: 153.6805 - may indicate learning issues
+2025-11-29 18:12:49,112 [WARNI] Very high loss value: 461.4593 - may indicate learning issues
+2025-11-29 18:12:49,259 [WARNI] Very high loss value: 45961.0352 - may indicate learning issues
+2025-11-29 18:12:49,330 [WARNI] Very high loss value: 111.5267 - may indicate learning issues
+2025-11-29 18:12:49,487 [WARNI] Very high loss value: 244.0170 - may indicate learning issues
+2025-11-29 18:12:49,627 [WARNI] Very high loss value: 456.8093 - may indicate learning issues
+2025-11-29 18:12:49,769 [WARNI] Very high loss value: 37267.2031 - may indicate learning issues
+2025-11-29 18:12:49,980 [WARNI] Very high loss value: 154.8082 - may indicate learning issues
+2025-11-29 18:12:50,124 [WARNI] Very high loss value: 595.4103 - may indicate learning issues
+2025-11-29 18:12:50,264 [WARNI] Very high loss value: 34598.8086 - may indicate learning issues
+2025-11-29 18:12:50,476 [WARNI] Very high loss value: 135.4397 - may indicate learning issues
+2025-11-29 18:12:50,625 [WARNI] Very high loss value: 362.4754 - may indicate learning issues
+2025-11-29 18:12:50,772 [WARNI] Very high loss value: 20661.4980 - may indicate learning issues
+2025-11-29 18:12:50,977 [WARNI] Very high loss value: 134.4801 - may indicate learning issues
+2025-11-29 18:12:51,125 [WARNI] Very high loss value: 403.4545 - may indicate learning issues
+2025-11-29 18:12:51,265 [WARNI] Very high loss value: 34438.5938 - may indicate learning issues
+2025-11-29 18:12:51,483 [WARNI] Very high loss value: 145.2787 - may indicate learning issues
+2025-11-29 18:12:51,636 [WARNI] Very high loss value: 311.3459 - may indicate learning issues
+2025-11-29 18:12:51,786 [WARNI] Very high loss value: 20588.5977 - may indicate learning issues
+2025-11-29 18:12:52,004 [WARNI] Very high loss value: 512.0078 - may indicate learning issues
+2025-11-29 18:12:52,144 [WARNI] Very high loss value: 468.4177 - may indicate learning issues
+2025-11-29 18:12:52,290 [WARNI] Very high loss value: 19820.2773 - may indicate learning issues
+2025-11-29 18:12:52,512 [WARNI] Very high loss value: 136.3315 - may indicate learning issues
+2025-11-29 18:12:52,668 [WARNI] Very high loss value: 1107.7480 - may indicate learning issues
+2025-11-29 18:12:52,815 [WARNI] Very high loss value: 32685.1016 - may indicate learning issues
+2025-11-29 18:12:53,022 [WARNI] Very high loss value: 103.5874 - may indicate learning issues
+2025-11-29 18:12:53,159 [WARNI] Very high loss value: 310.3079 - may indicate learning issues
+2025-11-29 18:12:53,299 [WARNI] Very high loss value: 6637.4014 - may indicate learning issues
+2025-11-29 18:12:53,657 [WARNI] Very high loss value: 359.2491 - may indicate learning issues
+2025-11-29 18:12:53,798 [WARNI] Very high loss value: 36934.7305 - may indicate learning issues
+2025-11-29 18:12:54,004 [WARNI] Very high loss value: 102.8174 - may indicate learning issues
+2025-11-29 18:12:54,146 [WARNI] Very high loss value: 260.4724 - may indicate learning issues
+2025-11-29 18:12:54,286 [WARNI] Very high loss value: 28672.3887 - may indicate learning issues
+2025-11-29 18:12:54,379 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:54,379 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:54,479 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:54,480 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:54,588 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:54,589 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:54,635 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:54,635 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:12:54,675 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:12:54,675 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:00,894 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:13:01,000 [WARNI] Very high loss value: 199.0968 - may indicate learning issues
+2025-11-29 18:13:01,145 [WARNI] Very high loss value: 2029.2473 - may indicate learning issues
+2025-11-29 18:13:01,294 [WARNI] Very high loss value: 1755.5098 - may indicate learning issues
+2025-11-29 18:13:01,418 [WARNI] Very high loss value: 106.7990 - may indicate learning issues
+2025-11-29 18:13:01,448 [WARNI] Very high loss value: 4879.9038 - may indicate learning issues
+2025-11-29 18:13:01,662 [WARNI] Very high loss value: 114.6767 - may indicate learning issues
+2025-11-29 18:13:01,821 [WARNI] Very high loss value: 249.9942 - may indicate learning issues
+2025-11-29 18:13:01,972 [WARNI] Very high loss value: 13832.5107 - may indicate learning issues
+2025-11-29 18:13:02,334 [WARNI] Very high loss value: 225.7051 - may indicate learning issues
+2025-11-29 18:13:02,476 [WARNI] Very high loss value: 7650.3672 - may indicate learning issues
+2025-11-29 18:13:02,833 [WARNI] Very high loss value: 168.8881 - may indicate learning issues
+2025-11-29 18:13:02,990 [WARNI] Very high loss value: 13316.7344 - may indicate learning issues
+2025-11-29 18:13:03,370 [WARNI] Very high loss value: 167.6967 - may indicate learning issues
+2025-11-29 18:13:03,526 [WARNI] Very high loss value: 15353.0791 - may indicate learning issues
+2025-11-29 18:13:03,906 [WARNI] Very high loss value: 163.8849 - may indicate learning issues
+2025-11-29 18:13:04,042 [WARNI] Very high loss value: 15008.5703 - may indicate learning issues
+2025-11-29 18:13:04,390 [WARNI] Very high loss value: 117.8644 - may indicate learning issues
+2025-11-29 18:13:04,534 [WARNI] Very high loss value: 15220.1055 - may indicate learning issues
+2025-11-29 18:13:04,878 [WARNI] Very high loss value: 131.2112 - may indicate learning issues
+2025-11-29 18:13:05,058 [WARNI] Very high loss value: 17464.3555 - may indicate learning issues
+2025-11-29 18:13:05,547 [WARNI] Very high loss value: 125.1801 - may indicate learning issues
+2025-11-29 18:13:05,774 [WARNI] Very high loss value: 12100.5508 - may indicate learning issues
+2025-11-29 18:13:06,270 [WARNI] Very high loss value: 101.7664 - may indicate learning issues
+2025-11-29 18:13:06,458 [WARNI] Very high loss value: 9896.8926 - may indicate learning issues
+2025-11-29 18:13:06,890 [WARNI] Very high loss value: 203.8062 - may indicate learning issues
+2025-11-29 18:13:07,055 [WARNI] Very high loss value: 11195.5117 - may indicate learning issues
+2025-11-29 18:13:07,651 [WARNI] Very high loss value: 7582.6694 - may indicate learning issues
+2025-11-29 18:13:08,146 [WARNI] Very high loss value: 101.7695 - may indicate learning issues
+2025-11-29 18:13:08,306 [WARNI] Very high loss value: 12171.3311 - may indicate learning issues
+2025-11-29 18:13:08,796 [WARNI] Very high loss value: 11094.6172 - may indicate learning issues
+2025-11-29 18:13:09,299 [WARNI] Very high loss value: 6123.5649 - may indicate learning issues
+2025-11-29 18:13:09,796 [WARNI] Very high loss value: 7422.5405 - may indicate learning issues
+2025-11-29 18:13:10,011 [WARNI] Very high loss value: 1750.2745 - may indicate learning issues
+2025-11-29 18:13:10,304 [WARNI] Very high loss value: 4435.0566 - may indicate learning issues
+2025-11-29 18:13:10,788 [WARNI] Very high loss value: 10316.8203 - may indicate learning issues
+2025-11-29 18:13:11,309 [WARNI] Very high loss value: 3005.1294 - may indicate learning issues
+2025-11-29 18:13:11,823 [WARNI] Very high loss value: 1746.2430 - may indicate learning issues
+2025-11-29 18:13:11,935 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:13:11,936 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:12,067 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:13:12,067 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:12,184 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:13:12,184 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:12,229 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:13:12,229 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:12,264 [WARNI] All predictions are zero - model may not be learning
+2025-11-29 18:13:12,264 [WARNI] Party has all zero predictions - model may not be learning
+2025-11-29 18:13:18,204 [WARNI] All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:13:18,239 [INFO ] ================================================================================
+2025-11-29 18:13:18,239 [INFO ] Saving experiment results
+2025-11-29 18:13:18,239 [INFO ] ================================================================================
+2025-11-29 18:13:18,239 [INFO ] Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:13:18,240 [INFO ] Data settings: ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:13:18,240 [INFO ] Saving Federated Learning results
+2025-11-29 18:13:18,720 [INFO ] Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:13:18,721 [INFO ] ================================================================================
+2025-11-29 18:21:23,765 [INFO ] root                                     - Random seed set as 0
+2025-11-29 18:21:46,539 [INFO ] root                                     - Random seed set as 0
+2025-11-29 18:21:53,245 [WARNI] models.gnn                               - Very high loss value: 4894.0249 - may indicate learning issues
+2025-11-29 18:21:53,396 [WARNI] models.gnn                               - Very high loss value: 51660.3633 - may indicate learning issues
+2025-11-29 18:21:53,545 [WARNI] models.gnn                               - Very high loss value: 53679.4102 - may indicate learning issues
+2025-11-29 18:21:53,675 [WARNI] models.gnn                               - Very high loss value: 4769.2402 - may indicate learning issues
+2025-11-29 18:21:53,706 [WARNI] models.gnn                               - Very high loss value: 64110.0781 - may indicate learning issues
+2025-11-29 18:21:54,076 [WARNI] models.gnn                               - Very high loss value: 210.4382 - may indicate learning issues
+2025-11-29 18:21:54,232 [WARNI] models.gnn                               - Very high loss value: 20629.8906 - may indicate learning issues
+2025-11-29 18:21:54,433 [WARNI] models.gnn                               - Very high loss value: 141.7929 - may indicate learning issues
+2025-11-29 18:21:54,583 [WARNI] models.gnn                               - Very high loss value: 303.9193 - may indicate learning issues
+2025-11-29 18:21:54,742 [WARNI] models.gnn                               - Very high loss value: 22652.1875 - may indicate learning issues
+2025-11-29 18:21:54,954 [WARNI] models.gnn                               - Very high loss value: 171.9674 - may indicate learning issues
+2025-11-29 18:21:55,102 [WARNI] models.gnn                               - Very high loss value: 402.3918 - may indicate learning issues
+2025-11-29 18:21:55,277 [WARNI] models.gnn                               - Very high loss value: 36788.3516 - may indicate learning issues
+2025-11-29 18:21:55,526 [WARNI] models.gnn                               - Very high loss value: 175.3812 - may indicate learning issues
+2025-11-29 18:21:55,693 [WARNI] models.gnn                               - Very high loss value: 526.0737 - may indicate learning issues
+2025-11-29 18:21:55,874 [WARNI] models.gnn                               - Very high loss value: 43952.4609 - may indicate learning issues
+2025-11-29 18:21:56,111 [WARNI] models.gnn                               - Very high loss value: 187.9892 - may indicate learning issues
+2025-11-29 18:21:56,287 [WARNI] models.gnn                               - Very high loss value: 444.1972 - may indicate learning issues
+2025-11-29 18:21:56,447 [WARNI] models.gnn                               - Very high loss value: 42257.3477 - may indicate learning issues
+2025-11-29 18:21:56,669 [WARNI] models.gnn                               - Very high loss value: 118.1220 - may indicate learning issues
+2025-11-29 18:21:56,814 [WARNI] models.gnn                               - Very high loss value: 578.6686 - may indicate learning issues
+2025-11-29 18:21:56,966 [WARNI] models.gnn                               - Very high loss value: 25843.8945 - may indicate learning issues
+2025-11-29 18:21:57,168 [WARNI] models.gnn                               - Very high loss value: 150.6938 - may indicate learning issues
+2025-11-29 18:21:57,308 [WARNI] models.gnn                               - Very high loss value: 578.9643 - may indicate learning issues
+2025-11-29 18:21:57,455 [WARNI] models.gnn                               - Very high loss value: 34767.5898 - may indicate learning issues
+2025-11-29 18:21:57,656 [WARNI] models.gnn                               - Very high loss value: 178.5303 - may indicate learning issues
+2025-11-29 18:21:57,796 [WARNI] models.gnn                               - Very high loss value: 741.3295 - may indicate learning issues
+2025-11-29 18:21:57,938 [WARNI] models.gnn                               - Very high loss value: 38286.0391 - may indicate learning issues
+2025-11-29 18:21:58,137 [WARNI] models.gnn                               - Very high loss value: 152.1966 - may indicate learning issues
+2025-11-29 18:21:58,278 [WARNI] models.gnn                               - Very high loss value: 512.3832 - may indicate learning issues
+2025-11-29 18:21:58,422 [WARNI] models.gnn                               - Very high loss value: 34639.0820 - may indicate learning issues
+2025-11-29 18:21:58,626 [WARNI] models.gnn                               - Very high loss value: 110.5542 - may indicate learning issues
+2025-11-29 18:21:58,768 [WARNI] models.gnn                               - Very high loss value: 510.2542 - may indicate learning issues
+2025-11-29 18:21:58,914 [WARNI] models.gnn                               - Very high loss value: 50668.4180 - may indicate learning issues
+2025-11-29 18:21:59,116 [WARNI] models.gnn                               - Very high loss value: 132.5774 - may indicate learning issues
+2025-11-29 18:21:59,256 [WARNI] models.gnn                               - Very high loss value: 397.6766 - may indicate learning issues
+2025-11-29 18:21:59,401 [WARNI] models.gnn                               - Very high loss value: 46540.4219 - may indicate learning issues
+2025-11-29 18:21:59,601 [WARNI] models.gnn                               - Very high loss value: 116.5897 - may indicate learning issues
+2025-11-29 18:21:59,753 [WARNI] models.gnn                               - Very high loss value: 395.3929 - may indicate learning issues
+2025-11-29 18:21:59,895 [WARNI] models.gnn                               - Very high loss value: 40235.9180 - may indicate learning issues
+2025-11-29 18:22:00,098 [WARNI] models.gnn                               - Very high loss value: 113.7618 - may indicate learning issues
+2025-11-29 18:22:00,238 [WARNI] models.gnn                               - Very high loss value: 4365.4956 - may indicate learning issues
+2025-11-29 18:22:00,370 [WARNI] models.gnn                               - Very high loss value: 40784.2266 - may indicate learning issues
+2025-11-29 18:22:00,567 [WARNI] models.gnn                               - Very high loss value: 110.9156 - may indicate learning issues
+2025-11-29 18:22:00,712 [WARNI] models.gnn                               - Very high loss value: 388.6239 - may indicate learning issues
+2025-11-29 18:22:00,855 [WARNI] models.gnn                               - Very high loss value: 48619.8320 - may indicate learning issues
+2025-11-29 18:22:01,234 [WARNI] models.gnn                               - Very high loss value: 484.6241 - may indicate learning issues
+2025-11-29 18:22:01,553 [WARNI] models.gnn                               - Very high loss value: 43949.1602 - may indicate learning issues
+2025-11-29 18:22:01,977 [WARNI] models.gnn                               - Very high loss value: 300.6395 - may indicate learning issues
+2025-11-29 18:22:02,123 [WARNI] models.gnn                               - Very high loss value: 33782.2734 - may indicate learning issues
+2025-11-29 18:22:02,450 [WARNI] models.gnn                               - Very high loss value: 296.6028 - may indicate learning issues
+2025-11-29 18:22:02,588 [WARNI] models.gnn                               - Very high loss value: 39760.3242 - may indicate learning issues
+2025-11-29 18:22:02,942 [WARNI] models.gnn                               - Very high loss value: 311.3852 - may indicate learning issues
+2025-11-29 18:22:03,102 [WARNI] models.gnn                               - Very high loss value: 12031.3643 - may indicate learning issues
+2025-11-29 18:22:03,444 [WARNI] models.gnn                               - Very high loss value: 244.8750 - may indicate learning issues
+2025-11-29 18:22:03,584 [WARNI] models.gnn                               - Very high loss value: 16553.0977 - may indicate learning issues
+2025-11-29 18:22:03,675 [WARNI] models.gnn                               - All predictions are zero - model may not be learning
+2025-11-29 18:22:03,675 [WARNI] inference                                - Party has all zero predictions - model may not be learning
+2025-11-29 18:22:03,768 [WARNI] models.gnn                               - All predictions are zero - model may not be learning
+2025-11-29 18:22:03,769 [WARNI] inference                                - Party has all zero predictions - model may not be learning
+2025-11-29 18:22:03,875 [WARNI] models.gnn                               - All predictions are zero - model may not be learning
+2025-11-29 18:22:03,875 [WARNI] inference                                - Party has all zero predictions - model may not be learning
+2025-11-29 18:22:03,922 [WARNI] models.gnn                               - All predictions are zero - model may not be learning
+2025-11-29 18:22:03,922 [WARNI] inference                                - Party has all zero predictions - model may not be learning
+2025-11-29 18:22:03,956 [WARNI] models.gnn                               - All predictions are zero - model may not be learning
+2025-11-29 18:22:03,956 [WARNI] inference                                - Party has all zero predictions - model may not be learning
+2025-11-29 18:22:11,279 [WARNI] inference                                - All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:22:11,650 [WARNI] models.gnn                               - Very high loss value: 406.2150 - may indicate learning issues
+2025-11-29 18:22:11,784 [WARNI] models.gnn                               - Very high loss value: 10131.2178 - may indicate learning issues
+2025-11-29 18:22:12,126 [WARNI] models.gnn                               - Very high loss value: 167.1206 - may indicate learning issues
+2025-11-29 18:22:12,283 [WARNI] models.gnn                               - Very high loss value: 16456.1816 - may indicate learning issues
+2025-11-29 18:22:12,355 [WARNI] models.gnn                               - Very high loss value: 190.8264 - may indicate learning issues
+2025-11-29 18:22:12,497 [WARNI] models.gnn                               - Very high loss value: 218.8617 - may indicate learning issues
+2025-11-29 18:22:12,650 [WARNI] models.gnn                               - Very high loss value: 281.1191 - may indicate learning issues
+2025-11-29 18:22:12,775 [WARNI] models.gnn                               - Very high loss value: 185.6948 - may indicate learning issues
+2025-11-29 18:22:17,808 [INFO ] root                 - Random seed set as 0
+2025-11-29 18:22:43,868 [INFO ] root                 - Random seed set as 0
+2025-11-29 18:22:52,762 [WARNI] models.gnn           - Very high loss value: 4894.0249 - may indicate learning issues
+2025-11-29 18:22:52,917 [WARNI] models.gnn           - Very high loss value: 51660.3633 - may indicate learning issues
+2025-11-29 18:22:53,085 [WARNI] models.gnn           - Very high loss value: 53679.4102 - may indicate learning issues
+2025-11-29 18:22:53,226 [WARNI] models.gnn           - Very high loss value: 4769.2402 - may indicate learning issues
+2025-11-29 18:22:53,254 [WARNI] models.gnn           - Very high loss value: 64110.0781 - may indicate learning issues
+2025-11-29 18:22:53,626 [WARNI] models.gnn           - Very high loss value: 210.4382 - may indicate learning issues
+2025-11-29 18:22:53,785 [WARNI] models.gnn           - Very high loss value: 20629.8906 - may indicate learning issues
+2025-11-29 18:22:53,997 [WARNI] models.gnn           - Very high loss value: 141.7929 - may indicate learning issues
+2025-11-29 18:22:54,140 [WARNI] models.gnn           - Very high loss value: 303.9193 - may indicate learning issues
+2025-11-29 18:22:54,279 [WARNI] models.gnn           - Very high loss value: 22652.1875 - may indicate learning issues
+2025-11-29 18:22:54,492 [WARNI] models.gnn           - Very high loss value: 171.9674 - may indicate learning issues
+2025-11-29 18:22:54,631 [WARNI] models.gnn           - Very high loss value: 402.3918 - may indicate learning issues
+2025-11-29 18:22:54,789 [WARNI] models.gnn           - Very high loss value: 36788.3516 - may indicate learning issues
+2025-11-29 18:22:55,008 [WARNI] models.gnn           - Very high loss value: 175.3812 - may indicate learning issues
+2025-11-29 18:22:55,170 [WARNI] models.gnn           - Very high loss value: 526.0737 - may indicate learning issues
+2025-11-29 18:22:55,323 [WARNI] models.gnn           - Very high loss value: 43952.4609 - may indicate learning issues
+2025-11-29 18:22:55,524 [WARNI] models.gnn           - Very high loss value: 187.9892 - may indicate learning issues
+2025-11-29 18:22:55,682 [WARNI] models.gnn           - Very high loss value: 444.1972 - may indicate learning issues
+2025-11-29 18:22:55,826 [WARNI] models.gnn           - Very high loss value: 42257.3477 - may indicate learning issues
+2025-11-29 18:22:56,039 [WARNI] models.gnn           - Very high loss value: 118.1220 - may indicate learning issues
+2025-11-29 18:22:56,189 [WARNI] models.gnn           - Very high loss value: 578.6686 - may indicate learning issues
+2025-11-29 18:22:56,332 [WARNI] models.gnn           - Very high loss value: 25843.8945 - may indicate learning issues
+2025-11-29 18:22:56,560 [WARNI] models.gnn           - Very high loss value: 150.6938 - may indicate learning issues
+2025-11-29 18:22:56,726 [WARNI] models.gnn           - Very high loss value: 578.9643 - may indicate learning issues
+2025-11-29 18:22:56,923 [WARNI] models.gnn           - Very high loss value: 34767.5898 - may indicate learning issues
+2025-11-29 18:22:57,162 [WARNI] models.gnn           - Very high loss value: 178.5303 - may indicate learning issues
+2025-11-29 18:22:57,323 [WARNI] models.gnn           - Very high loss value: 741.3293 - may indicate learning issues
+2025-11-29 18:22:57,477 [WARNI] models.gnn           - Very high loss value: 38286.0391 - may indicate learning issues
+2025-11-29 18:22:57,698 [WARNI] models.gnn           - Very high loss value: 152.1966 - may indicate learning issues
+2025-11-29 18:22:57,873 [WARNI] models.gnn           - Very high loss value: 512.3832 - may indicate learning issues
+2025-11-29 18:22:58,039 [WARNI] models.gnn           - Very high loss value: 34639.0820 - may indicate learning issues
+2025-11-29 18:22:58,257 [WARNI] models.gnn           - Very high loss value: 110.5542 - may indicate learning issues
+2025-11-29 18:22:58,421 [WARNI] models.gnn           - Very high loss value: 510.2542 - may indicate learning issues
+2025-11-29 18:22:58,601 [WARNI] models.gnn           - Very high loss value: 50668.4180 - may indicate learning issues
+2025-11-29 18:22:58,822 [WARNI] models.gnn           - Very high loss value: 132.5774 - may indicate learning issues
+2025-11-29 18:22:58,985 [WARNI] models.gnn           - Very high loss value: 397.6765 - may indicate learning issues
+2025-11-29 18:22:59,143 [WARNI] models.gnn           - Very high loss value: 46540.4219 - may indicate learning issues
+2025-11-29 18:22:59,377 [WARNI] models.gnn           - Very high loss value: 116.5897 - may indicate learning issues
+2025-11-29 18:22:59,549 [WARNI] models.gnn           - Very high loss value: 395.3929 - may indicate learning issues
+2025-11-29 18:22:59,707 [WARNI] models.gnn           - Very high loss value: 40235.9141 - may indicate learning issues
+2025-11-29 18:22:59,969 [WARNI] models.gnn           - Very high loss value: 113.7618 - may indicate learning issues
+2025-11-29 18:23:00,160 [WARNI] models.gnn           - Very high loss value: 4365.4956 - may indicate learning issues
+2025-11-29 18:23:00,317 [WARNI] models.gnn           - Very high loss value: 40784.2305 - may indicate learning issues
+2025-11-29 18:23:00,543 [WARNI] models.gnn           - Very high loss value: 110.9156 - may indicate learning issues
+2025-11-29 18:23:00,696 [WARNI] models.gnn           - Very high loss value: 388.6239 - may indicate learning issues
+2025-11-29 18:23:00,845 [WARNI] models.gnn           - Very high loss value: 48619.8320 - may indicate learning issues
+2025-11-29 18:23:01,214 [WARNI] models.gnn           - Very high loss value: 484.6240 - may indicate learning issues
+2025-11-29 18:23:01,370 [WARNI] models.gnn           - Very high loss value: 43949.1602 - may indicate learning issues
+2025-11-29 18:23:01,749 [WARNI] models.gnn           - Very high loss value: 300.6395 - may indicate learning issues
+2025-11-29 18:23:01,922 [WARNI] models.gnn           - Very high loss value: 33782.2695 - may indicate learning issues
+2025-11-29 18:23:02,319 [WARNI] models.gnn           - Very high loss value: 296.6028 - may indicate learning issues
+2025-11-29 18:23:02,483 [WARNI] models.gnn           - Very high loss value: 39760.3320 - may indicate learning issues
+2025-11-29 18:23:02,881 [WARNI] models.gnn           - Very high loss value: 311.3853 - may indicate learning issues
+2025-11-29 18:23:03,046 [WARNI] models.gnn           - Very high loss value: 12031.3633 - may indicate learning issues
+2025-11-29 18:23:03,458 [WARNI] models.gnn           - Very high loss value: 244.8750 - may indicate learning issues
+2025-11-29 18:23:03,614 [WARNI] models.gnn           - Very high loss value: 16553.0898 - may indicate learning issues
+2025-11-29 18:23:03,718 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:03,719 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:03,821 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:03,822 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:03,935 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:03,935 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:03,984 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:03,984 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:04,043 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:04,043 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:09,856 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:23:10,359 [WARNI] models.gnn           - Very high loss value: 406.2150 - may indicate learning issues
+2025-11-29 18:23:10,523 [WARNI] models.gnn           - Very high loss value: 10131.2178 - may indicate learning issues
+2025-11-29 18:23:10,990 [WARNI] models.gnn           - Very high loss value: 167.1206 - may indicate learning issues
+2025-11-29 18:23:11,162 [WARNI] models.gnn           - Very high loss value: 16456.1816 - may indicate learning issues
+2025-11-29 18:23:11,235 [WARNI] models.gnn           - Very high loss value: 190.8264 - may indicate learning issues
+2025-11-29 18:23:11,389 [WARNI] models.gnn           - Very high loss value: 218.8617 - may indicate learning issues
+2025-11-29 18:23:11,544 [WARNI] models.gnn           - Very high loss value: 281.1191 - may indicate learning issues
+2025-11-29 18:23:11,708 [WARNI] models.gnn           - Very high loss value: 185.6948 - may indicate learning issues
+2025-11-29 18:23:11,742 [WARNI] models.gnn           - Very high loss value: 8244.1914 - may indicate learning issues
+2025-11-29 18:23:12,193 [WARNI] models.gnn           - Very high loss value: 178.2406 - may indicate learning issues
+2025-11-29 18:23:12,382 [WARNI] models.gnn           - Very high loss value: 14083.8691 - may indicate learning issues
+2025-11-29 18:23:12,772 [WARNI] models.gnn           - Very high loss value: 184.1691 - may indicate learning issues
+2025-11-29 18:23:12,934 [WARNI] models.gnn           - Very high loss value: 18957.0742 - may indicate learning issues
+2025-11-29 18:23:13,327 [WARNI] models.gnn           - Very high loss value: 235.5219 - may indicate learning issues
+2025-11-29 18:23:13,496 [WARNI] models.gnn           - Very high loss value: 12789.4180 - may indicate learning issues
+2025-11-29 18:23:13,882 [WARNI] models.gnn           - Very high loss value: 238.6513 - may indicate learning issues
+2025-11-29 18:23:14,051 [WARNI] models.gnn           - Very high loss value: 10218.4590 - may indicate learning issues
+2025-11-29 18:23:14,469 [WARNI] models.gnn           - Very high loss value: 227.3409 - may indicate learning issues
+2025-11-29 18:23:14,635 [WARNI] models.gnn           - Very high loss value: 10098.0244 - may indicate learning issues
+2025-11-29 18:23:15,037 [WARNI] models.gnn           - Very high loss value: 174.2283 - may indicate learning issues
+2025-11-29 18:23:15,200 [WARNI] models.gnn           - Very high loss value: 10784.0244 - may indicate learning issues
+2025-11-29 18:23:15,585 [WARNI] models.gnn           - Very high loss value: 186.6259 - may indicate learning issues
+2025-11-29 18:23:15,761 [WARNI] models.gnn           - Very high loss value: 6537.4429 - may indicate learning issues
+2025-11-29 18:23:16,137 [WARNI] models.gnn           - Very high loss value: 167.8694 - may indicate learning issues
+2025-11-29 18:23:16,298 [WARNI] models.gnn           - Very high loss value: 6058.5186 - may indicate learning issues
+2025-11-29 18:23:16,727 [WARNI] models.gnn           - Very high loss value: 153.0473 - may indicate learning issues
+2025-11-29 18:23:16,911 [WARNI] models.gnn           - Very high loss value: 4725.4082 - may indicate learning issues
+2025-11-29 18:23:17,280 [WARNI] models.gnn           - Very high loss value: 126.8471 - may indicate learning issues
+2025-11-29 18:23:17,419 [WARNI] models.gnn           - Very high loss value: 3646.7542 - may indicate learning issues
+2025-11-29 18:23:17,759 [WARNI] models.gnn           - Very high loss value: 101.8219 - may indicate learning issues
+2025-11-29 18:23:17,904 [WARNI] models.gnn           - Very high loss value: 3033.8354 - may indicate learning issues
+2025-11-29 18:23:18,259 [WARNI] models.gnn           - Very high loss value: 131.8315 - may indicate learning issues
+2025-11-29 18:23:18,398 [WARNI] models.gnn           - Very high loss value: 2356.6846 - may indicate learning issues
+2025-11-29 18:23:18,616 [WARNI] models.gnn           - Very high loss value: 404.8536 - may indicate learning issues
+2025-11-29 18:23:18,789 [WARNI] models.gnn           - Very high loss value: 139.5576 - may indicate learning issues
+2025-11-29 18:23:18,957 [WARNI] models.gnn           - Very high loss value: 1717.7424 - may indicate learning issues
+2025-11-29 18:23:19,508 [WARNI] models.gnn           - Very high loss value: 2292.3706 - may indicate learning issues
+2025-11-29 18:23:20,086 [WARNI] models.gnn           - Very high loss value: 2488.0901 - may indicate learning issues
+2025-11-29 18:23:20,609 [WARNI] models.gnn           - Very high loss value: 2891.0779 - may indicate learning issues
+2025-11-29 18:23:21,111 [WARNI] models.gnn           - Very high loss value: 3812.4602 - may indicate learning issues
+2025-11-29 18:23:21,210 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:21,211 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:21,323 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:21,323 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:21,435 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:21,435 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:21,485 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:21,485 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:21,525 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:21,525 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:27,764 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:23:27,854 [WARNI] models.gnn           - Very high loss value: 3681.6614 - may indicate learning issues
+2025-11-29 18:23:27,989 [WARNI] models.gnn           - Very high loss value: 17738.4863 - may indicate learning issues
+2025-11-29 18:23:28,132 [WARNI] models.gnn           - Very high loss value: 18077.7109 - may indicate learning issues
+2025-11-29 18:23:28,250 [WARNI] models.gnn           - Very high loss value: 2816.7073 - may indicate learning issues
+2025-11-29 18:23:28,277 [WARNI] models.gnn           - Very high loss value: 6421.7026 - may indicate learning issues
+2025-11-29 18:23:28,610 [WARNI] models.gnn           - Very high loss value: 210.9511 - may indicate learning issues
+2025-11-29 18:23:28,750 [WARNI] models.gnn           - Very high loss value: 21481.3848 - may indicate learning issues
+2025-11-29 18:23:28,943 [WARNI] models.gnn           - Very high loss value: 115.5401 - may indicate learning issues
+2025-11-29 18:23:29,080 [WARNI] models.gnn           - Very high loss value: 363.9489 - may indicate learning issues
+2025-11-29 18:23:29,211 [WARNI] models.gnn           - Very high loss value: 19808.2852 - may indicate learning issues
+2025-11-29 18:23:29,414 [WARNI] models.gnn           - Very high loss value: 154.1569 - may indicate learning issues
+2025-11-29 18:23:29,562 [WARNI] models.gnn           - Very high loss value: 491.9068 - may indicate learning issues
+2025-11-29 18:23:29,703 [WARNI] models.gnn           - Very high loss value: 34177.7656 - may indicate learning issues
+2025-11-29 18:23:29,969 [WARNI] models.gnn           - Very high loss value: 168.8803 - may indicate learning issues
+2025-11-29 18:23:30,140 [WARNI] models.gnn           - Very high loss value: 497.3773 - may indicate learning issues
+2025-11-29 18:23:30,285 [WARNI] models.gnn           - Very high loss value: 28758.1582 - may indicate learning issues
+2025-11-29 18:23:30,501 [WARNI] models.gnn           - Very high loss value: 178.8554 - may indicate learning issues
+2025-11-29 18:23:30,692 [WARNI] models.gnn           - Very high loss value: 465.3894 - may indicate learning issues
+2025-11-29 18:23:30,879 [WARNI] models.gnn           - Very high loss value: 49625.5664 - may indicate learning issues
+2025-11-29 18:23:31,090 [WARNI] models.gnn           - Very high loss value: 160.1657 - may indicate learning issues
+2025-11-29 18:23:31,242 [WARNI] models.gnn           - Very high loss value: 450.7770 - may indicate learning issues
+2025-11-29 18:23:31,388 [WARNI] models.gnn           - Very high loss value: 38066.2500 - may indicate learning issues
+2025-11-29 18:23:31,592 [WARNI] models.gnn           - Very high loss value: 171.7452 - may indicate learning issues
+2025-11-29 18:23:31,738 [WARNI] models.gnn           - Very high loss value: 470.4283 - may indicate learning issues
+2025-11-29 18:23:31,886 [WARNI] models.gnn           - Very high loss value: 46787.1953 - may indicate learning issues
+2025-11-29 18:23:32,097 [WARNI] models.gnn           - Very high loss value: 166.1270 - may indicate learning issues
+2025-11-29 18:23:32,243 [WARNI] models.gnn           - Very high loss value: 355.5613 - may indicate learning issues
+2025-11-29 18:23:32,381 [WARNI] models.gnn           - Very high loss value: 27825.1992 - may indicate learning issues
+2025-11-29 18:23:32,584 [WARNI] models.gnn           - Very high loss value: 153.6805 - may indicate learning issues
+2025-11-29 18:23:32,738 [WARNI] models.gnn           - Very high loss value: 461.4593 - may indicate learning issues
+2025-11-29 18:23:32,895 [WARNI] models.gnn           - Very high loss value: 45961.0352 - may indicate learning issues
+2025-11-29 18:23:32,970 [WARNI] models.gnn           - Very high loss value: 111.5267 - may indicate learning issues
+2025-11-29 18:23:33,114 [WARNI] models.gnn           - Very high loss value: 244.0170 - may indicate learning issues
+2025-11-29 18:23:33,309 [WARNI] models.gnn           - Very high loss value: 456.8093 - may indicate learning issues
+2025-11-29 18:23:33,490 [WARNI] models.gnn           - Very high loss value: 37267.2031 - may indicate learning issues
+2025-11-29 18:23:33,736 [WARNI] models.gnn           - Very high loss value: 154.8082 - may indicate learning issues
+2025-11-29 18:23:33,914 [WARNI] models.gnn           - Very high loss value: 595.4103 - may indicate learning issues
+2025-11-29 18:23:34,079 [WARNI] models.gnn           - Very high loss value: 34598.8086 - may indicate learning issues
+2025-11-29 18:23:34,330 [WARNI] models.gnn           - Very high loss value: 135.4397 - may indicate learning issues
+2025-11-29 18:23:34,511 [WARNI] models.gnn           - Very high loss value: 362.4754 - may indicate learning issues
+2025-11-29 18:23:34,702 [WARNI] models.gnn           - Very high loss value: 20661.4980 - may indicate learning issues
+2025-11-29 18:23:34,956 [WARNI] models.gnn           - Very high loss value: 134.4801 - may indicate learning issues
+2025-11-29 18:23:35,134 [WARNI] models.gnn           - Very high loss value: 403.4545 - may indicate learning issues
+2025-11-29 18:23:35,311 [WARNI] models.gnn           - Very high loss value: 34438.5938 - may indicate learning issues
+2025-11-29 18:23:35,533 [WARNI] models.gnn           - Very high loss value: 145.2787 - may indicate learning issues
+2025-11-29 18:23:35,683 [WARNI] models.gnn           - Very high loss value: 311.3459 - may indicate learning issues
+2025-11-29 18:23:35,819 [WARNI] models.gnn           - Very high loss value: 20588.5977 - may indicate learning issues
+2025-11-29 18:23:36,055 [WARNI] models.gnn           - Very high loss value: 512.0078 - may indicate learning issues
+2025-11-29 18:23:36,235 [WARNI] models.gnn           - Very high loss value: 468.4177 - may indicate learning issues
+2025-11-29 18:23:36,411 [WARNI] models.gnn           - Very high loss value: 19820.2773 - may indicate learning issues
+2025-11-29 18:23:36,636 [WARNI] models.gnn           - Very high loss value: 136.3315 - may indicate learning issues
+2025-11-29 18:23:36,795 [WARNI] models.gnn           - Very high loss value: 1107.7480 - may indicate learning issues
+2025-11-29 18:23:36,958 [WARNI] models.gnn           - Very high loss value: 32685.1016 - may indicate learning issues
+2025-11-29 18:23:37,183 [WARNI] models.gnn           - Very high loss value: 103.5874 - may indicate learning issues
+2025-11-29 18:23:37,320 [WARNI] models.gnn           - Very high loss value: 310.3079 - may indicate learning issues
+2025-11-29 18:23:37,468 [WARNI] models.gnn           - Very high loss value: 6637.4014 - may indicate learning issues
+2025-11-29 18:23:37,825 [WARNI] models.gnn           - Very high loss value: 359.2491 - may indicate learning issues
+2025-11-29 18:23:37,969 [WARNI] models.gnn           - Very high loss value: 36934.7305 - may indicate learning issues
+2025-11-29 18:23:38,173 [WARNI] models.gnn           - Very high loss value: 102.8174 - may indicate learning issues
+2025-11-29 18:23:38,316 [WARNI] models.gnn           - Very high loss value: 260.4724 - may indicate learning issues
+2025-11-29 18:23:38,455 [WARNI] models.gnn           - Very high loss value: 28672.3887 - may indicate learning issues
+2025-11-29 18:23:38,548 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:38,548 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:38,643 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:38,643 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:38,762 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:38,763 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:38,805 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:38,806 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:38,842 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:38,842 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:44,088 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:23:44,247 [WARNI] models.gnn           - Very high loss value: 199.0968 - may indicate learning issues
+2025-11-29 18:23:44,397 [WARNI] models.gnn           - Very high loss value: 2029.2473 - may indicate learning issues
+2025-11-29 18:23:44,539 [WARNI] models.gnn           - Very high loss value: 1755.5098 - may indicate learning issues
+2025-11-29 18:23:44,656 [WARNI] models.gnn           - Very high loss value: 106.7990 - may indicate learning issues
+2025-11-29 18:23:44,685 [WARNI] models.gnn           - Very high loss value: 4879.9038 - may indicate learning issues
+2025-11-29 18:23:44,891 [WARNI] models.gnn           - Very high loss value: 114.6767 - may indicate learning issues
+2025-11-29 18:23:45,045 [WARNI] models.gnn           - Very high loss value: 249.9942 - may indicate learning issues
+2025-11-29 18:23:45,206 [WARNI] models.gnn           - Very high loss value: 13832.5107 - may indicate learning issues
+2025-11-29 18:23:45,594 [WARNI] models.gnn           - Very high loss value: 225.7051 - may indicate learning issues
+2025-11-29 18:23:45,748 [WARNI] models.gnn           - Very high loss value: 7650.3672 - may indicate learning issues
+2025-11-29 18:23:46,121 [WARNI] models.gnn           - Very high loss value: 168.8881 - may indicate learning issues
+2025-11-29 18:23:46,304 [WARNI] models.gnn           - Very high loss value: 13316.7344 - may indicate learning issues
+2025-11-29 18:23:46,673 [WARNI] models.gnn           - Very high loss value: 167.6967 - may indicate learning issues
+2025-11-29 18:23:46,821 [WARNI] models.gnn           - Very high loss value: 15353.0791 - may indicate learning issues
+2025-11-29 18:23:47,175 [WARNI] models.gnn           - Very high loss value: 163.8849 - may indicate learning issues
+2025-11-29 18:23:47,324 [WARNI] models.gnn           - Very high loss value: 15008.5703 - may indicate learning issues
+2025-11-29 18:23:47,688 [WARNI] models.gnn           - Very high loss value: 117.8644 - may indicate learning issues
+2025-11-29 18:23:47,830 [WARNI] models.gnn           - Very high loss value: 15220.1055 - may indicate learning issues
+2025-11-29 18:23:48,170 [WARNI] models.gnn           - Very high loss value: 131.2112 - may indicate learning issues
+2025-11-29 18:23:48,307 [WARNI] models.gnn           - Very high loss value: 17464.3555 - may indicate learning issues
+2025-11-29 18:23:48,647 [WARNI] models.gnn           - Very high loss value: 125.1801 - may indicate learning issues
+2025-11-29 18:23:48,789 [WARNI] models.gnn           - Very high loss value: 12100.5508 - may indicate learning issues
+2025-11-29 18:23:49,149 [WARNI] models.gnn           - Very high loss value: 101.7664 - may indicate learning issues
+2025-11-29 18:23:49,298 [WARNI] models.gnn           - Very high loss value: 9896.8926 - may indicate learning issues
+2025-11-29 18:23:49,695 [WARNI] models.gnn           - Very high loss value: 203.8062 - may indicate learning issues
+2025-11-29 18:23:49,874 [WARNI] models.gnn           - Very high loss value: 11195.5117 - may indicate learning issues
+2025-11-29 18:23:50,418 [WARNI] models.gnn           - Very high loss value: 7582.6694 - may indicate learning issues
+2025-11-29 18:23:50,781 [WARNI] models.gnn           - Very high loss value: 101.7695 - may indicate learning issues
+2025-11-29 18:23:50,929 [WARNI] models.gnn           - Very high loss value: 12171.3301 - may indicate learning issues
+2025-11-29 18:23:51,428 [WARNI] models.gnn           - Very high loss value: 11094.6172 - may indicate learning issues
+2025-11-29 18:23:51,910 [WARNI] models.gnn           - Very high loss value: 6123.5649 - may indicate learning issues
+2025-11-29 18:23:52,423 [WARNI] models.gnn           - Very high loss value: 7422.5405 - may indicate learning issues
+2025-11-29 18:23:52,660 [WARNI] models.gnn           - Very high loss value: 1750.2739 - may indicate learning issues
+2025-11-29 18:23:52,977 [WARNI] models.gnn           - Very high loss value: 4435.0566 - may indicate learning issues
+2025-11-29 18:23:53,504 [WARNI] models.gnn           - Very high loss value: 10316.8203 - may indicate learning issues
+2025-11-29 18:23:54,019 [WARNI] models.gnn           - Very high loss value: 3005.1294 - may indicate learning issues
+2025-11-29 18:23:54,504 [WARNI] models.gnn           - Very high loss value: 1746.2437 - may indicate learning issues
+2025-11-29 18:23:54,612 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:54,612 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:54,729 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:54,729 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:54,841 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:54,842 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:54,884 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:54,884 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:23:54,921 [WARNI] models.gnn           - All predictions are zero - model may not be learning
+2025-11-29 18:23:54,921 [WARNI] inference            - Party has all zero predictions - model may not be learning
+2025-11-29 18:24:01,097 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-11-29 18:24:01,121 [INFO ] relbanks_saving_analysis.save_results - ================================================================================
+2025-11-29 18:24:01,121 [INFO ] relbanks_saving_analysis.save_results - Saving experiment results
+2025-11-29 18:24:01,121 [INFO ] relbanks_saving_analysis.save_results - ================================================================================
+2025-11-29 18:24:01,122 [INFO ] relbanks_saving_analysis.save_results - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:24:01,122 [INFO ] relbanks_saving_analysis.save_results - Data settings: ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:24:01,122 [INFO ] relbanks_saving_analysis.save_results - Saving Federated Learning results
+2025-11-29 18:24:01,479 [INFO ] relbanks_saving_analysis.save_results - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedAvg/GINe/ibm_fe__ibm_hp__train_for_final
+2025-11-29 18:24:01,480 [INFO ] relbanks_saving_analysis.save_results - ================================================================================
+2025-11-29 19:49:16,794 [INFO ] root                 - Random seed set as 0
+2025-11-29 19:49:20,668 [INFO ] root                 - train size: 3248921 
+ validation size: 965524 
+ test size: 863900
+2025-11-29 19:49:56,483 [INFO ] root                 - Random seed set as 0
+2025-11-29 19:49:59,567 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 19:49:59,567 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-29 19:50:29,900 [INFO ] root                 - Random seed set as 0
+2025-11-29 19:50:33,023 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-29 19:50:33,023 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900

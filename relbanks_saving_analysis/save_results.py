@@ -1,6 +1,7 @@
 import configs.configs as config
 import os
 import json
+import logging
 from pathlib import Path
 import torch
 import pickle
@@ -8,7 +9,13 @@ import utils
 from datetime import datetime
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 def save_results(results, hyperparams, manager):
+
+    logger.info("="*80)
+    logger.info("Saving experiment results")
+    logger.info("="*80)
 
     # get general folders
     str_testing = 'testing' if manager.args['data_parser'].testing else ''
@@ -19,13 +26,13 @@ def save_results(results, hyperparams, manager):
 
     str_folder = manager.args['fl_parser'].model
     model_tuning_configs = utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
-    
+
     # get gnn folder
     if manager.args['fl_parser'].model_type == 'gnn':
         for key, value in vars(manager.args['gnn_parser']).items():
             if value:
                 str_folder += f'__{key}'
-                
+
 
     # get booster folder
     elif manager.args['fl_parser'].model_type == 'booster':
@@ -41,22 +48,33 @@ def save_results(results, hyperparams, manager):
     folder_path = Path(save_direc)
     folder_path.mkdir(parents=True, exist_ok=True)
 
+    logger.info("Save directory: %s", save_direc)
+    logger.info("Data settings: %s", data_folder if data_settings else "default (no special flags)")
+
     # save tuning configs
     file_path = folder_path / 'model_tuning_configs.json'
     file_path.write_text(json.dumps(model_tuning_configs, indent=4))
+    logger.debug("Saved model tuning configs")
 
     # save experiment configs
     experiment_config = create_experiment_config(manager)
     file_path = folder_path / 'experiment_config.json'
     file_path.write_text(json.dumps(experiment_config, indent=4))
+    logger.debug("Saved experiment config")
 
     # save the results
     if manager.args['fl_parser'].fl_algo == 'full_info':
+        logger.info("Saving Full Info results")
         save_full_info(save_direc, results, hyperparams, manager)
     elif manager.args['fl_parser'].fl_algo != 'individual':
+        logger.info("Saving Federated Learning results")
         save_FL(save_direc, results, hyperparams, manager)
     else:
+        logger.info("Saving Individual bank results")
         save_individual(save_direc, results, manager)
+
+    logger.info("Results saved successfully to: %s", save_direc)
+    logger.info("="*80)
 
 
 def save_FL(save_direc, results, hyperparams, manager):
@@ -90,6 +108,7 @@ def save_individual(save_direc, results, manager):
 
     if manager.args['fl_parser'].model_type == 'gnn':
 
+        logger.info("Saving results for %d seeds", len(results))
         for seed, seed_result in results.items():
 
             seed_folder = os.path.join(save_direc, f'seed_{seed}')
@@ -102,10 +121,18 @@ def save_individual(save_direc, results, manager):
             with open(f'{seed_folder}/models_hyperparameters.pkl', 'wb') as f:
                 pickle.dump({'models_hyperparameters': seed_result['models']}, f)
 
+            logger.debug("Seed %d saved - F1: %.4f", seed, seed_result['metrics']['f1'])
+
         aggregated_results = aggregate_seed_results(results)
         file_path = os.path.join(save_direc, 'aggregated_results.json')
         with open(file_path, 'w') as file:
             json.dump(aggregated_results, file, indent=4)
+
+        logger.info("Aggregated results: Mean F1=%.4f (±%.4f), Best F1=%.4f (seed %d)",
+                   aggregated_results['f1']['mean'],
+                   aggregated_results['f1']['std'],
+                   aggregated_results['best_f1'],
+                   aggregated_results['best_seed'])
 
 
 def save_full_info(save_direc, results, hyperparams, manager):
@@ -114,10 +141,12 @@ def save_full_info(save_direc, results, hyperparams, manager):
     file_path = os.path.join(save_direc, 'hyper_parameters.json')
     with open(file_path, 'w') as file:
         json.dump(hyperparams, file, indent=4)
+    logger.debug("Saved hyperparameters")
 
     # save seeds and the results
     if manager.args['fl_parser'].model_type == 'gnn':
 
+        logger.info("Saving results for %d seeds", len(results))
         for seed, seed_result in results.items():
 
             seed_folder = os.path.join(save_direc, f'seed_{seed}')
@@ -129,10 +158,18 @@ def save_full_info(save_direc, results, hyperparams, manager):
 
             torch.save(seed_result['model'], f'{seed_folder}/model.pth')
 
+            logger.debug("Seed %d saved - F1: %.4f", seed, seed_result['metrics']['f1'])
+
         aggregated_results = aggregate_seed_results(results)
         file_path = os.path.join(save_direc, 'aggregated_results.json')
         with open(file_path, 'w') as file:
             json.dump(aggregated_results, file, indent=4)
+
+        logger.info("Aggregated results: Mean F1=%.4f (±%.4f), Best F1=%.4f (seed %d)",
+                   aggregated_results['f1']['mean'],
+                   aggregated_results['f1']['std'],
+                   aggregated_results['best_f1'],
+                   aggregated_results['best_seed'])
 
 
 def create_experiment_config(manager):

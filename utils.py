@@ -99,8 +99,8 @@ def logger_setup():
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     logging.basicConfig(
-        level=logging.INFO, 
-        format="%(asctime)s [%(levelname)-5.5s] %(message)s",
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-5.5s] %(name)-20s - %(message)s",
         handlers=[
             logging.FileHandler(os.path.join(log_directory, "logs.log")),     ## log to local log file
             logging.StreamHandler(sys.stdout)          ## log also to stdout (i.e., print to screen)
@@ -172,7 +172,7 @@ def parser_all():
 def fl_parser():
 
     parser = argparse.ArgumentParser(description="main args for fl")
-    parser.add_argument('--fl_algo', default='FedGD', type=str)
+    parser.add_argument('--fl_algo', default='FedAvg', type=str)
     parser.add_argument('--model', default='GINe', type=str)
     #parser.add_argument('--model', default='xgboost', type=str)
     #parser.add_argument('--regu', default=)

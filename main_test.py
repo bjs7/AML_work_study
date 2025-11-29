@@ -18,11 +18,9 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 # setup -----------------------------------------------
 
-# caching in managers?
-# check the way seeds are set
+# have logging for most, but still need for federated manager
 
-# NEED TO CHANGE NAME OF FEDGD. I AM USING AVERAGE CURRENTLY
-# Be sure that it is a 0.5 threshold that is used for f1 score etc.
+# caching in managers?
 
 # ALSO NEED TO ADD MORE LOGGING AND SAVE THE LOGGING IN THE EXPERIEMENTS FOLDER!
 
@@ -30,12 +28,8 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 # be sure that gpu is used on hpc
 
-# if parsers['data_parser'].train_for_final = True skip second round banks
-
 # in tuning, most of the metrics calcuations can be skipped
 # conditino that only adds max_prob, avg_prob etc. if not full info?
-
-# add wwarnings different places. Do this with logging etc.
 
 
 

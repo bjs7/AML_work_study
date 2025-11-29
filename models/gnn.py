@@ -2,6 +2,7 @@
 # packages for FL
 
 from abc import ABC, abstractmethod
+import logging
 import utils as fl_utils
 import torch
 from federated_learning.registry import GNN_REGISTRY
@@ -11,6 +12,8 @@ from torch_geometric.transforms import BaseTransform
 from typing import Union
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -67,6 +70,14 @@ class GNN(ABC):
         pred = self.gnn(df.x, df.edge_index, df.edge_attr)
         loss = self.loss_fn(pred, df.y)
 
+        # Check for unusual loss values
+        if torch.isnan(loss):
+            logger.error("Loss is NaN! Check for numerical instability, learning rate, or data issues")
+        elif torch.isinf(loss):
+            logger.error("Loss is infinite! Check for numerical overflow in model or data")
+        elif loss.item() > 100:
+            logger.warning("Very high loss value: %.4f - may indicate learning issues", loss.item())
+
         loss.backward()
         self.optimizer.step()
 
@@ -81,8 +92,16 @@ class GNN(ABC):
             df = df.to(device)
             pred = self.gnn(df.x, df.edge_index, df.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
-        
-        return pred.softmax(dim=1)[:,1].cpu().numpy()
+
+        predictions = pred.softmax(dim=1)[:,1].cpu().numpy()
+
+        # Check for unusual predictions
+        if torch.isnan(pred).any():
+            logger.warning("Model predictions contain NaN values!")
+        elif (predictions == 0).all():
+            logger.warning("All predictions are zero - model may not be learning")
+
+        return predictions
 
     def predict_binary(self, graph_data):
 

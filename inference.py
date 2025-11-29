@@ -1,6 +1,9 @@
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, precision_score, recall_score, average_precision_score
 import pandas as pd
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 def predictions_helper(y_pred_probabilities, threshold = 0.5):
     return (y_pred_probabilities > threshold) * 1
@@ -10,11 +13,20 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
     if y_pred_binary is None:
         y_pred_binary = predictions_helper(y_pred_probabilities)
 
+    # Check for NaN values before processing
     if isinstance(y_pred_probabilities, pd.Series):
+        nan_count = y_pred_probabilities.isna().sum()
+        if nan_count > 0:
+            logger.warning("Found %d NaN values in predictions (%.2f%%), replacing with 0",
+                          nan_count, 100 * nan_count / len(y_pred_probabilities))
         y_pred_probabilities = y_pred_probabilities.fillna(0).values
     else:
+        nan_count = np.isnan(y_pred_probabilities).sum()
+        if nan_count > 0:
+            logger.warning("Found %d NaN values in predictions (%.2f%%), replacing with 0",
+                          nan_count, 100 * nan_count / len(y_pred_probabilities))
         y_pred_probabilities = np.nan_to_num(y_pred_probabilities, nan=0.0)
-    
+
     results = {
         'f1': f1_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
         'precision': precision_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
@@ -23,6 +35,17 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
         'roc_auc': roc_auc_score(y_true, y_pred_probabilities),
         'pr_auc': average_precision_score(y_true, y_pred_probabilities)
     }
+
+    # Warn about unusual metric values
+    if results['f1'] == 0 and results['precision'] == 0 and results['recall'] == 0:
+        logger.warning("All metrics are zero - model may not be making any positive predictions")
+    elif results['precision'] == 0:
+        logger.warning("Precision is zero - all positive predictions are false positives")
+    elif results['recall'] == 0:
+        logger.warning("Recall is zero - model is not detecting any true positives")
+
+    if results['roc_auc'] < 0.5:
+        logger.warning("ROC-AUC < 0.5 (%.4f) - model performs worse than random", results['roc_auc'])
 
     return results
 
@@ -42,8 +65,18 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None):
     """
 
     # make predictions and get prediction indicies
-    if pred_probabilities is None: 
+    if pred_probabilities is None:
         pred_probabilities = party.model.predict(party.get_eval_data())
+
+    # Check for unusual predictions
+    if np.isnan(pred_probabilities).any():
+        nan_count = np.isnan(pred_probabilities).sum()
+        logger.warning("Party has %d NaN predictions (%.2f%%)",
+                      nan_count, 100 * nan_count / len(pred_probabilities))
+
+    if np.all(pred_probabilities == 0):
+        logger.warning("Party has all zero predictions - model may not be learning")
+
     pred_labels = predictions_helper(pred_probabilities)
     original_indices = party.get_eval_indices()
 
