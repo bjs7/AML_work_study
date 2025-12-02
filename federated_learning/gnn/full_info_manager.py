@@ -186,8 +186,8 @@ class FullInfoGNNManager(GNNMixinManager):
             elif (preds == 0).all():
                 logger.warning("All predictions are zero - model may not be learning")
 
-            #preds = torch.cat(preds, dim=0).detach().cpu().numpy()
-            preds = np.concatenate(preds)
+            preds = torch.cat(preds, dim=0).detach().cpu().numpy()
+            #preds = np.concatenate(preds)
             ground_truths = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
 
             tmp_metrics = metrics(y_true = ground_truths,

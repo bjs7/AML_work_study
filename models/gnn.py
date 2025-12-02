@@ -77,6 +77,7 @@ class GNN(ABC):
 
         return loss.item()
 
+    @torch.no_grad()
     def predict(self, gd, mask):
 
         #df = gd.get('df')

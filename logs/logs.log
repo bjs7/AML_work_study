@@ -1323,3 +1323,9 @@
 2025-12-02 23:09:10,382 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
 2025-12-02 23:09:10,382 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
 2025-12-02 23:16:50,074 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-12-02 23:33:16,237 [INFO ] root                 - Random seed set as 0
+2025-12-02 23:33:20,241 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-02 23:33:20,339 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-02 23:33:20,339 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-02 23:33:20,339 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-02 23:35:22,779 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
