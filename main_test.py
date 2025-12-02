@@ -35,7 +35,7 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 utils.logger_setup()
 parsers = utils.parser_all()
-#parsers['data_parser'].testing = True
+parsers['data_parser'].testing = True
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 

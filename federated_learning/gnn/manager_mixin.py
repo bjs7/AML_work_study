@@ -19,7 +19,7 @@ class GNNMixinManager:
         sample_party = next(iter(self.parties.values()))
         node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
         edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
-        print(sample_party.procs_data['train_data']['df'].edge_index.shape[1])
+        #print(sample_party.procs_data['train_data']['df'].edge_index.shape[1])
    
         if bank_id:
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)

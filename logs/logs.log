@@ -1229,3 +1229,97 @@
 2025-11-29 22:49:26,959 [WARNI] models.gnn           - All predictions are zero - model may not be learning
 2025-11-29 22:49:33,384 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
 2025-11-29 22:49:37,283 [WARNI] models.gnn           - Very high loss value: 10387.6504 - may indicate learning issues
+2025-11-29 23:43:15,922 [INFO ] root                 - Random seed set as 0
+2025-11-29 23:44:17,623 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 23:45:01,906 [INFO ] root                 - Random seed set as 0
+2025-11-29 23:45:05,533 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-29 23:45:05,608 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-29 23:45:05,608 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-29 23:45:05,608 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-30 01:24:34,626 [INFO ] root                 - Random seed set as 0
+2025-11-30 01:24:38,460 [INFO ] root                 - Parsers, data and scalers loaded
+2025-11-30 01:24:38,460 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-11-30 01:24:39,285 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-11-30 01:24:39,358 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-11-30 01:24:39,359 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-11-30 01:24:39,359 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-11-30 01:24:39,662 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-11-30 01:24:40,400 [WARNI] models.gnn           - Very high loss value: 25140.0195 - may indicate learning issues
+2025-11-30 01:24:41,665 [WARNI] models.gnn           - Very high loss value: 132.6953 - may indicate learning issues
+2025-11-30 01:24:44,307 [WARNI] models.gnn           - Very high loss value: 951.4937 - may indicate learning issues
+2025-11-30 01:24:45,788 [WARNI] models.gnn           - Very high loss value: 164.7535 - may indicate learning issues
+2025-11-30 01:24:47,123 [WARNI] models.gnn           - Very high loss value: 280.9522 - may indicate learning issues
+2025-11-30 01:24:48,449 [WARNI] models.gnn           - Very high loss value: 547.2144 - may indicate learning issues
+2025-11-30 01:24:49,702 [WARNI] models.gnn           - Very high loss value: 103.2715 - may indicate learning issues
+2025-11-30 01:24:53,774 [WARNI] models.gnn           - Very high loss value: 617.1705 - may indicate learning issues
+2025-11-30 01:24:56,336 [WARNI] models.gnn           - Very high loss value: 230.0595 - may indicate learning issues
+2025-11-30 01:25:00,088 [WARNI] models.gnn           - Very high loss value: 183.4362 - may indicate learning issues
+2025-11-30 01:25:01,316 [WARNI] models.gnn           - Very high loss value: 255.4458 - may indicate learning issues
+2025-11-30 01:25:03,931 [WARNI] models.gnn           - Very high loss value: 26264110.0000 - may indicate learning issues
+2025-11-30 01:25:06,565 [WARNI] models.gnn           - Very high loss value: 209.9633 - may indicate learning issues
+2025-11-30 01:25:07,871 [WARNI] models.gnn           - Very high loss value: 1318.4103 - may indicate learning issues
+2025-11-30 01:25:09,152 [WARNI] models.gnn           - Very high loss value: 45681.6602 - may indicate learning issues
+2025-11-30 01:25:10,566 [WARNI] models.gnn           - Very high loss value: 418.0281 - may indicate learning issues
+2025-11-30 01:25:11,827 [WARNI] models.gnn           - Very high loss value: 1262.0778 - may indicate learning issues
+2025-11-30 01:25:13,095 [WARNI] models.gnn           - Very high loss value: 1018.8058 - may indicate learning issues
+2025-11-30 01:25:14,438 [WARNI] models.gnn           - Very high loss value: 14272.6826 - may indicate learning issues
+2025-11-30 01:25:15,724 [WARNI] models.gnn           - Very high loss value: 455.0868 - may indicate learning issues
+2025-11-30 01:25:16,980 [WARNI] models.gnn           - Very high loss value: 12485.1104 - may indicate learning issues
+2025-11-30 01:25:21,001 [WARNI] models.gnn           - Very high loss value: 146.9872 - may indicate learning issues
+2025-11-30 01:25:22,298 [WARNI] models.gnn           - Very high loss value: 161.3442 - may indicate learning issues
+2025-11-30 01:25:25,106 [WARNI] models.gnn           - Very high loss value: 447.4926 - may indicate learning issues
+2025-11-30 01:25:29,273 [WARNI] models.gnn           - Very high loss value: 2291.0505 - may indicate learning issues
+2025-11-30 01:25:47,866 [WARNI] models.gnn           - Very high loss value: 424.8962 - may indicate learning issues
+2025-11-30 01:25:50,420 [WARNI] models.gnn           - Very high loss value: 1047.0996 - may indicate learning issues
+2025-11-30 01:25:53,185 [WARNI] models.gnn           - Very high loss value: 152.0441 - may indicate learning issues
+2025-11-30 01:25:54,470 [WARNI] models.gnn           - Very high loss value: 164.4077 - may indicate learning issues
+2025-11-30 01:25:58,173 [WARNI] models.gnn           - Very high loss value: 239.6634 - may indicate learning issues
+2025-11-30 01:26:09,936 [WARNI] models.gnn           - Very high loss value: 199.0282 - may indicate learning issues
+2025-11-30 01:26:18,233 [WARNI] models.gnn           - Very high loss value: 51506.8125 - may indicate learning issues
+2025-11-30 01:26:36,365 [WARNI] models.gnn           - Very high loss value: 7554.2500 - may indicate learning issues
+2025-11-30 01:26:43,659 [WARNI] models.gnn           - Very high loss value: 180.5970 - may indicate learning issues
+2025-11-30 01:26:45,046 [WARNI] models.gnn           - Very high loss value: 124.1911 - may indicate learning issues
+2025-11-30 01:26:47,789 [WARNI] models.gnn           - Very high loss value: 266.0234 - may indicate learning issues
+2025-11-30 01:26:49,205 [WARNI] models.gnn           - Very high loss value: 1196.5554 - may indicate learning issues
+2025-11-30 01:26:50,522 [WARNI] models.gnn           - Very high loss value: 492.5028 - may indicate learning issues
+2025-11-30 01:26:57,492 [WARNI] models.gnn           - Very high loss value: 480.1586 - may indicate learning issues
+2025-11-30 01:27:09,218 [WARNI] models.gnn           - Very high loss value: 74850.1797 - may indicate learning issues
+2025-11-30 01:27:12,067 [WARNI] models.gnn           - Very high loss value: 194.2128 - may indicate learning issues
+2025-11-30 01:27:14,899 [WARNI] models.gnn           - Very high loss value: 148.2145 - may indicate learning issues
+2025-11-30 01:27:17,754 [WARNI] models.gnn           - Very high loss value: 877.1046 - may indicate learning issues
+2025-11-30 01:27:24,653 [WARNI] models.gnn           - Very high loss value: 240.6094 - may indicate learning issues
+2025-11-30 01:27:29,938 [WARNI] models.gnn           - Very high loss value: 575.9572 - may indicate learning issues
+2025-11-30 19:12:52,875 [INFO ] root                 - Random seed set as 0
+2025-11-30 19:12:58,435 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-11-30 19:12:58,536 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-11-30 19:12:58,536 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-11-30 19:12:58,536 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-01 21:21:52,155 [INFO ] root                 - Random seed set as 0
+2025-12-01 21:21:57,529 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-01 21:21:57,617 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-01 21:21:57,617 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-01 21:21:57,617 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-02 15:39:10,702 [INFO ] root                 - Random seed set as 0
+2025-12-02 15:39:15,180 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-02 15:39:15,261 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-02 15:39:15,261 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-02 15:39:15,261 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-02 21:05:35,316 [INFO ] root                 - Random seed set as 0
+2025-12-02 21:05:42,045 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-02 21:05:42,118 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-02 21:05:42,118 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-02 21:05:42,118 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-02 21:13:23,391 [WARNI] models.gnn           - Very high loss value: 17244.1270 - may indicate learning issues
+2025-12-02 23:09:03,944 [INFO ] root                 - Random seed set as 0
+2025-12-02 23:09:10,305 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-02 23:09:10,382 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-02 23:09:10,382 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-02 23:09:10,382 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-02 23:16:50,074 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions

@@ -8,6 +8,11 @@ from inference import metrics, predictions_helper
 import inference as flin
 from training.utils import ibm_gnn
 
+from torch_geometric.loader import LinkNeighborLoader
+from models.gnn import add_arange_ids, batching_masker
+import torch
+from models.gnn import get_loaders
+
 logger = logging.getLogger(__name__)
 
 
@@ -86,21 +91,26 @@ class FullInfoGNNManager(GNNMixinManager):
 
         for seed in range(seeds):
             seed_value = seed + 1
+
             logger.info("\n" + "-"*80)
             logger.info("Training with seed %d/%d", seed_value, seeds)
             logger.info("-"*80)
+
+
             utils.set_seed(seed_value)
             self.init_models(hyperparameters)
             results_by_seed[seed_value] = self._train(copy.deepcopy(laundering_values))
+
+
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
                        seed_value,
                        results_by_seed[seed_value]['metrics']['f1'],
                        results_by_seed[seed_value]['metrics']['roc_auc'],
                        results_by_seed[seed_value]['metrics']['pr_auc'])
-
         logger.info("\n" + "="*80)
         logger.info("All seeds completed")
         logger.info("="*80)
+
         return results_by_seed
     
     def _train(self, laundering_values):
@@ -111,6 +121,18 @@ class FullInfoGNNManager(GNNMixinManager):
         best_f1 = -1
         best_model = None
 
+        # need to add indices in teh train data
+        train_data = copy.deepcopy(self._party.procs_data['train_data']['df'])
+        train_indices = copy.deepcopy(self._party.procs_data['train_data']['pred_indices'])
+        
+        eval_data = copy.deepcopy(self._party.procs_data['eval_data']['df'])
+        eval_pred_indices = self._party.procs_data['eval_data']['pred_indices']    
+    
+        add_arange_ids([train_data, eval_data])
+
+        num_neighbors = [100]*self._party.model.gnn.num_gnn_layers
+        train_loader, eval_loader = get_loaders(train_data, eval_data, eval_pred_indices, num_neighbors)
+
         # reset predictions
         laundering_values['pred_probabilities'] = 0
         laundering_values['pred_label'] = 0
@@ -119,13 +141,60 @@ class FullInfoGNNManager(GNNMixinManager):
         logger.info("Training for %d epochs (evaluating every 20 epochs)", epochs)
 
         for epoch in range(epochs):
-            loss = self._party.update_local_w()
 
-            #if (epoch + 1) % 20 == 0:
+            total_loss = 0
+            #self = self._party.model
 
-            pred_probabilities = self._party.model.predict(self._party.get_eval_data())
-            tmp_metrics = metrics(y_true = laundering_values['true_y'],
-                                    y_pred_probabilities = pred_probabilities)
+            for batch in train_loader:
+                #batch = next(iter(train_loader))
+
+                mask = batching_masker(batch, train_data, train_loader, train_indices)
+                
+                #remove the unique edge id from the edge features, as it's no longer needed
+                batch.edge_attr = batch.edge_attr[:, 1:]
+
+                loss = self._party.model.update_w(batch, mask)
+                total_loss += loss #* batch.input_id.shape*2
+            
+            # Check for unusual loss values
+            if torch.isnan(total_loss):
+                logger.error("Loss is NaN! Check for numerical instability, learning rate, or data issues")
+            elif torch.isinf(total_loss):
+                logger.error("Loss is infinite! Check for numerical overflow in model or data")
+            #elif total_loss.item() > 100:
+            #logger.warning("Very high loss value: %.4f - may indicate learning issues", total_loss)
+            logger.info("Very high loss value: %.4f - may indicate learning issues", total_loss)
+            
+
+            preds = []
+            ground_truths = []
+
+            for batch in eval_loader:
+                #batch = next(iter(eval_loader))
+                mask = batching_masker(batch, eval_data, eval_loader, eval_pred_indices)
+                batch.edge_attr = batch.edge_attr[:, 1:]
+
+                pred = self._party.model.predict(batch, mask)
+                preds.append(pred)
+                ground_truths.append(batch.y[mask])
+
+            #pred_probabilities = self._party.model.predict(self._party.get_eval_data())
+
+            # Check for unusual predictions
+            if torch.isnan(pred).any():
+                logger.warning("Model predictions contain NaN values!")
+            elif (preds == 0).all():
+                logger.warning("All predictions are zero - model may not be learning")
+
+            #preds = torch.cat(preds, dim=0).detach().cpu().numpy()
+            preds = np.concatenate(preds)
+            ground_truths = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
+
+            tmp_metrics = metrics(y_true = ground_truths,
+                                    y_pred_probabilities = preds)
+
+            #tmp_metrics = metrics(y_true = laundering_values['true_y'],
+                                    #y_pred_probabilities = pred_probabilities)
 
             # Debug logging every 20 epochs
             if (epoch + 1) % 20 == 0:
@@ -133,19 +202,21 @@ class FullInfoGNNManager(GNNMixinManager):
                            epoch + 1, epochs, loss, tmp_metrics['f1'], tmp_metrics['precision'],
                            tmp_metrics['recall'], tmp_metrics['roc_auc'])
                 logger.debug("  Prediction stats - Min: %.4f, Max: %.4f, Mean: %.4f, Median: %.4f",
-                            pred_probabilities.min(), pred_probabilities.max(),
-                            pred_probabilities.mean(), np.median(pred_probabilities))
+                            preds.min(), preds.max(),
+                            preds.mean(), np.median(preds))
                 logger.debug("  True label distribution - Positives: %d (%.2f%%), Negatives: %d",
                             laundering_values['true_y'].sum(),
                             100 * laundering_values['true_y'].mean(),
                             len(laundering_values['true_y']) - laundering_values['true_y'].sum())
 
             if tmp_metrics['f1'] > best_f1:
+
                 best_metrics = tmp_metrics
-                best_pred_label = predictions_helper(pred_probabilities)
-                best_pred_probabilities = copy.deepcopy(pred_probabilities)
+                best_pred_label = predictions_helper(preds)
+                best_pred_probabilities = copy.deepcopy(preds)
                 best_model = copy.deepcopy(self._party.model.gnn.state_dict())
                 best_f1 = tmp_metrics['f1']
+
                 logger.debug("New best F1: %.4f at epoch %d", best_f1, epoch + 1)
 
         if best_model is None:

@@ -59,51 +59,38 @@ class GNN(ABC):
         self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')]).to(device)) 
 
-    def update_w(self, df):
+    def update_w(self, gd, mask):
 
         self.gnn.train()
         self.optimizer.zero_grad()
 
         # Move data to device
-        df = df.to(device)
+        gd = gd.to(device)
 
-        pred = self.gnn(df.x, df.edge_index, df.edge_attr)
-        loss = self.loss_fn(pred, df.y)
+        out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
+        pred = out[mask]
 
-        # Check for unusual loss values
-        if torch.isnan(loss):
-            logger.error("Loss is NaN! Check for numerical instability, learning rate, or data issues")
-        elif torch.isinf(loss):
-            logger.error("Loss is infinite! Check for numerical overflow in model or data")
-        elif loss.item() > 100:
-            logger.warning("Very high loss value: %.4f - may indicate learning issues", loss.item())
+        loss = self.loss_fn(pred, gd.y[mask])
 
         loss.backward()
         self.optimizer.step()
 
         return loss.item()
 
-    def predict(self, graph_data):
+    def predict(self, gd, mask):
 
-        df = graph_data.get('df')
-        pred_indices = graph_data.get('pred_indices')
+        #df = gd.get('df')
+        #pred_indices = graph_data.get('pred_indices')
 
         self.gnn.eval()
         with torch.no_grad():
             # Move data to device
-            df = df.to(device)
-            pred = self.gnn(df.x, df.edge_index, df.edge_attr)
-            pred = pred[pred_indices] if pred_indices is not None else pred
+            gd = gd.to(device)
+            out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
+            pred = out[mask]
+            #pred = pred[pred_indices] if pred_indices is not None else pred
 
-        predictions = pred.softmax(dim=1)[:,1].cpu().numpy()
-
-        # Check for unusual predictions
-        if torch.isnan(pred).any():
-            logger.warning("Model predictions contain NaN values!")
-        elif (predictions == 0).all():
-            logger.warning("All predictions are zero - model may not be learning")
-
-        return predictions
+        return pred.softmax(dim=1)[:,1].detach().cpu()
 
     def predict_binary(self, graph_data):
 
@@ -150,17 +137,77 @@ class GNN(ABC):
 # Util functions for the gnn models -----------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
+import torch
+
+# if using batch.e_id then one would also need to add the original edges indices for the added edges
+def batching_masker(batch, data, loader, indices):
+
+    indices = indices.detach().cpu()
+    batch_edge_inds = indices[batch.input_id.detach().cpu()]
+    batch_edge_ids = loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
+
+    missing_seed_edges = ~torch.isin(batch_edge_ids, batch.edge_attr[:, 0].detach().cpu())
+
+    if missing_seed_edges.sum() != 0:
+        missing_ids = batch_edge_ids[missing_seed_edges].int()
+
+        edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
+        edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
+        y_add = data.y[missing_ids].detach().clone()
+
+        batch.edge_index = torch.cat([batch.edge_index, edge_labels_add], dim=1)
+        batch.edge_attr = torch.cat([batch.edge_attr, edge_attr_add], dim=0)
+        batch.y = torch.cat([batch.y, y_add], dim=0)
+
+    return torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
+
+
+#inds = self._party.procs_data['train_data']['pred_indices'].detach().cpu()
+#batch_edge_inds = inds[batch.input_id]
+#batch_edge_ids = train_loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
+
+#mask = torch.isin(batch.edge_attr[:, 0], batch_edge_ids)
+#mask.sum()
+
+
+#inds = self._party.procs_data['train_data']['pred_indices'].detach().cpu()
+#batch_edge_inds = inds[batch.input_id.detach().cpu()]
+#batch_edge_ids = train_loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
+
+#mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch.input_id.detach().cpu())
+#sum(mask)
+
+
 # select loader for sampling edges ---------------------------------------------------------------------------------------------------------
 
-def get_loaders(train_data, vali_data, pred_indices, m_param, batch_size, transform = None):
 
-    train_loader = LinkNeighborLoader(train_data, num_neighbors=m_param.get('num_neighbors'), edge_label = train_data.y, batch_size=batch_size, shuffle=True, transform=transform)
-    vali_loader = LinkNeighborLoader(vali_data, num_neighbors=m_param.get('num_neighbors'), 
-                                     edge_label_index=vali_data.edge_index[:, pred_indices],
-                                     edge_label=vali_data.y[pred_indices],
-                                        batch_size=batch_size, shuffle=False, transform=transform)
+
+#train_loader = LinkNeighborLoader(tr_data, num_neighbors=num_neighbors, 
+#                                    edge_label_index = tr_data.edge_index,
+#                                    edge_label = tr_data.y, 
+#                                    batch_size=8192, shuffle=True, transform=None)
+
+#eval_loader = LinkNeighborLoader(ev_data, num_neighbors=num_neighbors, 
+#                                    edge_label_index=ev_data.edge_index[:, ev_pred_indices],
+#                                    edge_label=ev_data.y[ev_pred_indices],
+#                                    batch_size=8192, shuffle=False, transform=None)
+
+
+def get_loaders(train_data, eval_data, eval_pred_indices, num_neighbors, transform = None):
+
+    train_loader = LinkNeighborLoader(train_data, num_neighbors=num_neighbors, 
+                                          edge_label_index = train_data.edge_index,
+                                          edge_label = train_data.y, 
+                                          batch_size=8192, shuffle=True, transform=transform)
+
+
+    eval_loader = LinkNeighborLoader(eval_data, num_neighbors=num_neighbors, 
+                                        edge_label_index=eval_data.edge_index[:, eval_pred_indices],
+                                        edge_label=eval_data.y[eval_pred_indices],
+                                        batch_size=8192, shuffle=False, transform=transform)
     
-    return train_loader, vali_loader
+    return train_loader, eval_loader
+
 
 class AddEgoIds(BaseTransform):
     r"""Add IDs to the centre nodes of the batch.
