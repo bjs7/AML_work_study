@@ -157,9 +157,9 @@ class FullInfoGNNManager(GNNMixinManager):
                 total_loss += loss #* batch.input_id.shape*2
             
             # Check for unusual loss values
-            if torch.isnan(total_loss):
+            if torch.isnan(torch.tensor(total_loss)):
                 logger.error("Loss is NaN! Check for numerical instability, learning rate, or data issues")
-            elif torch.isinf(total_loss):
+            elif torch.isinf(torch.tensor(total_loss)):
                 logger.error("Loss is infinite! Check for numerical overflow in model or data")
             #elif total_loss.item() > 100:
             #logger.warning("Very high loss value: %.4f - may indicate learning issues", total_loss)
