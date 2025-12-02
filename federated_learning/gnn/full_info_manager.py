@@ -180,15 +180,15 @@ class FullInfoGNNManager(GNNMixinManager):
 
             #pred_probabilities = self._party.model.predict(self._party.get_eval_data())
 
-            # Check for unusual predictions
-            if torch.isnan(pred).any():
-                logger.warning("Model predictions contain NaN values!")
-            elif (preds == 0).all():
-                logger.warning("All predictions are zero - model may not be learning")
-
             preds = torch.cat(preds, dim=0).detach().cpu().numpy()
             #preds = np.concatenate(preds)
             ground_truths = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
+
+            # Check for unusual predictions
+            if torch.isnan(torch.tensor(preds)).any():
+                logger.warning("Model predictions contain NaN values!")
+            elif (preds == 0).all():
+                logger.warning("All predictions are zero - model may not be learning")
 
             tmp_metrics = metrics(y_true = ground_truths,
                                     y_pred_probabilities = preds)
