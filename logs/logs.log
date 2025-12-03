@@ -1605,3 +1605,47 @@
 2025-12-03 23:50:50,022 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
 2025-12-03 23:50:50,022 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
 2025-12-03 23:50:50,022 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-03 23:58:09,855 [INFO ] root                 - Random seed set as 1
+2025-12-03 23:58:12,859 [INFO ] root                 - Parsers, data and scalers loaded
+2025-12-03 23:58:12,859 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-12-03 23:58:14,050 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-12-03 23:58:14,178 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-12-03 23:58:14,267 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-12-03 23:58:14,267 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-12-03 23:58:14,267 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-12-03 23:58:14,634 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-12-04 00:04:23,846 [INFO ] root                 - Random seed set as 1
+2025-12-04 00:04:27,035 [INFO ] root                 - Parsers, data and scalers loaded
+2025-12-04 00:04:27,035 [INFO ] root                 - train size: 3248921, validation size: 965524, test size: 863900
+2025-12-04 00:04:27,943 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 00:04:28,056 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 00:04:28,057 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 00:04:28,057 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 00:04:28,057 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-12-04 00:04:28,057 [INFO ] federated_learning.gnn.full_info_manager - Starting Full Info training with 4 seeds
+2025-12-04 00:04:28,057 [INFO ] federated_learning.gnn.full_info_manager - ================================================================================
+2025-12-04 00:04:28,136 [INFO ] federated_learning.gnn.full_info_manager - 
+--------------------------------------------------------------------------------
+2025-12-04 00:04:28,136 [INFO ] federated_learning.gnn.full_info_manager - Training with seed 1/4
+2025-12-04 00:04:28,136 [INFO ] federated_learning.gnn.full_info_manager - --------------------------------------------------------------------------------
+2025-12-04 00:04:28,278 [INFO ] root                 - train_data: tensor([[-1.1894, -0.0063, -0.8355, -1.2734],
+        [-1.1894, -0.0063, -0.8355, -1.2734],
+        [-1.1894, -0.0062, -0.8355, -1.2734],
+        ...,
+        [ 1.8740, -0.0063, -0.6004,  2.8243],
+        [ 1.8740, -0.0063, -0.6004,  2.8243],
+        [ 1.8740, -0.0063, -0.6004,  2.8243]])
+2025-12-04 00:04:28,480 [INFO ] federated_learning.gnn.full_info_manager - Training for 100 epochs (evaluating every 20 epochs)
+2025-12-04 00:05:23,495 [INFO ] root                 - Random seed set as 1
+2025-12-04 00:05:23,504 [INFO ] __main__             - ====================================================================================================
+2025-12-04 00:05:23,509 [INFO ] __main__             - Starting main_full_info experiment
+2025-12-04 00:05:23,515 [INFO ] __main__             - Seed: 1
+2025-12-04 00:05:23,525 [INFO ] __main__             - Data size: small, IR: HI
+2025-12-04 00:05:23,535 [INFO ] __main__             - Using IBM hyperparameters: False
+2025-12-04 00:05:23,536 [INFO ] __main__             - ====================================================================================================

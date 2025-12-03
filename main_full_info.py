@@ -28,6 +28,11 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+def z_norm(data):
+    std = data.std(0).unsqueeze(0)
+    std = torch.where(std == 0, torch.tensor(1, dtype=torch.float32).cpu(), std)
+    return (data - data.mean(0).unsqueeze(0)) / std
+
 def evaluate(loader, inds, model, data, device):
 
     preds = []
@@ -280,13 +285,20 @@ def main():
 
     df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
-    df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
+    df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = [0.6, 0.2])
     df = df['graph_data']
+
+    df['train_data']['df'].x = z_norm(df['train_data']['df'].x)
+    df['vali_data']['df'].x = z_norm(df['vali_data']['df'].x)
+
+    df['train_data']['df'].edge_attr = z_norm(df['train_data']['df'].edge_attr)
+    df['vali_data']['df'].edge_attr = z_norm(df['vali_data']['df'].edge_attr)
+
 
     if parsers['data_parser'].ibm_hp:
         hyperparameters = ibm_gnn
-        hyperparameters['w_ce1'] = 1
-        hyperparameters['w_ce2'] = 1
+        #hyperparameters['w_ce1'] = 1
+        #hyperparameters['w_ce2'] = 1
         logger.info("Training with IBM hyperparameters")
         results = train(df, hyperparameters)
     else:

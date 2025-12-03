@@ -12,6 +12,7 @@ from torch_geometric.loader import LinkNeighborLoader
 from models.gnn import add_arange_ids, batching_masker
 import torch
 from models.gnn import get_loaders
+from sklearn.metrics import f1_score
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +127,10 @@ class FullInfoGNNManager(GNNMixinManager):
         train_indices = copy.deepcopy(self._party.procs_data['train_data']['pred_indices'])
         
         eval_data = copy.deepcopy(self._party.procs_data['eval_data']['df'])
-        eval_pred_indices = self._party.procs_data['eval_data']['pred_indices']    
+        eval_pred_indices = self._party.procs_data['eval_data']['pred_indices']
+
+        #print(train_data.edge_attr)
+        logging.info(f'train_data: {train_data.edge_attr}')
     
         add_arange_ids([train_data, eval_data])
 
@@ -189,6 +193,9 @@ class FullInfoGNNManager(GNNMixinManager):
                 logger.warning("Model predictions contain NaN values!")
             elif (preds == 0).all():
                 logger.warning("All predictions are zero - model may not be learning")
+
+            te_f1 = f1_score(ground_truths, pred)
+            logging.info(f'Test F1: {te_f1:.4f}')
 
             tmp_metrics = metrics(y_true = ground_truths,
                                     y_pred_probabilities = preds)
