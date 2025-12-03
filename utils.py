@@ -10,11 +10,11 @@ import random
 import pandas as pd
 import copy
 
-#from data.get_indices_type_data import get_indices_bdt
-#from federated_learning.fl_base import Manager, Party
-#import data.data_functions as dfn
-#from data.raw_data_processing import get_data
-#from configs.configs import split_perc
+from data.get_indices_type_data import get_indices_bdt
+from federated_learning.fl_base import Manager, Party
+import data.data_functions as dfn
+from data.raw_data_processing import get_data
+from configs.configs import split_perc
 
 # --------------------------------------------------------------------------------------------------
 # dictionary holders

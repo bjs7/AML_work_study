@@ -11,7 +11,9 @@ import logging
 def train_homo(tr_loader, val_loader, te_loader, tr_inds, val_inds, te_inds, model, optimizer, loss_fn, args, config, device, val_data, te_data):
     #training
     best_val_f1 = 0
-    for epoch in range(config['epochs']):
+    epochs = 15 if args['data_parser'].testing else config['epochs']
+
+    for epoch in range(epochs):
         total_loss = total_examples = 0
         preds = []
         ground_truths = []
