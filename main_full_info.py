@@ -59,7 +59,7 @@ def evaluate(loader, inds, model, data, device):
             batch.edge_attr = torch.cat([batch.edge_attr, edge_attr_add], dim=0)
             batch.y = torch.cat([batch.y, add_y], dim=0)
 
-        mask = torch.cat((mask, torch.ones(add_y.shape[0], dtype=torch.bool)))
+            mask = torch.cat((mask, torch.ones(add_y.shape[0], dtype=torch.bool)))
 
         batch.edge_attr = batch.edge_attr[:, 1:]
 
