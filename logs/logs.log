@@ -1329,3 +1329,61 @@
 2025-12-02 23:33:20,339 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
 2025-12-02 23:33:20,339 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
 2025-12-02 23:35:22,779 [WARNI] inference            - All metrics are zero - model may not be making any positive predictions
+2025-12-03 14:50:12,174 [INFO ] root                 - Random seed set as 0
+2025-12-03 14:50:16,886 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 485 fr_banks and 215 sr_banks
+2025-12-03 14:50:16,886 [INFO ] federated_learning.gnn.individual_manager - Adding 485 fr_banks to manager
+2025-12-03 14:51:57,222 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 14:51:57,223 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 14:51:57,223 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 14:51:57,223 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 14:51:57,223 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 485 banks
+2025-12-03 14:58:14,910 [INFO ] root                 - Random seed set as 0
+2025-12-03 14:59:17,053 [INFO ] root                 - Random seed set as 0
+2025-12-03 14:59:21,951 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 1 fr_banks and 215 sr_banks
+2025-12-03 14:59:21,952 [INFO ] federated_learning.gnn.individual_manager - Adding 1 fr_banks to manager
+2025-12-03 14:59:26,385 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 14:59:26,386 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 14:59:26,386 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 14:59:26,386 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 14:59:26,386 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 1 banks
+2025-12-03 15:33:05,673 [INFO ] root                 - Random seed set as 0
+2025-12-03 15:33:09,966 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 485 fr_banks and 215 sr_banks
+2025-12-03 15:33:09,967 [INFO ] federated_learning.gnn.individual_manager - Adding 485 fr_banks to manager
+2025-12-03 15:34:40,384 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 15:34:40,385 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 15:34:40,386 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 15:34:40,386 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 15:34:40,386 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 485 banks
+2025-12-03 15:38:59,328 [INFO ] root                 - Random seed set as 0
+2025-12-03 15:39:03,862 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 1 fr_banks and 215 sr_banks
+2025-12-03 15:39:03,862 [INFO ] federated_learning.gnn.individual_manager - Adding 1 fr_banks to manager
+2025-12-03 15:39:09,219 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 15:39:09,219 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 15:39:09,220 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 15:39:09,220 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 15:39:09,220 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 1 banks
+2025-12-03 15:48:06,571 [INFO ] root                 - Random seed set as 0
+2025-12-03 15:48:52,702 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 1 fr_banks and 0 sr_banks
+2025-12-03 15:48:52,702 [INFO ] federated_learning.gnn.individual_manager - Adding 1 fr_banks to manager
+2025-12-03 15:48:57,797 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 15:48:57,797 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 15:48:57,797 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 15:48:57,797 [INFO ] federated_learning.gnn.individual_manager - Adding 0 sr_banks with tuned hyperparameters
+2025-12-03 15:48:57,797 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 1 banks
+2025-12-03 15:51:46,224 [INFO ] root                 - Random seed set as 0
+2025-12-03 15:52:32,014 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 1 fr_banks and 0 sr_banks
+2025-12-03 15:52:32,014 [INFO ] federated_learning.gnn.individual_manager - Adding 1 fr_banks to manager
+2025-12-03 15:52:36,257 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 15:52:36,257 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 15:52:36,257 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 15:52:36,257 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 15:52:36,257 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 1 banks
+2025-12-03 16:09:41,971 [INFO ] root                 - Random seed set as 1
+2025-12-03 16:10:24,866 [INFO ] federated_learning.gnn.individual_manager - Production mode: Using 1 fr_banks and 0 sr_banks
+2025-12-03 16:10:24,866 [INFO ] federated_learning.gnn.individual_manager - Adding 1 fr_banks to manager
+2025-12-03 16:10:29,803 [INFO ] federated_learning.gnn.individual_manager - Starting hyperparameter tuning for fr_banks
+2025-12-03 16:10:29,803 [INFO ] federated_learning.gnn.individual_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-03 16:10:29,803 [INFO ] federated_learning.gnn.individual_manager - Hyperparameter tuning completed
+2025-12-03 16:10:29,803 [INFO ] federated_learning.gnn.individual_manager - train_for_final=True: Skipping sr_banks
+2025-12-03 16:10:29,803 [INFO ] federated_learning.gnn.individual_manager - Setup complete: Total 1 banks
+2025-12-03 16:19:38,713 [INFO ] root                 - Random seed set as 1

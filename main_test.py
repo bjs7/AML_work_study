@@ -35,21 +35,21 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 utils.logger_setup()
 parsers = utils.parser_all()
-parsers['data_parser'].testing = True
+#parsers['data_parser'].testing = True
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
 # need to check that individual saves predictions/laundering values correct
 
-parsers['data_parser'].ibm_fe = True
+#parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
 
-parsers['fl_parser'].fl_algo = 'full_info'
-parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+#parsers['fl_parser'].fl_algo = 'full_info'
+#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
-#parsers['fl_parser'].fl_algo = 'individual'
+parsers['fl_parser'].fl_algo = 'individual'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -74,6 +74,30 @@ laundering_values = laundering_values_vali
 
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
+
+
+
+fr_banks, sr_banks = get_relevant_banks(parsers)
+max_obs = 0
+max_bank = None
+max_y_equal_one_obs = 0
+max_y_equal_one_bank = None
+
+sum(manager.parties[68].data['train_data']['df'].y) # 390
+sum(manager.parties[68].data['vali_data']['df'].y) # 523
+sum(manager.parties[68].data['test_data']['df'].y) # 633
+
+for bank in fr_banks:
+    if len(manager.parties[bank].data['train_data']['df'].y) > max_obs:
+        max_bank = bank
+        max_obs = len(manager.parties[bank].data['train_data']['df'].y)
+
+    if sum(manager.parties[bank].data['train_data']['df'].y) > max_y_equal_one_obs:
+        max_y_equal_one_bank = bank
+        max_y_equal_one_obs = sum(manager.parties[bank].data['train_data']['df'].y)\
+
+
+
 
 
 self = manager

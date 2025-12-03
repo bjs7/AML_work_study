@@ -10,6 +10,7 @@ import inference as flin
 from .manager_mixin import GNNMixinManager
 from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 from training.utils import ibm_gnn
+from sklearn.metrics import f1_score
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,11 @@ class IndividualGNNManager(GNNMixinManager):
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup fr_banks, tune them, then add sr_banks with best hyperparameters."""
         fr_banks, sr_banks = get_relevant_banks(parsers)
+
+        # tmp 
+        bank_to_get = [idx for idx in range(len(fr_banks)) if fr_banks[idx] == 68]
+        fr_banks = [fr_banks[bank_to_get[0]]]
+        sr_banks = []
 
         if parsers['data_parser'].testing:
             fr_banks = fr_banks[0:5]
@@ -100,6 +106,102 @@ class IndividualGNNManager(GNNMixinManager):
 
     def party_train(self, party, party_laundering_values):
 
+
+        from torch_geometric.loader import LinkNeighborLoader
+        from models.gnn import add_arange_ids, batching_masker
+        import torch
+        from models.gnn import get_loaders
+
+        self.set_mode('training')
+
+        for bank_id, party in self.parties.items():
+            party.prep_data()
+
+        #hyperparameters = tuned_hp
+        hyperparameters  = {}
+        hyperparameters[68] = {'learning_rate': 0.026563807693306837,
+                                'hidden_embedding_size': 28, 'n_mlp_layers': 1, 
+                                'num_gnn_layers': 3, 'loss': 'ce', 'w_ce1': 1.0000182882773443, 
+                                'w_ce2': 7.075395081105593, 'norm_method': 'z_normalize', 
+                                'dropout': 0.19692771081793753, 'final_dropout': 0.19692771081793753}
+        
+        laundering_values = laundering_values_test
+
+
+        for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
+            self.init_models(hyperparameters[bank_id], bank_id)
+            party_laundering_values = self._helper_party_tuning(party, laundering_values)
+        
+        train_data = copy.deepcopy(self.parties[68].procs_data['train_data']['df'])
+        train_indices = copy.deepcopy(self.parties[68].procs_data['train_data']['pred_indices'])
+        
+        eval_data = copy.deepcopy(self.parties[68].procs_data['eval_data']['df'])
+        eval_pred_indices = self.parties[68].procs_data['eval_data']['pred_indices']
+    
+        add_arange_ids([train_data, eval_data])
+
+        #num_neighbors = [100]*self.parties[68].model.gnn.num_gnn_layers
+        num_neighbors = [20,20,10]
+
+        #train_loader, eval_loader = get_loaders(train_data, eval_data, eval_pred_indices, num_neighbors)
+        train_loader = LinkNeighborLoader(train_data, num_neighbors=num_neighbors, 
+                                        edge_label_index = train_data.edge_index,
+                                        edge_label = train_data.y, 
+                                        batch_size=4096, shuffle=True, transform=None)
+
+        from models.gnn import GNN
+        utils.set_seed(1)
+        #model = GNN._create_gnn_model(manager, hyperparameters[68], 1, 6)
+        model = GNN._create_gnn_model(manager, hyperparameters[68], 1, 33)
+        
+        optimizer = torch.optim.Adam(model.parameters(), lr=hyperparameters[68]['learning_rate'])
+        loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparameters[68]['w_ce1'], 
+                                                                      hyperparameters[68]['w_ce2']]))
+        
+
+        for i in range(0, 100):
+            
+            total_loss = total_examples = 0
+            preds = []
+            ground_truths = []
+
+            for batch in train_loader:
+                #batch = next(iter(train_loader))
+
+                train_indices = train_indices.detach().cpu()
+                batch_edge_inds = train_indices[batch.input_id.detach().cpu()]
+                batch_edge_ids = train_loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
+
+                mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
+
+                batch.edge_attr = batch.edge_attr[:, 1:]
+
+                #out = self.parties[68].model.gnn(batch.x, batch.edge_index, batch.edge_attr)
+                out = model(batch.x, batch.edge_index, batch.edge_attr)
+                pred = out[mask]
+                ground_truth = batch.y[mask]
+                preds.append(pred.argmax(dim=-1))
+                ground_truths.append(ground_truth)
+                loss = loss_fn(pred, ground_truth)
+
+
+
+                loss.backward()
+                optimizer.step()
+                #self.parties[68].model.optimizer.step()
+
+                total_loss += float(loss) * pred.numel()
+                total_examples += pred.numel()
+
+            pred = torch.cat(preds, dim=0).detach().cpu().numpy()
+            ground_truth = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
+            f1 = f1_score(ground_truth, pred)
+            print(total_loss)
+            print(f1)
+
+
+
+        # ------------------------------------------------
         best_metrics = None
         #best_preditcions = None
 
@@ -116,7 +218,10 @@ class IndividualGNNManager(GNNMixinManager):
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
 
         for i in range(0, epochs):
-            party.update_local_w()
+
+            
+
+            #party.update_local_w()
 
             if (i+1) % 20 == 0:  
 

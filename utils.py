@@ -196,7 +196,7 @@ def data_parser():
     # utils
     parser.add_argument('--testing', action='store_true')
     parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
-    parser.add_argument('--seed', default=0, type=int, help="Set seed for reproducability")
+    parser.add_argument('--seed', default=1, type=int, help="Set seed for reproducability")
 
     return parser
 
