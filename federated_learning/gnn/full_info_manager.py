@@ -194,11 +194,10 @@ class FullInfoGNNManager(GNNMixinManager):
             elif (preds == 0).all():
                 logger.warning("All predictions are zero - model may not be learning")
 
-            te_f1 = f1_score(ground_truths, preds)
-            logging.info(f'Test F1: {te_f1:.4f}')
-
             tmp_metrics = metrics(y_true = ground_truths,
                                     y_pred_probabilities = preds)
+            
+            logging.info(f'Test F1: {tmp_metrics['f1']:.4f}')
 
             #tmp_metrics = metrics(y_true = laundering_values['true_y'],
                                     #y_pred_probabilities = pred_probabilities)
