@@ -30,10 +30,13 @@ def main():
     parsers['gnn_parser'].model = 'gin'
     parsers['data_parser'].ibm_fe = True
     
-    #tr_data, val_data, te_data, tr_inds, val_inds, te_inds = dl.get_data(df, parsers['gnn_parser'])
+    tr_data, val_data, te_data, tr_inds, val_inds, te_inds = dl.get_data(df, parsers['gnn_parser'])
 
     graph_data, scaler_encoders  = rdp.get_data(df, parsers['data_parser'], split_perc = [0.6, 0.2])
     graph_data = graph_data['graph_data']
+
+    graph_data['train_data']['df'].edge_attr
+    tr_data.edge_attr
 
     tr_data, tr_inds = graph_data['train_data']['df'], graph_data['train_data']['pred_indices']
     val_data, val_inds = graph_data['vali_data']['df'], graph_data['vali_data']['pred_indices']

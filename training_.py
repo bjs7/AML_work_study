@@ -2,7 +2,7 @@ import torch
 import tqdm
 from sklearn.metrics import f1_score
 from train_util import AddEgoIds, extract_param, add_arange_ids, get_loaders, evaluate_homo, evaluate_hetero, save_model, load_model
-from models import GINe, PNA, GATe, RGCN
+from models_ import GINe, PNA, GATe, RGCN
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.nn import to_hetero, summary
 from torch_geometric.utils import degree
@@ -11,7 +11,7 @@ import logging
 def train_homo(tr_loader, val_loader, te_loader, tr_inds, val_inds, te_inds, model, optimizer, loss_fn, args, config, device, val_data, te_data):
     #training
     best_val_f1 = 0
-    epochs = 15 if args['data_parser'].testing else config['epochs']
+    epochs = 30 if args['data_parser'].testing else config['epochs']
 
     for epoch in range(epochs):
         total_loss = total_examples = 0

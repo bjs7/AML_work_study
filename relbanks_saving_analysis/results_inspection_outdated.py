@@ -13,7 +13,7 @@ import copy
 from mix.relevant_banks import get_relevant_banks
 import pandas as pd
 from data.raw_data_processing import get_data
-from models import booster
+from models_ import booster
 from models.base import Model, InferenceModel
 from models.booster import BoosterInf
 from superseded.gnn import GNNInf

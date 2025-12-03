@@ -41,15 +41,15 @@ utils.set_seed(parsers['data_parser'].seed, True)
 
 # need to check that individual saves predictions/laundering values correct
 
-#parsers['data_parser'].ibm_fe = True
+parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
 
-#parsers['fl_parser'].fl_algo = 'full_info'
-#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+parsers['fl_parser'].fl_algo = 'full_info'
+parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
-parsers['fl_parser'].fl_algo = 'individual'
+#parsers['fl_parser'].fl_algo = 'individual'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -74,6 +74,12 @@ laundering_values = laundering_values_vali
 
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
+
+self = manager
+laundering_values = laundering_values_vali
+#laundering_values = laundering_values_test
+hyperparameters = tuned_hp
+
 
 
 
@@ -100,10 +106,7 @@ for bank in fr_banks:
 
 
 
-self = manager
-laundering_values = laundering_values_vali
-#laundering_values = laundering_values_test
-hyperparameters = tuned_hp
+
 
 
 results = manager.train(tuned_hp, laundering_values_test)

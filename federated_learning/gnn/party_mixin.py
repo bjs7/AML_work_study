@@ -1,13 +1,19 @@
 """GNN-specific Party mixin providing data preparation and weight updates."""
 
 from data.feature_engi import feature_engi_graph_data
+import torch
+
+def z_norm(data):
+    std = data.std(0).unsqueeze(0)
+    std = torch.where(std == 0, torch.tensor(1, dtype=torch.float32).cpu(), std)
+    return (data - data.mean(0).unsqueeze(0)) / std
 
 
 class GNNMixinParty:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._skip_feature_engineering = self.manager.args['data_parser'].ibm_fe
+        self._ibm_fe = self.manager.args['data_parser'].ibm_fe
         self._train_for_final = self.manager.args['data_parser'].train_for_final
         #self._get_batch_configs()
 
@@ -31,7 +37,14 @@ class GNNMixinParty:
 
     def feature_engineering(self, train_data, eval_data):
 
-        if self._skip_feature_engineering:
+        if self._ibm_fe:
+
+            train_data['df'].x = z_norm(train_data['df'].x)
+            eval_data['df'].x = z_norm(eval_data['df'].x)
+
+            train_data['df'].edge_attr = z_norm(train_data['df'].edge_attr)
+            eval_data['df'].edge_attr = z_norm(eval_data['df'].edge_attr)
+
             return train_data, eval_data
 
         train_data = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
