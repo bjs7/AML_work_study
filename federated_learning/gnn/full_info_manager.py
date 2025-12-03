@@ -194,7 +194,7 @@ class FullInfoGNNManager(GNNMixinManager):
             elif (preds == 0).all():
                 logger.warning("All predictions are zero - model may not be learning")
 
-            te_f1 = f1_score(ground_truths, pred)
+            te_f1 = f1_score(ground_truths, preds)
             logging.info(f'Test F1: {te_f1:.4f}')
 
             tmp_metrics = metrics(y_true = ground_truths,
