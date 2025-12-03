@@ -285,14 +285,16 @@ def main():
 
     if parsers['data_parser'].ibm_hp:
         hyperparameters = ibm_gnn
+        hyperparameters['w_ce1'] = 1
+        hyperparameters['w_ce2'] = 1
         logger.info("Training with IBM hyperparameters")
         results = train(df, hyperparameters)
     else:
         results = {}
-        logger.info("Running hyperparameter search with 50 trials")
-        for i in range(50):
+        logger.info("Running hyperparameter search with 25 trials")
+        for i in range(25):
             logger.info(f"\n{'='*80}")
-            logger.info(f"Hyperparameter trial {i+1}/50")
+            logger.info(f"Hyperparameter trial {i+1}/25")
             logger.info(f"{'='*80}")
             hyperparameters = hyper_sampler(parsers['fl_parser'])
             results[i] = train(df, hyperparameters)
