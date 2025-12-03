@@ -196,8 +196,8 @@ class FullInfoGNNManager(GNNMixinManager):
 
             tmp_metrics = metrics(y_true = ground_truths,
                                     y_pred_probabilities = preds)
-            
-            logging.info(f'Test F1: {tmp_metrics['f1']:.4f}')
+            f1_eval = tmp_metrics['f1']
+            logging.info(f'Test F1: {f1_eval}')
 
             #tmp_metrics = metrics(y_true = laundering_values['true_y'],
                                     #y_pred_probabilities = pred_probabilities)
