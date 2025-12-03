@@ -1649,3 +1649,35 @@
 2025-12-04 00:05:23,525 [INFO ] __main__             - Data size: small, IR: HI
 2025-12-04 00:05:23,535 [INFO ] __main__             - Using IBM hyperparameters: False
 2025-12-04 00:05:23,536 [INFO ] __main__             - ====================================================================================================
+2025-12-04 00:13:09,224 [INFO ] root                 - Random seed set as 1
+2025-12-04 00:13:09,229 [INFO ] root                 - Retrieving data
+2025-12-04 00:13:11,646 [INFO ] root                 - Available Edge Features: ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Amount Received', 'Received Currency', 'Payment Format', 'From Bank', 'To Bank', 'Is Laundering']
+2025-12-04 00:13:35,182 [INFO ] root                 - Illicit ratio = 5177 / 5078345 = 0.10%
+2025-12-04 00:13:35,182 [INFO ] root                 - Number of nodes (holdings doing transcations) = 515088
+2025-12-04 00:13:35,182 [INFO ] root                 - Number of transactions = 5078345
+2025-12-04 00:13:35,182 [INFO ] root                 - Edge features being used: ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+2025-12-04 00:13:35,183 [INFO ] root                 - Node features being used: ['Feature'] ("Feature" is a placeholder feature of all 1s)
+2025-12-04 00:13:35,272 [INFO ] root                 - number of days and transactions in the data: 18 days, 5078345 transactions
+2025-12-04 00:13:35,350 [INFO ] root                 - Calculate split: [[0, 1, 2, 3, 4, 5], [6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]]
+2025-12-04 00:13:35,357 [INFO ] root                 - Total train samples: 63.98% || IR: 0.08% || Train days: [0, 1, 2, 3, 4]
+2025-12-04 00:13:35,359 [INFO ] root                 - Total val samples: 19.01% || IR: 0.11% || Val days: [6, 7]
+2025-12-04 00:13:35,360 [INFO ] root                 - Total test samples: 17.01% || IR: 0.19% || Test days: [8, 9, 10, 11, 12]
+2025-12-04 00:13:35,525 [INFO ] root                 - train data object: GraphData(x=[515088, 1], edge_index=[2, 3248921], edge_attr=[3248921, 4], y=[3248921], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[3248921])
+2025-12-04 00:13:35,525 [INFO ] root                 - validation data object: GraphData(x=[515088, 1], edge_index=[2, 4214445], edge_attr=[4214445, 4], y=[4214445], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[4214445])
+2025-12-04 00:13:35,525 [INFO ] root                 - test data object: GraphData(x=[515088, 1], edge_index=[2, 5078345], edge_attr=[5078345, 4], y=[5078345], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[5078345])
+2025-12-04 00:15:02,419 [INFO ] root                 - Random seed set as 1
+2025-12-04 00:15:02,423 [INFO ] root                 - Retrieving data
+2025-12-04 00:15:04,806 [INFO ] root                 - Available Edge Features: ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent', 'Sent Currency', 'Amount Received', 'Received Currency', 'Payment Format', 'From Bank', 'To Bank', 'Is Laundering']
+2025-12-04 00:15:28,380 [INFO ] root                 - Illicit ratio = 5177 / 5078345 = 0.10%
+2025-12-04 00:15:28,381 [INFO ] root                 - Number of nodes (holdings doing transcations) = 515088
+2025-12-04 00:15:28,381 [INFO ] root                 - Number of transactions = 5078345
+2025-12-04 00:15:28,381 [INFO ] root                 - Edge features being used: ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+2025-12-04 00:15:28,381 [INFO ] root                 - Node features being used: ['Feature'] ("Feature" is a placeholder feature of all 1s)
+2025-12-04 00:15:28,466 [INFO ] root                 - number of days and transactions in the data: 18 days, 5078345 transactions
+2025-12-04 00:15:28,540 [INFO ] root                 - Calculate split: [[0, 1, 2, 3, 4, 5], [6, 7], [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]]
+2025-12-04 00:15:28,547 [INFO ] root                 - Total train samples: 63.98% || IR: 0.08% || Train days: [0, 1, 2, 3, 4]
+2025-12-04 00:15:28,549 [INFO ] root                 - Total val samples: 19.01% || IR: 0.11% || Val days: [6, 7]
+2025-12-04 00:15:28,550 [INFO ] root                 - Total test samples: 17.01% || IR: 0.19% || Test days: [8, 9, 10, 11, 12]
+2025-12-04 00:15:28,687 [INFO ] root                 - train data object: GraphData(x=[515088, 1], edge_index=[2, 3248921], edge_attr=[3248921, 4], y=[3248921], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[3248921])
+2025-12-04 00:15:28,687 [INFO ] root                 - validation data object: GraphData(x=[515088, 1], edge_index=[2, 4214445], edge_attr=[4214445, 4], y=[4214445], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[4214445])
+2025-12-04 00:15:28,688 [INFO ] root                 - test data object: GraphData(x=[515088, 1], edge_index=[2, 5078345], edge_attr=[5078345, 4], y=[5078345], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[5078345])

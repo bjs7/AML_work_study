@@ -10,6 +10,12 @@ from configs import configs
 
 import data_loading as dl
 import data.raw_data_processing as rdp
+import torch
+
+def z_norm(data):
+    std = data.std(0).unsqueeze(0)
+    std = torch.where(std == 0, torch.tensor(1, dtype=torch.float32).cpu(), std)
+    return (data - data.mean(0).unsqueeze(0)) / std
 
 
 def main():
@@ -30,18 +36,22 @@ def main():
     parsers['gnn_parser'].model = 'gin'
     parsers['data_parser'].ibm_fe = True
     
-    tr_data, val_data, te_data, tr_inds, val_inds, te_inds = dl.get_data(df, parsers['gnn_parser'])
+    #tr_data, val_data, te_data, tr_inds, val_inds, te_inds = dl.get_data(df, parsers['gnn_parser'])
 
     graph_data, scaler_encoders  = rdp.get_data(df, parsers['data_parser'], split_perc = [0.6, 0.2])
     graph_data = graph_data['graph_data']
 
-    graph_data['train_data']['df'].edge_attr
-    tr_data.edge_attr
+    graph_data['train_data']['df'].x = z_norm(graph_data['train_data']['df'].x)
+    graph_data['vali_data']['df'].x = z_norm(graph_data['vali_data']['df'].x)
+    graph_data['test_data']['df'].x = z_norm(graph_data['test_data']['df'].x)
+
+    graph_data['train_data']['df'].edge_attr = z_norm(graph_data['train_data']['df'].edge_attr)
+    graph_data['vali_data']['df'].edge_attr = z_norm(graph_data['vali_data']['df'].edge_attr)
+    graph_data['test_data']['df'].edge_attr = z_norm(graph_data['test_data']['df'].edge_attr)
 
     tr_data, tr_inds = graph_data['train_data']['df'], graph_data['train_data']['pred_indices']
     val_data, val_inds = graph_data['vali_data']['df'], graph_data['vali_data']['pred_indices']
     te_data, te_inds = graph_data['test_data']['df'], graph_data['test_data']['pred_indices']
-    
     
     t2 = time.perf_counter()
     logging.info(f"Retrieved data in {t2-t1:.2f}s")
