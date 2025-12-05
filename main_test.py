@@ -31,6 +31,9 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 # in tuning, most of the metrics calcuations can be skipped
 # conditino that only adds max_prob, avg_prob etc. if not full info?
 
+# NEED TO DOUBLE CHECK feature_engi_graph_data, not sure it copies, applies, selects the right dataframe
+
+# probably need to update the inference up_laundering_values function to match batching
 
 
 utils.logger_setup()
@@ -41,9 +44,9 @@ utils.set_seed(parsers['data_parser'].seed, True)
 
 # need to check that individual saves predictions/laundering values correct
 
-parsers['data_parser'].ibm_fe = True
+#parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
-parsers['data_parser'].train_for_final = True
+#parsers['data_parser'].train_for_final = True
 
 
 parsers['fl_parser'].fl_algo = 'full_info'
@@ -76,11 +79,15 @@ laundering_values = laundering_values_vali
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
 self = manager
-laundering_values = laundering_values_vali
-#laundering_values = laundering_values_test
+#laundering_values = laundering_values_vali
+laundering_values = laundering_values_test
 hyperparameters = tuned_hp
 
 
+self = manager._party
+
+self._party.data
+self._party.procs_data
 
 
 fr_banks, sr_banks = get_relevant_banks(parsers)

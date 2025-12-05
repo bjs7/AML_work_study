@@ -29,11 +29,8 @@ def get_data(df, data_paser, **kwargs):
                         'Amount_Difference_Pct', 'is_currency_exchange']
     else:
         scaler_encoders = None
-        edge_features = ['Timestamp', 'Amount Sent', 'Sent Currency', 
-                         'Amount Received', 'Received Currency', 'Payment Format']
+        edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
         
-    # temporary that this is used
-    edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
     
     df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()
 
@@ -189,16 +186,3 @@ def pack_graph_data(df_edges, y, timestamps, indices, edge_features):
     
     
 
-
-
-
-
-
-
-
-
-
-    #edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
-    #edge_features = ['Timestamp', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
-                     #'Sent Currency', 'Received Currency', 'Payment Format', 
-                     #'Amount_Difference_Pct', 'is_currency_exchange']

@@ -1681,3 +1681,55 @@
 2025-12-04 00:15:28,687 [INFO ] root                 - train data object: GraphData(x=[515088, 1], edge_index=[2, 3248921], edge_attr=[3248921, 4], y=[3248921], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[3248921])
 2025-12-04 00:15:28,687 [INFO ] root                 - validation data object: GraphData(x=[515088, 1], edge_index=[2, 4214445], edge_attr=[4214445, 4], y=[4214445], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[4214445])
 2025-12-04 00:15:28,688 [INFO ] root                 - test data object: GraphData(x=[515088, 1], edge_index=[2, 5078345], edge_attr=[5078345, 4], y=[5078345], readout='edge', loss_fn='ce', num_nodes=515088, timestamps=[5078345])
+2025-12-04 11:08:16,667 [INFO ] root                 - Random seed set as 1
+2025-12-04 11:08:21,103 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 11:08:21,179 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 11:08:21,180 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 11:08:21,180 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 18:01:59,342 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:02:05,036 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 18:02:05,122 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 18:02:05,123 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 18:02:05,123 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 18:30:00,051 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:39:49,735 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:41:16,462 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:41:52,492 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:43:06,316 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:44:03,592 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:45:06,433 [INFO ] root                 - Random seed set as 1
+2025-12-04 18:45:09,796 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 18:45:09,880 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 18:45:09,880 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 18:45:09,880 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 19:02:25,289 [INFO ] root                 - Random seed set as 1
+2025-12-04 19:03:57,265 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 19:03:57,371 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 19:03:57,372 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 19:03:57,372 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 19:07:37,613 [INFO ] root                 - Random seed set as 1
+2025-12-04 19:08:22,752 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 19:08:22,898 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 19:08:22,898 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 19:08:22,898 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 20:01:06,859 [INFO ] root                 - Random seed set as 1
+2025-12-04 20:01:51,390 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 20:01:51,468 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 20:01:51,468 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 20:01:51,468 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-04 22:01:39,263 [INFO ] root                 - Random seed set as 1
+2025-12-04 22:02:25,655 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-04 22:02:25,753 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-04 22:02:25,753 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-04 22:02:25,754 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-05 10:35:40,182 [INFO ] root                 - Random seed set as 1
+2025-12-05 10:37:29,853 [INFO ] root                 - Random seed set as 1
+2025-12-05 10:38:12,747 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-05 10:38:12,826 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-05 10:38:12,826 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-05 10:38:12,826 [INFO ] federated_learning.gnn.full_info_manager - Setup complete
+2025-12-05 17:10:46,271 [INFO ] root                 - Random seed set as 1
+2025-12-05 17:11:30,706 [INFO ] federated_learning.gnn.full_info_manager - Setting up Full Info model (single party with complete dataset)
+2025-12-05 17:11:30,790 [INFO ] federated_learning.gnn.full_info_manager - Starting hyperparameter tuning
+2025-12-05 17:11:30,791 [INFO ] federated_learning.gnn.full_info_manager - Using IBM hyperparameters (skipping tuning)
+2025-12-05 17:11:30,791 [INFO ] federated_learning.gnn.full_info_manager - Setup complete

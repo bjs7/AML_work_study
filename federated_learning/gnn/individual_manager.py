@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import utils
 import configs.configs as configs
-from inference import metrics, predictions_helper
+from inference import metrics, probs_to_binary
 import inference as flin
 from .manager_mixin import GNNMixinManager
 from relbanks_saving_analysis.relevant_banks import get_relevant_banks
@@ -230,7 +230,7 @@ class IndividualGNNManager(GNNMixinManager):
                 
                 if tmp_metrics['f1'] > best_f1:
                     best_metrics = tmp_metrics
-                    best_pred_label = predictions_helper(pred_probabilities)
+                    best_pred_label = probs_to_binary(pred_probabilities)
                     best_pred_probabilities = copy.deepcopy(pred_probabilities)
                     best_model = copy.deepcopy(party.model.gnn.state_dict())
                     best_f1 = tmp_metrics['f1']

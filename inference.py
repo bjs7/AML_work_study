@@ -5,13 +5,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def predictions_helper(y_pred_probabilities, threshold = 0.5):
+def probs_to_binary(y_pred_probabilities, threshold = 0.5):
     return (y_pred_probabilities > threshold) * 1
 
 def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
 
     if y_pred_binary is None:
-        y_pred_binary = predictions_helper(y_pred_probabilities)
+        y_pred_binary = probs_to_binary(y_pred_probabilities)
 
     # Check for NaN values before processing
     if isinstance(y_pred_probabilities, pd.Series):
@@ -77,7 +77,7 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None):
     if np.all(pred_probabilities == 0):
         logger.warning("Party has all zero predictions - model may not be learning")
 
-    pred_labels = predictions_helper(pred_probabilities)
+    pred_labels = probs_to_binary(pred_probabilities)
     original_indices = party.get_eval_indices()
 
     # update laundering values, where observations have been predicted as 1

@@ -75,7 +75,7 @@ class GNN(ABC):
         loss.backward()
         self.optimizer.step()
 
-        return loss.item()
+        return pred, gd.y[mask], loss.item()
 
     @torch.no_grad()
     def predict(self, gd, mask):
@@ -85,7 +85,6 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            # Move data to device
             gd = gd.to(device)
             out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
             pred = out[mask]
@@ -100,39 +99,11 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            # Move data to device
             df = df.to(device)
             pred = self.gnn(df.x, df.edge_index, df.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
 
-        return pred.argmax(dim=-1).cpu().numpy()  # Move predictions back to CPU and convert to numpy
-
-
-
-#torch.randn(3, 5).softmax(dim=0)
-#torch.randn(10, 2).softmax(dim=1)
-
-#pred.softmax(dim=1)[:,1]
-#pred.argmax(dim=-1)
-
-#assert ((pred.softmax(dim=1)[:,1] > 0.5) == (pred.argmax(dim=-1) == 1)).all()
-
-#self = manager._party.model
-#graph_data = manager._party.get_eval_data()
-#pred = self.predict(graph_data)
-
-#pred.softmax(dim=1)
-
-#self = party.model
-#graph_data = party.get_eval_data()
-#pred = self.predict(graph_data)
-
-#pred.softmax(dim=1)
-
-#self.predict_binary(graph_data)
-
-#torch.exp(pred[0,:])/sum(torch.exp(pred[0,:]))
-#torch.exp(torch.tensor(100))
+        return pred.argmax(dim=-1).cpu().numpy() 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 # Util functions for the gnn models -----------------------------------------------------------------------------------------------------
@@ -141,16 +112,32 @@ class GNN(ABC):
 import torch
 
 # if using batch.e_id then one would also need to add the original edges indices for the added edges
+
+#data = eval_data
+#loader = eval_loader
+#indices = eval_indices
+# current approach doesn't work
+# compare 
+# batch_edge_ids = torch.concat([ids_in_batch, missing_ids])
+# and 
+# batch.edge_attr[mask,0].int()
+# and what they drag out
+# and how it is used "outside"
+
+
 def batching_masker(batch, data, loader, indices):
 
     indices = indices.detach().cpu()
     batch_edge_inds = indices[batch.input_id.detach().cpu()]
     batch_edge_ids = loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
-
+    #mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
+    
     missing_seed_edges = ~torch.isin(batch_edge_ids, batch.edge_attr[:, 0].detach().cpu())
 
     if missing_seed_edges.sum() != 0:
+
         missing_ids = batch_edge_ids[missing_seed_edges].int()
+        ids_in_batch = batch_edge_ids[~missing_seed_edges].int()
 
         edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
         edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
@@ -159,8 +146,17 @@ def batching_masker(batch, data, loader, indices):
         batch.edge_index = torch.cat([batch.edge_index, edge_labels_add], dim=1)
         batch.edge_attr = torch.cat([batch.edge_attr, edge_attr_add], dim=0)
         batch.y = torch.cat([batch.y, y_add], dim=0)
+        
+        #batch_edge_ids = torch.concat([ids_in_batch, missing_ids])
+        #mask = torch.cat((mask, torch.ones(y_add.shape[0], dtype=torch.bool)))
+    #torch.all(torch.sort(batch.edge_attr[mask,0])[0] == torch.sort(batch_edge_ids)[0])
+    
+    mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
+    batch.edge_attr[mask,0].int()
+    pred_ids = batch.edge_attr[mask,0].int()
+    batch.edge_attr = batch.edge_attr[:, 1:]
 
-    return torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
+    return mask, pred_ids
 
 
 #inds = self._party.procs_data['train_data']['pred_indices'].detach().cpu()
