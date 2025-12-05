@@ -100,7 +100,9 @@ def logger_setup():
         os.makedirs(log_directory)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-5.5s] %(name)-20s - %(message)s",
+        #format="%(asctime)s [%(levelname)-5.5s] %(name)-20s - %(message)s",
+        format="%(asctime)s [%(levelname)-5.5s] %(filename)-20s:%(lineno)-4d - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[
             logging.FileHandler(os.path.join(log_directory, "logs.log")),     ## log to local log file
             logging.StreamHandler(sys.stdout)          ## log also to stdout (i.e., print to screen)

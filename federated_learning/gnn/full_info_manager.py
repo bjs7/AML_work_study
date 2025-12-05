@@ -80,7 +80,7 @@ class FullInfoGNNManager(GNNMixinManager):
         
         return best_hyperparameters, scores, best_f1
     
-    def train(self, hyperparameters, laundering_values, seeds=4):
+    def train(self, hyperparameters, laundering_values, seeds=1):
         
         self.set_mode('training')
         results_by_seed = {}
@@ -180,9 +180,9 @@ class FullInfoGNNManager(GNNMixinManager):
             ground_truths_eval = torch.cat(ground_truths_eval, dim=0).detach().cpu().numpy()
             pred_ids = torch.cat(eval_pred_ids).detach().cpu().numpy()
             
-            if len(ground_truths) != len(eval_indices):
-                    logger.warning("Difference in the size of ground_truths and eval_data indices, %d and %d",
-                                    len(ground_truths), len(eval_indices))
+            if len(ground_truths_eval) != len(laundering_values['true_y']):
+                    logger.warning("Difference in the size of ground_truths and laundering_values['true_y'], %d and %d",
+                                    len(ground_truths_eval), len(laundering_values['true_y']))
 
             f1_eval = f1_score(ground_truths_eval, preb_binary_eval)
 
