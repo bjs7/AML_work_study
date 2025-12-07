@@ -164,7 +164,7 @@ class GNNMixinParty:
 
             f1_eval = f1_score(ground_truths_eval, preb_binary_eval)
 
-            if self.args['fl_parser'].fl_algo == 'full_info':
+            if self.args['fl_parser'].fl_algo == 'full_info' or self.args['data_parser'].testing:
                 logger.info(f'Test F1: {f1_eval}')
 
             if torch.isnan(torch.tensor(preds_eval)).any() and self.mode == 'training':
