@@ -11835,3 +11835,388 @@
 2025-12-07 23:21:47 [INFO ] utils.py            :124  - Random seed set as 1
 2025-12-07 23:21:50 [INFO ] main.py             :30   - Parsers, data and scalers loaded
 2025-12-07 23:21:50 [INFO ] main.py             :31   - train size: 3248921, validation size: 965524, test size: 863900
+2025-12-07 23:25:35 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-07 23:25:38 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-07 23:25:38 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-07 23:25:38 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-07 23:25:38 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-07 23:25:38 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :106  - Starting training with 1 seeds for full info
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :115  - Training with seed 1/1
+2025-12-07 23:25:38 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-07 23:25:38 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 1.9301, F1: 0.0007
+2025-12-07 23:25:38 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:39 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.0287, F1: 0.0000
+2025-12-07 23:25:39 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:39 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.0639, F1: 0.0000
+2025-12-07 23:25:39 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:40 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.0656, F1: 0.0000
+2025-12-07 23:25:40 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:40 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.0525, F1: 0.0000
+2025-12-07 23:25:41 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:41 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.0487, F1: 0.0000
+2025-12-07 23:25:41 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:42 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.0351, F1: 0.0000
+2025-12-07 23:25:42 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:42 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.0312, F1: 0.0000
+2025-12-07 23:25:43 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:43 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.0273, F1: 0.0000
+2025-12-07 23:25:43 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:44 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.0264, F1: 0.0000
+2025-12-07 23:25:44 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:44 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.0233, F1: 0.0000
+2025-12-07 23:25:45 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:45 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.0226, F1: 0.0000
+2025-12-07 23:25:45 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:46 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.0202, F1: 0.0000
+2025-12-07 23:25:46 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:46 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.0200, F1: 0.0000
+2025-12-07 23:25:47 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:47 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.0213, F1: 0.0000
+2025-12-07 23:25:47 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:48 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.0200, F1: 0.0000
+2025-12-07 23:25:48 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:48 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.0187, F1: 0.0000
+2025-12-07 23:25:49 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:49 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.0193, F1: 0.0000
+2025-12-07 23:25:49 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:50 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.0194, F1: 0.0000
+2025-12-07 23:25:50 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:50 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.0157, F1: 0.0000
+2025-12-07 23:25:50 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:25:51 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:25:51 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.6767, PR-AUC: 0.0109
+2025-12-07 23:25:51 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  full_info
+2025-12-07 23:25:51 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  full_info
+2025-12-07 23:25:51 [INFO ] manager_mixin.py    :121  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.6767, PR-AUC: 0.0109
+2025-12-07 23:25:51 [INFO ] manager_mixin.py    :127  - 
+================================================================================
+2025-12-07 23:25:51 [INFO ] manager_mixin.py    :128  - All seeds completed
+2025-12-07 23:25:51 [INFO ] manager_mixin.py    :129  - ================================================================================
+2025-12-07 23:25:51 [INFO ] save_results.py     :16   - ================================================================================
+2025-12-07 23:25:51 [INFO ] save_results.py     :17   - Saving experiment results
+2025-12-07 23:25:51 [INFO ] save_results.py     :18   - ================================================================================
+2025-12-07 23:25:51 [INFO ] save_results.py     :51   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/full_info/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:25:51 [INFO ] save_results.py     :52   - Data settings: batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:25:51 [INFO ] save_results.py     :67   - Saving Full Info results
+2025-12-07 23:25:51 [INFO ] save_results.py     :149  - Saving results for 1 seeds
+2025-12-07 23:25:51 [INFO ] save_results.py     :168  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2025-12-07 23:25:51 [INFO ] save_results.py     :76   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/full_info/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:25:51 [INFO ] save_results.py     :77   - ================================================================================
+2025-12-07 23:26:01 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-07 23:26:04 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-07 23:26:04 [INFO ] main.py             :31   - train size: 3248921, validation size: 965524, test size: 863900
+2025-12-07 23:26:05 [INFO ] individual_manager.py:24   - Testing mode: Limited to 5 fr_banks and 2 sr_banks
+2025-12-07 23:26:05 [INFO ] individual_manager.py:28   - Adding 5 fr_banks to manager
+2025-12-07 23:26:09 [INFO ] individual_manager.py:30   - Starting hyperparameter tuning for fr_banks
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-07 23:26:09 [INFO ] individual_manager.py:32   - Hyperparameter tuning completed
+2025-12-07 23:26:09 [INFO ] individual_manager.py:36   - train_for_final=True: Skipping sr_banks
+2025-12-07 23:26:09 [INFO ] individual_manager.py:41   - Setup complete: Total 5 banks
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :106  - Starting training with 1 seeds for 5 banks
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :115  - Training with seed 1/1
+2025-12-07 23:26:09 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-07 23:26:09 [INFO ] individual_manager.py:64   - Training 5 individual banks
+2025-12-07 23:26:10 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 1.8598, F1: 0.0015
+2025-12-07 23:26:10 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:11 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.3861, F1: 0.0000
+2025-12-07 23:26:11 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:12 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.3882, F1: 0.0000
+2025-12-07 23:26:12 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:13 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.1972, F1: 0.0000
+2025-12-07 23:26:14 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:15 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.1808, F1: 0.0000
+2025-12-07 23:26:15 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:16 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.1563, F1: 0.0000
+2025-12-07 23:26:16 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:17 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.1541, F1: 0.0000
+2025-12-07 23:26:17 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:18 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.1355, F1: 0.0000
+2025-12-07 23:26:19 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:20 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.1278, F1: 0.0000
+2025-12-07 23:26:20 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:21 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.1290, F1: 0.0000
+2025-12-07 23:26:21 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:22 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.1248, F1: 0.0000
+2025-12-07 23:26:22 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:23 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.1221, F1: 0.0000
+2025-12-07 23:26:24 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:25 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.1161, F1: 0.0000
+2025-12-07 23:26:25 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:26 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.1105, F1: 0.0000
+2025-12-07 23:26:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:27 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.1071, F1: 0.0000
+2025-12-07 23:26:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:28 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.1160, F1: 0.0000
+2025-12-07 23:26:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:29 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.1053, F1: 0.0000
+2025-12-07 23:26:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:30 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.1137, F1: 0.0000
+2025-12-07 23:26:31 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:32 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.1104, F1: 0.0000
+2025-12-07 23:26:32 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:33 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.1060, F1: 0.0000
+2025-12-07 23:26:33 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:33 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:26:33 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.8119, PR-AUC: 0.0130
+2025-12-07 23:26:33 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2025-12-07 23:26:33 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  0
+2025-12-07 23:26:34 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 1.8834, F1: 0.0008
+2025-12-07 23:26:34 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:35 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.3455, F1: 0.0000
+2025-12-07 23:26:35 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:36 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.2853, F1: 0.0000
+2025-12-07 23:26:37 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:38 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.2023, F1: 0.0000
+2025-12-07 23:26:38 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:39 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.1659, F1: 0.0000
+2025-12-07 23:26:39 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:40 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.1474, F1: 0.0000
+2025-12-07 23:26:40 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:41 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.1541, F1: 0.0000
+2025-12-07 23:26:41 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:42 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.1448, F1: 0.0000
+2025-12-07 23:26:42 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:43 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.1453, F1: 0.0000
+2025-12-07 23:26:43 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:44 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.1328, F1: 0.0000
+2025-12-07 23:26:45 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:46 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.1276, F1: 0.0000
+2025-12-07 23:26:46 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:47 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.1151, F1: 0.0000
+2025-12-07 23:26:47 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:48 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.1162, F1: 0.0000
+2025-12-07 23:26:48 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:49 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.1018, F1: 0.0000
+2025-12-07 23:26:49 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:50 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.0928, F1: 0.0000
+2025-12-07 23:26:50 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:51 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.0869, F1: 0.0000
+2025-12-07 23:26:51 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:52 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.0900, F1: 0.0000
+2025-12-07 23:26:52 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:53 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.0782, F1: 0.0000
+2025-12-07 23:26:53 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:54 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.0778, F1: 0.0000
+2025-12-07 23:26:54 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:55 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.0738, F1: 0.0488
+2025-12-07 23:26:56 [INFO ] party_mixin.py      :168  - Test F1: 0.0784313725490196
+2025-12-07 23:26:56 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0784, Precision: 0.2222, Recall: 0.0476, ROC-AUC: 0.9255, PR-AUC: 0.1275
+2025-12-07 23:26:56 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0784 - Check data and model configuration in bank  2
+2025-12-07 23:26:57 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 2.3551, F1: 0.0018
+2025-12-07 23:26:57 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:26:59 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.5805, F1: 0.0000
+2025-12-07 23:26:59 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:01 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.4286, F1: 0.0000
+2025-12-07 23:27:01 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:02 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.3185, F1: 0.0000
+2025-12-07 23:27:02 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:03 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.2958, F1: 0.0000
+2025-12-07 23:27:04 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:05 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.2755, F1: 0.0000
+2025-12-07 23:27:05 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:07 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.2571, F1: 0.0000
+2025-12-07 23:27:07 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:08 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.2473, F1: 0.0000
+2025-12-07 23:27:08 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:09 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.2154, F1: 0.0000
+2025-12-07 23:27:10 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:11 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.2185, F1: 0.0000
+2025-12-07 23:27:11 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:13 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.1907, F1: 0.0000
+2025-12-07 23:27:13 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:14 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.1841, F1: 0.0000
+2025-12-07 23:27:14 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:15 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.1679, F1: 0.0000
+2025-12-07 23:27:16 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:17 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.1555, F1: 0.0000
+2025-12-07 23:27:17 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:18 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.1571, F1: 0.0000
+2025-12-07 23:27:19 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:20 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.1508, F1: 0.0000
+2025-12-07 23:27:20 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:21 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.1500, F1: 0.0000
+2025-12-07 23:27:21 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:23 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.1419, F1: 0.0000
+2025-12-07 23:27:23 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:24 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.1402, F1: 0.0000
+2025-12-07 23:27:24 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.1298, F1: 0.0000
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:26 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7862, PR-AUC: 0.0116
+2025-12-07 23:27:26 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2025-12-07 23:27:26 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  4
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 0.9581, F1: 0.0000
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.2133, F1: 0.0000
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.0291, F1: 0.0000
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.0166, F1: 0.0000
+2025-12-07 23:27:26 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.0717, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.0294, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.0600, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.0592, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.0670, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.0535, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.0248, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.0332, F1: 0.0000
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:27 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.0244, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.0269, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.0262, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.0306, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.0314, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.0602, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.0216, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.0308, F1: 0.0000
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:28 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7586, PR-AUC: 0.0108
+2025-12-07 23:27:28 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2025-12-07 23:27:28 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  5
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :141  - Epoch 1/20 - Loss: 1.3221, F1: 0.0015
+2025-12-07 23:27:28 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 2/20 - Loss: 0.5678, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 3/20 - Loss: 0.0918, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 4/20 - Loss: 0.1758, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 5/20 - Loss: 0.0493, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 6/20 - Loss: 0.1309, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 7/20 - Loss: 0.1180, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 8/20 - Loss: 0.1349, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 9/20 - Loss: 0.0642, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 10/20 - Loss: 0.0593, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :141  - Epoch 11/20 - Loss: 0.0465, F1: 0.0000
+2025-12-07 23:27:29 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 12/20 - Loss: 0.1159, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 13/20 - Loss: 0.0671, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 14/20 - Loss: 0.0374, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 15/20 - Loss: 0.0500, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 16/20 - Loss: 0.0386, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 17/20 - Loss: 0.0628, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 18/20 - Loss: 0.0343, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 19/20 - Loss: 0.0327, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :141  - Epoch 20/20 - Loss: 0.0461, F1: 0.0000
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :168  - Test F1: 0.0
+2025-12-07 23:27:30 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:27:30 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7668, PR-AUC: 0.3365
+2025-12-07 23:27:30 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2025-12-07 23:27:30 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  10
+2025-12-07 23:27:30 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2025-12-07 23:27:31 [WARNI] inference.py        :20   - Found 50449 NaN values in predictions (5.84%), replacing with 0
+2025-12-07 23:27:41 [WARNI] inference.py        :48   - ROC-AUC < 0.5 (0.4996) - model performs worse than random
+2025-12-07 23:27:41 [INFO ] individual_manager.py:90   - Final metrics - F1: 0.0025, Precision: 0.2222, Recall: 0.0012, ROC-AUC: 0.4996, PR-AUC: 0.0019
+2025-12-07 23:27:41 [WARNI] individual_manager.py:96   - Very low F1 score: 0.0025 - Check data and model configuration
+2025-12-07 23:27:41 [INFO ] manager_mixin.py    :121  - Seed 1 complete - F1: 0.0025, ROC-AUC: 0.4996, PR-AUC: 0.0019
+2025-12-07 23:27:41 [INFO ] manager_mixin.py    :127  - 
+================================================================================
+2025-12-07 23:27:41 [INFO ] manager_mixin.py    :128  - All seeds completed
+2025-12-07 23:27:41 [INFO ] manager_mixin.py    :129  - ================================================================================
+2025-12-07 23:27:41 [INFO ] save_results.py     :16   - ================================================================================
+2025-12-07 23:27:41 [INFO ] save_results.py     :17   - Saving experiment results
+2025-12-07 23:27:41 [INFO ] save_results.py     :18   - ================================================================================
+2025-12-07 23:27:41 [INFO ] save_results.py     :51   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/individual/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:27:41 [INFO ] save_results.py     :52   - Data settings: batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:27:41 [INFO ] save_results.py     :73   - Saving Individual bank results
+2025-12-07 23:27:41 [INFO ] save_results.py     :111  - Saving results for 1 seeds
+2025-12-07 23:27:41 [INFO ] save_results.py     :131  - Aggregated results: Mean F1=0.0025 (±0.0000), Best F1=0.0025 (seed 1)
+2025-12-07 23:27:41 [INFO ] save_results.py     :76   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/individual/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:27:41 [INFO ] save_results.py     :77   - ================================================================================
+2025-12-07 23:30:02 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-07 23:30:05 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-07 23:30:05 [INFO ] main.py             :31   - train size: 3248921, validation size: 965524, test size: 863900
+2025-12-07 23:30:06 [INFO ] individual_manager.py:24   - Testing mode: Limited to 5 fr_banks and 2 sr_banks
+2025-12-07 23:30:06 [INFO ] individual_manager.py:28   - Adding 5 fr_banks to manager
+2025-12-07 23:30:11 [INFO ] individual_manager.py:30   - Starting hyperparameter tuning for fr_banks
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-07 23:30:11 [INFO ] individual_manager.py:32   - Hyperparameter tuning completed
+2025-12-07 23:30:11 [INFO ] individual_manager.py:36   - train_for_final=True: Skipping sr_banks
+2025-12-07 23:30:11 [INFO ] individual_manager.py:41   - Setup complete: Total 5 banks
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :106  - Starting training with 1 seeds for 5 banks
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :115  - Training with seed 1/1
+2025-12-07 23:30:11 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-07 23:30:11 [INFO ] individual_manager.py:64   - Training 5 individual banks
+2025-12-07 23:30:32 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:30:32 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.8119, PR-AUC: 0.0130
+2025-12-07 23:30:32 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2025-12-07 23:30:32 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  0
+2025-12-07 23:30:55 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0784, Precision: 0.2222, Recall: 0.0476, ROC-AUC: 0.9550, PR-AUC: 0.1374
+2025-12-07 23:30:55 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0784 - Check data and model configuration in bank  2
+2025-12-07 23:31:24 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:31:24 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7862, PR-AUC: 0.0116
+2025-12-07 23:31:24 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2025-12-07 23:31:24 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  4
+2025-12-07 23:31:26 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:31:26 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7586, PR-AUC: 0.0108
+2025-12-07 23:31:26 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2025-12-07 23:31:26 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  5
+2025-12-07 23:31:28 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2025-12-07 23:31:28 [INFO ] party_mixin.py      :208  - Training complete - Best F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7668, PR-AUC: 0.3365
+2025-12-07 23:31:28 [WARNI] party_mixin.py      :213  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2025-12-07 23:31:28 [WARNI] party_mixin.py      :215  - Zero precision or recall - Model may not be learning properly in bank  10
+2025-12-07 23:31:28 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2025-12-07 23:31:28 [WARNI] inference.py        :20   - Found 50449 NaN values in predictions (5.84%), replacing with 0
+2025-12-07 23:31:36 [WARNI] inference.py        :48   - ROC-AUC < 0.5 (0.4996) - model performs worse than random
+2025-12-07 23:31:36 [INFO ] individual_manager.py:90   - Final metrics - F1: 0.0025, Precision: 0.2222, Recall: 0.0012, ROC-AUC: 0.4996, PR-AUC: 0.0019
+2025-12-07 23:31:36 [WARNI] individual_manager.py:96   - Very low F1 score: 0.0025 - Check data and model configuration
+2025-12-07 23:31:36 [INFO ] manager_mixin.py    :121  - Seed 1 complete - F1: 0.0025, ROC-AUC: 0.4996, PR-AUC: 0.0019
+2025-12-07 23:31:36 [INFO ] manager_mixin.py    :127  - 
+================================================================================
+2025-12-07 23:31:36 [INFO ] manager_mixin.py    :128  - All seeds completed
+2025-12-07 23:31:36 [INFO ] manager_mixin.py    :129  - ================================================================================
+2025-12-07 23:31:36 [INFO ] save_results.py     :16   - ================================================================================
+2025-12-07 23:31:36 [INFO ] save_results.py     :17   - Saving experiment results
+2025-12-07 23:31:36 [INFO ] save_results.py     :18   - ================================================================================
+2025-12-07 23:31:36 [INFO ] save_results.py     :51   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/individual/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:31:36 [INFO ] save_results.py     :52   - Data settings: batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:31:36 [INFO ] save_results.py     :73   - Saving Individual bank results
+2025-12-07 23:31:36 [INFO ] save_results.py     :111  - Saving results for 1 seeds
+2025-12-07 23:31:36 [INFO ] save_results.py     :131  - Aggregated results: Mean F1=0.0025 (±0.0000), Best F1=0.0025 (seed 1)
+2025-12-07 23:31:36 [INFO ] save_results.py     :76   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/individual/GINe/batching__ibm_fe__ibm_hp__train_for_final
+2025-12-07 23:31:36 [INFO ] save_results.py     :77   - ================================================================================
