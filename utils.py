@@ -194,6 +194,7 @@ def data_parser():
     parser.add_argument('--train_for_final', action='store_true', help='Use train data for final training instead of vali')
     parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
+    parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
 
     # utils
     parser.add_argument('--testing', action='store_true')

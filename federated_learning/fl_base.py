@@ -74,8 +74,8 @@ class Manager(BaseFL, ABC):
     def __init__(self, args):
         super().__init__(args)
         self.parties: Dict[int, Party] = {}
-        self.parties_w: Dict[int, Any] = {}
-        self.global_w = None
+        self.parties_weights: Dict[int, Any] = {}
+        self.global_weights = None
 
     @classmethod
     def get_algo_class(cls, parsers):

@@ -2,7 +2,7 @@
 
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
-from federated_learning.gnn import GNNMixinParty, FLGNNManager, IndividualGNNManager, FullInfoGNNManager
+from federated_learning.gnn import GNNMixinParty, FLGNNManager, IndividualGNNManager, FullInfoGNNManager #GNNMixinParty_Individual, GNNMixinParty_Full_info, 
 from federated_learning.booster.individual_manager import IndividualBoosterManager
 from federated_learning.booster.party_mixin import BoosterMixinParty
 
@@ -83,6 +83,7 @@ class FullInfo_GNN_Party(GNNMixinParty, Party):
     def return_class(**kwargs):
         return FullInfo_GNN_Party(**kwargs)
 
+#FullInfo_GNN_Party.__mro__
 
 @regi_algo_party("individual_gnn")
 class Individual_GNN_Party(GNNMixinParty, Party):
@@ -94,6 +95,7 @@ class Individual_GNN_Party(GNNMixinParty, Party):
     def return_class(**kwargs):
         return Individual_GNN_Party(**kwargs)
 
+#Individual_GNN_Party.__mro__
 
 @regi_algo_party("FedAvg_gnn")
 class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):

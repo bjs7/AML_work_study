@@ -9,6 +9,13 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 from .communication import GNNCommunicationMixin
 from .manager_mixin import GNNMixinManager
 from training.utils import ibm_gnn
+import logging
+
+
+from models.gnn import add_arange_ids, batching_masker, get_loaders
+import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
@@ -55,8 +62,8 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         for hyperparams in hyperparameters_tuning:
             
             self.init_models(hyperparams)
-            self.get_global_w()
-            self.send_global_w_params()
+            self.get_global_weights()
+            self.send_global_weights_params()
 
             # if reg or graph epochs is used. Or also is for decision trees, yes?
             # just update in one, and then another for sending to manager?
@@ -88,51 +95,51 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
     def _train(self, hyperparameters, laundering_values):
 
         self.init_models(hyperparameters)
-        self.get_global_w()
-        self.send_global_w_params()
+        
+        self.get_global_weights()
+        self.send_global_weights_params()
 
         return self.fl_training(laundering_values)
     
     def fl_training(self, laundering_values):
 
-        best_w = None
+        best_weights = None
         best_metrics = None
         best_f1 = -1
 
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
 
-        for i in range(0, epochs):
+        for epoch in range(epochs):
 
-            for bank_id, party in self.parties.items():    
+            for bank_id, party in self.parties.items():
                 # little unsure if I should update parameters like this, or if 
                 # it should be kept inside the party
+                party.update_local_weights()
+                party.send_local_weights(self)
 
-                party.update_local_w()
-                party.send_local_w(self)
-            
-            self.update_global_w()
-            self.send_global_w()
+            self.update_global_weights()
+            self.send_global_weights()
 
             # I need to reset laundering_values or something every time new parameters are tested
             # inference / status
-            if (i+1) % 20 == 0:
+            #if (epoch+1) % 20 == 0:
 
-                # reset preditcions
-                for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
-                    laundering_values[col] = 0
-                
-                for bank_id, party in self.parties.items():
-                    flin.update_laundering_values(party, laundering_values)
+            # reset preditcions
+            for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
+                laundering_values[col] = 0
+            
+            for bank_id, party in self.parties.items():
+                flin.update_laundering_values(party, laundering_values)
 
-                tmp_metrics = metrics(y_true = laundering_values['true_y'], 
-                                      y_pred_probabilities = laundering_values['avg_prob'], 
-                                      y_pred_binary = laundering_values['pred_label'])
+            tmp_metrics = metrics(y_true = laundering_values['true_y'], 
+                                    y_pred_probabilities = laundering_values['avg_prob'], 
+                                    y_pred_binary = laundering_values['pred_label'])
 
-                if tmp_metrics['f1'] > best_f1:
-                    best_metrics = tmp_metrics
-                    best_laundering_values = copy.deepcopy(laundering_values)
-                    best_w = copy.deepcopy(self.global_w)
-                    best_f1 = tmp_metrics['f1']
+            if tmp_metrics['f1'] > best_f1:
+                best_metrics = tmp_metrics
+                best_laundering_values = copy.deepcopy(laundering_values)
+                best_weights = copy.deepcopy(self.global_weights)
+                best_f1 = tmp_metrics['f1']
 
-        return {'w': best_w, 'metrics': best_metrics, 'laundering_values': best_laundering_values}
+        return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': best_laundering_values}
 

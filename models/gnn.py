@@ -46,7 +46,8 @@ class GNN(ABC):
                     'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),
                     'residual': False, 'edge_updates': manager.args['gnn_parser'].emlps,
                     'edge_dim': edge_dim, 'dropout': hyperparams.get('dropout'),
-                    'final_dropout': hyperparams.get('final_dropout')}
+                    'final_dropout': hyperparams.get('final_dropout'), 
+                    'batching': manager.args['data_parser'].batching}
         
         return gnn_init(**arguments)
 
@@ -59,7 +60,7 @@ class GNN(ABC):
         self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')]).to(device)) 
 
-    def update_w(self, gd, mask):
+    def update_weights(self, gd, mask):
 
         self.gnn.train()
         self.optimizer.zero_grad()
@@ -76,6 +77,21 @@ class GNN(ABC):
         self.optimizer.step()
 
         return pred, gd.y[mask], loss.item()
+    
+    def update_weights_no_batching(self, gd):
+
+        #gd = gd.get('df')
+
+        self.gnn.train()
+        self.optimizer.zero_grad()
+
+        # Move data to device
+        gd = gd.to(device)
+        pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
+        loss = self.loss_fn(pred, gd.y)
+
+        loss.backward()
+        self.optimizer.step()
 
     @torch.no_grad()
     def predict(self, gd, mask):
@@ -91,7 +107,22 @@ class GNN(ABC):
             #pred = pred[pred_indices] if pred_indices is not None else pred
 
         return pred.softmax(dim=1)[:,1].detach().cpu()
+    
+    @torch.no_grad()
+    def predict_no_batching(self, gd):
 
+        pred_indices = gd.get('pred_indices')
+        gd = gd.get('df')        
+
+        self.gnn.eval()
+        with torch.no_grad():
+            gd = gd.to(device)
+            pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
+            pred = pred[pred_indices] if pred_indices is not None else pred
+
+        return pred.softmax(dim=1)[:,1].detach().cpu()
+
+    @torch.no_grad()
     def predict_binary(self, graph_data):
 
         df = graph_data.get('df')
@@ -190,7 +221,7 @@ def batching_masker(batch, data, loader, indices):
 #                                    batch_size=8192, shuffle=False, transform=None)
 
 
-def get_loaders(train_data, eval_data, eval_pred_indices, num_neighbors, transform = None):
+def get_loaders(train_data, eval_data, eval_indices, num_neighbors, transform = None):
 
     train_loader = LinkNeighborLoader(train_data, num_neighbors=num_neighbors, 
                                           edge_label_index = train_data.edge_index,
@@ -199,8 +230,8 @@ def get_loaders(train_data, eval_data, eval_pred_indices, num_neighbors, transfo
 
 
     eval_loader = LinkNeighborLoader(eval_data, num_neighbors=num_neighbors, 
-                                        edge_label_index=eval_data.edge_index[:, eval_pred_indices],
-                                        edge_label=eval_data.y[eval_pred_indices],
+                                        edge_label_index=eval_data.edge_index[:, eval_indices],
+                                        edge_label=eval_data.y[eval_indices],
                                         batch_size=8192, shuffle=False, transform=transform)
     
     return train_loader, eval_loader

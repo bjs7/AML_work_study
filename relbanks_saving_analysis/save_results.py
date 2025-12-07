@@ -39,7 +39,7 @@ def save_results(results, hyperparams, manager):
         x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
 
     # add data flags to folder name
-    data_flags = ['ibm_fe', 'ibm_hp', 'train_for_final']
+    data_flags = ['batching', 'ibm_fe', 'ibm_hp', 'train_for_final']
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 

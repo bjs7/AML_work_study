@@ -42,7 +42,6 @@ def main():
     tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
     # Train the model ----------------------------------------------------------------------------------------
-
     results = manager.train(tuned_hp, laundering_values_test)
 
     # Save restuls ----------------------------------------------------------------------------------------

@@ -1,8 +1,13 @@
 """Shared GNN Manager functionality for hyperparameter tuning and model initialization."""
 
+from training.utils import ibm_gnn
 import training.utils as tr_utils
 from models.gnn import GNN
+import logging
+import utils
+import copy
 
+logger = logging.getLogger(__name__)
 
 
 class GNNMixinManager:
@@ -19,9 +24,8 @@ class GNNMixinManager:
         sample_party = next(iter(self.parties.values()))
         node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
         edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
-        #print(sample_party.procs_data['train_data']['df'].edge_index.shape[1])
    
-        if bank_id:
+        if bank_id is not None:
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
         else:
             for bank_id, party in self.parties.items():
@@ -68,3 +72,100 @@ class GNNMixinManager:
             intervals['w_ce2_interval'] = tr_utils.update_interval(params['w_ce2'], intervals['w_ce2_interval'])
 
         return intervals
+
+
+class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
+
+    def tuning_loop(self, hyperparameters_tuning, laundering_values, **kwargs):
+
+        best_hyperparameters, best_f1, scores = None, -1, []
+
+        for hyperparams in hyperparameters_tuning:
+            
+            self.init_models(hyperparams, **kwargs) 
+            results = self._train_party(laundering_values, **kwargs)
+               
+            if results['f1'] > best_f1:
+                best_hyperparameters = hyperparams
+                best_f1 = results['f1']
+
+            scores.append(results['f1'])
+
+        return best_hyperparameters, scores, best_f1
+
+    def _train_party(self, laundering_values, **kwargs):
+        raise NotImplementedError
+    
+    def train(self, hyperparameters, laundering_values, seeds = 4):
+
+        self.set_mode('training')
+        results_by_seed = {}
+        bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
+
+        logger.info("="*80)
+        logger.info("Starting training with %d seeds for %s", seeds, bank_str)
+        logger.info("="*80)
+
+        for bank_id, party in self.parties.items():
+            party.prep_data()
+
+        for seed in range(seeds):
+            seed_value = seed + 1
+            logger.info("\n" + "-"*80)
+            logger.info("Training with seed %d/%d", seed_value, seeds)
+            logger.info("-"*80)
+            utils.set_seed(seed_value)
+
+            results_by_seed[seed_value] = self._train_helper(hyperparameters, copy.deepcopy(laundering_values))
+
+            logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
+                       seed_value,
+                       results_by_seed[seed_value]['metrics']['f1'],
+                       results_by_seed[seed_value]['metrics']['roc_auc'],
+                       results_by_seed[seed_value]['metrics']['pr_auc'])
+
+        logger.info("\n" + "="*80)
+        logger.info("All seeds completed")
+        logger.info("="*80)
+        
+        return results_by_seed
+    
+    def _train_helper(self, hyperparameters, laundering_values):
+        raise NotImplementedError
+
+    def _tuning_helper(self, laundering_values, party, bank_id):
+        raise NotImplementedError
+
+    def tuning(self, laundering_values):
+
+        results = {}
+        self.set_mode('tuning')
+
+        if self.args['data_parser'].ibm_hp:
+            logger.info("Using IBM hyperparameters (skipping tuning)")
+            tuned_hyparameters, f1_score_for_hp = ibm_gnn, 1
+
+            for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
+                results[bank_id] = {'hyperparameters': tuned_hyparameters, 'f1_score': f1_score_for_hp}
+        
+        else:
+            bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
+            logger.info("Running hyperparameter tuning for %s", bank_str)
+
+            for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
+                if self.args['fl_parser'].fl_algo == 'full_info':
+                    logger.info("Tuning full_info")
+                else:
+                    logger.info("Tuning bank %s (%d/%d)", bank_id, idx, len(self.parties))
+
+                party.prep_data()
+                tuned_hyparameters, f1_score_for_hp = self._tuning_helper(laundering_values, party, bank_id)   
+                
+                if self.args['fl_parser'].fl_algo == 'full_info':
+                    logger.info("Tuning complete - Best F1: %.4f", f1_score_for_hp)
+                else:
+                    logger.info("Bank %s: Best F1=%.4f", bank_id, f1_score_for_hp)
+
+                results[bank_id] = {'hyperparameters': tuned_hyparameters, 'f1_score': f1_score_for_hp}
+
+        return results

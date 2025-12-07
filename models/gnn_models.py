@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RGCNConv
+from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RGCNConv, LayerNorm
 import torch.nn.functional as F
 import torch
 from federated_learning.registry import register_gnn
@@ -16,7 +16,7 @@ from federated_learning.registry import register_gnn
 class GINe(torch.nn.Module):
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
                  n_hidden=100, edge_updates=False, residual=True,
-                 edge_dim=None, dropout=0.0, final_dropout=0.5):
+                 edge_dim=None, dropout=0.0, final_dropout=0.5, batching=True):
         super().__init__()
         self.n_hidden = n_hidden
         self.num_gnn_layers = num_gnn_layers
@@ -33,7 +33,10 @@ class GINe(torch.nn.Module):
             conv = GINEConv(nn.Sequential(nn.Linear(self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden)), edge_dim=self.n_hidden)
             if self.edge_updates: self.emlps.append(nn.Sequential(nn.Linear(3 * self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden),))
             self.convs.append(conv)
-            self.batch_norms.append(BatchNorm(n_hidden))
+            if batching:
+                self.batch_norms.append(BatchNorm(n_hidden))
+            else:
+                self.batch_norms.append(LayerNorm(n_hidden))
 
         self.mlp = nn.Sequential(Linear(n_hidden * 3, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))
 
@@ -56,9 +59,9 @@ class GINe(torch.nn.Module):
 
 
 class GATe(torch.nn.Module):
-    def __init__(self, num_features, num_gnn_layers, n_classes=2, 
-                 n_hidden=100, n_heads=4, edge_updates=False, 
-                 edge_dim=None, dropout=0.0, final_dropout=0.5):
+    def __init__(self, num_features, num_gnn_layers, n_classes=2,
+                 n_hidden=100, n_heads=4, edge_updates=False,
+                 edge_dim=None, dropout=0.0, final_dropout=0.5, batching=True):
         super().__init__()
         # GAT specific code
         tmp_out = n_hidden // n_heads
@@ -82,7 +85,10 @@ class GATe(torch.nn.Module):
             conv = GATConv(self.n_hidden, tmp_out, self.n_heads, concat = True, dropout = self.dropout, add_self_loops = True, edge_dim=self.n_hidden)
             if self.edge_updates: self.emlps.append(nn.Sequential(nn.Linear(3 * self.n_hidden, self.n_hidden),nn.ReLU(),nn.Linear(self.n_hidden, self.n_hidden),))
             self.convs.append(conv)
-            self.batch_norms.append(BatchNorm(n_hidden))
+            if batching:
+                self.batch_norms.append(BatchNorm(n_hidden))
+            else:
+                self.batch_norms.append(LayerNorm(n_hidden))
                 
         self.mlp = nn.Sequential(Linear(n_hidden*3, 50), nn.ReLU(), nn.Dropout(self.final_dropout),Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout),Linear(25, n_classes))
             

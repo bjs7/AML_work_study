@@ -66,7 +66,10 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None):
 
     # make predictions and get prediction indicies
     if pred_probabilities is None:
-        pred_probabilities = party.model.predict(party.get_eval_data())
+        if party.args['fl_parser'].fl_algo == 'individual':
+            pred_probabilities = party.model.predict(party.get_eval_data())
+        else:
+            pred_probabilities = party.model.predict_no_batching(party.get_eval_data()) 
 
     # Check for unusual predictions
     if np.isnan(pred_probabilities).any():
