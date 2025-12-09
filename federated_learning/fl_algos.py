@@ -2,7 +2,7 @@
 
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
-from federated_learning.gnn import GNNMixinParty, FLGNNManager, IndividualGNNManager, FullInfoGNNManager #GNNMixinParty_Individual, GNNMixinParty_Full_info, 
+from federated_learning.gnn import GNNMixinParty, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical #GNNMixinParty_Individual, GNNMixinParty_Full_info, 
 from federated_learning.booster.individual_manager import IndividualBoosterManager
 from federated_learning.booster.party_mixin import BoosterMixinParty
 
@@ -21,8 +21,15 @@ class RegressionMixinManager:
 # FL Algos ----------------------------------
 # -------------------------------------------
 
-# FedAVG ------------------------------------------------------
+# FedVert -------------------------------------------------------
 
+class FedVert_party(Party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
+    def send_messages(self, recipient, content):
+        return super().send_messages(recipient, content)
 
 # FedAvg -------------------------------------------------------
 
@@ -37,6 +44,12 @@ class FedAvg_party(Party):
 
 
 class FedAvg_manager(Manager):
+
+    def get_adjacency_matrix(self):
+        return 0
+    
+
+class FedVert_manager(Manager):
 
     def get_adjacency_matrix(self):
         return 0
@@ -106,6 +119,17 @@ class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
     @staticmethod
     def return_class(**kwargs):
         return FedAvg_GNN_Party(**kwargs)
+    
+
+@regi_algo_party("FedVert_gnn")
+class FedVert_GNN_Party(GNNMixinParty, FedVert_party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return FedVert_GNN_Party(**kwargs)
 
 
 # Manager --------------------------
@@ -126,6 +150,7 @@ class Individual_GNN_Manager(IndividualGNNManager, Manager): #FLGNNManager #GNNM
         return Individual_GNN_Manager(args)
 
 
+
 @regi_algo_manager("FedAvg_gnn")
 class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager): #FLGNNManager #GNNMixinManager
 
@@ -135,6 +160,12 @@ class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager): #FLGNNManager #GNNMixinM
 
 
 
+@regi_algo_manager("FedVert_gnn")
+class FedVert_GNN_Manager(FLGNNManagerVertical, FedVert_manager): #FLGNNManager #GNNMixinManager
+
+    @staticmethod
+    def return_class(args):
+        return FedVert_GNN_Manager(args)
 
 
 

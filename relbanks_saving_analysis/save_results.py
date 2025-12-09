@@ -44,7 +44,8 @@ def save_results(results, hyperparams, manager):
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 
     # create the folder
-    save_direc = os.path.join(save_direc, str_folder, data_folder)
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    save_direc = os.path.join(save_direc, str_folder, data_folder, run_id)
     folder_path = Path(save_direc)
     folder_path.mkdir(parents=True, exist_ok=True)
 
@@ -95,7 +96,7 @@ def save_FL(save_direc, results, hyperparams, manager):
             with open(f'{seed_folder}/metrics_laundering_values.pkl', 'wb') as f:
                 pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values']}, f)
 
-            torch.save(seed_result['w'], f'{seed_folder}/model.pth')
+            torch.save(seed_result['weights'], f'{seed_folder}/model.pth')
 
         aggregated_results = aggregate_seed_results(results)
         file_path = os.path.join(save_direc, 'aggregated_results.json')

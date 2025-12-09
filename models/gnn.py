@@ -120,7 +120,7 @@ class GNN(ABC):
             pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
 
-        return pred.softmax(dim=1)[:,1].detach().cpu()
+        return pred.softmax(dim=1)[:,1].detach().cpu().numpy()
 
     @torch.no_grad()
     def predict_binary(self, graph_data):
@@ -183,7 +183,7 @@ def batching_masker(batch, data, loader, indices):
     #torch.all(torch.sort(batch.edge_attr[mask,0])[0] == torch.sort(batch_edge_ids)[0])
     
     mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
-    batch.edge_attr[mask,0].int()
+    #batch.edge_attr[mask,0].int()
     pred_ids = batch.edge_attr[mask,0].int()
     batch.edge_attr = batch.edge_attr[:, 1:]
 

@@ -21,6 +21,7 @@ class GNNMixinParty:
         super().__init__(**kwargs)
         self._ibm_fe = self.manager.args['data_parser'].ibm_fe
         self._train_for_final = self.manager.args['data_parser'].train_for_final
+        self._batching = self.manager.args['data_parser'].batching
         #self._get_batch_configs()
 
     def _get_batch_configs(self):
@@ -44,6 +45,9 @@ class GNNMixinParty:
     def feature_engineering(self, train_data, eval_data):
 
         if self._ibm_fe:
+
+            train_data = copy.deepcopy(train_data)
+            eval_data = copy.deepcopy(eval_data)
 
             train_data['df'].x = z_norm(train_data['df'].x)
             eval_data['df'].x = z_norm(eval_data['df'].x)
@@ -103,10 +107,12 @@ class GNNMixinParty:
         eval_data = copy.deepcopy(self.procs_data['eval_data']['df'])
         eval_indices = self.procs_data['eval_data']['pred_indices']
 
-        add_arange_ids([train_data, eval_data])
-
-        num_neighbors = [100]*self.model.gnn.num_gnn_layers
-        train_loader, eval_loader = get_loaders(train_data, eval_data, eval_indices, num_neighbors)
+        if self._batching:
+            add_arange_ids([train_data, eval_data])
+            num_neighbors = [100]*self.model.gnn.num_gnn_layers
+            train_loader, eval_loader = get_loaders(train_data, eval_data, eval_indices, num_neighbors)
+        else:
+             train_loader, eval_loader = [train_data], [eval_data]
 
         return train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices
     
@@ -117,6 +123,7 @@ class GNNMixinParty:
         laundering_values['pred_probabilities'], laundering_values['pred_label'] = 0, 0
         bank_str = f" {self.bank_id}" if self.bank_id is not None else " full_info"
         
+        self._batching = False
         train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices = self._get_loaders()
         laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': eval_indices}), laundering_values], axis=1)
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
@@ -127,7 +134,8 @@ class GNNMixinParty:
             ground_truths_eval, eval_pred_ids, total_loss = [], [], 0
 
             for batch in train_loader:
-                mask, _ = batching_masker(batch, train_data, train_loader, train_indices)
+                mask, _ = batching_masker(batch, train_data, train_loader, train_indices) if self._batching else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
+                #batch.edge_attr = batch.edge_attr[:, 1:]
                 pred, true_y, loss = self.model.update_weights(batch, mask)
                 total_loss += loss
                 preds.append(pred.argmax(dim=-1))
@@ -145,7 +153,8 @@ class GNNMixinParty:
 
 
             for batch in eval_loader:
-                mask, pred_ids = batching_masker(batch, eval_data, eval_loader, eval_indices)
+                mask, pred_ids = batching_masker(batch, eval_data, eval_loader, eval_indices) if self._batching else (torch.zeros(eval_data.y.shape[0], dtype=torch.bool).index_fill_(0, eval_indices, True), eval_indices)
+                #batch.edge_attr = batch.edge_attr[:, 1:]
                 pred = self.model.predict(batch, mask)
                 preds_eval.append(pred)
                 ground_truths_eval.append(batch.y[mask])

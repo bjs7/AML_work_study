@@ -18,6 +18,10 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 # setup -----------------------------------------------
 
+# remeber to adjust the amount of seeds
+
+# need more loggin on federated avg
+
 # for FL there are two approach? Batch individually, calculate one layer for each batch,
 # send info to other banks, get info back, update batches etc.
 # Second, which is probably much better, no batching, just calculate info, send out,
@@ -47,14 +51,10 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 # double check the update nodes etc. like the parts when full graph data set is sliced into bank subsets
 
 # log or save data on how many banks has a f1 of 0, or close to 0 and the amount of data they have access to
-
 # and f1 score of all the banks
-
 
 # batch vs no batching? Make analysis of banks amount of data, and their amount of 1 observations they see
 
-
-# seeds equal to 1 for individual currently
 
 
 utils.logger_setup()
@@ -74,6 +74,9 @@ parsers['data_parser'].train_for_final = True
 #parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
 #parsers['fl_parser'].fl_algo = 'individual'
+
+parsers['fl_parser'].fl_algo = 'FedVert'
+
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -97,11 +100,11 @@ manager = Manager.get_algo_class(parsers)
 self = manager
 laundering_values = laundering_values_vali
 
-
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
-party = self.parties[0]
+self.label_data
+
 
 
 self = manager
@@ -110,44 +113,12 @@ laundering_values = laundering_values_test
 hyperparameters = tuned_hp
 
 
+party = self.parties[0]
+self = party
+
+
 self = self.parties[None]
 
-
-
-for bank_id, party in self.parties.items():
-    print(bank_id, party.data['test_data'])
-
-for bank_id, party in self.parties.items():
-    print(bank_id, party.data['train_data'])
-    
-
-
-
-
-self = manager._party
-
-self._party.data
-self._party.procs_data
-
-
-fr_banks, sr_banks = get_relevant_banks(parsers)
-max_obs = 0
-max_bank = None
-max_y_equal_one_obs = 0
-max_y_equal_one_bank = None
-
-sum(manager.parties[68].data['train_data']['df'].y) # 390
-sum(manager.parties[68].data['vali_data']['df'].y) # 523
-sum(manager.parties[68].data['test_data']['df'].y) # 633
-
-for bank in fr_banks:
-    if len(manager.parties[bank].data['train_data']['df'].y) > max_obs:
-        max_bank = bank
-        max_obs = len(manager.parties[bank].data['train_data']['df'].y)
-
-    if sum(manager.parties[bank].data['train_data']['df'].y) > max_y_equal_one_obs:
-        max_y_equal_one_bank = bank
-        max_y_equal_one_obs = sum(manager.parties[bank].data['train_data']['df'].y)\
 
 
 
