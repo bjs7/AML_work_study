@@ -34,8 +34,9 @@ parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
-parsers['fl_parser'].fl_algo = 'FedVert'
-#parsers['fl_parser'].model = 'GINe'
+#parsers['fl_parser'].fl_algo = 'FedVert'
+parsers['fl_parser'].fl_algo = 'full_info'
+parsers['data_parser'].scenario = 'full_info'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")

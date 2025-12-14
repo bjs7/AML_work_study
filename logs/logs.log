@@ -14779,3 +14779,74 @@
 2025-12-14 14:34:42 [INFO ] save_results.py     :134  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
 2025-12-14 14:34:42 [INFO ] save_results.py     :77   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/individual/GINe__emlps/ibm_fe__ibm_hp__train_for_final/20251214_143442
 2025-12-14 14:34:42 [INFO ] save_results.py     :78   - ================================================================================
+2025-12-14 18:40:15 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-14 18:40:20 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-14 18:40:20 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-14 18:40:20 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-14 18:40:20 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-14 18:40:20 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :106  - Starting training with 4 seeds for full info
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
+2025-12-14 18:40:20 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-14 18:48:50 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-14 18:48:53 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-14 18:48:53 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-14 18:48:53 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-14 18:48:53 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-14 18:48:53 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :106  - Starting training with 4 seeds for full info
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
+2025-12-14 18:48:53 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-14 18:49:31 [INFO ] party_mixin.py      :149  - Epoch 1/20 - Loss: 0.7194, F1: 0.0002
+2025-12-14 18:49:53 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-14 18:49:55 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-14 18:49:55 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-14 18:49:55 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-14 18:49:55 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-14 18:49:55 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :106  - Starting training with 4 seeds for full info
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
+2025-12-14 18:49:55 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-14 18:51:53 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-14 18:51:55 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-14 18:51:55 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-14 18:51:55 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-14 18:51:55 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-14 18:51:55 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :106  - Starting training with 4 seeds for full info
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
+2025-12-14 18:51:55 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-14 18:56:04 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-14 18:56:07 [INFO ] main.py             :30   - Parsers, data and scalers loaded
+2025-12-14 18:56:07 [INFO ] main.py             :31   - train size: 50000, validation size: 50000, test size: 50000
+2025-12-14 18:56:07 [INFO ] full_info_manager.py:22   - Setting up Full Info model (single party with complete dataset)
+2025-12-14 18:56:07 [INFO ] full_info_manager.py:25   - Starting hyperparameter tuning
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-14 18:56:07 [INFO ] full_info_manager.py:27   - Setup complete
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :105  - ================================================================================
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :106  - Starting training with 4 seeds for full info
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :107  - ================================================================================
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :114  - 
+--------------------------------------------------------------------------------
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
+2025-12-14 18:56:07 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------

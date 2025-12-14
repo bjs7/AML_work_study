@@ -123,7 +123,6 @@ class GNNMixinParty:
         laundering_values['pred_probabilities'], laundering_values['pred_label'] = 0, 0
         bank_str = f" {self.bank_id}" if self.bank_id is not None else " full_info"
         
-        self._batching = False
         train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices = self._get_loaders()
         laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': eval_indices}), laundering_values], axis=1)
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
