@@ -425,7 +425,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         return best_hyperparameters, scores, best_f1
     
-    def train(self, hyperparameters, laundering_values, seeds = 1):
+    def train(self, hyperparameters, laundering_values, seeds = 4):
 
         self.set_mode('training')
         results_by_seed = {}

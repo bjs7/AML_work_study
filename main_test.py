@@ -18,6 +18,8 @@ from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 #from examples.checkpoint_workflow import save_checkpoint, load_checkpoint
 
+# add settings, like type of algo etc. to sbatch info to output file of jobs?
+
 # setup -----------------------------------------------
 
 utils.logger_setup()
