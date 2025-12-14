@@ -16,46 +16,9 @@ from relbanks_saving_analysis.save_results import save_results
 from relbanks_saving_analysis.relevant_banks import get_relevant_banks
 
 
+#from examples.checkpoint_workflow import save_checkpoint, load_checkpoint
+
 # setup -----------------------------------------------
-
-# remeber to adjust the amount of seeds
-
-# need more loggin on federated avg
-
-# for FL there are two approach? Batch individually, calculate one layer for each batch,
-# send info to other banks, get info back, update batches etc.
-# Second, which is probably much better, no batching, just calculate info, send out,
-# get info back update etc.
-
-# IF NON-BATCHING IS USED, CHANGE THE BATCHNORM TO LAYERNORM IN GNN MODEL!
-
-# have logging for most, but still need for federated manager
-
-# caching in managers?
-
-# ALSO NEED TO ADD MORE LOGGING AND SAVE THE LOGGING IN THE EXPERIEMENTS FOLDER!
-
-# smart way for how to handle / sort folders on hpc and how to set "algos" etc. in the .sh file
-
-# be sure that gpu is used on hpc
-
-# in tuning, most of the metrics calcuations can be skipped
-# conditino that only adds max_prob, avg_prob etc. if not full info?
-
-# NEED TO DOUBLE CHECK feature_engi_graph_data, not sure it copies, applies, selects the right dataframe
-
-# probably need to update the inference up_laundering_values function to match batching
-
-# currently just have one seed in full_info, just as right now stuff is just being tested if it runs corrctly
-
-# double check the update nodes etc. like the parts when full graph data set is sliced into bank subsets
-
-# log or save data on how many banks has a f1 of 0, or close to 0 and the amount of data they have access to
-# and f1 score of all the banks
-
-# batch vs no batching? Make analysis of banks amount of data, and their amount of 1 observations they see
-
-
 
 utils.logger_setup()
 parsers = utils.parser_all()
@@ -69,20 +32,16 @@ parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
 
-
-#parsers['fl_parser'].fl_algo = 'full_info'
-#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
-
-#parsers['fl_parser'].fl_algo = 'individual'
-
 parsers['fl_parser'].fl_algo = 'FedVert'
-
+#parsers['fl_parser'].model = 'GINe'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
-#if parsers['fl_parser'].fl_algo == 'full_info' and parsers['data_parser'].testing:
-#    df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
+if parsers['data_parser'].testing:
+    df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]]).reset_index()
+
+#unique_banks = sorted(df[['From Bank', 'To Bank']].stack().unique())
 
 df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
@@ -92,7 +51,6 @@ laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers
 # -------------------------------------------------------------------------------------------------
 # Setup for manager and parties ------------------------------------------------------
 
-# test full epoch on one bank, if still problems, check if all on problem on larger bank etc.
 
 # Get the manager
 manager = Manager.get_algo_class(parsers)
@@ -103,21 +61,13 @@ laundering_values = laundering_values_vali
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
-self.label_data
+hyperparameters = tuned_hp
 
 
 
 self = manager
 #laundering_values = laundering_values_vali
 laundering_values = laundering_values_test
-hyperparameters = tuned_hp
-
-
-party = self.parties[0]
-self = party
-
-
-self = self.parties[None]
 
 
 
@@ -125,13 +75,16 @@ self = self.parties[None]
 
 
 
+# where is this used, and where is it set?
+self.label_data
 
 
-results = manager.train(tuned_hp, laundering_values_test)
+
+#results = manager.train(tuned_hp, laundering_values_test)
 
 
 # save results
-save_results(results, tuned_hp, manager)
+#save_results(results, tuned_hp, manager)
 
 
 

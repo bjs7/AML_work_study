@@ -11,6 +11,70 @@ import superseded.save_load_models as slm
 from mix.relevant_banks import get_relevant_banks
 
 
+# need to pass the "relevant" to the bank or not. Every bank should be considered in fedvertical case?
+# need to pass the "relevant" to the bank or not. Every bank should be considered in fedvertical case?
+# need to pass the "relevant" to the bank or not. Every bank should be considered in fedvertical case?
+
+
+
+#parsers['fl_parser'].fl_algo = 'full_info'
+#parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
+
+#parsers['fl_parser'].fl_algo = 'individual'
+
+
+
+
+
+
+# remeber to adjust the amount of seeds
+
+# need more loggin on federated avg
+
+# probably also want more data on hwo each bank perferms individually
+# like their f1 and then be able to get average f1 over them all etc.
+
+# also for the vertical case. What to do about something like the mean/std for the standardization of data?
+# somehow obtain a global one?
+# also why exchanging everything to dollars is important potentially
+
+# fed average I should modify it such that the weight to each depends on the amount of data they have
+
+# for FL there are two approach? Batch individually, calculate one layer for each batch,
+# send info to other banks, get info back, update batches etc.
+# Second, which is probably much better, no batching, just calculate info, send out,
+# get info back update etc.
+
+# IF NON-BATCHING IS USED, CHANGE THE BATCHNORM TO LAYERNORM IN GNN MODEL!
+
+# have logging for most, but still need for federated manager
+
+# caching in managers?
+
+# ALSO NEED TO ADD MORE LOGGING AND SAVE THE LOGGING IN THE EXPERIEMENTS FOLDER!
+
+# smart way for how to handle / sort folders on hpc and how to set "algos" etc. in the .sh file
+
+# be sure that gpu is used on hpc
+
+# in tuning, most of the metrics calcuations can be skipped
+# conditino that only adds max_prob, avg_prob etc. if not full info?
+
+# NEED TO DOUBLE CHECK feature_engi_graph_data, not sure it copies, applies, selects the right dataframe
+
+# probably need to update the inference up_laundering_values function to match batching
+
+# currently just have one seed in full_info, just as right now stuff is just being tested if it runs corrctly
+
+# double check the update nodes etc. like the parts when full graph data set is sliced into bank subsets
+
+# log or save data on how many banks has a f1 of 0, or close to 0 and the amount of data they have access to
+# and f1 score of all the banks
+
+# batch vs no batching? Make analysis of banks amount of data, and their amount of 1 observations they see
+
+
+
 # residuals i gnn model?
 
 # IMPLEMENT FINETUNING? LIKE FOR THE DATASETS MEDIUM OR HIGHER, THERE I SHOULD USE

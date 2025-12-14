@@ -227,3 +227,121 @@ class GNNMixinParty:
                 'laundering_values': laundering_values, 
                 'model': best_model}
 
+
+
+
+
+class GNNMixinPartyVert(GNNMixinParty):
+#party_0.manager.parties.items()
+
+    # this function isn't done. Need to make it dynamic such that it adjusted to mode
+    def _get_edge_indices(self):
+        return self.data['train_data']['df'].edge_index.T
+
+    # this function isn't done. Need to make it dynamic such that it adjusted to mode
+    def _get_shared_edge_indices(self):
+
+        # these should be placed in the init party, potentially, potentially several of the functions
+        # but then again they will vary from tuning/training, so might not work
+        self.intersects = {}
+        self.own_ints_idx = {}
+        self.nodes_idx = {}
+        self.ints_edge_idx = {}
+        
+        for bank_id, party in self.manager.parties.items():
+            if self.bank_id == bank_id:
+                continue
+            self.intersects[bank_id] = np.where(np.isin(self.indices['train_indices'], 
+                                                 party.indices['train_indices']))[0]
+
+    
+    def get_ints_send_ints(self):
+
+        # this could be simplified or combined with the _get_shared_edge_indices
+        #self._get_shared_edge_indices()
+        for bank_id, intersects in self.intersects.items():
+            self.own_ints_idx[bank_id] = self._get_edge_indices()[intersects]
+            self.nodes_idx[bank_id] = self.own_ints_idx[bank_id].unique().tolist()
+            self.manager.parties[bank_id].ints_edge_idx[self.bank_id] = self._get_edge_indices()[intersects]
+
+    def _get__node_mappings_helper(self, bank_id):
+
+        mappings = {}
+        for idx_own, idx_rec in zip(self.own_ints_idx[bank_id].tolist(), self.ints_edge_idx[bank_id].tolist()):
+
+            for key, val in zip(idx_rec, idx_own):
+                mappings[key] = val
+
+        return mappings
+    
+    def get_node_mappings(self):
+
+        # this method here could be reconsidered, and instead use a method where one match the from_id and to_id 
+        # overlaps, look up the two banks mapping of them, and then extract mappings between the two banks 
+        # like this. However, doing so, could one "maintain" or keep the account labels, or somehow
+        # share them between the banks? Not sure that it would work
+
+        self.node_mappings = {}
+        for bank_id in self.own_ints_idx.keys():
+            self.node_mappings[bank_id] = self._get__node_mappings_helper(bank_id)
+
+
+    def get_embeddings(self):
+        embed = self.manager.embedder
+        self.received_embeddings = {}
+        self.current_embeddings = embed(self.data['train_data']['df'].x, self.data['train_data']['df'].edge_attr)
+
+    def send_embeddings(self):
+
+        # okay, some important points. For the first round, of hidden layers, banks should only interest in obtaining
+        # embeddings from other banks, for nodes that they don't hold, like nodes/accounts that are not one of their owns.
+        # Because they will be able to see more links to them than the other banks. However, this is (I think) only
+        # applies in the case where all banks use the exact same model, i.e. embedding layer, hidden layers. If different
+        # then they would potentially be interest in getting everything also from round one. But that might be
+        # more complex for now "simpler" model/approach. Also, does it even make sense to share edge embeddings 
+        # in the case of them using the same model, I guess not? Or maybe it doesn, because it will be a product/results
+        # of the node embeddings, and they may vary even though they are updated/shared between banks
+
+        for bank_id, nodes_indices in self.nodes_idx.items():
+            self.manager.parties[bank_id].received_embeddings[self.bank_id] = {
+                'nodes': dict(zip(nodes_indices, self.current_embeddings['nodes'][nodes_indices])),
+                'edges': self.current_embeddings['edges'][self.intersects[bank_id]]
+            }
+
+    def merge_embeddings(self):
+
+        # Still need to come up with a "combination layer" in the final layer, like where the manager
+        # somehow combines all embeddings from all banks. Somehow, use theri mappings, then start at one bank
+        # merge it into all the banks it match with, then take next bank etc.
+        # as more and more are merged, there should be less and less to merge with for the following banks, as they 
+        # have already had been merged with some of the other banks in the previous steps
+
+        for bank_id, embeddings in self.received_embeddings.items():
+            self.current_embeddings['edges'][self.intersects[bank_id]] += embeddings['edges']            
+            for node_idx, node_embed in embeddings['nodes'].items():
+                self.current_embeddings['nodes'][self.node_mappings[bank_id][node_idx]] += node_embed
+
+
+
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

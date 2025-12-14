@@ -36,6 +36,7 @@ def main():
     # Setup manager and parties ----------------------------------------------------------------------------------------
 
     # Manager
+    #print(parsers)
     manager = Manager.get_algo_class(parsers)
 
     # Setup parties and tune

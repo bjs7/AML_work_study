@@ -117,7 +117,9 @@ def save_individual(save_direc, results, manager):
             folder_path.mkdir(parents=True, exist_ok=True)
 
             with open(f'{seed_folder}/metrics_laundering_values.pkl', 'wb') as f:
-                pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values']}, f)
+                pickle.dump({'metrics': seed_result['metrics'], 
+                             'laundering_values': seed_result['laundering_values'],
+                             'party_performance': seed_result['party_performance']}, f)
 
             with open(f'{seed_folder}/models_hyperparameters.pkl', 'wb') as f:
                 pickle.dump({'models_hyperparameters': seed_result['models']}, f)

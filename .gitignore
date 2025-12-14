@@ -1,0 +1,61 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Model checkpoints and weights
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.h5
+
+# Logs
+logs/
+*.log
+
+# Data files (uncomment if you don't want to track data)
+# data/*.csv
+# data/*.pkl
+# data/*.parquet
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# PyTest cache
+.pytest_cache/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary test files
+quick_test*.py
+test_*_quick.py
+
+# Local-only directories
+examples/
+tests/

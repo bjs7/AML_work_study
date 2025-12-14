@@ -60,6 +60,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
 
         models_hyperparameters = {}
         party_predictions = {}
+        party_individual_performans = {}
 
         logger.info("Training %d individual banks", len(self.parties))
         for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
@@ -72,6 +73,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
                                                'hyperparameters': hyperparameters[bank_id]}
 
             party_predictions[bank_id] = tmp_model['laundering_values']['pred_probabilities']
+            party_individual_performans[bank_id] = tmp_model['metrics']
 
             if np.all(party_predictions[bank_id] == 0):
                 logger.warning("Bank %s: All predictions are zero!", bank_id)
@@ -100,6 +102,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         return {
             'metrics': collective_metrics,
             'laundering_values': copy.deepcopy(laundering_values),
-            'models': models_hyperparameters
+            'models': models_hyperparameters,
+            'party_performance': party_individual_performans
         }
 

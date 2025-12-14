@@ -78,7 +78,7 @@ def load_experiment(experiment_path):
             # Load model (full_info and FL)
             model_file = seed_dir / 'model.pth'
             if model_file.exists():
-                seed_data['model'] = torch.load(model_file)
+                seed_data['model'] = torch.load(model_file, map_location=torch.device('cpu'), weights_only=False)
             
             # Load models (individual)
             models_file = seed_dir / 'models_hyperparameters.pkl'

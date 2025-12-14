@@ -21,6 +21,7 @@ from configs.configs import split_perc
 
 model_types = {
     'GINe': 'gnn',
+    'GINe_vert': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
     'regression': 'regression'
@@ -49,7 +50,6 @@ def setup_get_data():
     df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
     if parsers['data_parser'].testing and parsers['fl_parser'].fl_algo == 'full_info':
-        print('set set of data')
         df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
 
     df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
