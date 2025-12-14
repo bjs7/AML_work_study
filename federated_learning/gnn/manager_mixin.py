@@ -96,7 +96,7 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
     def _train_party(self, laundering_values, **kwargs):
         raise NotImplementedError
     
-    def train(self, hyperparameters, laundering_values, seeds = 1):
+    def train(self, hyperparameters, laundering_values, seeds = 4):
 
         self.set_mode('training')
         results_by_seed = {}
