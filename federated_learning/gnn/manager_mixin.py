@@ -19,11 +19,13 @@ class GNNMixinManager:
 
         return hp_list
     
-    def init_models(self, hyperparams, bank_id = None):
+    def init_models(self, hyperparams, bank_id = None, gnn_batching = False):
 
         sample_party = next(iter(self.parties.values()))
         node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
         edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
+        if gnn_batching:
+            edge_dim -= 1
    
         if bank_id is not None:
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
@@ -96,9 +98,11 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
     def _train_party(self, laundering_values, **kwargs):
         raise NotImplementedError
     
-    def train(self, hyperparameters, laundering_values, seeds = 4):
+    def train(self, hyperparameters, laundering_values):
 
         self.set_mode('training')
+        seeds = self.args['data_parser'].testing_seeds
+
         results_by_seed = {}
         bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
 

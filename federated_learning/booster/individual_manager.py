@@ -6,7 +6,7 @@ import configs.configs as configs
 from inference import metrics
 import inference as flin
 from .manager_mixin import BoosterMixinManager
-from relbanks_saving_analysis.relevant_banks import get_relevant_banks
+from data.relevant_banks import get_relevant_banks
 
 
 class IndividualBoosterManager(BoosterMixinManager):

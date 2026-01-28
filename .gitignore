@@ -59,3 +59,13 @@ test_*_quick.py
 # Local-only directories
 examples/
 tests/
+
+# Local notes, docs, and archive (not for GitHub)
+archive/
+docs/
+notes/
+
+# Local scratch/test files
+main_test.py
+fedvert_new.py
+test_file.py

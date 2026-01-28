@@ -19,8 +19,8 @@ class Party(BaseFL):
     REGISTRY = FL_ALGO_REGISTRY_PARTY
 
     """Individual computation node that can send/receive messages"""
-    
-    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders) -> None:
+
+    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders, is_sr=False) -> None:
         super().__init__(args)
         self.bank_id = bank_id
         self.indices = indices
@@ -28,10 +28,11 @@ class Party(BaseFL):
         self.manager = manager
         self.scaler_encoders = scaler_encoders
         self.model = None
-        self.tr_configs = {}  
+        self.tr_configs = {}
+        self.is_sr = is_sr  # Flag to indicate if this is an sr_party
 
         if self.manager:
-            self.manager.add_party(self)
+            self.manager.add_party(self, is_sr=is_sr)
         
     @classmethod
     def get_algo_class(cls, parsers: argparse.Namespace, **kwargs) -> classmethod:
@@ -74,6 +75,7 @@ class Manager(BaseFL, ABC):
     def __init__(self, args):
         super().__init__(args)
         self.parties: Dict[int, Party] = {}
+        self.sr_parties: Dict[int, Party] = {}  # Parties with data only in validation/test (e.g., sr_banks)
         self.parties_weights: Dict[int, Any] = {}
         self.global_weights = None
 
@@ -86,27 +88,44 @@ class Manager(BaseFL, ABC):
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(parsers)
 
-    def add_party(self, party: Party):
-        self.parties[party.bank_id] = party
-        print(f"[Manager] added: party {party.bank_id}")
+    def add_party(self, party: Party, is_sr=False):
+        
+        if not is_sr:
+            self.parties[party.bank_id] = party
+        else:
+            self.sr_parties[party.bank_id] = party
+        #print(f"[Manager] added: party {party.bank_id}" + (" (sr_party)" if is_sr else ""))
 
-    def _add_party(self, bank_id, df, parsers, scaler_encoders):
-        """Create and add a single party to this manager."""
+    def _add_party(self, bank_id, df, parsers, scaler_encoders, is_sr=False):
+        """Create and add a single party to this manager.
+
+        Args:
+            bank_id: ID of the bank/party to add
+            df: Data dictionary
+            parsers: Parser configurations
+            scaler_encoders: Encoder objects for feature engineering
+            is_sr: If True, also add to sr_parties (for banks with no train data)
+        """
         bank_indices = get_indices_bdt(df, bank=bank_id)
         train_data, vali_data, test_data = dfn.fl_get_data(parsers, df, bank_indices)
         tmp_data = {'train_data': train_data, 'vali_data': vali_data, 'test_data': test_data}
-        Party.get_algo_class(parsers = parsers, 
-                             bank_id=bank_id, 
-                             data=tmp_data, 
-                             indices=bank_indices, 
-                             manager=self, 
-                             scaler_encoders=scaler_encoders
-                             )
+        Party.get_algo_class(parsers = parsers,
+                            bank_id=bank_id,
+                            data=tmp_data,
+                            indices=bank_indices,
+                            manager=self,
+                            scaler_encoders=scaler_encoders,
+                            is_sr=is_sr
+                            )
 
     def set_mode(self, mode):
         self.mode = mode
-        for _, party in self.parties.items():
-            party.mode = mode
+        if self.sr_parties:
+            for _, party in self.sr_parties.items():
+                party.mode = mode
+        else:
+            for _, party in self.parties.items():
+                party.mode = mode
 
     @abstractmethod
     def init_models(self):

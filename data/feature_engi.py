@@ -158,6 +158,12 @@ def update_data(data, bank_indices):
     # get indices for the bank
     updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices = get_updated_bank_indices(bank_indices)
 
+
+    train_mapping = dict(enumerate(bank_indices[:len(updated_train_indices)]))
+    vali_mapping = dict(enumerate(bank_indices[:len(updated_train_indices) + len(updated_vali_indices)]))
+    test_mapping = dict(enumerate(bank_indices))
+
+
     df.edge_index = df.edge_index[:,bank_indices].clone()
     df.edge_attr = df.edge_attr[bank_indices,:].clone()
     df.y = df.y[bank_indices].clone()
@@ -177,15 +183,29 @@ def update_data(data, bank_indices):
     train_data = du.GraphData(x = df.x, y=train_y, edge_index=train_edges, edge_attr=train_attr, timestamps=train_ts)
     vali_data = du.GraphData(x = df.x, y=vali_y, edge_index=vali_edges, edge_attr=vali_attr, timestamps=vali_ts)
     test_data = df
-    
-    du.update_nr_nodes(train_data)
-    du.update_nr_nodes(vali_data)
-    du.update_nr_nodes(test_data)
 
-    for data in [train_data, vali_data, test_data]:
-        data.num_nodes = int(data.x.shape[0])
+    if len(updated_train_indices) > 0:
+        du.update_nr_nodes(train_data)
+        train_data.num_nodes = int(train_data.x.shape[0])
+        du.update_nr_nodes(vali_data)
+        vali_data.num_nodes = int(vali_data.x.shape[0])
+        du.update_nr_nodes(test_data)
+        test_data.num_nodes = int(test_data.x.shape[0])
+        
+    elif len(updated_vali_indices) > 0:
+        train_data = None
+        du.update_nr_nodes(vali_data)
+        vali_data.num_nodes = int(vali_data.x.shape[0])
+        du.update_nr_nodes(test_data)
+        test_data.num_nodes = int(test_data.x.shape[0])
 
-    return {'df': train_data, 'pred_indices': torch.tensor(updated_train_indices)}, {'df': vali_data, 'pred_indices': torch.tensor(updated_vali_indices)}, {'df': test_data, 'pred_indices': torch.tensor(updated_test_indices)}
+    else:
+        train_data = None
+        vali_data = None
+        du.update_nr_nodes(test_data)
+        test_data.num_nodes = int(test_data.x.shape[0])
+
+    return {'df': train_data, 'pred_indices': torch.tensor(updated_train_indices), 'indices_mapping': train_mapping}, {'df': vali_data, 'pred_indices': torch.tensor(updated_vali_indices), 'indices_mapping': vali_mapping}, {'df': test_data, 'pred_indices': torch.tensor(updated_test_indices), 'indices_mapping': test_mapping}
 
 
 # function to process it, standardize etc.

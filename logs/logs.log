@@ -14850,3 +14850,193 @@
 --------------------------------------------------------------------------------
 2025-12-14 18:56:07 [INFO ] manager_mixin.py    :115  - Training with seed 1/4
 2025-12-14 18:56:07 [INFO ] manager_mixin.py    :116  - --------------------------------------------------------------------------------
+2025-12-15 17:23:38 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-15 17:23:44 [INFO ] individual_manager.py:26   - Production mode: Using 485 fr_banks and 215 sr_banks
+2025-12-15 17:23:44 [INFO ] individual_manager.py:28   - Adding 485 fr_banks to manager
+2025-12-15 17:25:23 [INFO ] individual_manager.py:30   - Starting hyperparameter tuning for fr_banks
+2025-12-15 17:25:23 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-15 17:25:23 [INFO ] individual_manager.py:32   - Hyperparameter tuning completed
+2025-12-15 17:25:23 [INFO ] individual_manager.py:36   - train_for_final=True: Skipping sr_banks
+2025-12-15 17:25:23 [INFO ] individual_manager.py:41   - Setup complete: Total 485 banks
+2025-12-18 18:45:14 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-18 21:24:55 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-18 21:25:03 [INFO ] individual_manager.py:26   - Production mode: Using 485 fr_banks and 215 sr_banks
+2025-12-18 21:25:03 [INFO ] individual_manager.py:28   - Adding 485 fr_banks to manager
+2025-12-18 21:26:41 [INFO ] individual_manager.py:30   - Starting hyperparameter tuning for fr_banks
+2025-12-18 21:26:41 [INFO ] manager_mixin.py    :145  - Using IBM hyperparameters (skipping tuning)
+2025-12-18 21:26:41 [INFO ] individual_manager.py:32   - Hyperparameter tuning completed
+2025-12-18 21:26:41 [INFO ] individual_manager.py:36   - train_for_final=True: Skipping sr_banks
+2025-12-18 21:26:41 [INFO ] individual_manager.py:41   - Setup complete: Total 485 banks
+2025-12-18 21:57:37 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-31 17:03:34 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-31 17:09:28 [INFO ] utils.py            :124  - Random seed set as 1
+2025-12-31 17:21:18 [INFO ] utils.py            :124  - Random seed set as 1
+2026-01-22 18:50:00 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-22 18:50:29 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-22 21:51:09 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 11:30:10 [INFO ] training_utils.py   :55   - Epoch 1/5 - Train Loss: 24.5541, F1: 0.0000
+2026-01-27 11:31:13 [INFO ] <stdin>             :1    - Test F1: 0.0
+2026-01-27 11:31:22 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 12:28:23 [INFO ] <stdin>             :1    - Test F1: 0.1
+2026-01-27 12:29:46 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 45.3130, F1: 0.0000
+2026-01-27 12:29:54 [INFO ] <stdin>             :42   - Test F1: 0.0
+2026-01-27 12:31:05 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 81.3995, F1: 0.0000
+2026-01-27 12:31:14 [INFO ] <stdin>             :42   - Test F1: 0.0
+2026-01-27 12:54:29 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:06:13 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 54.1807, F1: 0.0000
+2026-01-27 13:06:20 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:07:15 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 25.6920, F1: 0.0000
+2026-01-27 13:07:22 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:07:22 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - Starting training with %d seeds for federated learning
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:08:30 [INFO ] <stdin>             :3    - 
+--------------------------------------------------------------------------------
+2026-01-27 13:08:30 [INFO ] <stdin>             :4    - Training with seed 1/2
+2026-01-27 13:08:30 [INFO ] <stdin>             :5    - --------------------------------------------------------------------------------
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - 
+================================================================================
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - All seeds completed
+2026-01-27 13:08:30 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:09:02 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:09:02 [INFO ] <stdin>             :1    - Starting training with %d seeds for federated learning
+2026-01-27 13:09:02 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:09:02 [INFO ] <stdin>             :3    - 
+--------------------------------------------------------------------------------
+2026-01-27 13:09:02 [INFO ] <stdin>             :4    - Training with seed 1/2
+2026-01-27 13:09:02 [INFO ] <stdin>             :5    - --------------------------------------------------------------------------------
+2026-01-27 13:10:00 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 40.5044, F1: 0.0000
+2026-01-27 13:10:07 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:11:01 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 33.8014, F1: 0.0000
+2026-01-27 13:11:09 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:11:09 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:11:09 [INFO ] <stdin>             :8    - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 13:11:09 [INFO ] <stdin>             :3    - 
+--------------------------------------------------------------------------------
+2026-01-27 13:11:09 [INFO ] <stdin>             :4    - Training with seed 2/2
+2026-01-27 13:11:09 [INFO ] <stdin>             :5    - --------------------------------------------------------------------------------
+2026-01-27 13:12:01 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 30.0409, F1: 0.0000
+2026-01-27 13:12:08 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:13:01 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 31.8795, F1: 0.0000
+2026-01-27 13:13:08 [INFO ] federated_manager.py:251  - Test F1: 0.0
+2026-01-27 13:13:08 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:13:09 [INFO ] <stdin>             :8    - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 13:13:09 [INFO ] <stdin>             :1    - 
+================================================================================
+2026-01-27 13:13:09 [INFO ] <stdin>             :1    - All seeds completed
+2026-01-27 13:13:09 [INFO ] <stdin>             :1    - ================================================================================
+2026-01-27 13:22:21 [INFO ] save_results.py     :16   - ================================================================================
+2026-01-27 13:22:21 [INFO ] save_results.py     :17   - Saving experiment results
+2026-01-27 13:22:21 [INFO ] save_results.py     :18   - ================================================================================
+2026-01-27 13:22:21 [INFO ] save_results.py     :52   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__embed_merger__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_132221
+2026-01-27 13:22:21 [INFO ] save_results.py     :53   - Data settings: batching__ibm_fe__ibm_hp
+2026-01-27 13:22:21 [INFO ] save_results.py     :71   - Saving Federated Learning results
+2026-01-27 13:22:21 [INFO ] save_results.py     :77   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__embed_merger__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_132221
+2026-01-27 13:22:21 [INFO ] save_results.py     :78   - ================================================================================
+2026-01-27 13:39:32 [INFO ] federated_manager.py:186  - ================================================================================
+2026-01-27 13:39:32 [INFO ] federated_manager.py:187  - Starting training with %d seeds for federated learning
+2026-01-27 13:39:32 [INFO ] federated_manager.py:188  - ================================================================================
+2026-01-27 13:39:32 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 13:39:32 [INFO ] federated_manager.py:193  - Training with seed 1/4
+2026-01-27 13:39:32 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 13:39:45 [INFO ] federated_manager.py:186  - ================================================================================
+2026-01-27 13:39:45 [INFO ] federated_manager.py:187  - Starting training with %d seeds for federated learning
+2026-01-27 13:39:45 [INFO ] federated_manager.py:188  - ================================================================================
+2026-01-27 13:39:45 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 13:39:45 [INFO ] federated_manager.py:193  - Training with seed 1/2
+2026-01-27 13:39:45 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 13:40:32 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 13.8236, F1: 0.0000
+2026-01-27 13:40:39 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 13:41:27 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 21.3921, F1: 0.0000
+2026-01-27 13:41:34 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 13:41:34 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:41:35 [INFO ] federated_manager.py:199  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 13:41:35 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 13:41:35 [INFO ] federated_manager.py:193  - Training with seed 2/2
+2026-01-27 13:41:35 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 13:42:37 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 22.8761, F1: 0.0000
+2026-01-27 13:42:47 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 13:43:56 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 24.5287, F1: 0.0000
+2026-01-27 13:44:05 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 13:44:05 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 13:44:06 [INFO ] federated_manager.py:199  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 13:44:06 [INFO ] federated_manager.py:205  - 
+================================================================================
+2026-01-27 13:44:06 [INFO ] federated_manager.py:206  - All seeds completed
+2026-01-27 13:44:06 [INFO ] federated_manager.py:207  - ================================================================================
+2026-01-27 13:44:09 [INFO ] save_results.py     :16   - ================================================================================
+2026-01-27 13:44:09 [INFO ] save_results.py     :17   - Saving experiment results
+2026-01-27 13:44:09 [INFO ] save_results.py     :18   - ================================================================================
+2026-01-27 13:44:09 [INFO ] save_results.py     :52   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__embed_merger__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_134409
+2026-01-27 13:44:09 [INFO ] save_results.py     :53   - Data settings: batching__ibm_fe__ibm_hp
+2026-01-27 13:44:09 [INFO ] save_results.py     :71   - Saving Federated Learning results
+2026-01-27 13:44:09 [INFO ] save_results.py     :77   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__embed_merger__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_134409
+2026-01-27 13:44:09 [INFO ] save_results.py     :78   - ================================================================================
+2026-01-27 13:55:25 [INFO ] utils.py            :124  - Random seed set as 1
+2026-01-27 13:55:27 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-01-27 13:55:27 [INFO ] main.py             :32   - train size: 30470, validation size: 10156, test size: 10157
+2026-01-27 13:59:13 [INFO ] utils.py            :124  - Random seed set as 1
+2026-01-27 13:59:16 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-01-27 13:59:16 [INFO ] main.py             :32   - train size: 30470, validation size: 10156, test size: 10157
+2026-01-27 14:00:09 [INFO ] utils.py            :124  - Random seed set as 1
+2026-01-27 14:00:12 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-01-27 14:00:12 [INFO ] main.py             :32   - train size: 30470, validation size: 10156, test size: 10157
+2026-01-27 14:01:51 [INFO ] federated_manager.py:186  - ================================================================================
+2026-01-27 14:01:51 [INFO ] federated_manager.py:187  - Starting training with %d seeds for federated learning
+2026-01-27 14:01:51 [INFO ] federated_manager.py:188  - ================================================================================
+2026-01-27 14:01:51 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 14:01:51 [INFO ] federated_manager.py:193  - Training with seed 1/4
+2026-01-27 14:01:51 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 14:02:49 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 13.1173, F1: 0.0000
+2026-01-27 14:02:56 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:03:52 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 16.9730, F1: 0.0000
+2026-01-27 14:03:59 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:03:59 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 14:03:59 [INFO ] federated_manager.py:199  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 14:03:59 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 14:03:59 [INFO ] federated_manager.py:193  - Training with seed 2/4
+2026-01-27 14:03:59 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 14:04:53 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 24.4817, F1: 0.0000
+2026-01-27 14:05:00 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:06:00 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 24.1261, F1: 0.0000
+2026-01-27 14:06:08 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:06:08 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 14:06:09 [INFO ] federated_manager.py:199  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 14:06:09 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 14:06:09 [INFO ] federated_manager.py:193  - Training with seed 3/4
+2026-01-27 14:06:09 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 14:07:09 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 4.3985, F1: 0.0000
+2026-01-27 14:07:17 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:08:15 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 7.2610, F1: 0.0000
+2026-01-27 14:08:22 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:08:22 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 14:08:23 [INFO ] federated_manager.py:199  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 14:08:23 [INFO ] federated_manager.py:192  - 
+--------------------------------------------------------------------------------
+2026-01-27 14:08:23 [INFO ] federated_manager.py:193  - Training with seed 4/4
+2026-01-27 14:08:23 [INFO ] federated_manager.py:194  - --------------------------------------------------------------------------------
+2026-01-27 14:09:18 [INFO ] training_utils.py   :55   - Epoch 1/2 - Train Loss: 258.4044, F1: 0.0003
+2026-01-27 14:09:27 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:10:27 [INFO ] training_utils.py   :55   - Epoch 2/2 - Train Loss: 18.5843, F1: 0.0000
+2026-01-27 14:10:34 [INFO ] federated_manager.py:286  - Test F1: 0.0
+2026-01-27 14:10:35 [WARNI] inference.py        :41   - All metrics are zero - model may not be making any positive predictions
+2026-01-27 14:10:35 [INFO ] federated_manager.py:199  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.5000, PR-AUC: 0.0001
+2026-01-27 14:10:35 [INFO ] federated_manager.py:205  - 
+================================================================================
+2026-01-27 14:10:35 [INFO ] federated_manager.py:206  - All seeds completed
+2026-01-27 14:10:36 [INFO ] federated_manager.py:207  - ================================================================================
+2026-01-27 14:10:36 [INFO ] save_results.py     :16   - ================================================================================
+2026-01-27 14:10:36 [INFO ] save_results.py     :17   - Saving experiment results
+2026-01-27 14:10:36 [INFO ] save_results.py     :18   - ================================================================================
+2026-01-27 14:10:36 [INFO ] save_results.py     :52   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_141036
+2026-01-27 14:10:36 [INFO ] save_results.py     :53   - Data settings: batching__ibm_fe__ibm_hp
+2026-01-27 14:10:36 [INFO ] save_results.py     :71   - Saving Federated Learning results
+2026-01-27 14:10:36 [INFO ] save_results.py     :77   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/FedVert/GINe_vert__add_ids__fl_algo/batching__ibm_fe__ibm_hp/20260127_141036
+2026-01-27 14:10:36 [INFO ] save_results.py     :78   - ================================================================================

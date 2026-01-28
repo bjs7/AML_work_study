@@ -41,10 +41,12 @@ def get_data(df, data_paser, **kwargs):
     valid_keys = inspect.signature(split_indices).parameters.keys()
     args = {key: kwargs[key] for key in valid_keys if key in kwargs}
 
-    split_inds, test_perc = split_indices(timestamps, y, **args)
-    #split_inds, test_perc = split_indices(timestamps, y, [0.6, 0.2])
 
-    indices = [np.concatenate(split_inds[i]) for i in range(0,3)]
+    if not data_paser.testing:
+        split_inds, test_perc = split_indices(timestamps, y, **args)
+        indices = [np.concatenate(split_inds[i]) for i in range(0,3)]
+    else:
+        indices = sub_indices(df)
 
     packed_data = {}
 
@@ -57,6 +59,15 @@ def get_data(df, data_paser, **kwargs):
 
     return packed_data, scaler_encoders
 
+
+
+def sub_indices(sub_df):
+    
+    train_indices = sub_df.iloc[:round(sub_df.shape[0] * 0.6),:].index.to_numpy()
+    vali_indices = sub_df.iloc[round(sub_df.shape[0] * 0.6):round(sub_df.shape[0] * 0.8),:].index.to_numpy()
+    test_indices = sub_df.iloc[round(sub_df.shape[0] * 0.8):,:].index.to_numpy()
+
+    return [train_indices, vali_indices, test_indices] 
 
 
 # function for splitting the data into training, validation and testing -------------------------------------

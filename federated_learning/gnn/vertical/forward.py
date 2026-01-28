@@ -1,0 +1,175 @@
+"""Forward pass functions for vertical federated learning.
+
+These functions handle the multi-party forward pass with embedding exchange.
+"""
+
+import numpy as np
+import torch
+
+
+def get_batch_data(manager, mode, batch_num=None, batch_banks=None):
+    """Get batch data for a given mode and batch.
+
+    Args:
+        manager: The FL manager instance
+        mode: 'train' or 'eval'
+        batch_num: Batch number (None for non-batching mode)
+        batch_banks: List of bank IDs in the batch
+
+    Returns:
+        Dict mapping bank_id to (party, graph_data) tuple
+    """
+    if batch_num is None:
+        parties = manager.parties.items() if mode == 'train' else manager.sr_parties.items()
+        return {bank_id: (party, party.procs_data[f'{mode}_data']['df']) for bank_id, party in parties}
+    else:
+        return {bank_id: (manager.sr_parties[bank_id], manager.sr_parties[bank_id].ctx[mode][batch_num]['graph_data']) for bank_id in batch_banks}
+
+
+def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
+    """Execute forward pass with embedding exchange between parties.
+
+    This is the core vertical FL forward pass that:
+    1. Computes initial embeddings at each party
+    2. Applies GNN layers with embedding exchange between parties
+    3. Collects embeddings and makes predictions
+
+    Args:
+        manager: The FL manager instance
+        mode: 'train' or 'eval'
+        batch_num: Batch number (None for non-batching mode)
+        batch_banks: List of bank IDs participating in this batch
+        batch_data: Dict mapping bank_id to (party, graph_data)
+
+    Returns:
+        preds_tensor: Predictions tensor
+        true_y_tensor: Ground truth labels tensor
+    """
+    manager.embeddings_indices = {}
+
+    # Get the embeddings of nodes and edges
+    for bank_id in batch_banks:
+        party, party_data = batch_data[bank_id]
+
+        party.received_embeddings = {}
+        party.current_embeddings = party.model.gnn.emed_features(party_data.x, party_data.edge_attr)
+
+    # Apply GNN layers with embedding exchange
+    for layer_idx in range(party.model.gnn.num_gnn_layers):
+
+        for bank_id in batch_banks:
+            party, party_data = batch_data[bank_id]
+
+            party.current_embeddings = party.model.gnn.apply_gnn_layer(
+                party.current_embeddings['nodes'],
+                party.current_embeddings['edges'],
+                party_data.edge_index,
+                layer_idx
+            )
+
+        # Send embeddings to other parties
+        for bank_id in batch_banks:
+            party, party_data = batch_data[bank_id]
+
+            for inner_bank_id, nodes_indices in party.ctx[mode][batch_num]['nodes_to_send'].items():
+
+                # Send embeddings
+                node_embeds = party.current_embeddings['nodes'][nodes_indices['local_indices']]
+                nodes_dict = dict(zip(nodes_indices['global_ids'], node_embeds))
+
+                idx = party_data.edge_attr[party.ctx[mode][batch_num]['intersects'][inner_bank_id],0].tolist()
+                owned_edges = party.ctx[mode][batch_num]['intersects'][inner_bank_id][manager.data[f'{mode}_data'].iloc[idx, :]['From Bank'] == bank_id]
+
+                manager.sr_parties[inner_bank_id].received_embeddings[party.bank_id] = {
+                    'nodes': nodes_dict,
+                    'edges': party.current_embeddings['edges'][owned_edges]
+                }
+
+        # Receive and merge embeddings
+        for bank_id in batch_banks:
+            party, party_data = batch_data[bank_id]
+
+            if len(party.received_embeddings) == 0:
+                continue
+
+            nodes_clone = party.current_embeddings['nodes'].clone()
+            edges_clone = party.current_embeddings['edges'].clone()
+
+            for inner_bank_id, received in party.received_embeddings.items():
+                idx = party_data.edge_attr[party.ctx[mode][batch_num]['intersects'][inner_bank_id],0].tolist()
+                not_owned_edges = party.ctx[mode][batch_num]['intersects'][inner_bank_id][manager.data[f'{mode}_data'].iloc[idx, :]['From Bank'] == inner_bank_id]
+
+                for global_id, embedding in received['nodes'].items():
+                    local_idx = party.ctx[mode][batch_num]['global_to_local'][global_id]
+                    own_acc = party.ctx[mode][batch_num]['owned_accounts'] if isinstance(party.ctx[mode][batch_num]['owned_accounts'], set) else party.ctx[mode][batch_num]['owned_accounts'][0]
+
+                    if global_id not in own_acc:
+                        nodes_clone[local_idx] = embedding
+
+                edges_clone[not_owned_edges] = received['edges']
+
+            party.current_embeddings['nodes'] = nodes_clone
+            party.current_embeddings['edges'] = edges_clone
+
+    # Final preparation of embeddings
+    for bank_id in batch_banks:
+        party, party_data = batch_data[bank_id]
+        party.current_embeddings = party.model.gnn.prep_nodes_edges(
+            party.current_embeddings['nodes'],
+            party.current_embeddings['edges'],
+            party_data.edge_index
+        )
+
+    # Collect embeddings for prediction
+    embeddings_tensor = {}
+    index_to_position = {}
+
+    for bank_id in batch_banks:
+        embeddings_tensor[bank_id] = manager.sr_parties[bank_id].current_embeddings
+
+        party, party_data = batch_data[bank_id]
+        index_to_position[bank_id] = {
+            int(idx): pos for pos, idx in enumerate(party_data.edge_attr[:,0])
+        }
+
+    # Build prediction tensors
+    batch_df = manager.ctx[mode][batch_num]['batch_labels']
+    from_banks = batch_df['From Bank'].values.astype(int)
+    to_banks = batch_df['To Bank'].values.astype(int)
+    true_y = batch_df['Is Laundering'].values
+
+    embed_dim = list(embeddings_tensor.values())[0].shape[1]
+    device = list(embeddings_tensor.values())[0].device
+
+    n_samples = manager.ctx[mode][batch_num]['batch_labels'].shape[0]
+    indices = batch_df.index.values
+
+    # Pre-allocate full embeddings tensor
+    from_embeds = torch.zeros(n_samples, embed_dim, device=device)
+    to_embeds = torch.zeros(n_samples, embed_dim, device=device)
+
+    # Process each bank's transactions
+    unique_from_banks = np.unique(from_banks)
+    for bank in unique_from_banks:
+        mask = from_banks == bank
+        bank_indices = indices[mask]
+        positions = [index_to_position[bank][idx] for idx in bank_indices]
+        from_embeds[mask] = embeddings_tensor[bank][positions]
+
+    unique_to_banks = np.unique(to_banks)
+    for bank in unique_to_banks:
+        mask = to_banks == bank
+        bank_indices = indices[mask]
+        positions = [index_to_position[bank][idx] for idx in bank_indices]
+        to_embeds[mask] = embeddings_tensor[bank][positions]
+
+    # Handle same-bank transactions (set to_embed to zero)
+    same_bank_mask = from_banks == to_banks
+    to_embeds[same_bank_mask] = 0
+
+    # Concatenate and predict
+    embeds = torch.cat([from_embeds, to_embeds], dim=1)
+    preds_tensor = manager.model.gnn.mlp_vert(embeds)
+    true_y_tensor = torch.tensor(true_y, dtype=torch.long, device=device)
+
+    return preds_tensor, true_y_tensor

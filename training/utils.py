@@ -1,11 +1,23 @@
 
 import random
 import json
-from superseded.utils import get_data_path
+#from utils import get_data_path
 
 # --------------------------------------------------------------------------------------------------
 # tuning functions
 
+
+def get_data_path():
+    local_path = "/home/nam_07/projects"
+    hpc_path = "/data/leuven/362/vsc36278"
+    
+    # Check which path exists
+    if os.path.exists(local_path):
+        return local_path
+    elif os.path.exists(hpc_path):
+        return hpc_path
+    else:
+        raise FileNotFoundError("Neither data path exists: local_path or hpc_path")
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------

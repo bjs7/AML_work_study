@@ -46,11 +46,12 @@ def setup_get_data():
 
     parsers = parser_all()
     set_seed(parsers['data_parser'].seed, True)
-    
+
+
     df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
-    if parsers['data_parser'].testing and parsers['fl_parser'].fl_algo == 'full_info':
-        df = pd.concat([df.iloc[0:50000,:], df.iloc[3000000:3050000,:], df.iloc[5000000:5050000,:]])
+    if parsers['data_parser'].testing:
+        df = df.iloc[:round(df.shape[0] * 0.01),:]
 
     df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
@@ -100,7 +101,6 @@ def logger_setup():
         os.makedirs(log_directory)
     logging.basicConfig(
         level=logging.INFO,
-        #format="%(asctime)s [%(levelname)-5.5s] %(name)-20s - %(message)s",
         format="%(asctime)s [%(levelname)-5.5s] %(filename)-20s:%(lineno)-4d - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[
@@ -167,6 +167,9 @@ def parser_all():
 
     all_parsers['data_parser'].scenario = 'individual_banks' if all_parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
+    if all_parsers['fl_parser'].fl_algo == 'FedVert':
+        all_parsers['gnn_parser'].fl_algo = 'FedVert'
+
     return all_parsers
 
 
@@ -176,8 +179,6 @@ def fl_parser():
     parser = argparse.ArgumentParser(description="main args for fl")
     parser.add_argument('--fl_algo', default='FedAvg', type=str)
     parser.add_argument('--model', default='GINe', type=str)
-    #parser.add_argument('--model', default='xgboost', type=str)
-    #parser.add_argument('--regu', default=)
     
     return parser
 
@@ -195,6 +196,7 @@ def data_parser():
     parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
+    parser.add_argument('--testing_seeds', default=4, type=int, help="The amount of seeds tested in the final evaluation of a model")
 
     # utils
     parser.add_argument('--testing', action='store_true')
@@ -211,6 +213,7 @@ def gnn_parser():
     parser.add_argument("--ports", action='store_true')
     parser.add_argument("--tds", action='store_true', help="Use time deltas (i.e. the time between subsequent transactions) in GNN training")
     parser.add_argument("--reverse_mp", action='store_true', help="Use reverse MP in GNN training")
+    parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
 
     return parser
 
@@ -243,20 +246,22 @@ def init_parties(df, parsers, manager, scaler_encoders = None):
 
 
 
-def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None):
-
+def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, is_sr=False):
     # this part here is only used for individual banks settings
     if tuned_hp is not None:
         best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']
         tuned_hp = {bank_id: entry['hyperparameters'] for bank_id, entry in tuned_hp.items()}
 
     for bank in banks:
-        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders))
-        
+        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders), is_sr=is_sr)
+
         if tuned_hp is not None:
             tuned_hp[bank] = best_tuned_hp
-    
+
     manager._num_parties = len(manager.parties)
+
+    if is_sr:
+        manager.sr_parties = manager.parties | manager.sr_parties
 
     return tuned_hp
 

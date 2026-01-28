@@ -1,7 +1,7 @@
 """Individual GNN Manager - trains each party independently with separate models."""
 
 from .manager_mixin import GNNMixinManager_Fullinfo_Indi
-from relbanks_saving_analysis.relevant_banks import get_relevant_banks
+from data.relevant_banks import get_relevant_banks
 from inference import metrics
 import inference as flin
 import numpy as np

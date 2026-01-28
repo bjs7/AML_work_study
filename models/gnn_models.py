@@ -35,10 +35,10 @@ class GINe_vert(torch.nn.Module):
             conv = GINEConv(nn.Sequential(nn.Linear(self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden)), edge_dim=self.n_hidden)
             if self.edge_updates: self.emlps.append(nn.Sequential(nn.Linear(3 * self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden),))
             self.convs.append(conv)
-            if batching:
-                self.batch_norms.append(BatchNorm(n_hidden))
-            else:
-                self.batch_norms.append(LayerNorm(n_hidden))
+            #if batching:
+            #    self.batch_norms.append(BatchNorm(n_hidden))
+            #else:
+            self.batch_norms.append(LayerNorm(n_hidden))
 
         self.mlp = nn.Sequential(Linear(n_hidden * 3, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))
         self.mlp_vert = nn.Sequential(Linear(n_hidden * 3 * 2, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))

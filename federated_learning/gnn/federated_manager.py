@@ -5,13 +5,12 @@ import utils
 import configs.configs as configs
 from inference import metrics
 import inference as flin
-from relbanks_saving_analysis.relevant_banks import get_relevant_banks
+from data.relevant_banks import get_relevant_banks
 from .communication import GNNCommunicationMixin
 from .manager_mixin import GNNMixinManager
 from training.utils import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
-
 
 from models.gnn import add_arange_ids, batching_masker, get_loaders
 from data.get_indices_type_data import get_indices_bdt
@@ -23,116 +22,170 @@ from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RG
 import torch.nn.functional as F
 import torch
 
+from .vertical import setup, forward, training_utils
 
-# one could also have it such that manager holds all labels,
-# individual calculates their own network, or fedavg or something like that,
-# but rather then "splitting" or "combining" networks, banks just do caculations for themself
-# though there could be some weight sharing or similar as there is in fedavg
-
-
-# in the case of this, one still need banks, that doesn't have any laundring values, like regardless of whether
-# they are in fr or sr subset, they are still needed, because in case they hold
-# info or work as a link between other banks, they are needed
-# so potentially every single bank is need, and needs to send data, else something might get lost
-# because if a bank is missing, then other banks wont have the ability to send and receive data from it
 
 logger = logging.getLogger(__name__)
 
-# approach sharing embeddings between banks
 
 class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
-    """Vertical Federated Learning Manager."""
+    """Vertical Federated Learning Manager.
+
+    Coordinates training across parties using embedding exchange rather than
+    weight aggregation. All parties share a single model and exchange
+    embeddings for cross-bank transactions.
+    """
+
+    def cal_global_sats(self):
+        
+        # Calculate statistics for normalization
+        # might need to create a "global" of these, like where one take the average of the averages
+        cols = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+        self.data['means_tr'] = self.data['train_data'][cols].apply(np.mean)
+        self.data['std_tr'] = self.data['train_data'][cols].apply(np.std)
+        self.data['means_eval'] = self.data['eval_data'][cols].apply(np.mean)
+        self.data['std_eval'] = self.data['eval_data'][cols].apply(np.std)
+
+
+    def get_relevant_banks_vert(self):
+
+        # Get banks for first round (train) and second round (eval only)
+        # not sure if this part here is actually "necessary"
+        # the part about only looping over banks in the first round, but in the second
+        # round other banks can be considered to. I think it is needed and that I need to
+        # remember to account for this
+        fr_banks = set(self.data['train_data'][['From Bank', 'To Bank']].stack())
+        sr_banks = set(self.data['eval_data'][['From Bank', 'To Bank']].stack())
+        sr_banks = list(sr_banks - fr_banks)
+        fr_banks = list(fr_banks)
+
+        return fr_banks, sr_banks
+
+    def set_manager_data(self, reg_df, mode):
+
+        train = reg_df['train_data']['x']
+        vali = reg_df['vali_data']['x']
+        test = reg_df['test_data']['x']
+        train_vali = pd.concat([train, vali])
+
+        if mode == 'tuning':
+            self.data = {'train_data': train, 'eval_data': train_vali}
+        #elif mode == 'training':
+        else:
+            self.data = {'train_data': train_vali, 'eval_data': pd.concat([train_vali, test])}
+
+        self.indices = {'train': self.data['train_data'].index, 'eval': self.data['eval_data'].index[self.data['train_data'].shape[0]:]}
+
+    def add_parties_prep_data(self, mode, df, scaler_encoders):
+
+        self.set_manager_data(df['regular_data'], mode)
+        self.cal_global_sats()
+
+        fr_banks, sr_banks = self.get_relevant_banks_vert()
+        utils.add_banks_to_manager(self.args, fr_banks, self, df, scaler_encoders)
+        utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
+
+        # might still be able to optimize on the prep of banks with limited data, like share
+        # the mean/std of values etc.
+        self.set_mode(mode)
+        for bank_id, party in self.sr_parties.items():
+            party.prep_data()
+
+        self.setup_vertical(batching=self.args['data_parser'].batching)
+
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
+        """Setup parties for vertical FL.
 
-        self.label_data = laundering_values
-        
-        fr_banks = set(pd.concat([
-            df['regular_data']['train_data']['x'][['From Bank', 'To Bank']].stack(),
-            df['regular_data']['vali_data']['x'][['From Bank', 'To Bank']].stack(),
-            df['regular_data']['test_data']['x'][['From Bank', 'To Bank']].stack()]))
-        
-        fr_banks = list(fr_banks)
-        sr_banks = []
-
-        self.fl_fr_banks = []
-        self.fl_sr_banks = []
-
-        for bank in fr_banks:
-            bank_indices = get_indices_bdt(df, bank=bank)
-            if len(bank_indices['train_indices']) > 1:
-                self.fl_fr_banks.append(bank)
-            else:
-                self.fl_sr_banks.append(bank)
-
-        fr_banks = self.fl_fr_banks
-        #len(fr_banks)
-        #len(self.fl_fr_banks)
-        #5705
-
-        #self.full_fl_fr_sr_banks = self.fl_fr_banks + self.fl_sr_banks
-
-        #banks_to_remove = []
-        #for bank in fr_banks:
-            #if len(np.where(df['regular_data']['train_data']['x'][['From Bank', 'To Bank']].stack() == bank)[0]) < 2:
-                #banks_to_remove.append(bank)
-
-        #fr_banks, sr_banks = get_relevant_banks(parsers)
-        #if parsers['data_parser'].testing:
-            #fr_banks = fr_banks[0:5]
-            #sr_banks = sr_banks[0:2]
-
-        #len(np.where(df['regular_data']['train_data']['x'][['From Bank', 'To Bank']].stack() == 1168)[0])
-
-        #np.where(df['regular_data']['train_data']['x']['From Bank'] == 1168)
-        #np.where(df['regular_data']['train_data']['x']['To Bank'] == 1168)
-        #fr_banks = [71]
-        #[idx for idx, value in enumerate(fr_banks) if value == 1168]
-        #fr_banks[825:835]
-        #bank = bank_id = 1170
-
-        # Add and tune fr_banks
-        utils.add_banks_to_manager(parsers, fr_banks, self, df, scaler_encoders)
+        Args:
+            df: DataFrame with graph and regular data
+            parsers: Parser dict with data_parser, gnn_parser, fl_parser
+            scaler_encoders: Scaler/encoder objects for data preprocessing
+            laundering_values: Laundering values DataFrame for evaluation
+        """
+        if not self.args['data_parser'].ibm_hp:
+            self.add_parties_prep_data('tuning', df, scaler_encoders)
+            #self.label_data = laundering_values
+            
         tuned_hp, _ = self.tuning(laundering_values)
 
-        # Add sr_banks
-        if self.args['data_parser'].train_for_final:
-            sr_banks = []
-        utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders)
+        self.add_parties_prep_data('training', df, scaler_encoders)
 
         return tuned_hp
-        
+    
     def tuning(self, laundering_values):
 
         # --------------------------------
 
-        if self.args['data_parser'].ibm_hp:
-            return ibm_gnn, None
+        return ibm_gnn, None
 
-        self.set_mode('tuning')
+        
 
-        for bank_id, party in self.parties.items():
-            party.prep_data()
+        #if self.args['data_parser'].ibm_hp:
+        #    return ibm_gnn, None
+        #self.set_mode('tuning')
+        #for bank_id, party in self.parties.items():
+        #    party.prep_data()
+        #return 0 #self._gnn_tuning(laundering_values)
 
-        return self._gnn_tuning(laundering_values)
+    def setup_vertical(self, batching=True):
+        """Set up vertical FL structures (intersects, mappings, batches).
+
+        Args:
+            batching: Whether to use batching (True) or process all data at once (False)
+        """
+        setup.setup_vertical(self, batching=batching)
+
+    def setup_model(self, hyperparameters, laundering_values):
+        """Initialize the shared model and optimizer.
+
+        Args:
+            hyperparameters: Model hyperparameters dict
+            laundering_values: Laundering values for evaluation
+        """
+        self.args['fl_parser'].model = 'GINe_vert'
+        #if hyperparameters is None:
+        #    hyperparameters = self.tuning(laundering_values)[0]
+
+        # Initialize model on first party and share with all
+        self.init_models(hyperparams=hyperparameters, bank_id=0)
+        for bank_id, party in self.sr_parties.items():
+            if bank_id == 0:
+                continue
+            party.model = self.parties[0].model
+        self.model = self.parties[0].model
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.optimizer = torch.optim.Adam(
+            self.model.gnn.parameters(),
+            lr=hyperparameters.get('learning_rate')
+        )
+        self.loss_fn = torch.nn.CrossEntropyLoss(
+            weight=torch.FloatTensor([
+                hyperparameters.get('w_ce1'),
+                hyperparameters.get('w_ce2')
+            ]).to(device)
+        )
+
+        return hyperparameters
+
+    def get_batch_data(self, mode, batch_num=None, batch_banks=None):
+        """Get batch data for a given mode and batch."""
+        return forward.get_batch_data(self, mode, batch_num, batch_banks)
+
+    def forward_pass(self, mode, batch_num, batch_banks, batch_data):
+        """Execute forward pass with embedding exchange."""
+        return forward.forward_pass(self, mode, batch_num, batch_banks, batch_data)
     
-    def train(self, hyperparameters, laundering_values, df, seeds = 1):
+    def train(self, hyperparameters, laundering_values, seeds = 4):
 
-        logger.info("Staring training on FLvert")
-
-        self.data = df
-
-        # ------------------
         self.set_mode('training')
         results_by_seed = {}
-        bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
+        #best_f1 = -1; best_model = None
 
         logger.info("="*80)
-        logger.info("Starting training with %d seeds for %s", seeds, bank_str)
+        logger.info("Starting training with %d seeds for federated learning")
         logger.info("="*80)
-
-        for bank_id, party in self.parties.items():
-            party.prep_data()
 
         for seed in range(seeds):
             seed_value = seed + 1
@@ -141,227 +194,114 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             logger.info("-"*80)
             utils.set_seed(seed_value)
 
-            results_by_seed[seed_value] = self._train(hyperparameters)
+            results_by_seed[seed_value] = self._train(hyperparameters, copy.deepcopy(laundering_values))
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
-                       seed_value,
-                       results_by_seed[seed_value]['metrics']['f1'],
-                       results_by_seed[seed_value]['metrics']['roc_auc'],
-                       results_by_seed[seed_value]['metrics']['pr_auc'])
+            seed_value,
+            results_by_seed[seed_value]['metrics']['f1'],
+            results_by_seed[seed_value]['metrics']['roc_auc'],
+            results_by_seed[seed_value]['metrics']['pr_auc'])
 
         logger.info("\n" + "="*80)
         logger.info("All seeds completed")
         logger.info("="*80)
-        
+
         return results_by_seed
     
-    
-    def _train(self, hyperparameters):
+    def _train(self, hyperparameters, laundering_values):
+        self.setup_model(hyperparameters, laundering_values)
+        return self.train_vertical(laundering_values, batching = self.args['data_parser'].batching)
+
+    def train_vertical(self, laundering_values, epochs=None, batching=True):
+        """Train the vertical FL model.
+
+        Args:
+            epochs: Number of training epochs (uses config default if None)
+            batching: Whether to use batching
+
+        Returns:
+            Dict with best model state and metrics
+        """
+        if epochs is None:
+            epochs = 2 if self.args['data_parser'].testing else configs.epochs
 
         best_f1 = -1
-    
-        self.init_models(hyperparams=hyperparameters, bank_id=0)
-        for bank_id, party in self.parties.items():
-            if bank_id == 0:
-                continue
-            party.model = self.parties[0].model
+        best_model_state = None
 
-        self.model = self.parties[0].model
-
-        # training
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.optimizer = torch.optim.Adam(self.model.gnn.parameters(), lr=hyperparameters.get('learning_rate'))
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparameters.get('w_ce1'), hyperparameters.get('w_ce2')]).to(device)) 
-        epochs = 5 if self.args['data_parser'].testing else configs.epochs
+        # Pre-generate batch data for non-batching mode
+        if not batching:
+            batch_data_train = self.get_batch_data('train')
+            batch_data_eval = self.get_batch_data('eval')
 
         for epoch in range(epochs):
 
+            # Training phase
             self.model.gnn.train()
-            self.optimizer.zero_grad()
-            self.embeddings_indices = {}
+            train_loss = 0
+            batch_iter = range(self.ctx['train']['num_batches']) if batching else [None]
+            all_preds, all_labels = [], []
 
-            for bank_id, party in self.parties.items():
-                
-                party.current_embeddings = party.model.gnn.emed_features(party.procs_data['train_data']['df'].x,
-                                                                    party.procs_data['train_data']['df'].edge_attr)
-                
-                party.current_embeddings['nodes'] = torch.where(torch.isnan(party.current_embeddings['nodes']), 0, party.current_embeddings['nodes'])
-                party.current_embeddings['edges'] = torch.where(torch.isnan(party.current_embeddings['edges']), 0, party.current_embeddings['edges'])
-
-                for layer_idx in range(party.model.gnn.num_gnn_layers):
-                    party.current_embeddings = party.model.gnn.apply_gnn_layer(party.current_embeddings['nodes'],
-                                                                    party.current_embeddings['edges'],
-                                                                    party.procs_data['train_data']['df'].edge_index,
-                                                                    layer_idx)
-                
-                
-                party.current_embeddings = party.model.gnn.prep_nodes_edges(party.current_embeddings['nodes'],
-                                                                party.current_embeddings['edges'],
-                                                                party.data['train_data']['df'].edge_index)
-                
-                            
-                self.embeddings_indices[bank_id] = dict(zip(party.indices['train_indices'], party.current_embeddings))
-                
-            
-            #df_preds = pd.DataFrame(data = {'indices': [], 'true_y': [], 'preds': []})
-            preds, true_y = [], []
-            for index, row in self.data['regular_data']['train_data']['x'].iterrows():
-                if index == 100000:
-                    break
-                #if np.isin([0,2,4], [int(row['From Bank'])]).any() and np.isin([0,2,4], [int(row['To Bank'])]).any():
-                if int(row['From Bank']) == int(row['To Bank']):
-                    embed = torch.concat([self.embeddings_indices[int(row['From Bank'])][index], 
-                                    torch.zeros(self.embeddings_indices[int(row['From Bank'])][index].shape)])
+            for batch_num in batch_iter:
+                if batching:
+                    batch_banks = self.ctx['train'][batch_num]['batch_parties']
+                    batch_data = self.get_batch_data('train', batch_num, batch_banks)
                 else:
-                    embed = torch.concat(
-                        [self.embeddings_indices[int(row['From Bank'])][index],
-                        self.embeddings_indices[int(row['To Bank'])][index]]
-                    )
-                logits = self.model.gnn.mlp_vert(embed)
-                preds.append(logits)
-                true_y.append(int(row['Is Laundering']))
+                    batch_banks = self.ctx['train'][None]['batch_parties']
+                    batch_data = batch_data_train
 
-            preds_tensor = torch.stack(preds)
-            true_y_tensor = torch.tensor(true_y, dtype=torch.long)
-            loss = self.loss_fn(preds_tensor, true_y_tensor)
-            loss.backward()
-            self.optimizer.step()
+                self.optimizer.zero_grad()
+                preds, labels = self.forward_pass('train', batch_num, batch_banks, batch_data)
+                all_preds.append(preds)
+                all_labels.append(labels)
 
+                loss = self.loss_fn(preds, labels)
+                loss.backward()
+                self.optimizer.step()
+                train_loss += loss.item()
 
-            # eval
-            self.embeddings_indices = {}
-            for bank_id, party in self.parties.items():
+            training_utils.log_train_performance(all_labels, all_preds, train_loss, epoch, epochs)
 
-                party.current_embeddings = party.model.gnn.emed_features(party.procs_data['eval_data']['df'].x,
-                                                                    party.procs_data['eval_data']['df'].edge_attr)
-                
-                party.current_embeddings['nodes'] = torch.where(torch.isnan(party.current_embeddings['nodes']), 0, party.current_embeddings['nodes'])
-                party.current_embeddings['edges'] = torch.where(torch.isnan(party.current_embeddings['edges']), 0, party.current_embeddings['edges'])
-                
-                for layer_idx in range(party.model.gnn.num_gnn_layers):
-                    party.current_embeddings = party.model.gnn.apply_gnn_layer(party.current_embeddings['nodes'],
-                                                                    party.current_embeddings['edges'],
-                                                                    party.procs_data['eval_data']['df'].edge_index,
-                                                                    layer_idx)
-                
-                party.current_embeddings = party.model.gnn.prep_nodes_edges(party.current_embeddings['nodes'],
-                                                                party.current_embeddings['edges'],
-                                                                party.procs_data['eval_data']['df'].edge_index)
-                
-                        
-                self.embeddings_indices[bank_id] = dict(zip(party.indices['test_indices'], party.current_embeddings[party.procs_data['eval_data']['pred_indices']]))
+            # Evaluation phase
+            self.model.gnn.eval()
+            all_preds_eval, all_labels_eval = [], []
+            batch_iter = range(self.ctx['eval']['num_batches']) if batching else [None]
 
-            df_preds = []
-            for index, row in self.data['regular_data']['test_data']['x'].iterrows():
-                if index == 100000:
-                    break
-                #if np.isin([0,2,4], [int(row['From Bank'])]).any() and np.isin([0,2,4], [int(row['To Bank'])]).any():
-                if int(row['From Bank']) == int(row['To Bank']):
-                    embed = torch.concat([self.embeddings_indices[int(row['From Bank'])][index], 
-                                    torch.zeros(self.embeddings_indices[int(row['From Bank'])][index].shape)])
-                else:
-                    embed = torch.concat(
-                        [self.embeddings_indices[int(row['From Bank'])][index],
-                        self.embeddings_indices[int(row['To Bank'])][index]]
-                    )
+            with torch.no_grad():
+                for batch_num in batch_iter:
+                    if batching:
+                        batch_banks = self.ctx['eval'][batch_num]['batch_parties']
+                        batch_data = self.get_batch_data('eval', batch_num, batch_banks)
+                    else:
+                        batch_banks = self.ctx['eval'][None]['batch_parties']
+                        batch_data = batch_data_eval
 
-                    logits = self.model.gnn.mlp_vert(embed)
+                    preds, labels = self.forward_pass('eval', batch_num, batch_banks, batch_data)
+                    all_preds_eval.append(preds)
+                    all_labels_eval.append(labels)
 
-                    df_preds.append(
-                                    {'indices': index,
-                                    'true_y': int(row['Is Laundering']),
-                                    'pred_probabilities': logits.softmax(dim=0)[1].item(),
-                                    'pred_label': logits.argmax(dim=-1).item()}
-                                    )
-                    
-            df_preds = pd.DataFrame(df_preds)
-            eval_f1 = f1_score(df_preds['true_y'], df_preds['pred_label'])
+            labels_np, preds_probs, preds_binary = training_utils.prep_eval_preds_labels(
+                all_labels_eval, all_preds_eval
+            )
+            f1_eval = f1_score(labels_np, preds_binary)
+            logger.info(f'Test F1: {f1_eval}')
 
-            if eval_f1 > best_f1:
-                best_df_preds = copy.deepcopy(df_preds)
-                best_model = copy.deepcopy(self.model.gnn.state_dict())
-                best_f1 = eval_f1
-            
-        perform_metrics = metrics(y_true = best_df_preds['true_y'], y_pred_probabilities = best_df_preds['pred_probabilities'])
+            best_f1, best_model_state = training_utils.update_best_model(
+                f1_eval, best_f1, best_model_state,
+                labels_np, preds_probs, self.model, epoch
+            )
 
-        return {'metrics': perform_metrics, 
-                'laundering_values': best_df_preds, 
-                'weights': best_model}
+        final_metrics = training_utils.compute_final_metrics(best_model_state)
 
+        laundering_values['true_y'] = best_model_state['best_ground_truths']
+        laundering_values['pred_probabilities'] = best_model_state['best_pred_probabilities']
+        laundering_values['pred_label'] = best_model_state['best_pred_binary']
+        best_model = best_model_state['best_model']
 
-        
-
-
-
-
-        
-            
-
-
-
-            
-            
-            
-
-        
-
-
-
-
-
-
-
-
-    
-    
-    def fl_training(self):
-
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        # get intersects of banks
-
-        self = manager
-
-        for bank_id, party in self.parties.items():
-            party.intersects = {}
-
-        # might be possible to simple just use this 
-        # np.where(np.isin(self.parties[0].indices['train_indices'], self.parties[2].indices['train_indices']))
-
-        for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
-            for i in list(self.parties)[idx:]:
-                tmp_intersects = np.intersect1d(party.indices['train_indices'], self.parties[i].indices['train_indices'])
-                party.intersects[i] = tmp_intersects
-                self.parties[i].intersects[bank_id] = tmp_intersects
-
-        #test1 = np.where(np.isin(self.parties[0].indices['train_indices'], self.parties[0].intersects[2]))[0]
-        #test2 = np.isin(self.parties[0].indices['train_indices'], self.parties[0].intersects[2])
-
-
-
-
-
-
-
-
-
-
-
-
+        return {
+            'weights': best_model,
+            'metrics': final_metrics,
+            'laundering_values': laundering_values
+        }
 
 
 
