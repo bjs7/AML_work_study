@@ -26,6 +26,7 @@ utils.set_seed(parsers['data_parser'].seed, True)
 parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].train_for_final = True
+parsers['data_parser'].add_ids = False
 
 #parsers['fl_parser'].fl_algo = 'FedVert'
 parsers['fl_parser'].fl_algo = 'full_info'
@@ -54,11 +55,26 @@ laundering_values = laundering_values_vali
 
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
-
 hyperparameters = tuned_hp
 
 self = manager
 #laundering_values = laundering_values_vali
 laundering_values = laundering_values_test
+
+self.args['data_parser'].testing_seeds = 2
+
+results = self.train(tuned_hp, laundering_values_test)
+
+
+self.edge_feat_start
+self.parties[None].edge_feat_start
+
+self.parties[None].data['train_data']['df'].edge_attr
+self.parties[None].procs_data['train_data']['df'].edge_attr
+
+import torch
+self.parties[None].data['train_data']['df'].edge_attr[:,0] == self.parties[None].procs_data['train_data']['df'].edge_attr[:,0]
+torch.all(self.parties[None].data['train_data']['df'].edge_attr[:,0] == self.parties[None].procs_data['train_data']['df'].edge_attr[:,0])
+self.parties[None].procs_data['train_data']['df'].edge_attr[:,0]
 
 

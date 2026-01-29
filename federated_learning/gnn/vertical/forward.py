@@ -46,13 +46,19 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
         true_y_tensor: Ground truth labels tensor
     """
     manager.embeddings_indices = {}
+    device = manager.device
 
-    # Get the embeddings of nodes and edges
+    # Get the embeddings of nodes and edges (exclude ID column with [:,1:])
     for bank_id in batch_banks:
         party, party_data = batch_data[bank_id]
 
+        # Move graph data to device
+        party_data.x = party_data.x.to(device)
+        party_data.edge_attr = party_data.edge_attr.to(device)
+        party_data.edge_index = party_data.edge_index.to(device)
+
         party.received_embeddings = {}
-        party.current_embeddings = party.model.gnn.emed_features(party_data.x, party_data.edge_attr)
+        party.current_embeddings = party.model.gnn.emed_features(party_data.x, party_data.edge_attr[:,1:])
 
     # Apply GNN layers with embedding exchange
     for layer_idx in range(party.model.gnn.num_gnn_layers):

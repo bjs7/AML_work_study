@@ -21,9 +21,9 @@ class RegressionMixinManager:
 # FL Algos ----------------------------------
 # -------------------------------------------
 
-# FedVert -------------------------------------------------------
+# FedGraph -------------------------------------------------------
 
-class FedVert_party(Party):
+class FedGraph_party(Party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -49,7 +49,7 @@ class FedAvg_manager(Manager):
         return 0
     
 
-class FedVert_manager(Manager):
+class FedGraph_manager(Manager):
 
     def get_adjacency_matrix(self):
         return 0
@@ -121,15 +121,15 @@ class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
         return FedAvg_GNN_Party(**kwargs)
     
 
-@regi_algo_party("FedVert_gnn")
-class FedVert_GNN_Party(GNNMixinPartyVert, FedVert_party):
+@regi_algo_party("FedGraph_gnn")
+class FedGraph_GNN_Party(GNNMixinPartyVert, FedGraph_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @staticmethod
     def return_class(**kwargs):
-        return FedVert_GNN_Party(**kwargs)
+        return FedGraph_GNN_Party(**kwargs)
 
 
 # Manager --------------------------
@@ -160,12 +160,12 @@ class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager): #FLGNNManager #GNNMixinM
 
 
 
-@regi_algo_manager("FedVert_gnn")
-class FedVert_GNN_Manager(FLGNNManagerVertical, FedVert_manager): #FLGNNManager #GNNMixinManager
+@regi_algo_manager("FedGraph_gnn")
+class FedGraph_GNN_Manager(FLGNNManagerVertical, FedGraph_manager): #FLGNNManager #GNNMixinManager
 
     @staticmethod
     def return_class(args):
-        return FedVert_GNN_Manager(args)
+        return FedGraph_GNN_Manager(args)
 
 
 

@@ -12,12 +12,12 @@ from federated_learning.registry import register_gnn
 # ALSO NEED TO CHANGE THE ELIF CONDITION TO MODEL.TYPE
 # Or whether another type of data (holder) for the graph data is needed
 
-@register_gnn('GINe_vert')
+@register_gnn('GINe')
 class GINe_vert(torch.nn.Module):
 
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
                  n_hidden=100, edge_updates=False, residual=True,
-                 edge_dim=None, dropout=0.0, final_dropout=0.5, batching=True):
+                 edge_dim=None, dropout=0.0, final_dropout=0.5, batching=False):
         super().__init__()
         self.n_hidden = n_hidden
         self.num_gnn_layers = num_gnn_layers
@@ -35,10 +35,10 @@ class GINe_vert(torch.nn.Module):
             conv = GINEConv(nn.Sequential(nn.Linear(self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden)), edge_dim=self.n_hidden)
             if self.edge_updates: self.emlps.append(nn.Sequential(nn.Linear(3 * self.n_hidden, self.n_hidden), nn.ReLU(), nn.Linear(self.n_hidden, self.n_hidden),))
             self.convs.append(conv)
-            #if batching:
-            #    self.batch_norms.append(BatchNorm(n_hidden))
-            #else:
-            self.batch_norms.append(LayerNorm(n_hidden))
+            if batching:
+                self.batch_norms.append(BatchNorm(n_hidden))
+            else:
+                self.batch_norms.append(LayerNorm(n_hidden))
 
         self.mlp = nn.Sequential(Linear(n_hidden * 3, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))
         self.mlp_vert = nn.Sequential(Linear(n_hidden * 3 * 2, 50), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(50, 25), nn.ReLU(), nn.Dropout(self.final_dropout), Linear(25, n_classes))
@@ -63,7 +63,7 @@ class GINe_vert(torch.nn.Module):
     def final_layer(self, embeddings):
         return self.mlp(embeddings)
     
-    def forward(self, nodes, edges, edge_index):
+    def forward(self, nodes, edge_index, edges):
 
         embeddings = self.emed_features(nodes, edges)
         for i in range(self.num_gnn_layers):
@@ -73,14 +73,14 @@ class GINe_vert(torch.nn.Module):
                 edge_index,
                 i
             )
-        embeddings = self.prep_nodes_edges(nodes, edges, edge_index)
+        embeddings = self.prep_nodes_edges(embeddings['nodes'], embeddings['edges'], edge_index)
         output = self.final_layer(embeddings)
 
         return output
 
 
 
-@register_gnn('GINe')
+@register_gnn('GINe_2')
 class GINe(torch.nn.Module):
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
                  n_hidden=100, edge_updates=False, residual=True,

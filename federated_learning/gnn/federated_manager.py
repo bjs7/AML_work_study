@@ -85,14 +85,9 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         utils.add_banks_to_manager(self.args, fr_banks, self, df, scaler_encoders)
         utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
 
-        # might still be able to optimize on the prep of banks with limited data, like share
-        # the mean/std of values etc.
         self.set_mode(mode)
-        for bank_id, party in self.sr_parties.items():
+        for bank_id, party in self.sr_parties.items(): #TODO Needs to only be self.parties when tuning?
             party.prep_data()
-
-        self.setup_vertical(batching=self.args['data_parser'].batching)
-
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup parties for vertical FL.
@@ -103,6 +98,11 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             scaler_encoders: Scaler/encoder objects for data preprocessing
             laundering_values: Laundering values DataFrame for evaluation
         """
+
+        add_arange_ids([df['graph_data']['train_data']['df'], 
+                        df['graph_data']['vali_data']['df'],
+                        df['graph_data']['test_data']['df']])
+
         if not self.args['data_parser'].ibm_hp:
             self.add_parties_prep_data('tuning', df, scaler_encoders)
             #self.label_data = laundering_values
@@ -143,19 +143,24 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             hyperparameters: Model hyperparameters dict
             laundering_values: Laundering values for evaluation
         """
-        self.args['fl_parser'].model = 'GINe_vert'
+        #self.args['fl_parser'].model = 'GINe_vert'
         #if hyperparameters is None:
         #    hyperparameters = self.tuning(laundering_values)[0]
 
+        # Set device
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
         # Initialize model on first party and share with all
         self.init_models(hyperparams=hyperparameters, bank_id=0)
-        for bank_id, party in self.sr_parties.items():
+        for bank_id, party in self.sr_parties.items(): #TODO also need to adjust sr_parties/parties when tuning?
             if bank_id == 0:
                 continue
             party.model = self.parties[0].model
         self.model = self.parties[0].model
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # Move model to device (all parties share this same model reference)
+        self.model.gnn.to(self.device)
+
         self.optimizer = torch.optim.Adam(
             self.model.gnn.parameters(),
             lr=hyperparameters.get('learning_rate')
@@ -164,7 +169,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             weight=torch.FloatTensor([
                 hyperparameters.get('w_ce1'),
                 hyperparameters.get('w_ce2')
-            ]).to(device)
+            ]).to(self.device)
         )
 
         return hyperparameters
@@ -177,14 +182,15 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         """Execute forward pass with embedding exchange."""
         return forward.forward_pass(self, mode, batch_num, batch_banks, batch_data)
     
-    def train(self, hyperparameters, laundering_values, seeds = 4):
+    def train(self, hyperparameters, laundering_values):
 
         self.set_mode('training')
+        seeds = self.args['data_parser'].testing_seeds
         results_by_seed = {}
         #best_f1 = -1; best_model = None
 
         logger.info("="*80)
-        logger.info("Starting training with %d seeds for federated learning")
+        logger.info("Starting training with %d seeds for federated learning", seeds)
         logger.info("="*80)
 
         for seed in range(seeds):
@@ -209,6 +215,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         return results_by_seed
     
     def _train(self, hyperparameters, laundering_values):
+        self.setup_vertical(batching=self.args['data_parser'].batching)
         self.setup_model(hyperparameters, laundering_values)
         return self.train_vertical(laundering_values, batching = self.args['data_parser'].batching)
 

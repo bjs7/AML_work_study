@@ -34,11 +34,6 @@ def main():
     # Laudering values -------
     laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
 
-    if parsers['gnn_parser'].add_ids:
-        add_arange_ids([df['graph_data']['train_data']['df'], 
-                        df['graph_data']['vali_data']['df'],
-                        df['graph_data']['test_data']['df']])
-
     # Setup manager and parties ----------------------------------------------------------------------------------------
 
     # Manager

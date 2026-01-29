@@ -30,6 +30,7 @@ class Party(BaseFL):
         self.model = None
         self.tr_configs = {}
         self.is_sr = is_sr  # Flag to indicate if this is an sr_party
+        self.edge_feat_start = self.manager.edge_feat_start
 
         if self.manager:
             self.manager.add_party(self, is_sr=is_sr)
@@ -78,6 +79,7 @@ class Manager(BaseFL, ABC):
         self.sr_parties: Dict[int, Party] = {}  # Parties with data only in validation/test (e.g., sr_banks)
         self.parties_weights: Dict[int, Any] = {}
         self.global_weights = None
+        self.edge_feat_start = 1 if self.args['fl_parser'].fl_algo == 'FedGraph' else 0
 
     @classmethod
     def get_algo_class(cls, parsers):

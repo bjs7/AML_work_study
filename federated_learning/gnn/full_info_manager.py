@@ -12,10 +12,10 @@ class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
         self._party = None  # Single party reference
         self._train_for_final = self.args['data_parser'].train_for_final
         
-    def add_party(self, party):
+    def add_party(self, party, is_sr=False):
         if self._party is not None:
             raise ValueError("FullInfoGNNManager only supports single party")
-        super().add_party(party)
+        super().add_party(party, is_sr=is_sr)
         self._party = party
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):

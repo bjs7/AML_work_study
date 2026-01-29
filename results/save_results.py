@@ -22,7 +22,8 @@ def save_results(results, hyperparams, manager):
     save_direc = os.path.join(config.save_direc_training, str_testing,
                             manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
                             f'split_{config.split_perc[0]}_{config.split_perc[1]}',
-                            manager.args['fl_parser'].fl_algo)
+                            manager.args['fl_parser'].fl_algo,
+                            manager.args['fl_parser'].aggregation)
 
     str_folder = manager.args['fl_parser'].model
     model_tuning_configs = utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
@@ -39,7 +40,7 @@ def save_results(results, hyperparams, manager):
         x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
 
     # add data flags to folder name
-    data_flags = ['batching', 'ibm_fe', 'ibm_hp', 'train_for_final', 'add_ids']
+    data_flags = ['batching', 'ibm_fe', 'ibm_hp', 'train_for_final', 'use_global_stats'] #'add_ids', 
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 

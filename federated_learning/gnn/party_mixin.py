@@ -23,6 +23,7 @@ class GNNMixinParty:
         self._ibm_fe = self.manager.args['data_parser'].ibm_fe
         self._train_for_final = self.manager.args['data_parser'].train_for_final
         self._batching = self.manager.args['data_parser'].batching
+        self._use_global_stats = self.manager.args['data_parser'].use_global_stats
 
     def _get_batch_configs(self):
 
@@ -46,37 +47,34 @@ class GNNMixinParty:
 
         if self._ibm_fe:
 
-            if train_data['df'] is not None:
+            data_configs = [(train_data, 'means_tr', 'std_tr'), (eval_data, 'means_eval', 'std_eval')]
+            results = []
+            for data_dict, means_key, std_key in data_configs:
+                if data_dict['df'] is None:
+                    results.append(data_dict)
+                    continue
 
-                train_data = copy.deepcopy(train_data)
-                if train_data['df'].x.shape[0] > 1:
-                    z_norm(train_data['df'].x)
+                data_dict = copy.deepcopy(data_dict)
+                df = data_dict['df']
+                if df.x.shape[0] > 1:
+                    z_norm(df.x)
                 else:
-                    train_data['df'].x = torch.tensor([[0.]])
+                    df.x = torch.tensor([[0.]])
 
-                if train_data['df'].edge_attr.shape[0] > 1:
-                    train_data['df'].edge_attr[:,1:] = z_norm(train_data['df'].edge_attr[:,1:]) #TODO: Adjust to given scenario
+                # Edge features: use global or local statistics for standardization
+                start = self.edge_feat_start
+                if self._use_global_stats or df.edge_attr.shape[0] <= 1:
+                    # Use global statistics from manager
+                    df_means = self.manager.data[means_key]
+                    df_std = self.manager.data[std_key]
+                    for idx, col in enumerate(['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format'], start):
+                        df.edge_attr[:,idx] = (df.edge_attr[:,idx] - df_means[col]) / df_std[col]
                 else:
-                    df_means_tr = self.manager.data['means_tr']
-                    df_std_tr = self.manager.data['std_tr']
-                    for idx, col in enumerate(['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format'], 1):
-                        train_data['df'].edge_attr[:,idx] = (train_data['df'].edge_attr[:,idx] - df_means_tr[col]) / df_std_tr[col]
-
-            if eval_data['df'] is not None:
-                eval_data = copy.deepcopy(eval_data)
-                if eval_data['df'].x.shape[0] > 1:
-                    z_norm(eval_data['df'].x)
-                else:
-                    eval_data['df'].x = torch.tensor([[0.]])
-
-                if eval_data['df'].edge_attr.shape[0] > 1:
-                    eval_data['df'].edge_attr[:,1:] = z_norm(eval_data['df'].edge_attr[:,1:])
-                else:
-                    df_means_eval = self.manager.data['means_eval']
-                    df_std_eval = self.manager.data['std_eval']
-                    for idx, col in enumerate(['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format'], 1):
-                        eval_data['df'].edge_attr[:,idx] = (eval_data['df'].edge_attr[:,idx] - df_means_eval[col]) / df_std_eval[col]
-
+                    # Use local statistics (z_norm)
+                    df.edge_attr[:,start:] = z_norm(df.edge_attr[:,start:])
+                results.append(data_dict)
+            train_data, eval_data = results
+            
             return train_data, eval_data
 
         train_data = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
@@ -144,7 +142,7 @@ class GNNMixinParty:
         
         train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices = self._get_loaders()
         laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': eval_indices}), laundering_values], axis=1)
-        epochs = 20 if self.args['data_parser'].testing else configs.epochs
+        epochs = 10 if self.args['data_parser'].testing else configs.epochs
         
         for epoch in range(epochs):
 
@@ -242,4 +240,10 @@ class GNNMixinParty:
         return {'metrics': perform_metrics, 
                 'laundering_values': laundering_values, 
                 'model': best_model}
+
+
+class GNNMixinPartyVert(GNNMixinParty):
+
+    def set_up_parties(self):
+        pass
 

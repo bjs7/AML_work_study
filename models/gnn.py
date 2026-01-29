@@ -42,12 +42,17 @@ class GNN(ABC):
             raise ValueError(f"Unknown algo type: {model_name}")
         gnn_init = GNN_REGISTRY[model_name]
 
+        # FedGraph/FedAvg: parties compute locally with potentially very few observations,
+        # so BatchNorm can fail. Always use LayerNorm for these algorithms.
+        fl_algo = manager.args['fl_parser'].fl_algo
+        use_batchnorm = manager.args['data_parser'].batching and fl_algo not in ('FedGraph', 'FedAvg')
+
         arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('num_gnn_layers'),
                     'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),
                     'residual': False, 'edge_updates': manager.args['gnn_parser'].emlps,
                     'edge_dim': edge_dim, 'dropout': hyperparams.get('dropout'),
-                    'final_dropout': hyperparams.get('final_dropout'), 
-                    'batching': manager.args['data_parser'].batching}
+                    'final_dropout': hyperparams.get('final_dropout'),
+                    'batching': use_batchnorm}
         
         return gnn_init(**arguments)
 
