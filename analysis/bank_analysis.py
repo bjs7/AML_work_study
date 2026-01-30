@@ -1,5 +1,8 @@
 # %% 
 
+import sys
+sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study')
+
 # packages
 import pandas as pd
 from data.raw_data_processing import get_data
@@ -31,17 +34,14 @@ parsers = utils.parser_all()
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
-# need to check that individual saves predictions/laundering values correct
-
 parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
-parsers['data_parser'].train_for_final = True
-
+parsers['data_parser'].train_for_final = False
+parsers['fl_parser'].fl_algo = 'individual'
 
 #parsers['fl_parser'].fl_algo = 'full_info'
 #parsers['data_parser'].scenario = 'individual_banks' if parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
-parsers['fl_parser'].fl_algo = 'individual'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -56,6 +56,46 @@ laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers
 manager = Manager.get_algo_class(parsers)
 self = manager
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
+
+
+# %%
+
+
+
+len(self.parties)
+
+
+len(self.parties)
+
+stats = []
+for bank_id, party in self.parties.items():
+
+    data = party.data['train_data']['df']
+
+    stats.append({
+        'bank_id': bank_id,
+        'n_nodes': data.x.shape[0],
+        'n_edges': data.y.shape[0],
+        'n_fraud': np.sum(data.y.tolist()),
+        'fraud_rate': np.mean(data.y.tolist()) * 100
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # %%

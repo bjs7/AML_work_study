@@ -1,6 +1,8 @@
 # %%
 
 # packages
+import sys
+sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study')
 import pandas as pd
 import utils
 import copy
@@ -169,3 +171,5 @@ df = fe.universal_features_restructure(df)
 df
 
 
+
+# %%
