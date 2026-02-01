@@ -30,6 +30,8 @@ def get_data(df, data_paser, **kwargs):
     else:
         scaler_encoders = None
         edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+        if 'Pattern' in df.columns:
+            edge_features.append('Pattern')
         
     
     df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()

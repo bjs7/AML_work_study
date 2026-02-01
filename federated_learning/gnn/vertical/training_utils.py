@@ -87,3 +87,16 @@ def compute_final_metrics(best_model_state):
         y_true=best_model_state['best_ground_truths'],
         y_pred_probabilities=best_model_state['best_pred_probabilities']
     )
+
+
+def compute_final_metrics_from_preds(labels_np, preds_probs):
+    """Compute final metrics directly from predictions and labels.
+
+    Args:
+        labels_np: Ground truth labels (numpy array)
+        preds_probs: Prediction probabilities (numpy array)
+
+    Returns:
+        Dict of metrics (f1, roc_auc, pr_auc, etc.)
+    """
+    return metrics(y_true=labels_np, y_pred_probabilities=preds_probs)

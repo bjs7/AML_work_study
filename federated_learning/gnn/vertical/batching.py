@@ -17,8 +17,9 @@ warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")
 
 def gen_seed_values(manager, mode, banks_to_sample, df):
     """Generate seed values for neighbor sampling."""
+    mode_parties = manager.get_parties_for_mode(mode)
     for bank_id in banks_to_sample:
-        party = manager.parties[bank_id] if mode == 'train' else manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
 
         mask = (df['From Bank'] == bank_id) | (df['To Bank'] == bank_id)
         party.indexes = np.array(df[mask].index)
@@ -33,9 +34,10 @@ def gen_seed_values(manager, mode, banks_to_sample, df):
 def gen_loaders(manager, mode, banks_to_sample, layer_num):
     """Generate neighbor loaders for each bank."""
     shuffle_arg = True if mode == 'train' else False
+    mode_parties = manager.get_parties_for_mode(mode)
 
     for bank_id in banks_to_sample:
-        party = manager.parties[bank_id] if mode == 'train' else manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
 
         if len(party.sample_nodes) > 0:
             tmp_loader = NeighborLoader(party.procs_data[f'{mode}_data']['df'],
@@ -50,15 +52,16 @@ def gen_loaders(manager, mode, banks_to_sample, layer_num):
 
 def send_sample_nodes(manager, banks_to_sample, mode):
     """Send sampled nodes to other parties that share edges."""
+    mode_parties = manager.get_parties_for_mode(mode)
     banks_to_add = []
     for bank_id in banks_to_sample:
 
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         for inner_bank_id, nodes_ids in party.ctx[mode][None]['nodes_idx'].items():
             if len(np.array(party.matching_values)[np.isin(party.matching_values, nodes_ids)]) > 0:
                 local_nodes_to_send = np.array(party.matching_values)[np.isin(party.matching_values, nodes_ids)]
                 nodes_to_send = [party.ctx[mode][None]['local_to_global'][node] for node in local_nodes_to_send]
-                manager.sr_parties[inner_bank_id].sample_nodes_to_add[party.bank_id] = nodes_to_send
+                mode_parties[inner_bank_id].sample_nodes_to_add[party.bank_id] = nodes_to_send
                 if inner_bank_id not in banks_to_sample and inner_bank_id not in banks_to_add:
                     banks_to_add.append(inner_bank_id)
 
@@ -67,9 +70,10 @@ def send_sample_nodes(manager, banks_to_sample, mode):
 
 def receive_sample_nodes(manager, banks_to_sample, banks_to_add, layer_num, sample_neighbors, mode):
     """Receive sampled nodes from other parties."""
+    mode_parties = manager.get_parties_for_mode(mode)
     for bank_id in (banks_to_sample + banks_to_add):
 
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         party.sample_nodes = []
 
         for inner_bank_id, nodes in party.sample_nodes_to_add.items():
@@ -91,20 +95,21 @@ def receive_sample_nodes(manager, banks_to_sample, banks_to_add, layer_num, samp
 
 def send_receive_final_nodes(manager, banks_to_sample, mode):
     """Exchange final subgraph nodes between parties."""
+    mode_parties = manager.get_parties_for_mode(mode)
     banks_to_add = []
     for bank_id in banks_to_sample:
 
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         for inner_bank_id, nodes_ids in party.ctx[mode][None]['nodes_idx'].items():
             if len(np.array(party.final_subgraph_nodes)[np.isin(party.final_subgraph_nodes, nodes_ids)]) > 0:
                 local_nodes_to_send = np.array(party.final_subgraph_nodes)[np.isin(party.final_subgraph_nodes, nodes_ids)]
                 nodes_to_send = [party.ctx[mode][None]['local_to_global'][node] for node in local_nodes_to_send]
-                manager.sr_parties[inner_bank_id].sample_nodes_to_add[party.bank_id] = nodes_to_send
+                mode_parties[inner_bank_id].sample_nodes_to_add[party.bank_id] = nodes_to_send
                 if inner_bank_id not in banks_to_sample and inner_bank_id not in banks_to_add:
                     banks_to_add.append(inner_bank_id)
 
     for bank_id in banks_to_sample:
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         for inner_bank_id, nodes in party.sample_nodes_to_add.items():
             mapped_nodes = [party.ctx[mode][None]['global_to_local'][node] for node in nodes]
             party.final_subgraph_nodes += mapped_nodes
@@ -113,8 +118,9 @@ def send_receive_final_nodes(manager, banks_to_sample, mode):
 
 def gen_batch_graph(manager, all_nodes, mode, batch_num=0, bank_id=0):
     """Generate batch subgraph for a party, filtering out isolated nodes."""
-    edge_index_orig = manager.sr_parties[bank_id].procs_data[f'{mode}_data']['df'].edge_index
-    edge_attr_orig = manager.sr_parties[bank_id].procs_data[f'{mode}_data']['df'].edge_attr
+    mode_parties = manager.get_parties_for_mode(mode)
+    edge_index_orig = mode_parties[bank_id].procs_data[f'{mode}_data']['df'].edge_index
+    edge_attr_orig = mode_parties[bank_id].procs_data[f'{mode}_data']['df'].edge_attr
 
     # First extract without relabeling to find nodes that actually have edges
     final_edge_index_tmp, _ = subgraph(subset=all_nodes,
@@ -132,25 +138,26 @@ def gen_batch_graph(manager, all_nodes, mode, batch_num=0, bank_id=0):
         relabel_nodes=True)
 
     final_subgraph = GraphData(
-        x=manager.sr_parties[bank_id].procs_data[f'{mode}_data']['df'].x[used_nodes],
+        x=mode_parties[bank_id].procs_data[f'{mode}_data']['df'].x[used_nodes],
         edge_index=final_edge_index,
         edge_attr=final_edge_attr,
     )
 
-    manager.sr_parties[bank_id].ctx[mode][batch_num]['graph_data'] = final_subgraph
+    mode_parties[bank_id].ctx[mode][batch_num]['graph_data'] = final_subgraph
 
 
 def get_batch_intersects(manager, banks_to_sample, mode, batch_num):
     """Calculate intersections for a batch."""
+    mode_parties = manager.get_parties_for_mode(mode)
     for bank_id in banks_to_sample:
 
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         party.ctx[mode][batch_num]['batch_overlaps'] = np.array(party.ctx[mode][batch_num]['graph_data'].edge_attr[:,0])[np.isin(
                                                                     np.array(party.ctx[mode][batch_num]['graph_data'].edge_attr[:,0]),
                                                                     party.ctx[mode][None]['ints_indices'])]
 
     for bank_id in banks_to_sample:
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         for inner_bank_id, idx in party.ctx[mode][None]['ints_indices_by_bank'].items():
             if np.any(np.isin(idx, party.ctx[mode][batch_num]['batch_overlaps'])):
                 party.ctx[mode][batch_num]['intersects'][inner_bank_id] = np.where(np.isin(
@@ -159,19 +166,21 @@ def get_batch_intersects(manager, banks_to_sample, mode, batch_num):
 
 
 def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
-    """Generate all batch data for a mode (train or eval)."""
+
+    print(f'testing generating batching for {mode}')
+
+    """Generate all batch data for a mode (train, vali, or test)."""
     if sample_neighbors is None:
         sample_neighbors = [100, 100]
 
     df_copy = manager.data[f'{mode}_data'][['From Bank', 'To Bank', 'Is Laundering']]
+    mode_parties = manager.get_parties_for_mode(mode)
 
     if mode == 'train':
         df_copy = df_copy.sample(frac=1)
-        parties = manager.parties.values()
         batch_iter = range(0, df_copy.shape[0], batch_size)
-    elif mode == 'eval':
-        parties = manager.sr_parties.values()
-        batch_iter = range(min(manager.indices['eval']), max(manager.indices['eval']), batch_size)
+    else:  # 'vali' or 'test'
+        batch_iter = range(min(manager.indices[mode]), max(manager.indices[mode]), batch_size)
 
     manager.ctx[mode]['num_batches'] = len(batch_iter)
 
@@ -184,7 +193,7 @@ def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
         gen_seed_values(manager, mode, banks_to_sample, manager.ctx[mode][batch_num]['batch_labels'])
 
         # Initialize subgraph storage for each party
-        for party in parties:
+        for party in mode_parties.values():
             party.subgraphs_nodes = defaultdict(list)
 
         for layer_num in range(1, (len(sample_neighbors) + 1)):
@@ -192,7 +201,7 @@ def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
             gen_loaders(manager, mode, banks_to_sample, layer_num)
 
             # Communication between banks
-            for party in parties:
+            for party in mode_parties.values():
                 party.sample_nodes_to_add = defaultdict(list)
 
             banks_to_add = send_sample_nodes(manager, banks_to_sample, mode)
@@ -208,8 +217,8 @@ def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
 
         for bank_id in banks_to_sample:
 
-            gen_batch_graph(manager, manager.sr_parties[bank_id].final_subgraph_nodes, mode, batch_num=batch_num, bank_id=bank_id)
-            if manager.sr_parties[bank_id].ctx[mode][batch_num]['graph_data'].edge_attr.shape[0] > 0:
+            gen_batch_graph(manager, mode_parties[bank_id].final_subgraph_nodes, mode, batch_num=batch_num, bank_id=bank_id)
+            if mode_parties[bank_id].ctx[mode][batch_num]['graph_data'].edge_attr.shape[0] > 0:
                 banks_to_use.append(bank_id)
 
         manager.ctx[mode][batch_num]['batch_parties'] = copy.deepcopy(banks_to_use)

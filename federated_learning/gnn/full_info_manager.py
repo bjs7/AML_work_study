@@ -10,7 +10,6 @@ class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
     def __init__(self, args):
         super().__init__(args)
         self._party = None  # Single party reference
-        self._train_for_final = self.args['data_parser'].train_for_final
         
     def add_party(self, party, is_sr=False):
         if self._party is not None:
@@ -34,8 +33,8 @@ class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
     def _train_party(self, laundering_values, **kwargs):
         return self._party.train(laundering_values)
         
-    def _train_helper(self, hyperparameters, laundering_values):
+    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
         self.init_models(hyperparameters)
-        return self._party.train(laundering_values)
+        return self._party.train(laundering_values_vali, laundering_values_test)
     
 

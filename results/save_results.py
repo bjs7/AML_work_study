@@ -40,7 +40,7 @@ def save_results(results, hyperparams, manager):
         x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
 
     # add data flags to folder name
-    data_flags = ['batching', 'ibm_fe', 'ibm_hp', 'train_for_final', 'use_global_stats'] #'add_ids', 
+    data_flags = ['batching', 'ibm_fe', 'ibm_hp', 'use_global_stats'] #'add_ids',
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 
@@ -192,8 +192,7 @@ def create_experiment_config(manager):
             "ir": manager.args['data_parser'].ir,
             "split": list(config.split_perc),
             "testing": manager.args['data_parser'].testing,
-            "ibm_fe": manager.args['data_parser'].ibm_fe,
-            "train_for_final": manager.args['data_parser'].train_for_final
+            "ibm_fe": manager.args['data_parser'].ibm_fe
         },
         "fl": {
             "fl_algo": manager.args['fl_parser'].fl_algo,

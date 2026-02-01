@@ -16,27 +16,24 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup fr_banks, tune them, then add sr_banks with best hyperparameters."""
-        fr_banks, sr_banks = get_relevant_banks(parsers)
+        #fr_banks, sr_banks = get_relevant_banks(parsers)
+        banks = get_relevant_banks(parsers)
 
         if parsers['data_parser'].testing:
-            fr_banks = fr_banks[0:5]
-            sr_banks = sr_banks[0:2]
-            logger.info("Testing mode: Limited to %d fr_banks and %d sr_banks", len(fr_banks), len(sr_banks))
+            banks = banks[0:5]
+            #sr_banks = sr_banks[0:2]
+            logger.info("Testing mode: Limited to %d banks", len(banks))
         else:
-            logger.info("Production mode: Using %d fr_banks and %d sr_banks", len(fr_banks), len(sr_banks))
+            logger.info("Production mode: Using %d banks", len(banks))
 
-        logger.info("Adding %d fr_banks to manager", len(fr_banks))
-        utils.add_banks_to_manager(parsers, fr_banks, self, df, scaler_encoders)
-        logger.info("Starting hyperparameter tuning for fr_banks")
+        logger.info("Adding %d banks to manager", len(banks))
+        utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
+        logger.info("Starting hyperparameter tuning for banks")
         tuned_hp = self.tuning(laundering_values)
         logger.info("Hyperparameter tuning completed")
 
-        if self.args['data_parser'].train_for_final:
-            sr_banks = []
-            logger.info("train_for_final=True: Skipping sr_banks")
-        else:
-            logger.info("Adding %d sr_banks with tuned hyperparameters", len(sr_banks))
-        tuned_hp = utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders, tuned_hp)
+        #logger.info("Adding %d sr_banks with tuned hyperparameters")
+        #tuned_hp = utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders, tuned_hp)
 
         logger.info("Setup complete: Total %d banks", len(self.parties))
         return tuned_hp
@@ -53,10 +50,14 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         bank_id = kwargs.get('bank_id')
         return self.parties[bank_id].train(laundering_values)
 
-    def _train_helper(self, hyperparameters, laundering_values):
-        return self._train(hyperparameters, laundering_values)
+    def _helper_party_test(self, party, laundering_values_test):
+        mask = np.isin(laundering_values_test['indices'], party.get_test_indices())
+        return laundering_values_test.iloc[mask,].reset_index(drop=True)
 
-    def _train(self, hyperparameters, laundering_values):
+    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
+        return self._train(hyperparameters, laundering_values_vali, laundering_values_test)
+
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         models_hyperparameters = {}
         party_predictions = {}
@@ -66,9 +67,10 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
             logger.debug("Training bank %s (%d/%d)", bank_id, idx, len(self.parties))
             self.init_models(hyperparameters[bank_id], bank_id)
-            party_laundering_values = self._helper_party_tuning(party, laundering_values)
+            party_lv_vali = self._helper_party_tuning(party, laundering_values_vali)
+            party_lv_test = self._helper_party_test(party, laundering_values_test)
 
-            tmp_model = party.train(party_laundering_values)
+            tmp_model = party.train(party_lv_vali, party_lv_test)
             models_hyperparameters[bank_id] = {'model': tmp_model['model'],
                                                'hyperparameters': hyperparameters[bank_id]}
 
@@ -83,11 +85,12 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         logger.info("Loading best models and aggregating predictions")
         for bank_id, party in self.parties.items():
             party.model.gnn.load_state_dict(models_hyperparameters[bank_id]['model'])
-            flin.update_laundering_values(party, laundering_values, pred_probabilities=party_predictions[bank_id])
+            flin.update_laundering_values(party, laundering_values_test,
+                                          pred_probabilities=party_predictions[bank_id], mode='test')
 
-        collective_metrics = metrics(y_true = laundering_values['true_y'],
-                                     y_pred_probabilities = laundering_values['avg_prob'],
-                                     y_pred_binary = laundering_values['pred_label'])
+        collective_metrics = metrics(y_true=laundering_values_test['true_y'],
+                                     y_pred_probabilities=laundering_values_test['avg_prob'],
+                                     y_pred_binary=laundering_values_test['pred_label'])
 
         logger.info("Final metrics - F1: %.4f, Precision: %.4f, Recall: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
                    collective_metrics['f1'], collective_metrics['precision'], collective_metrics['recall'],
@@ -101,7 +104,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
 
         return {
             'metrics': collective_metrics,
-            'laundering_values': copy.deepcopy(laundering_values),
+            'laundering_values': copy.deepcopy(laundering_values_test),
             'models': models_hyperparameters,
             'party_performance': party_individual_performans
         }

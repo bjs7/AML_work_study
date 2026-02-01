@@ -21,7 +21,6 @@ class GNNMixinParty:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._ibm_fe = self.manager.args['data_parser'].ibm_fe
-        self._train_for_final = self.manager.args['data_parser'].train_for_final
         self._batching = self.manager.args['data_parser'].batching
         self._use_global_stats = self.manager.args['data_parser'].use_global_stats
 
@@ -43,11 +42,16 @@ class GNNMixinParty:
             self.tr_configs['batch_size'] = 0
 
 
-    def feature_engineering(self, train_data, eval_data):
+    def feature_engineering(self, *data_configs):
+        """Process multiple data splits with feature engineering.
 
+        Args:
+            *data_configs: Tuples of (data_dict, means_key, std_key) for each split.
+        Returns:
+            List of processed data dicts, one per input config.
+        """
         if self._ibm_fe:
 
-            data_configs = [(train_data, 'means_tr', 'std_tr'), (eval_data, 'means_eval', 'std_eval')]
             results = []
             for data_dict, means_key, std_key in data_configs:
                 if data_dict['df'] is None:
@@ -73,26 +77,32 @@ class GNNMixinParty:
                     # Use local statistics (z_norm)
                     df.edge_attr[:,start:] = z_norm(df.edge_attr[:,start:])
                 results.append(data_dict)
-            train_data, eval_data = results
-            
-            return train_data, eval_data
 
-        train_data = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
-        eval_data = feature_engi_graph_data(eval_data, self.args['gnn_parser'], scaler_encoders = train_data.get('scaler_encoders'))
+            return results
 
-        return train_data, eval_data
+        # Non-ibm_fe path
+        train_data = data_configs[0][0]
+        processed_train = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
+        results = [processed_train]
+        for data_dict, _, _ in data_configs[1:]:
+            results.append(feature_engi_graph_data(data_dict, self.args['gnn_parser'],
+                                                   scaler_encoders=processed_train.get('scaler_encoders')))
+
+        return results
 
     def prep_data(self):
 
         if self.mode == 'tuning':
-            train_proc, eval_proc = self.feature_engineering(self.data['train_data'], 
-                                                             self.data['vali_data'])
+            train_proc, vali_proc = self.feature_engineering(
+                (self.data['train_data'], 'means_tr', 'std_tr'),
+                (self.data['vali_data'], 'means_vali', 'std_vali'))
+            self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc}
         elif self.mode == 'training':
-            tr_data = self.data['vali_data'] if not self._train_for_final else self.data['train_data']
-            train_proc, eval_proc = self.feature_engineering(tr_data, 
-                                                             self.data['test_data'])
-            
-        self.procs_data = {'train_data': train_proc, 'eval_data': eval_proc}
+            train_proc, vali_proc, test_proc = self.feature_engineering(
+                (self.data['train_data'], 'means_tr', 'std_tr'),
+                (self.data['vali_data'], 'means_vali', 'std_vali'),
+                (self.data['test_data'], 'means_test', 'std_test'))
+            self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc, 'test_data': test_proc}
     
 
     def update_local_weights(self, num_local_epochs = 1):
@@ -108,46 +118,71 @@ class GNNMixinParty:
         manager.parties_weights[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
     
     def get_eval_data(self):
-        return {'df': self.procs_data['eval_data']['df'], 
-                'pred_indices': self.procs_data['eval_data']['pred_indices']}
+        return {'df': self.procs_data['vali_data']['df'],
+                'pred_indices': self.procs_data['vali_data']['pred_indices']}
+
+    def get_test_data(self):
+        return {'df': self.procs_data['test_data']['df'],
+                'pred_indices': self.procs_data['test_data']['pred_indices']}
     
     def _get_loaders(self):
 
         train_data = copy.deepcopy(self.procs_data['train_data']['df'])
+        train_indices = self.data['train_data']['pred_indices']
 
-        if (self.mode == 'tuning') or self.args['data_parser'].train_for_final:
-            train_indices = self.data['train_data']['pred_indices']
-        else:
-            train_indices = torch.cat([self.data['train_data']['pred_indices'], 
-                                       self.data['vali_data']['pred_indices']])
+        vali_data = copy.deepcopy(self.procs_data['vali_data']['df'])
+        vali_indices = self.procs_data['vali_data']['pred_indices']
 
-        eval_data = copy.deepcopy(self.procs_data['eval_data']['df'])
-        eval_indices = self.procs_data['eval_data']['pred_indices']
+        has_test = 'test_data' in self.procs_data
+        test_data = copy.deepcopy(self.procs_data['test_data']['df']) if has_test else None
+        test_indices = self.procs_data['test_data']['pred_indices'] if has_test else None
 
         if self._batching:
-            add_arange_ids([train_data, eval_data])
+            datasets = [train_data, vali_data] + ([test_data] if has_test else [])
+            add_arange_ids(datasets)
             num_neighbors = [100]*self.model.gnn.num_gnn_layers
-            train_loader, eval_loader = get_loaders(train_data, eval_data, eval_indices, num_neighbors)
+            train_loader, vali_loader = get_loaders(train_data, vali_data, vali_indices, num_neighbors)
+            test_loader = get_loaders(train_data, test_data, test_indices, num_neighbors)[1] if has_test else None
         else:
-             train_loader, eval_loader = [train_data], [eval_data]
+            train_loader, vali_loader = [train_data], [vali_data]
+            test_loader = [test_data] if has_test else None
 
-        return train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices
+        return (train_loader, vali_loader, test_loader,
+                train_data, vali_data, test_data,
+                train_indices, vali_indices, test_indices)
     
 
-    def train(self, laundering_values):
- 
-        best_pred_probabilities, best_model, best_f1 = None, None, -1
+    def _eval_on_loader(self, loader, data, indices, bank_str):
+        """Run evaluation on a given loader, return predictions and ground truths."""
+        preds_list, gt_list, id_list = [], [], []
+        for batch in loader:
+            mask, pred_ids = batching_masker(batch, data, loader, indices) if self._batching else (torch.zeros(data.y.shape[0], dtype=torch.bool).index_fill_(0, indices, True), indices)
+            pred = self.model.predict(batch, mask)
+            preds_list.append(pred)
+            gt_list.append(batch.y[mask])
+            id_list.append(pred_ids)
+
+        preds = torch.cat(preds_list, dim=0).detach().cpu().numpy()
+        ground_truths = torch.cat(gt_list, dim=0).detach().cpu().numpy()
+        pred_ids = torch.cat(id_list).detach().cpu().numpy()
+        return preds, ground_truths, pred_ids
+
+    def train(self, laundering_values, laundering_values_test=None):
+
+        best_model, best_f1 = None, -1
         laundering_values['pred_probabilities'], laundering_values['pred_label'] = 0, 0
         bank_str = f" {self.bank_id}" if self.bank_id is not None else " full_info"
-        
-        train_loader, eval_loader, train_data, eval_data, train_indices, eval_indices = self._get_loaders()
-        laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': eval_indices}), laundering_values], axis=1)
+
+        (train_loader, vali_loader, test_loader,
+         train_data, vali_data, test_data,
+         train_indices, vali_indices, test_indices) = self._get_loaders()
+        laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': vali_indices}), laundering_values], axis=1)
         epochs = 10 if self.args['data_parser'].testing else configs.epochs
-        
+
+        # --- Epoch loop: train on train, select best model via vali ---
         for epoch in range(epochs):
 
-            preds, ground_truths, preds_eval = [], [], []
-            ground_truths_eval, eval_pred_ids, total_loss = [], [], 0
+            preds, ground_truths, total_loss = [], [], 0
 
             for batch in train_loader:
                 mask, _ = batching_masker(batch, train_data, train_loader, train_indices) if self._batching else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
@@ -156,89 +191,81 @@ class GNNMixinParty:
                 preds.append(pred.argmax(dim=-1))
                 ground_truths.append(true_y)
 
-
             if (self.args['fl_parser'].fl_algo == 'full_info' or self.args['data_parser'].testing) and self.mode == 'training':
                 preds = torch.cat(preds, dim=0).detach().cpu().numpy()
                 ground_truths = torch.cat(ground_truths, dim=0).detach().cpu().numpy()
                 f1 = f1_score(ground_truths, preds)
-                logger.info("Epoch %d/%d - Loss: %.4f, F1: %.4f", epoch + 1, epochs, total_loss, f1)
+                logger.info("Epoch %d/%d - Loss: %.4f, Train F1: %.4f", epoch + 1, epochs, total_loss, f1)
                 if len(ground_truths) != len(train_indices):
-                    logger.warning("Difference in the size of ground_truths and train_data indices, %d and %d", 
+                    logger.warning("Difference in the size of ground_truths and train_data indices, %d and %d",
                                     len(ground_truths), len(train_indices))
 
+            # Validation evaluation for model selection
+            preds_vali, ground_truths_vali, pred_ids_vali = self._eval_on_loader(
+                vali_loader, vali_data, vali_indices, bank_str)
 
-            for batch in eval_loader:
-                mask, pred_ids = batching_masker(batch, eval_data, eval_loader, eval_indices) if self._batching else (torch.zeros(eval_data.y.shape[0], dtype=torch.bool).index_fill_(0, eval_indices, True), eval_indices) 
-                pred = self.model.predict(batch, mask)
-                preds_eval.append(pred)
-                ground_truths_eval.append(batch.y[mask])
-                eval_pred_ids.append(pred_ids)
+            if len(ground_truths_vali) != len(laundering_values['true_y']):
+                logger.warning("Difference in the size of ground_truths and laundering_values['true_y'], %d and %d in bank %s",
+                                len(ground_truths_vali), len(laundering_values['true_y']), bank_str)
 
-            preds_eval = torch.cat(preds_eval, dim=0).detach().cpu().numpy()
-            preb_binary_eval = probs_to_binary(preds_eval)
-            ground_truths_eval = torch.cat(ground_truths_eval, dim=0).detach().cpu().numpy()
-            pred_ids = torch.cat(eval_pred_ids).detach().cpu().numpy()
-
-
-            if len(ground_truths_eval) != len(laundering_values['true_y']):
-                    logger.warning("Difference in the size of ground_truths and laundering_values['true_y'], %d and %d in bank %s",
-                                    len(ground_truths_eval), len(laundering_values['true_y']), bank_str)
-
-
-            f1_eval = f1_score(ground_truths_eval, preb_binary_eval)
+            f1_vali = f1_score(ground_truths_vali, probs_to_binary(preds_vali))
 
             if self.args['fl_parser'].fl_algo == 'full_info' or self.args['data_parser'].testing:
-                logger.info(f'Test F1: {f1_eval}')
+                logger.info(f'Vali F1: {f1_vali}')
 
-            if torch.isnan(torch.tensor(preds_eval)).any() and self.mode == 'training':
+            if torch.isnan(torch.tensor(preds_vali)).any() and self.mode == 'training':
                 logger.warning("Model predictions contain NaN values! In bank %s", bank_str)
-            
-            if f1_eval > best_f1:
-                best_pred_probabilities = copy.deepcopy(preds_eval)
-                best_pred_binary = probs_to_binary(preds_eval)
-                best_ground_truths = copy.deepcopy(ground_truths_eval)
-                best_pred_ids = copy.deepcopy(pred_ids)
 
+            if f1_vali > best_f1:
                 best_model = copy.deepcopy(self.model.gnn.state_dict())
-                best_f1 = f1_eval
-                logger.debug("New best F1: %.4f at epoch %d", best_f1, epoch + 1)
-
+                best_f1 = f1_vali
+                logger.debug("New best Vali F1: %.4f at epoch %d", best_f1, epoch + 1)
 
         if self.mode == 'tuning':
             return {'f1': best_f1}
 
-        
         if best_model is None:
             logger.error("No evaluation occurred during training (epochs=%d). Check evaluation frequency in bank %s", epochs, bank_str)
             raise ValueError(f"No evaluation occurred during training (epochs={epochs}). Check evaluation frequency.")
 
-        perform_metrics = metrics(y_true = best_ground_truths, y_pred_probabilities = best_pred_probabilities)
+        # --- Final test evaluation with best model ---
+        self.model.gnn.load_state_dict(best_model)
+        preds_test, ground_truths_test, pred_ids_test = self._eval_on_loader(
+            test_loader, test_data, test_indices, bank_str)
+        pred_binary_test = probs_to_binary(preds_test)
 
-        df_launderings = pd.DataFrame(data = {'party_indices': best_pred_ids,'true_y': best_ground_truths, 
-                                             'pred_probabilities': best_pred_probabilities, 
-                                             'pred_label': best_pred_binary})  
+        perform_metrics = metrics(y_true=ground_truths_test, y_pred_probabilities=preds_test)
+
+        df_launderings = pd.DataFrame(data={'party_indices': pred_ids_test, 'true_y': ground_truths_test,
+                                            'pred_probabilities': preds_test,
+                                            'pred_label': pred_binary_test})
         df_launderings = df_launderings.sort_values(by=['party_indices'], ignore_index=True)
 
-        if not np.all(laundering_values['true_y'] == df_launderings['true_y']):
-            logger.warning("Difference in the true y from laudering_values and true y from df_launderings in bank %s", bank_str)
+        # Update laundering_values_test with test predictions
+        if laundering_values_test is not None:
+            laundering_values_test['pred_probabilities'], laundering_values_test['pred_label'] = 0, 0
+            lv_test = pd.concat([pd.DataFrame(data={'party_indices': test_indices}), laundering_values_test], axis=1)
 
-        df_launderings = df_launderings.set_index('party_indices')
-        laundering_values = laundering_values.set_index('party_indices')
-        laundering_values.update(df_launderings[['pred_probabilities', 'pred_label']])
-        laundering_values = laundering_values.reset_index()
+            if not np.all(lv_test['true_y'].values == df_launderings['true_y'].values):
+                logger.warning("Difference in true_y from laundering_values_test and df_launderings in bank %s", bank_str)
+
+            df_launderings = df_launderings.set_index('party_indices')
+            lv_test = lv_test.set_index('party_indices')
+            lv_test.update(df_launderings[['pred_probabilities', 'pred_label']])
+            laundering_values_test = lv_test.reset_index()
 
         if self.args['fl_parser'].fl_algo == 'full_info' or self.args['data_parser'].testing:
-            logger.info("Training complete - Best F1: %.4f, Precision: %.4f, Recall: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
-                    perform_metrics['f1'], perform_metrics['precision'], perform_metrics['recall'],
+            logger.info("Training complete - Best Vali F1: %.4f | Test F1: %.4f, Precision: %.4f, Recall: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
+                    best_f1, perform_metrics['f1'], perform_metrics['precision'], perform_metrics['recall'],
                     perform_metrics['roc_auc'], perform_metrics['pr_auc'])
 
         if perform_metrics['f1'] < 0.1:
             logger.warning("Very low F1 score: %.4f - Check data and model configuration in bank %s", perform_metrics['f1'], bank_str)
         if (perform_metrics['precision'] == 0 or perform_metrics['recall'] == 0):
             logger.warning("Zero precision or recall - Model may not be learning properly in bank %s", bank_str)
-        
-        return {'metrics': perform_metrics, 
-                'laundering_values': laundering_values, 
+
+        return {'metrics': perform_metrics,
+                'laundering_values': laundering_values_test if laundering_values_test is not None else laundering_values,
                 'model': best_model}
 
 

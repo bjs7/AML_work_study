@@ -20,7 +20,7 @@ class Party(BaseFL):
 
     """Individual computation node that can send/receive messages"""
 
-    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders, is_sr=False) -> None:
+    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders, bank_type='train') -> None:
         super().__init__(args)
         self.bank_id = bank_id
         self.indices = indices
@@ -29,11 +29,11 @@ class Party(BaseFL):
         self.scaler_encoders = scaler_encoders
         self.model = None
         self.tr_configs = {}
-        self.is_sr = is_sr  # Flag to indicate if this is an sr_party
+        self.bank_type = bank_type  # Flag to indicate if this is an sr_party
         self.edge_feat_start = self.manager.edge_feat_start
 
         if self.manager:
-            self.manager.add_party(self, is_sr=is_sr)
+            self.manager.add_party(self, bank_type=bank_type)
         
     @classmethod
     def get_algo_class(cls, parsers: argparse.Namespace, **kwargs) -> classmethod:
@@ -45,7 +45,10 @@ class Party(BaseFL):
         return base_cls.return_class(args = parsers, **kwargs)
     
     def get_eval_indices(self):
-        return self.indices['vali_indices'] if self.mode == 'tuning' else self.indices['test_indices']
+        return self.indices['vali_indices']
+
+    def get_test_indices(self):
+        return self.indices['test_indices']
 
     @abstractmethod
     def prep_data(self):
@@ -76,7 +79,8 @@ class Manager(BaseFL, ABC):
     def __init__(self, args):
         super().__init__(args)
         self.parties: Dict[int, Party] = {}
-        self.sr_parties: Dict[int, Party] = {}  # Parties with data only in validation/test (e.g., sr_banks)
+        self.vali_parties: Dict[int, Party] = {}  # Parties with data only in validation/test (e.g., sr_banks)
+        self.test_parties: Dict[int, Party] = {}
         self.parties_weights: Dict[int, Any] = {}
         self.global_weights = None
         self.edge_feat_start = 1 if self.args['fl_parser'].fl_algo == 'FedGraph' else 0
@@ -90,15 +94,18 @@ class Manager(BaseFL, ABC):
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(parsers)
 
-    def add_party(self, party: Party, is_sr=False):
+    def add_party(self, party: Party, bank_type=False):
         
-        if not is_sr:
+        if bank_type == 'train':
             self.parties[party.bank_id] = party
+        elif bank_type == 'vali':
+            self.vali_parties[party.bank_id] = party
         else:
-            self.sr_parties[party.bank_id] = party
+            self.test_parties[party.bank_id] = party
+
         #print(f"[Manager] added: party {party.bank_id}" + (" (sr_party)" if is_sr else ""))
 
-    def _add_party(self, bank_id, df, parsers, scaler_encoders, is_sr=False):
+    def _add_party(self, bank_id, df, parsers, scaler_encoders, bank_type='train'):
         """Create and add a single party to this manager.
 
         Args:
@@ -106,7 +113,7 @@ class Manager(BaseFL, ABC):
             df: Data dictionary
             parsers: Parser configurations
             scaler_encoders: Encoder objects for feature engineering
-            is_sr: If True, also add to sr_parties (for banks with no train data)
+            bank_type: 'train', 'vali', or 'test' — which party dict to add to
         """
         bank_indices = get_indices_bdt(df, bank=bank_id)
         train_data, vali_data, test_data = dfn.fl_get_data(parsers, df, bank_indices)
@@ -117,13 +124,24 @@ class Manager(BaseFL, ABC):
                             indices=bank_indices,
                             manager=self,
                             scaler_encoders=scaler_encoders,
-                            is_sr=is_sr
+                            bank_type=bank_type
                             )
+
+    def get_parties_for_mode(self, mode):
+        if mode == 'train':
+            return self.parties
+        elif mode == 'vali':
+            return self.vali_parties
+        else:
+            return self.test_parties
 
     def set_mode(self, mode):
         self.mode = mode
-        if self.sr_parties:
-            for _, party in self.sr_parties.items():
+        if self.test_parties:
+            for _, party in self.test_parties.items():
+                party.mode = mode
+        elif self.vali_parties:
+            for _, party in self.vali_parties.items():
                 party.mode = mode
         else:
             for _, party in self.parties.items():

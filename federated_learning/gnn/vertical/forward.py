@@ -12,18 +12,18 @@ def get_batch_data(manager, mode, batch_num=None, batch_banks=None):
 
     Args:
         manager: The FL manager instance
-        mode: 'train' or 'eval'
+        mode: 'train', 'vali', or 'test'
         batch_num: Batch number (None for non-batching mode)
         batch_banks: List of bank IDs in the batch
 
     Returns:
         Dict mapping bank_id to (party, graph_data) tuple
     """
+    mode_parties = manager.get_parties_for_mode(mode)
     if batch_num is None:
-        parties = manager.parties.items() if mode == 'train' else manager.sr_parties.items()
-        return {bank_id: (party, party.procs_data[f'{mode}_data']['df']) for bank_id, party in parties}
+        return {bank_id: (party, party.procs_data[f'{mode}_data']['df']) for bank_id, party in mode_parties.items()}
     else:
-        return {bank_id: (manager.sr_parties[bank_id], manager.sr_parties[bank_id].ctx[mode][batch_num]['graph_data']) for bank_id in batch_banks}
+        return {bank_id: (mode_parties[bank_id], mode_parties[bank_id].ctx[mode][batch_num]['graph_data']) for bank_id in batch_banks}
 
 
 def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
@@ -36,7 +36,7 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
 
     Args:
         manager: The FL manager instance
-        mode: 'train' or 'eval'
+        mode: 'train', 'vali', or 'test'
         batch_num: Batch number (None for non-batching mode)
         batch_banks: List of bank IDs participating in this batch
         batch_data: Dict mapping bank_id to (party, graph_data)
@@ -86,7 +86,7 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
                 idx = party_data.edge_attr[party.ctx[mode][batch_num]['intersects'][inner_bank_id],0].tolist()
                 owned_edges = party.ctx[mode][batch_num]['intersects'][inner_bank_id][manager.data[f'{mode}_data'].iloc[idx, :]['From Bank'] == bank_id]
 
-                manager.sr_parties[inner_bank_id].received_embeddings[party.bank_id] = {
+                manager.get_parties_for_mode(mode)[inner_bank_id].received_embeddings[party.bank_id] = {
                     'nodes': nodes_dict,
                     'edges': party.current_embeddings['edges'][owned_edges]
                 }
@@ -131,7 +131,7 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
     index_to_position = {}
 
     for bank_id in batch_banks:
-        embeddings_tensor[bank_id] = manager.sr_parties[bank_id].current_embeddings
+        embeddings_tensor[bank_id] = manager.get_parties_for_mode(mode)[bank_id].current_embeddings
 
         party, party_data = batch_data[bank_id]
         index_to_position[bank_id] = {

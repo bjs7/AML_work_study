@@ -190,7 +190,6 @@ def data_parser():
     parser.add_argument('--ir', default='HI', type=str, help="Select the illicit ratio")
     parser.add_argument('--banks', default='only_launderings', type=str)
     parser.add_argument('--overwrite', action='store_true')
-    parser.add_argument('--train_for_final', action='store_true', help='Use train data for final training instead of vali')
     parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
@@ -245,22 +244,32 @@ def init_parties(df, parsers, manager, scaler_encoders = None):
 
 
 
-def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, is_sr=False):
+def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, bank_type='train'):
     # this part here is only used for individual banks settings
     if tuned_hp is not None:
         best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']
         tuned_hp = {bank_id: entry['hyperparameters'] for bank_id, entry in tuned_hp.items()}
 
     for bank in banks:
-        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders), is_sr=is_sr)
+        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders), bank_type=bank_type)
 
         if tuned_hp is not None:
             tuned_hp[bank] = best_tuned_hp
 
     manager._num_parties = len(manager.parties)
 
-    if is_sr:
-        manager.sr_parties = manager.parties | manager.sr_parties
+    if bank_type == 'vali':
+        manager.vali_parties = manager.parties | manager.vali_parties
+        # Sync parties to point to the same objects as vali_parties
+        for bank_id in manager.parties:
+            manager.parties[bank_id] = manager.vali_parties[bank_id]
+    elif bank_type == 'test':
+        manager.test_parties = manager.vali_parties | manager.test_parties
+        # Sync parties and vali_parties to point to the same objects as test_parties
+        for bank_id in manager.parties:
+            manager.parties[bank_id] = manager.test_parties[bank_id]
+        for bank_id in manager.vali_parties:
+            manager.vali_parties[bank_id] = manager.test_parties[bank_id]
 
     return tuned_hp
 

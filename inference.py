@@ -54,22 +54,30 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
 # if we are to include ROC/AUC probability predictions would also be needed
 # Maybe include ROC/AUC too? Because it might be relevant to look at observations that are "close enough",
 # like above a certain threshold
-def update_laundering_values(party, laundering_values, pred_probabilities=None):
+def update_laundering_values(party, laundering_values, pred_probabilities=None, mode='eval'):
     """Update laundering values with predictions from a party.
 
     Args:
         party: Party object with model for predictions
         laundering_values: DataFrame to update with predictions
-        predictions: Pre-computed predictions (optional). If None, will compute via predict_binary.
-                     Used to avoid redundant GNN forward passes when predictions are already available.
+        pred_probabilities: Pre-computed predictions (optional). If None, will compute via predict.
+        mode: 'eval' for vali data (default), 'test' for test data.
     """
 
-    # make predictions and get prediction indicies
+    # Get data and indices based on mode
+    if mode == 'test':
+        get_data_fn = party.get_test_data
+        get_indices_fn = party.get_test_indices
+    else:
+        get_data_fn = party.get_eval_data
+        get_indices_fn = party.get_eval_indices
+
+    # make predictions and get prediction indices
     if pred_probabilities is None:
         if party.args['fl_parser'].fl_algo == 'individual':
-            pred_probabilities = party.model.predict(party.get_eval_data())
+            pred_probabilities = party.model.predict(get_data_fn())
         else:
-            pred_probabilities = party.model.predict_no_batching(party.get_eval_data()) 
+            pred_probabilities = party.model.predict_no_batching(get_data_fn())
 
     # Check for unusual predictions
     if np.isnan(pred_probabilities).any():
@@ -81,7 +89,7 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None):
         logger.warning("Party has all zero predictions - model may not be learning")
 
     pred_labels = probs_to_binary(pred_probabilities)
-    original_indices = party.get_eval_indices()
+    original_indices = get_indices_fn()
 
     # update laundering values, where observations have been predicted as 1
     pred_labels_df = pd.DataFrame({'original_indices': original_indices, 'pred_label': pred_labels})

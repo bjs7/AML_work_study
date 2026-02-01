@@ -98,7 +98,7 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
     def _train_party(self, laundering_values, **kwargs):
         raise NotImplementedError
     
-    def train(self, hyperparameters, laundering_values):
+    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         self.set_mode('training')
         seeds = self.args['data_parser'].testing_seeds
@@ -120,7 +120,8 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
             logger.info("-"*80)
             utils.set_seed(seed_value)
 
-            results_by_seed[seed_value] = self._train_helper(hyperparameters, copy.deepcopy(laundering_values))
+            results_by_seed[seed_value] = self._train_helper(
+                hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
                        seed_value,
@@ -131,10 +132,10 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
         logger.info("\n" + "="*80)
         logger.info("All seeds completed")
         logger.info("="*80)
-        
+
         return results_by_seed
-    
-    def _train_helper(self, hyperparameters, laundering_values):
+
+    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
         raise NotImplementedError
 
     def _tuning_helper(self, laundering_values, party, bank_id):

@@ -43,22 +43,30 @@ def filter_banks(parsers):
         if np.any(test_data['x']['Is Laundering'] == 1):
             laundering_in_test_data.append(bank)
 
-    fr_laundering_banks = sorted(list(set(laundering_in_train_data) & set(laundering_in_vali_data) & set(laundering_in_test_data)))
-    sr_laundering_banks = sorted(list((set(laundering_in_train_data) | set(laundering_in_vali_data)) & set(laundering_in_test_data) - set(fr_laundering_banks)))
 
-    # Get number of observations available for banks with only laundering
-    all_indices = []
-    for bank in (fr_laundering_banks + sr_laundering_banks):
+    individual_banks = sorted(list(set(laundering_in_train_data) & set(laundering_in_vali_data)))
+    FedAvg_banks = sorted(list(laundering_in_train_data))
+
+    # --------------------------------------------------
+
+    # Get number of observations available for individual banks
+    all_indices_individual = []
+    for bank in individual_banks:
         bank_indices = get_indices_bdt(df, bank = bank)
-        all_indices.extend(bank_indices['train_indices'] + bank_indices['vali_indices'] + bank_indices['test_indices'])
+        all_indices_individual.extend(bank_indices['train_indices'] + bank_indices['vali_indices'] + bank_indices['test_indices'])
+    obs_available_for_individual_banks = len(set(all_indices_individual))
 
-    obs_available_for_laundering_banks = len(set(all_indices))
+
+    all_indices_FedAvg = []
+    for bank in FedAvg_banks:
+        bank_indices = get_indices_bdt(df, bank = bank)
+        all_indices_FedAvg.extend(bank_indices['train_indices'] + bank_indices['vali_indices'] + bank_indices['test_indices'])
+    obs_available_for_FedAvg_banks = len(set(all_indices_FedAvg))
 
     relevant_banks = {
         'total_observations': df_length,
-        #'full_first_second': {'fr_banks': fr_banks, 'sr_banks': sr_banks, 'obs_ava': obs_ava_fr_sr, 'percentage': obs_ava_fr_sr/df.shape[0]},
-        'only_launderings': {'fr_banks': fr_laundering_banks, 
-                                        'sr_banks': sr_laundering_banks, 'obs_ava': obs_available_for_laundering_banks, 'percentage': obs_available_for_laundering_banks/df_length},
+        'individual': {'banks': individual_banks, 'obs_ava': obs_available_for_individual_banks, 'percentage': obs_available_for_individual_banks/df_length},
+        'FedAvg': {'banks': FedAvg_banks, 'obs_ava': obs_available_for_FedAvg_banks, 'percentage': obs_available_for_FedAvg_banks/df_length}
     }
 
     # save the data
@@ -88,8 +96,8 @@ def load_relevant_banks(parsers):
     return relevant_banks
 
 def get_relevant_banks(parsers):
-    relevant_banks = load_relevant_banks(parsers).get(parsers['data_parser'].banks)
-    return relevant_banks.get('fr_banks'), relevant_banks.get('sr_banks')
+    relevant_banks = load_relevant_banks(parsers).get(parsers['fl_parser'].fl_algo)
+    return relevant_banks.get('banks')
 
 
 class BanksManager:
@@ -105,18 +113,19 @@ class BanksManager:
         file_location = os.path.join(save_direc, str_folder)
 
         if not os.path.isfile(file_location) or self.parsers['data_parser'].overwrite:
-            self.relvant_banks = filter_banks(self.parsers)
+            self.relevant_banks = filter_banks(self.parsers)
         else:
             self.relevant_banks = load_relevant_banks(self.parsers)
 
     def print_numbers(self):
 
-        fr_banks = len(self.relevant_banks.get('only_launderings').get('fr_banks'))
-        sr_banks = len(self.relevant_banks.get('only_launderings').get('sr_banks'))
-        obs = self.relevant_banks.get('only_launderings').get('obs_ava')
-        perc = self.relevant_banks.get('only_launderings').get('percentage')
-        print(f'In case of training on banks with laundering there are \nFirst round: {fr_banks} \nSecond round: {sr_banks}')
-        print(f'Resulting in a total of {obs} observations, {perc} percentage of the data\n')
+        for scenario in ['individual', 'FedAvg']:
+            info = self.relevant_banks.get(scenario)
+            if info:
+                num_banks = len(info.get('banks', []))
+                obs = info.get('obs_ava', 0)
+                perc = info.get('percentage', 0)
+                print(f'{scenario}: {num_banks} banks, {obs} observations ({perc:.2%} of data)')
 
 
 

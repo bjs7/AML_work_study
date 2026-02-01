@@ -37,29 +37,36 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
     """
 
     def cal_global_sats(self):
-        
+
         # Calculate statistics for normalization
-        # might need to create a "global" of these, like where one take the average of the averages
         cols = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
         self.data['means_tr'] = self.data['train_data'][cols].apply(np.mean)
         self.data['std_tr'] = self.data['train_data'][cols].apply(np.std)
-        self.data['means_eval'] = self.data['eval_data'][cols].apply(np.mean)
-        self.data['std_eval'] = self.data['eval_data'][cols].apply(np.std)
+        self.data['means_vali'] = self.data['vali_data'][cols].apply(np.mean)
+        self.data['std_vali'] = self.data['vali_data'][cols].apply(np.std)
+        if 'test_data' in self.data:
+            self.data['means_test'] = self.data['test_data'][cols].apply(np.mean)
+            self.data['std_test'] = self.data['test_data'][cols].apply(np.std)
 
 
     def get_relevant_banks_vert(self):
 
-        # Get banks for first round (train) and second round (eval only)
-        # not sure if this part here is actually "necessary"
-        # the part about only looping over banks in the first round, but in the second
-        # round other banks can be considered to. I think it is needed and that I need to
-        # remember to account for this
-        fr_banks = set(self.data['train_data'][['From Bank', 'To Bank']].stack())
-        sr_banks = set(self.data['eval_data'][['From Bank', 'To Bank']].stack())
-        sr_banks = list(sr_banks - fr_banks)
-        fr_banks = list(fr_banks)
+        # Get banks for first round (train) and second round (vali/test only)
+        train_banks = set(self.data['train_data'][['From Bank', 'To Bank']].stack())
+        vali_banks = set(self.data['vali_data'][['From Bank', 'To Bank']].stack())
+        test_banks = None
+        if 'test_data' in self.data:
+            test_banks = set(self.data['test_data'][['From Bank', 'To Bank']].stack())
+            test_banks = list(test_banks - vali_banks - train_banks)
+        vali_banks = list(vali_banks - train_banks)
+        train_banks = list(train_banks)
 
-        return fr_banks, sr_banks
+        #full_key = 'test_data' if 'test_data' in self.data else 'vali_data'
+        #sr_banks = set(self.data[full_key][['From Bank', 'To Bank']].stack())
+        #sr_banks = list(sr_banks - fr_banks)
+        #fr_banks = list(fr_banks)
+
+        return train_banks, vali_banks, test_banks
 
     def set_manager_data(self, reg_df, mode):
 
@@ -69,24 +76,37 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         train_vali = pd.concat([train, vali])
 
         if mode == 'tuning':
-            self.data = {'train_data': train, 'eval_data': train_vali}
-        #elif mode == 'training':
+            self.data = {'train_data': train, 'vali_data': train_vali}
+            self.indices = {
+                'train': train.index,
+                'vali': train_vali.index[train.shape[0]:]
+            }
         else:
-            self.data = {'train_data': train_vali, 'eval_data': pd.concat([train_vali, test])}
-
-        self.indices = {'train': self.data['train_data'].index, 'eval': self.data['eval_data'].index[self.data['train_data'].shape[0]:]}
+            self.data = {'train_data': train, 'vali_data': train_vali, 'test_data': pd.concat([train_vali, test])}
+            self.indices = {
+                'train': train.index,
+                'vali': train_vali.index[train.shape[0]:],
+                'test': pd.concat([train_vali, test]).index[train_vali.shape[0]:]
+            }
 
     def add_parties_prep_data(self, mode, df, scaler_encoders):
 
         self.set_manager_data(df['regular_data'], mode)
         self.cal_global_sats()
 
-        fr_banks, sr_banks = self.get_relevant_banks_vert()
-        utils.add_banks_to_manager(self.args, fr_banks, self, df, scaler_encoders)
-        utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
+        #fr_banks, sr_banks = self.get_relevant_banks_vert()
+        train_banks, vali_banks, test_banks = self.get_relevant_banks_vert()
+        for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
+            if banks:
+                utils.add_banks_to_manager(self.args, banks, self, df, scaler_encoders, bank_type=bank_type)
+
+        #utils.add_banks_to_manager(self.args, fr_banks, self, df, scaler_encoders)
+        #utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
+        #utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
 
         self.set_mode(mode)
-        for bank_id, party in self.sr_parties.items(): #TODO Needs to only be self.parties when tuning?
+        parties = self.test_parties if mode == 'training' else self.vali_parties
+        for bank_id, party in parties.items(): #TODO Needs to only be self.parties when tuning?
             party.prep_data()
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
@@ -152,7 +172,8 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         # Initialize model on first party and share with all
         self.init_models(hyperparams=hyperparameters, bank_id=0)
-        for bank_id, party in self.sr_parties.items(): #TODO also need to adjust sr_parties/parties when tuning?
+        all_parties = self.test_parties if self.mode == 'training' else self.vali_parties
+        for bank_id, party in all_parties.items():
             if bank_id == 0:
                 continue
             party.model = self.parties[0].model
@@ -182,12 +203,11 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         """Execute forward pass with embedding exchange."""
         return forward.forward_pass(self, mode, batch_num, batch_banks, batch_data)
     
-    def train(self, hyperparameters, laundering_values):
+    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         self.set_mode('training')
         seeds = self.args['data_parser'].testing_seeds
         results_by_seed = {}
-        #best_f1 = -1; best_model = None
 
         logger.info("="*80)
         logger.info("Starting training with %d seeds for federated learning", seeds)
@@ -200,7 +220,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             logger.info("-"*80)
             utils.set_seed(seed_value)
 
-            results_by_seed[seed_value] = self._train(hyperparameters, copy.deepcopy(laundering_values))
+            results_by_seed[seed_value] = self._train(hyperparameters, copy.deepcopy(laundering_values_test))
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
             seed_value,
@@ -213,16 +233,37 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         logger.info("="*80)
 
         return results_by_seed
-    
+
     def _train(self, hyperparameters, laundering_values):
         self.setup_vertical(batching=self.args['data_parser'].batching)
         self.setup_model(hyperparameters, laundering_values)
-        return self.train_vertical(laundering_values, batching = self.args['data_parser'].batching)
+        return self.train_vertical(laundering_values, batching=self.args['data_parser'].batching)
+
+    def _forward_eval(self, mode, batching, precomputed_batch_data=None):
+        """Run a forward pass on vali or test mode and return preds/labels."""
+        all_preds, all_labels = [], []
+        batch_iter = range(self.ctx[mode]['num_batches']) if batching else [None]
+
+        with torch.no_grad():
+            for batch_num in batch_iter:
+                if batching:
+                    batch_banks = self.ctx[mode][batch_num]['batch_parties']
+                    batch_data = self.get_batch_data(mode, batch_num, batch_banks)
+                else:
+                    batch_banks = self.ctx[mode][None]['batch_parties']
+                    batch_data = precomputed_batch_data
+
+                preds, labels = self.forward_pass(mode, batch_num, batch_banks, batch_data)
+                all_preds.append(preds)
+                all_labels.append(labels)
+
+        return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
     def train_vertical(self, laundering_values, epochs=None, batching=True):
         """Train the vertical FL model.
 
         Args:
+            laundering_values: Test laundering values for final evaluation
             epochs: Number of training epochs (uses config default if None)
             batching: Whether to use batching
 
@@ -238,7 +279,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         # Pre-generate batch data for non-batching mode
         if not batching:
             batch_data_train = self.get_batch_data('train')
-            batch_data_eval = self.get_batch_data('eval')
+            batch_data_vali = self.get_batch_data('vali')
 
         for epoch in range(epochs):
 
@@ -268,40 +309,35 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
             training_utils.log_train_performance(all_labels, all_preds, train_loss, epoch, epochs)
 
-            # Evaluation phase
+            # Validation phase (model selection)
             self.model.gnn.eval()
-            all_preds_eval, all_labels_eval = [], []
-            batch_iter = range(self.ctx['eval']['num_batches']) if batching else [None]
+            labels_np, preds_probs, preds_binary = self._forward_eval(
+                'vali', batching, batch_data_vali if not batching else None)
 
-            with torch.no_grad():
-                for batch_num in batch_iter:
-                    if batching:
-                        batch_banks = self.ctx['eval'][batch_num]['batch_parties']
-                        batch_data = self.get_batch_data('eval', batch_num, batch_banks)
-                    else:
-                        batch_banks = self.ctx['eval'][None]['batch_parties']
-                        batch_data = batch_data_eval
-
-                    preds, labels = self.forward_pass('eval', batch_num, batch_banks, batch_data)
-                    all_preds_eval.append(preds)
-                    all_labels_eval.append(labels)
-
-            labels_np, preds_probs, preds_binary = training_utils.prep_eval_preds_labels(
-                all_labels_eval, all_preds_eval
-            )
-            f1_eval = f1_score(labels_np, preds_binary)
-            logger.info(f'Test F1: {f1_eval}')
+            f1_vali = f1_score(labels_np, preds_binary)
+            logger.info(f'Vali F1: {f1_vali}')
 
             best_f1, best_model_state = training_utils.update_best_model(
-                f1_eval, best_f1, best_model_state,
+                f1_vali, best_f1, best_model_state,
                 labels_np, preds_probs, self.model, epoch
             )
 
-        final_metrics = training_utils.compute_final_metrics(best_model_state)
+        # --- Final test evaluation with best model ---
+        self.model.gnn.load_state_dict(best_model_state['best_model'])
+        self.model.gnn.eval()
 
-        laundering_values['true_y'] = best_model_state['best_ground_truths']
-        laundering_values['pred_probabilities'] = best_model_state['best_pred_probabilities']
-        laundering_values['pred_label'] = best_model_state['best_pred_binary']
+        if not batching:
+            batch_data_test = self.get_batch_data('test')
+
+        labels_np, preds_probs, preds_binary = self._forward_eval(
+            'test', batching, batch_data_test if not batching else None)
+
+        final_metrics = training_utils.compute_final_metrics_from_preds(labels_np, preds_probs)
+        logger.info(f'Test F1: {final_metrics["f1"]:.4f}')
+
+        laundering_values['true_y'] = labels_np
+        laundering_values['pred_probabilities'] = preds_probs
+        laundering_values['pred_label'] = preds_binary
         best_model = best_model_state['best_model']
 
         return {
@@ -317,20 +353,19 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
 
-        fr_banks, sr_banks = get_relevant_banks(parsers)
+        #fr_banks, sr_banks = get_relevant_banks(parsers)
+        banks = get_relevant_banks(parsers)
 
         if parsers['data_parser'].testing:
-            fr_banks = fr_banks[0:5]
-            sr_banks = sr_banks[0:2]
+            banks = banks[0:5]
+            #sr_banks = sr_banks[0:2]
 
-        # Add and tune fr_banks
-        utils.add_banks_to_manager(parsers, fr_banks, self, df, scaler_encoders)
+        # Add and tune banks
+        utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
         tuned_hp, _ = self.tuning(laundering_values)
 
         # Add sr_banks
-        if self.args['data_parser'].train_for_final:
-            sr_banks = []
-        utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders)
+        #utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders)
 
         return tuned_hp
 
@@ -372,14 +407,14 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         return best_hyperparameters, scores, best_f1
     
-    def train(self, hyperparameters, laundering_values, seeds = 4):
+    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         self.set_mode('training')
+        seeds = self.args['data_parser'].testing_seeds
         results_by_seed = {}
-        #best_f1 = -1; best_model = None
 
         logger.info("="*80)
-        logger.info("Starting training with %d seeds for federated learning")
+        logger.info("Starting training with %d seeds for federated learning", seeds)
         logger.info("="*80)
 
         for bank_id, party in self.parties.items():
@@ -392,7 +427,8 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             logger.info("-"*80)
             utils.set_seed(seed_value)
 
-            results_by_seed[seed_value] = self._train(hyperparameters, copy.deepcopy(laundering_values))
+            results_by_seed[seed_value] = self._train(
+                hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
             seed_value,
@@ -403,66 +439,70 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         logger.info("\n" + "="*80)
         logger.info("All seeds completed")
         logger.info("="*80)
-        
+
         return results_by_seed
-    
-    def _train(self, hyperparameters, laundering_values):
+
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         self.init_models(hyperparameters)
-        
+
         self.get_global_weights()
         self.send_global_weights_params()
 
-        return self.fl_training(laundering_values)
-    
-    def fl_training(self, laundering_values):
+        return self.fl_training(laundering_values_vali, laundering_values_test)
+
+    def fl_training(self, laundering_values_vali, laundering_values_test):
 
         best_weights = None
-        best_metrics = None
         best_f1 = -1
 
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
 
+        # --- Epoch loop: train, validate on vali for model selection ---
         for epoch in range(epochs):
 
             for bank_id, party in self.parties.items():
-                # little unsure if I should update parameters like this, or if 
-                # it should be kept inside the party
                 party.update_local_weights()
                 party.send_local_weights(self)
 
             self.update_global_weights()
             self.send_global_weights()
 
-            # I need to reset laundering_values or something every time new parameters are tested
-            # inference / status
-            #if (epoch+1) % 20 == 0:
-
-            # reset preditcions
+            # Evaluate on vali for model selection
             for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
-                laundering_values[col] = 0
-            
+                laundering_values_vali[col] = 0
+
             for bank_id, party in self.parties.items():
-                flin.update_laundering_values(party, laundering_values)
+                flin.update_laundering_values(party, laundering_values_vali, mode='eval')
 
-            f1_eval = f1_score(laundering_values['true_y'], laundering_values['pred_label'])
+            f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
 
-            logger.info("Epoch %d/%d - F1: %.4f", epoch + 1, epochs, f1_eval)
+            logger.info("Epoch %d/%d - Vali F1: %.4f", epoch + 1, epochs, f1_vali)
 
-            if f1_eval > best_f1:
-                best_laundering_values = copy.deepcopy(laundering_values)
+            if f1_vali > best_f1:
                 best_weights = copy.deepcopy(self.global_weights)
-                best_f1 = f1_eval
+                best_f1 = f1_vali
 
-        best_metrics = metrics(y_true = best_laundering_values['true_y'], 
-                                    y_pred_probabilities = best_laundering_values['avg_prob'], 
-                                    y_pred_binary = best_laundering_values['pred_label'])
-        
+        # --- Final test evaluation with best weights ---
+        self.global_weights = best_weights
+        self.send_global_weights()
+
+        for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
+            laundering_values_test[col] = 0
+
+        for bank_id, party in self.parties.items():
+            flin.update_laundering_values(party, laundering_values_test, mode='test')
+
+        best_metrics = metrics(y_true=laundering_values_test['true_y'],
+                               y_pred_probabilities=laundering_values_test['avg_prob'],
+                               y_pred_binary=laundering_values_test['pred_label'])
+
+        logger.info("Test F1: %.4f", best_metrics['f1'])
+
         if best_metrics['f1'] < 0.1:
             logger.warning("Very low F1 score: %.4f - Check data and model configuration", best_metrics['f1'])
         if (best_metrics['precision'] == 0 or best_metrics['recall'] == 0):
             logger.warning("Zero precision or recall - Model may not be learning properly")
-        
 
-        return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': best_laundering_values}
+        return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': laundering_values_test}
 

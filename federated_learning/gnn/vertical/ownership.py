@@ -7,14 +7,19 @@ and what data needs to be exchanged between parties.
 import numpy as np
 import torch
 
+# batch_banks = parties
+# batch_banks = manager.sr_parties.keys()
+# batch_num = None
+# get_ownership_mappings(mode, manager, parties, None)
 
 def get_ownership_mappings(mode, manager, batch_banks, batch_num):
     """Get ownership mappings for all banks in a batch."""
     df_ids = manager.data[f'{mode}_data']
+    mode_parties = manager.get_parties_for_mode(mode)
 
     for bank_id in batch_banks:
 
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         graph_df = party.procs_data[f'{mode}_data']['df'] if batch_num is None else party.ctx[mode][batch_num]['graph_data']
         indices = graph_df.edge_attr[:,0].tolist()
 
@@ -48,9 +53,10 @@ def _get_ownership_mappings(mode, party, bank_id, df_ids, graph_df, indices, bat
 def get_nodes_to_send(mode, manager, batch_banks, batch_num):
     """Determine which nodes each party needs to send to other parties."""
     df_ids = manager.data[f'{mode}_data']
+    mode_parties = manager.get_parties_for_mode(mode)
     processed_pairs = set()
     for bank_id in batch_banks:
-        party = manager.sr_parties[bank_id]
+        party = mode_parties[bank_id]
         processed_pairs = _get_nodes_to_send(mode, manager, df_ids, party, bank_id, processed_pairs, batch_num)
 
 
@@ -77,7 +83,7 @@ def _get_nodes_to_send(mode, manager, df_ids, party, bank_id, processed_pairs, b
             'global_ids': my_owned_shared,
         }
 
-        other_party = manager.sr_parties[inner_bank_id]
+        other_party = manager.get_parties_for_mode(mode)[inner_bank_id]
         other_owned_shared = sorted(shared_txns_set & other_party.ctx[mode][batch_num]['owned_accounts']) if len(other_party.ctx[mode][batch_num]['owned_accounts']) > 0 else []
         other_local = [other_party.ctx[mode][batch_num]['global_to_local'][acc] for acc in other_owned_shared]
 
