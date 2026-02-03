@@ -54,7 +54,20 @@ class FedGraph_manager(Manager):
     def get_adjacency_matrix(self):
         return 0
 
-    
+# FedProx -------------------------------------------------------
+
+class FedProx_party(Party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class FedProx_manager(Manager):
+
+    def get_adjacency_matrix(self):
+        return 0
+
+
 # ------------------------------------------------------------------------------------------
 
 # -------------------------------------------
@@ -121,6 +134,17 @@ class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
         return FedAvg_GNN_Party(**kwargs)
     
 
+@regi_algo_party("FedProx_gnn")
+class FedProx_GNN_Party(GNNMixinParty, FedProx_party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return FedProx_GNN_Party(**kwargs)
+
+
 @regi_algo_party("FedGraph_gnn")
 class FedGraph_GNN_Party(GNNMixinPartyVert, FedGraph_party):
 
@@ -152,12 +176,19 @@ class Individual_GNN_Manager(IndividualGNNManager, Manager): #FLGNNManager #GNNM
 
 
 @regi_algo_manager("FedAvg_gnn")
-class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager): #FLGNNManager #GNNMixinManager
+class FedAvg_GNN_Manager(FLGNNManager, FedAvg_manager):
 
     @staticmethod
     def return_class(args):
         return FedAvg_GNN_Manager(args)
 
+
+@regi_algo_manager("FedProx_gnn")
+class FedProx_GNN_Manager(FLGNNManager, FedProx_manager):
+
+    @staticmethod
+    def return_class(args):
+        return FedProx_GNN_Manager(args)
 
 
 @regi_algo_manager("FedGraph_gnn")

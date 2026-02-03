@@ -27,37 +27,39 @@ from collections import Counter
 from scipy.stats import entropy
 
 
-def plot_proportion_heatmap(df, cols, xlabel, bank_id_col='bank_id'):
+def plot_proportion_heatmap(df, cols, xlabel, bank_id_col='bank_id', figsize=(7, 5), fontsize=11):
     cmap = plt.cm.YlOrRd.copy()
     cmap.set_bad(color='lightgrey')
 
     prop_df = df[cols].div(df[cols].sum(axis=1), axis=0)
     prop_df.index = df[bank_id_col]
 
-    fig, ax = plt.subplots(figsize=(12, 10))
+    fig, ax = plt.subplots(figsize=figsize)
     ax.imshow(prop_df.values, aspect='auto', cmap=cmap, interpolation='nearest')
     for x in range(len(cols) - 1):
         ax.axvline(x + 0.5, color='white', linewidth=1.5)
     ax.set_xticks(range(len(cols)))
-    ax.set_xticklabels(cols, rotation=45, ha='right')
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel('Bank')
+    ax.set_xticklabels(cols, rotation=45, ha='right', fontsize=fontsize - 1)
+    ax.set_xlabel(xlabel, fontsize=fontsize)
+    ax.set_ylabel('Bank', fontsize=fontsize)
     fig.colorbar(ax.images[0], label='Proportion')
     plt.tight_layout()
+    return fig
 
 
-def plot_proportion_stacked_bar(df, cols, bank_id_col='bank_id', sort_by='n_edges', N=50, legend_title='Category'):
+def plot_proportion_stacked_bar(df, cols, bank_id_col='bank_id', sort_by='n_edges', N=50, legend_title='Category', figsize=(7, 4), fontsize=11):
     sorted_df = df.sort_values(sort_by, ascending=False).head(N)
     proportions = sorted_df[cols].fillna(0)
     proportions = proportions.div(proportions.sum(axis=1), axis=0)
 
-    fig, ax = plt.subplots(figsize=(16, 8))
+    fig, ax = plt.subplots(figsize=figsize)
     proportions.plot(kind='bar', stacked=True, ax=ax)
-    ax.set_xticklabels(sorted_df[bank_id_col].values, rotation=45)
-    ax.set_xlabel('Bank ID (sorted by edge count)')
-    ax.set_ylabel('Proportion')
-    ax.legend(title=legend_title, bbox_to_anchor=(1.05, 1))
+    ax.set_xticklabels(sorted_df[bank_id_col].values, rotation=45, fontsize=fontsize - 2)
+    ax.set_xlabel('Bank ID (sorted by edge count)', fontsize=fontsize)
+    ax.set_ylabel('Proportion', fontsize=fontsize)
+    ax.legend(title=legend_title, bbox_to_anchor=(1.05, 1), fontsize=fontsize - 2)
     plt.tight_layout()
+    return fig
 
 
 # %% ========== Data Loading ==========
@@ -68,7 +70,7 @@ parsers = utils.parser_all()
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
-parsers['data_parser'].ibm_fe = True
+#parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 #parsers['data_parser'].train_for_final = True
 parsers['fl_parser'].fl_algo = 'FedAvg'
@@ -90,18 +92,62 @@ self = manager
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
 
-test123 = (df['regular_data']['train_data']['x']['From Bank'] == 3) | (df['regular_data']['train_data']['x']['To Bank'] == 3)
+# %%
 
-self.parties[0].data['train_data']['df']
-len(self.parties[0].data['vali_data']['pred_indices'])
-len(self.parties[0].data['test_data']['pred_indices'])
+train_indices = []
+vali_indices = []
+test_indices = []
+for bank_id, party in self.parties.items():
+    
+    data = party.data['train_data']['df']
+    train_indices += party.indices['train_indices']
+    vali_indices += party.indices['vali_indices']
+    test_indices += party.indices['test_indices']
 
-len(self.parties.keys())
-self.parties[4].data['train_data']['df'].edge_attr
 
+len(set(test_indices))
+list(set(test_indices))
+
+sum(df['regular_data']['train_data']['x'].loc[list(set(train_indices)),'Is Laundering'])
+sum(df['regular_data']['vali_data']['x'].loc[list(set(vali_indices)),'Is Laundering'])
+sum(df['regular_data']['test_data']['x'].loc[list(set(test_indices)),'Is Laundering'])
+
+sum(df['regular_data']['train_data']['x'].loc[:,'Is Laundering'])
+sum(df['regular_data']['vali_data']['x'].loc[:,'Is Laundering'])
+sum(df['regular_data']['test_data']['x'].loc[:,'Is Laundering'])
+
+
+def load_relevant_banks(parsers):
+
+    save_direc = config.save_direc_training
+    save_direc = os.path.join(save_direc, 'relevant_banks')
+    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
+    
+    file_location = os.path.join(save_direc, str_folder)
+
+    with open(file_location, 'r') as file:
+        relevant_banks = json.load(file)
+
+    return relevant_banks
+
+
+import configs.configs as config
+import json
+relevant_banks = load_relevant_banks(parsers).get(parsers['fl_parser'].fl_algo)
+
+len(relevant_banks['train_banks'])
+len(self.parties)
+len(self.vali_parties)
+len(self.test_parties)
 
 
 # %% ========== Stat Calculations ==========
+
+
+# ===========================================================================================
+# ==================================== STAT CALCULATIONS ====================================
+# ===========================================================================================
+
 
 
 PATTERN_LABELS = {
@@ -131,13 +177,18 @@ PAYMENT_LABELS = {
 
 # Maybe look at what happens if banks with less than 1000 edges are removed?
 
-n_laundering_train = np.sum(df['regular_data']['train_data']['x']['Is Laundering'])
+#data_str = 'test_data'
+#parties = self.test_parties
+data_str = 'train_data'
+parties = self.parties
+
+n_laundering_train = np.sum(df['regular_data'][data_str]['x']['Is Laundering'])
 
 stats = []
-for bank_id, party in self.parties.items():
+for bank_id, party in parties.items():
 
-    data = party.data['train_data']['df']
-    edge_attr = party.data['train_data']['df'].edge_attr.numpy()
+    data = party.data[data_str]['df']
+    edge_attr = party.data[data_str]['df'].edge_attr.numpy()
     currency_dist = Counter(edge_attr[:, 2].tolist())
     payment_dist = Counter(edge_attr[:, 3].tolist())
 
@@ -169,111 +220,109 @@ currency_cols = list(CURRENCY_LABELS.values())
 payment_cols = list(PAYMENT_LABELS.values())
 
 
-# %% ========== Edge & Node Distributions ==========
-
-# ---------------------------------------------------------------------------------------
-# Edge, nodes and laundering distributions analysis ----------------------------------------
-# ---------------------------------------------------------------------------------------
-
-
-# A look at disitributions of number of nodes and number of edges
-
-fig, axes = plt.subplots(2, 1, figsize=(20, 15))
-
-axes[0].hist(stats_df['n_nodes'], bins=200, edgecolor='black', log = False)
-axes[0].set_xlabel('Number of nodes in local network')
-axes[0].set_ylabel('Number of banks')
-
-axes[1].hist(stats_df['n_edges'], bins=200, edgecolor='black', log = False)
-axes[1].set_xlabel('Number of edges in local network')
-axes[1].set_ylabel('Number of banks')
-
-
-
 
 # %% ========== Edge & Node Distributions ==========
 
-# Upper hist that shows the number of nodes in descending order.
-# Lower hist shows the number of edges sorted by the number of nodes in descending order
 
-fig, axes = plt.subplots(2, 1, figsize=(20, 15))
-
-sorted_df = stats_df.sort_values('n_nodes', ascending=False)
-axes[0].bar(range(len(sorted_df)), sorted_df['n_nodes'])
-axes[0].set_ylabel('Number of nodes')
-
-axes[1].bar(range(len(sorted_df)), sorted_df['n_edges'])
-axes[1].set_ylabel('Number of edges')
-axes[1].set_xlabel('Banks (sorted by node count)')
+# ===========================================================================================
+# ==================== EDGE, NODES AND LAUNDERING DSITRIBUTIONS ANALYSIS ====================
+# ===========================================================================================
 
 
+FONTSIZE = 11
+
+import os
+SAVE_DIR = '/home/nam_07/projects/AML_work_study/AML_work_study/analysis/figures'
+os.makedirs(SAVE_DIR, exist_ok=True)
+
+from matplotlib.ticker import FuncFormatter
+thousands_fmt = FuncFormatter(lambda x, _: f'{x/1000:.0f}k' if x >= 1000 else f'{x:.0f}')
+
+fig, axes = plt.subplots(1, 2, figsize=(7, 3))
+axes[0].hist(stats_df['n_nodes'], bins=50, edgecolor='black')
+axes[0].set_xlabel('Number of nodes', fontsize=FONTSIZE)
+axes[0].set_ylabel('Number of banks', fontsize=FONTSIZE)
+axes[0].xaxis.set_major_formatter(thousands_fmt)
+
+axes[1].hist(stats_df['n_edges'], bins=50, edgecolor='black')
+axes[1].set_xlabel('Number of edges', fontsize=FONTSIZE)
+axes[1].set_ylabel('Number of banks', fontsize=FONTSIZE)
+axes[1].xaxis.set_major_formatter(thousands_fmt)
+
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'node_edge_hist.pdf'), bbox_inches='tight')
 
 
-# %% ========== Fraud Rate Analysis ==========
+# %% ========== Edge & Node Distributions ==========
 
-# Histograms that show:
-#  The number of fraud transactions that in the banks local subgraphs
-#  The fraud rate, i.e. number_frauds/local_sample_size.
-#  The percentage of fraud they observe out of the total fraud cases
+# Bar charts sorted by number of edges in descending order
 
-fig, axes = plt.subplots(2, 1, figsize=(14, 10))
-
-axes[0].hist(stats_df['n_fraud'], bins=200, edgecolor='black', log = False)
-axes[0].set_xlabel('Number of observed fraud transactions')
-axes[0].set_ylabel('Number of banks')
-
-axes[1].hist(stats_df['fraud_rate'], bins=200, edgecolor='black', log = False)
-axes[1].set_xlabel('Fraud rate (%)')
-axes[1].set_ylabel('Number of banks')
-
-
-
-# %% ========== Fraud Rate Analysis ==========
-
-# Now the same histograms as above, but sorted by the number of edges in descending order
-
-fig, axes = plt.subplots(3, 1, figsize=(14, 10))
-
+fig, axes = plt.subplots(2, 1, figsize=(7, 4))
 sorted_df = stats_df.sort_values('n_edges', ascending=False)
-axes[0].bar(range(len(sorted_df)), sorted_df['n_edges'])
-axes[0].set_ylabel('Number of edges')
+axes[0].bar(range(len(sorted_df)), sorted_df['n_edges'], width=1.0)
+axes[0].set_ylabel('Number of edges', fontsize=FONTSIZE)
+axes[0].yaxis.set_major_formatter(thousands_fmt)
 
-axes[1].bar(range(len(sorted_df)), sorted_df['n_fraud'])
-axes[1].set_ylabel('Number of fraud cases')
+axes[1].bar(range(len(sorted_df)), sorted_df['n_nodes'], width=1.0)
+axes[1].set_ylabel('Number of nodes', fontsize=FONTSIZE)
+axes[1].set_xlabel('Banks (sorted by edge count)', fontsize=FONTSIZE)
+axes[1].yaxis.set_major_formatter(thousands_fmt)
 
-axes[2].bar(range(len(sorted_df)), sorted_df['fraud_rate'])
-axes[2].set_ylabel('Fraud rate (%)')
-
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'edge_node_sorted_bars.pdf'), bbox_inches='tight')
 
 
 # %% ========== Fraud Rate Analysis ==========
 
-# Scatter plots
+# Histograms of fraud count and fraud rate across banks
+
+fig, axes = plt.subplots(1, 2, figsize=(7, 3))
+axes[0].hist(stats_df['n_fraud'], bins=50, edgecolor='black')
+axes[0].set_xlabel('Number of fraud transactions', fontsize=FONTSIZE)
+axes[0].set_ylabel('Number of banks', fontsize=FONTSIZE)
+
+axes[1].hist(stats_df['fraud_rate'], bins=50, edgecolor='black')
+axes[1].set_xlabel('Fraud rate (%)', fontsize=FONTSIZE)
+axes[1].set_ylabel('Number of banks', fontsize=FONTSIZE)
+
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'fraud_hist.pdf'), bbox_inches='tight')
 
 
-fig, ax = plt.subplots(figsize=(10, 7))
-scatter = ax.scatter(
-    stats_df['n_edges'], 
-    stats_df['fraud_rate'], 
-    s=stats_df['n_fraud'],  # bubble size = fraud count
-    alpha=0.6
-)
-ax.set_xlabel('Number of edges')
-ax.set_ylabel('Fraud rate (%)')
-ax.set_title('Edges vs Fraud Rate (bubble size = fraud count)')
+# %% ========== Fraud Rate Analysis ==========
+
+# Banks sorted by number of edges: edge count, fraud count and fraud rate
+
+fig, axes = plt.subplots(3, 1, figsize=(7, 5.5))
+sorted_df = stats_df.sort_values('n_edges', ascending=False)
+axes[0].bar(range(len(sorted_df)), sorted_df['n_edges'], width=1.0)
+axes[0].set_ylabel('Number of edges', fontsize=FONTSIZE)
+axes[0].yaxis.set_major_formatter(thousands_fmt)
+
+axes[1].bar(range(len(sorted_df)), sorted_df['n_fraud'], width=1.0)
+axes[1].set_ylabel('Fraud cases', fontsize=FONTSIZE)
+
+axes[2].bar(range(len(sorted_df)), sorted_df['fraud_rate'], width=1.0)
+axes[2].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+axes[2].set_xlabel('Banks (sorted by edge count)', fontsize=FONTSIZE)
+
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'fraud_sorted_bars.pdf'), bbox_inches='tight')
 
 
-fig, ax = plt.subplots(figsize=(10, 7))
-scatter = ax.scatter(
-    stats_df['n_edges'], 
-    stats_df['n_fraud'], 
-    s=stats_df['fraud_rate'] * 100,  # bubble size = fraud count
-    alpha=0.6
-)
-ax.set_xlabel('Number of edges')
-ax.set_ylabel('Number of fraud edges')
-ax.set_title('Edges vs fraud cases (bubble size = fraud rate (%))')
+# %% ========== Fraud Rate Analysis ==========
 
+fig, ax = plt.subplots(figsize=(5, 3.5))
+
+ax.scatter(stats_df['n_edges'], stats_df['fraud_rate'],
+           s=stats_df['n_fraud'], alpha=0.6)
+ax.set_xlabel('Number of edges', fontsize=FONTSIZE)
+ax.set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+ax.set_title('Bubble size = fraud count', fontsize=FONTSIZE)
+ax.xaxis.set_major_formatter(thousands_fmt)
+
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'fraud_scatter.pdf'), bbox_inches='tight')
 
 
 # %% ========== Fraud Rate Analysis ==========
@@ -288,21 +337,20 @@ for col in ['n_edges', 'n_fraud', 'fraud_rate']:
 
 # %% ========== Laundering Patterns ==========
 
-# ---------------------------------------------------------------------------------------
-# Analysis of patterns --------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------
-
+# ==========================================================================================
+# ================================== ANALYSIS OF PATTERNS ==================================
+# ==========================================================================================
 
 # Now to look at the distribution of the laudering patterns
-
-plot_proportion_heatmap(stats_df, pattern_cols, 'Pattern type')
-
-
-
-# %% ========== Laundering Patterns ==========
+fig = plot_proportion_heatmap(stats_df, pattern_cols, 'Pattern type')
+plt.savefig(os.path.join(SAVE_DIR, 'pattern_heatmap.pdf'), bbox_inches='tight')
 
 
-plot_proportion_stacked_bar(stats_df, pattern_cols, legend_title='Pattern')
+# %%
+
+fig = plot_proportion_stacked_bar(stats_df, pattern_cols, legend_title='Pattern', N = 50)
+plt.savefig(os.path.join(SAVE_DIR, 'pattern_stacked_bar.pdf'), bbox_inches='tight')
+
 
 
 
@@ -326,78 +374,75 @@ proportions = pattern_counts.div(pattern_counts.sum(axis=1), axis=0).fillna(0)
 
 
 bank_entropy = [entropy(row) for _, row in proportions.iterrows()]
-plt.scatter(stats_df['n_edges'], bank_entropy)
-plt.xlabel('Number of edges')
-plt.ylabel('Pattern entropy')
+
+fig, ax = plt.subplots(figsize=(5, 3.5))
+ax.scatter(stats_df['n_edges'], bank_entropy, alpha=0.5)
+ax.set_xlabel('Number of edges', fontsize=FONTSIZE)
+ax.set_ylabel('Pattern entropy', fontsize=FONTSIZE)
+ax.xaxis.set_major_formatter(thousands_fmt)
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'pattern_entropy_scatter.pdf'), bbox_inches='tight')
 
 
 
 
+# %% ========== Feature Distributions ==========
 
 
+# ==========================================================================================
+# ================================== ANALYSIS OF FEATURES ==================================
+# ==========================================================================================
 
 
+fig, axes = plt.subplots(1, 2, figsize=(7, 3))
 
+axes[0].hist(stats_df['amount_received_mean'], bins=50, edgecolor='black')
+axes[0].set_xlabel('Mean amount received', fontsize=FONTSIZE)
+axes[0].set_ylabel('Number of banks', fontsize=FONTSIZE)
 
-
- # %% ========== Feature Distributions ==========
-
-
-# ---------------------------------------------------------------------------------------
-# Analysis of Features --------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------
-
-
-
-fig, axes = plt.subplots(2, 1, figsize=(20, 15))
-
-axes[0].hist(stats_df['amount_received_mean'], bins=200, edgecolor='black', log = False)
-axes[0].set_xlabel('Number of nodes in local network')
-axes[0].set_ylabel('Number of banks')
-#axes[0].set_title('Number of nodes in local network')
-
-axes[1].hist(stats_df['amount_received_std'], bins=200, edgecolor='black', log = False)
-axes[1].set_xlabel('Number of edges in local network')
-axes[1].set_ylabel('Number of banks')
+axes[1].hist(stats_df['amount_received_std'], bins=50, edgecolor='black')
+axes[1].set_xlabel('Std of amount received', fontsize=FONTSIZE)
+axes[1].set_ylabel('Number of banks', fontsize=FONTSIZE)
 
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(SAVE_DIR, 'amount_received_hist.pdf'), bbox_inches='tight')
 
+
+# %%
+
+fig, ax = plt.subplots(figsize=(5, 3.5))
+ax.scatter(stats_df['amount_received_mean'], stats_df['timestamp_mean'], alpha=0.6)
+ax.set_xlabel('Mean amount received', fontsize=FONTSIZE)
+ax.set_ylabel('Mean timestamp', fontsize=FONTSIZE)
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'amount_vs_timestamp.pdf'), bbox_inches='tight')
 
 
 
 # %%
 
+# Currency distribution across banks
 
-fig, ax = plt.subplots(figsize=(10, 7))
-scatter = ax.scatter(
-    stats_df['amount_received_mean'], 
-    stats_df['timestamp_mean'], 
-    #s=stats_df['n_fraud'],  # bubble size = fraud count
-    alpha=0.6
-)
-ax.set_xlabel('Number of edges')
-ax.set_ylabel('Fraud rate (%)')
-ax.set_title('Edges vs Fraud Rate (bubble size = fraud count)')
+fig = plot_proportion_heatmap(stats_df, currency_cols, 'Received currency type')
+plt.savefig(os.path.join(SAVE_DIR, 'currency_heatmap.pdf'), bbox_inches='tight')
 
+# %%
+
+fig = plot_proportion_stacked_bar(stats_df, currency_cols, legend_title='Currency')
+plt.savefig(os.path.join(SAVE_DIR, 'currency_stacked_bar.pdf'), bbox_inches='tight')
 
 
 # %%
 
-# some of like sorting amounts for the currency they were sent/received in
+# Payment format distribution across banks
 
-
-plot_proportion_heatmap(stats_df, currency_cols, 'Received currency type')
-plot_proportion_stacked_bar(stats_df, currency_cols, legend_title='Currency')
-
-stats_df[currency_cols]
-
-
+fig = plot_proportion_heatmap(stats_df, payment_cols, 'Payment format type')
+plt.savefig(os.path.join(SAVE_DIR, 'payment_heatmap.pdf'), bbox_inches='tight')
 
 # %%
 
-plot_proportion_heatmap(stats_df, payment_cols, 'Payment format type')
-plot_proportion_stacked_bar(stats_df, payment_cols, legend_title='Payment format')
+fig = plot_proportion_stacked_bar(stats_df, payment_cols, legend_title='Payment format')
+plt.savefig(os.path.join(SAVE_DIR, 'payment_stacked_bar.pdf'), bbox_inches='tight')
 
 
 # %% ========== Amount by Currency ==========
@@ -447,17 +492,18 @@ print(summary_df.to_string())
 
 # Visual comparison of summary stats across currencies
 
-fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+fig, axes = plt.subplots(1, 3, figsize=(7, 3.5))
 
 x = np.arange(len(summary_df))
 for ax, col, title in zip(axes, ['mean', 'std', 'max'], ['Mean', 'Std', 'Max']):
     ax.bar(x, summary_df[col])
     ax.set_xticks(x)
-    ax.set_xticklabels(summary_df.index, rotation=45, ha='right')
-    ax.set_ylabel('Amount received')
-    ax.set_title(title)
+    ax.set_xticklabels(summary_df.index, rotation=90, ha='center', fontsize=FONTSIZE - 3)
+    ax.set_ylabel('Amount received', fontsize=FONTSIZE - 1)
+    ax.set_title(title, fontsize=FONTSIZE)
 
 plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'currency_amount_summary.pdf'), bbox_inches='tight')
 
 
 # %% ========== Amount by Currency ==========
@@ -471,30 +517,32 @@ n = len(currencies_with_data)
 ncols = 3
 nrows = (n + ncols - 1) // ncols
 
-fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows))
+fig, axes = plt.subplots(nrows, ncols, figsize=(7, 2.5 * nrows))
 axes = axes.flatten()
 
 for i, currency in enumerate(currencies_with_data):
     arr = np.array(all_amounts_by_currency[currency])
     cutoff = np.percentile(arr, UPPER_PERCENTILE)
     filtered = arr[arr <= cutoff]
-    axes[i].hist(filtered, bins=80, edgecolor='black')
-    axes[i].set_title(f'{currency} (n={len(arr)}, shown={len(filtered)})')
-    axes[i].set_xlabel('Amount received')
-    axes[i].set_ylabel('Count')
+    axes[i].hist(filtered, bins=50, edgecolor='black')
+    axes[i].set_title(f'{currency} (n={len(arr):,})', fontsize=FONTSIZE - 2)
+    axes[i].set_xlabel('Amount received', fontsize=FONTSIZE - 2)
+    axes[i].set_ylabel('Count', fontsize=FONTSIZE - 2)
+    axes[i].tick_params(labelsize=FONTSIZE - 3)
 
 for i in range(n, len(axes)):
     axes[i].set_visible(False)
 
-plt.suptitle(f'Amount received by currency (full dataset, <p{UPPER_PERCENTILE})')
+plt.suptitle(f'Amount received by currency (full dataset, <p{UPPER_PERCENTILE})', fontsize=FONTSIZE)
 plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'currency_amount_full_hist.pdf'), bbox_inches='tight')
 
 
 # %% ========== Amount by Currency ==========
 
 # Per party: distribution of mean amounts across banks (outliers above p99 removed)
 
-fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows))
+fig, axes = plt.subplots(nrows, ncols, figsize=(7, 2.5 * nrows))
 axes = axes.flatten()
 
 for i, currency in enumerate(currencies_with_data):
@@ -502,15 +550,17 @@ for i, currency in enumerate(currencies_with_data):
     cutoff = np.percentile(vals, UPPER_PERCENTILE)
     filtered = vals[vals <= cutoff]
     axes[i].hist(filtered, bins=50, edgecolor='black')
-    axes[i].set_title(f'{currency} (n={len(vals)} banks, shown={len(filtered)})')
-    axes[i].set_xlabel('Mean amount received')
-    axes[i].set_ylabel('Number of banks')
+    axes[i].set_title(f'{currency} (n={len(vals)} banks)', fontsize=FONTSIZE - 2)
+    axes[i].set_xlabel('Mean amount received', fontsize=FONTSIZE - 2)
+    axes[i].set_ylabel('Number of banks', fontsize=FONTSIZE - 2)
+    axes[i].tick_params(labelsize=FONTSIZE - 3)
 
 for i in range(n, len(axes)):
     axes[i].set_visible(False)
 
-plt.suptitle(f'Per-bank mean amount by currency (<p{UPPER_PERCENTILE})')
+plt.suptitle(f'Per-bank mean amount by currency (<p{UPPER_PERCENTILE})', fontsize=FONTSIZE)
 plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'currency_amount_perbank_hist.pdf'), bbox_inches='tight')
 
 
 # %% ========== Inter-bank vs Intra-bank ==========
@@ -520,7 +570,9 @@ plt.tight_layout()
 # ---------------------------------------------------------------------------------------
 
 train_df = df['regular_data']['train_data']['x']
-party_banks = set(self.parties.keys())
+#train_df = df['regular_data']['vali_data']['x']
+#train_df = df['regular_data']['test_data']['x']
+party_banks = set(parties.keys())
 
 inter_intra_stats = []
 for bank_id in party_banks:
@@ -576,11 +628,13 @@ plt.tight_layout()
 
 # Scatter: bank size vs intra-bank proportion
 
-fig, ax = plt.subplots(figsize=(10, 7))
+fig, ax = plt.subplots(figsize=(5, 3.5))
 ax.scatter(ii_df['n_total'], ii_df['intra_pct'], alpha=0.5)
-ax.set_xlabel('Number of edges')
-ax.set_ylabel('Intra-bank proportion (%)')
-ax.set_title('Bank size vs intra-bank proportion')
+ax.set_xlabel('Number of edges', fontsize=FONTSIZE)
+ax.set_ylabel('Intra-bank proportion (%)', fontsize=FONTSIZE)
+ax.xaxis.set_major_formatter(thousands_fmt)
+plt.tight_layout()
+plt.savefig(os.path.join(SAVE_DIR, 'intra_proportion_scatter.pdf'), bbox_inches='tight')
 
 
 # %% ========== Inter-bank vs Intra-bank ==========
@@ -605,6 +659,117 @@ axes[1].set_xlabel('Intra-bank fraud rate (%)')
 axes[1].set_ylabel('Inter-bank fraud rate (%)')
 axes[1].set_title('Intra vs inter fraud rate per bank')
 
+plt.tight_layout()
+
+
+# %% ========== Filtered Analysis: Excluding Small Banks ==========
+
+# ---------------------------------------------------------------------------------------
+# Repeat key plots after removing small banks (few edges/transactions)
+# ---------------------------------------------------------------------------------------
+
+# How many banks survive at different thresholds?
+for threshold in [1000, 2500, 5000]:
+    n_keep = (stats_df['n_edges'] >= threshold).sum()
+    n_total = len(stats_df)
+    print(f"MIN_EDGES >= {threshold}: {n_keep}/{n_total} banks remain ({n_keep/n_total*100:.1f}%)")
+
+
+# %%
+
+MIN_EDGES = 1000
+
+filtered_stats_df = stats_df[stats_df['n_edges'] >= MIN_EDGES].copy()
+filtered_ii_df = ii_df[ii_df['n_total'] >= MIN_EDGES].copy()
+
+print(f"Threshold: {MIN_EDGES} edges")
+print(f"Banks kept: {len(filtered_stats_df)} / {len(stats_df)}")
+print(f"Banks kept (inter/intra): {len(filtered_ii_df)} / {len(ii_df)}")
+
+
+# %% ========== Filtered: Fraud Rate Scatter ==========
+
+fig, axes = plt.subplots(1, 2, figsize=(20, 7))
+
+axes[0].scatter(stats_df['n_edges'], stats_df['fraud_rate'],
+                s=stats_df['n_fraud'], alpha=0.6)
+axes[0].set_xlabel('Number of edges')
+axes[0].set_ylabel('Fraud rate (%)')
+axes[0].set_title('All banks')
+
+axes[1].scatter(filtered_stats_df['n_edges'], filtered_stats_df['fraud_rate'],
+                s=filtered_stats_df['n_fraud'], alpha=0.6)
+axes[1].set_xlabel('Number of edges')
+axes[1].set_ylabel('Fraud rate (%)')
+axes[1].set_title(f'Banks with >= {MIN_EDGES} edges')
+
+plt.suptitle('Edges vs Fraud Rate (bubble size = fraud count)')
+plt.tight_layout()
+
+
+# %% ========== Filtered: Pattern Heatmap ==========
+
+plot_proportion_heatmap(filtered_stats_df, pattern_cols, 'Pattern type')
+plt.title(f'Pattern proportions (banks with >= {MIN_EDGES} edges)')
+
+
+# %% ========== Filtered: Inter-bank vs Intra-bank ==========
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+
+# Top row: intra-bank proportion
+axes[0, 0].hist(ii_df['intra_pct'], bins=50, edgecolor='black')
+axes[0, 0].set_xlabel('Intra-bank proportion (%)')
+axes[0, 0].set_ylabel('Number of banks')
+axes[0, 0].set_title('All banks')
+
+axes[0, 1].hist(filtered_ii_df['intra_pct'], bins=50, edgecolor='black')
+axes[0, 1].set_xlabel('Intra-bank proportion (%)')
+axes[0, 1].set_ylabel('Number of banks')
+axes[0, 1].set_title(f'>= {MIN_EDGES} edges')
+
+# Bottom row: fraud rate comparison
+vals_intra_all = ii_df['intra_fraud_rate'].dropna()
+vals_inter_all = ii_df['inter_fraud_rate'].dropna()
+axes[1, 0].hist(vals_intra_all, bins=50, edgecolor='black', alpha=0.7, label='Intra')
+axes[1, 0].hist(vals_inter_all, bins=50, edgecolor='black', alpha=0.7, label='Inter')
+axes[1, 0].set_xlabel('Fraud rate (%)')
+axes[1, 0].set_ylabel('Number of banks')
+axes[1, 0].legend()
+axes[1, 0].set_title('All banks')
+
+vals_intra_f = filtered_ii_df['intra_fraud_rate'].dropna()
+vals_inter_f = filtered_ii_df['inter_fraud_rate'].dropna()
+axes[1, 1].hist(vals_intra_f, bins=50, edgecolor='black', alpha=0.7, label='Intra')
+axes[1, 1].hist(vals_inter_f, bins=50, edgecolor='black', alpha=0.7, label='Inter')
+axes[1, 1].set_xlabel('Fraud rate (%)')
+axes[1, 1].set_ylabel('Number of banks')
+axes[1, 1].legend()
+axes[1, 1].set_title(f'>= {MIN_EDGES} edges')
+
+plt.suptitle('Inter-bank vs Intra-bank: All vs Filtered')
+plt.tight_layout()
+
+
+# %% ========== Filtered: Intra vs Inter Fraud Scatter ==========
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+
+axes[0].scatter(ii_df['intra_fraud_rate'], ii_df['inter_fraud_rate'], alpha=0.5)
+lim = max(axes[0].get_xlim()[1], axes[0].get_ylim()[1])
+axes[0].plot([0, lim], [0, lim], 'r--', alpha=0.5)
+axes[0].set_xlabel('Intra-bank fraud rate (%)')
+axes[0].set_ylabel('Inter-bank fraud rate (%)')
+axes[0].set_title('All banks')
+
+axes[1].scatter(filtered_ii_df['intra_fraud_rate'], filtered_ii_df['inter_fraud_rate'], alpha=0.5)
+lim = max(axes[1].get_xlim()[1], axes[1].get_ylim()[1])
+axes[1].plot([0, lim], [0, lim], 'r--', alpha=0.5)
+axes[1].set_xlabel('Intra-bank fraud rate (%)')
+axes[1].set_ylabel('Inter-bank fraud rate (%)')
+axes[1].set_title(f'>= {MIN_EDGES} edges')
+
+plt.suptitle('Intra vs Inter Fraud Rate per Bank')
 plt.tight_layout()
 
 

@@ -27,13 +27,18 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
                           nan_count, 100 * nan_count / len(y_pred_probabilities))
         y_pred_probabilities = np.nan_to_num(y_pred_probabilities, nan=0.0)
 
+    # roc_auc_score and average_precision_score require both classes in y_true
+    n_classes = len(np.unique(y_true))
+    if n_classes < 2:
+        logger.warning("Only one class present in y_true - ROC-AUC and PR-AUC are undefined")
+
     results = {
         'f1': f1_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
         'precision': precision_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
         'recall': recall_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
         'accuracy': accuracy_score(y_true, y_pred_binary),
-        'roc_auc': roc_auc_score(y_true, y_pred_probabilities),
-        'pr_auc': average_precision_score(y_true, y_pred_probabilities)
+        'roc_auc': roc_auc_score(y_true, y_pred_probabilities) if n_classes >= 2 else 0.0,
+        'pr_auc': average_precision_score(y_true, y_pred_probabilities) if n_classes >= 2 else 0.0
     }
 
     # Warn about unusual metric values
@@ -64,20 +69,12 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None, 
         mode: 'eval' for vali data (default), 'test' for test data.
     """
 
-    # Get data and indices based on mode
-    if mode == 'test':
-        get_data_fn = party.get_test_data
-        get_indices_fn = party.get_test_indices
-    else:
-        get_data_fn = party.get_eval_data
-        get_indices_fn = party.get_eval_indices
+    # Get indices based on mode
+    get_indices_fn = party.get_test_indices if mode == 'test' else party.get_eval_indices
 
-    # make predictions and get prediction indices
+    # make predictions
     if pred_probabilities is None:
-        if party.args['fl_parser'].fl_algo == 'individual':
-            pred_probabilities = party.model.predict(get_data_fn())
-        else:
-            pred_probabilities = party.model.predict_no_batching(get_data_fn())
+        pred_probabilities = party.get_predictions(mode=mode)
 
     # Check for unusual predictions
     if np.isnan(pred_probabilities).any():

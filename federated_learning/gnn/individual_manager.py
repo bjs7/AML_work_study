@@ -66,13 +66,14 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         logger.info("Training %d individual banks", len(self.parties))
         for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
             logger.debug("Training bank %s (%d/%d)", bank_id, idx, len(self.parties))
-            self.init_models(hyperparameters[bank_id], bank_id)
+            
+            self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
             party_lv_vali = self._helper_party_tuning(party, laundering_values_vali)
             party_lv_test = self._helper_party_test(party, laundering_values_test)
 
             tmp_model = party.train(party_lv_vali, party_lv_test)
             models_hyperparameters[bank_id] = {'model': tmp_model['model'],
-                                               'hyperparameters': hyperparameters[bank_id]}
+                                               'hyperparameters': hyperparameters[bank_id]['hyperparameters']}
 
             party_predictions[bank_id] = tmp_model['laundering_values']['pred_probabilities']
             party_individual_performans[bank_id] = tmp_model['metrics']

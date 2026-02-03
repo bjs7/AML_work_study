@@ -19,11 +19,28 @@ def save_results(results, hyperparams, manager):
 
     # get general folders
     str_testing = 'testing' if manager.args['data_parser'].testing else ''
+    fl_algo = manager.args['fl_parser'].fl_algo
+
+    # Build algo-specific subfolder
+    if fl_algo == 'FedGraph':
+        algo_subfolder = manager.args['fl_parser'].aggregation
+    elif fl_algo in ('FedAvg', 'FedProx'):
+        fl_p = manager.args['fl_parser']
+        weighting = getattr(fl_p, 'weighting', 'proportional')
+        C = getattr(fl_p, 'client_fraction', 1.0)
+        E = getattr(fl_p, 'num_local_epochs', 1)
+        mu = getattr(fl_p, 'mu', 0.0)
+        algo_subfolder = f'{weighting}_C{C}_E{E}'
+        if mu > 0:
+            algo_subfolder += f'_mu{mu}'
+    else:
+        algo_subfolder = ''
+
     save_direc = os.path.join(config.save_direc_training, str_testing,
                             manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
                             f'split_{config.split_perc[0]}_{config.split_perc[1]}',
-                            manager.args['fl_parser'].fl_algo,
-                            manager.args['fl_parser'].aggregation)
+                            fl_algo,
+                            algo_subfolder)
 
     str_folder = manager.args['fl_parser'].model
     model_tuning_configs = utils.get_tuning_configs(manager.args).get(manager.args['data_parser'].scenario)
@@ -196,7 +213,12 @@ def create_experiment_config(manager):
         },
         "fl": {
             "fl_algo": manager.args['fl_parser'].fl_algo,
-            "scenario": manager.args['data_parser'].scenario
+            "scenario": manager.args['data_parser'].scenario,
+            "aggregation": manager.args['fl_parser'].aggregation,
+            "weighting": getattr(manager.args['fl_parser'], 'weighting', 'proportional'),
+            "client_fraction": getattr(manager.args['fl_parser'], 'client_fraction', 1.0),
+            "num_local_epochs": getattr(manager.args['fl_parser'], 'num_local_epochs', 1),
+            "mu": getattr(manager.args['fl_parser'], 'mu', 0.0)
         },
         "model": {
             "model_type": manager.args['fl_parser'].model_type,

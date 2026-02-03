@@ -31,8 +31,8 @@ class GNN(ABC):
     def __init__(self, manager, hyperparams, node_features, edge_dim):
         super().__init__()
         self._get_gnn_loss_optimizer(manager, hyperparams, node_features, edge_dim)
-        # I could potentially also ahve the data in here, if it is just pointers
-        # but keep it out for now
+        self._mu = getattr(manager.args['fl_parser'], 'mu', 0.0)
+        self._global_weight_ref = None
 
     @staticmethod
     def _create_gnn_model(manager, hyperparams, node_features, edge_dim):
@@ -45,7 +45,7 @@ class GNN(ABC):
         # FedGraph/FedAvg: parties compute locally with potentially very few observations,
         # so BatchNorm can fail. Always use LayerNorm for these algorithms.
         fl_algo = manager.args['fl_parser'].fl_algo
-        use_batchnorm = manager.args['data_parser'].batching and fl_algo not in ('FedGraph', 'FedAvg')
+        use_batchnorm = manager.args['data_parser'].batching and fl_algo not in ('FedGraph', 'FedAvg', 'FedProx')
 
         arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('num_gnn_layers'),
                     'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),
@@ -56,8 +56,21 @@ class GNN(ABC):
         
         return gnn_init(**arguments)
 
-    def _init_model_configs(self):
-        return 0
+    def set_global_weight_reference(self):
+        """Snapshot current model parameters as the global reference for FedProx proximal term."""
+        self._global_weight_ref = {
+            name: param.data.clone().detach()
+            for name, param in self.gnn.named_parameters()
+        }
+
+    def _proximal_term(self):
+        """Compute (mu/2) * ||w_local - w_global||^2. Returns 0.0 if not applicable."""
+        if self._global_weight_ref is None or self._mu == 0.0:
+            return 0.0
+        prox = 0.0
+        for name, param in self.gnn.named_parameters():
+            prox += ((param - self._global_weight_ref[name]) ** 2).sum()
+        return (self._mu / 2.0) * prox
 
     def _get_gnn_loss_optimizer(self, manager, hyperparams, node_features, edge_dim):
         self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
@@ -78,14 +91,17 @@ class GNN(ABC):
 
         loss = self.loss_fn(pred, gd.y[mask])
 
+        # FedProx proximal term
+        prox_term = self._proximal_term()
+        if prox_term != 0.0:
+            loss = loss + prox_term
+
         loss.backward()
         self.optimizer.step()
 
         return pred, gd.y[mask], loss.item()
     
     def update_weights_no_batching(self, gd):
-
-        #gd = gd.get('df')
 
         self.gnn.train()
         self.optimizer.zero_grad()
@@ -94,6 +110,11 @@ class GNN(ABC):
         gd = gd.to(device)
         pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
         loss = self.loss_fn(pred, gd.y)
+
+        # FedProx proximal term
+        prox_term = self._proximal_term()
+        if prox_term != 0.0:
+            loss = loss + prox_term
 
         loss.backward()
         self.optimizer.step()
@@ -175,7 +196,12 @@ def batching_masker(batch, data, loader, indices):
         missing_ids = batch_edge_ids[missing_seed_edges].int()
         ids_in_batch = batch_edge_ids[~missing_seed_edges].int()
 
-        edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
+        n_ids = batch.n_id
+        add_edge_index = data.edge_index[:, missing_ids].detach().clone()
+        node_mapping = {value.item(): idx for idx, value in enumerate(n_ids)}
+        edge_labels_add = torch.tensor([[node_mapping[val.item()] for val in row] for row in add_edge_index])
+
+        #edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
         edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
         y_add = data.y[missing_ids].detach().clone()
 
@@ -226,18 +252,18 @@ def batching_masker(batch, data, loader, indices):
 #                                    batch_size=8192, shuffle=False, transform=None)
 
 
-def get_loaders(train_data, eval_data, eval_indices, num_neighbors, transform = None):
+def get_loaders(train_data, eval_data, eval_indices, num_neighbors, batch_size, transform = None):
 
     train_loader = LinkNeighborLoader(train_data, num_neighbors=num_neighbors, 
                                           edge_label_index = train_data.edge_index,
                                           edge_label = train_data.y, 
-                                          batch_size=8192, shuffle=True, transform=transform)
+                                          batch_size=batch_size, shuffle=True, transform=transform)
 
 
     eval_loader = LinkNeighborLoader(eval_data, num_neighbors=num_neighbors, 
                                         edge_label_index=eval_data.edge_index[:, eval_indices],
                                         edge_label=eval_data.y[eval_indices],
-                                        batch_size=8192, shuffle=False, transform=transform)
+                                        batch_size=batch_size, shuffle=False, transform=transform)
     
     return train_loader, eval_loader
 

@@ -11,10 +11,10 @@ class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
         super().__init__(args)
         self._party = None  # Single party reference
         
-    def add_party(self, party, is_sr=False):
+    def add_party(self, party, bank_type='train'):
         if self._party is not None:
             raise ValueError("FullInfoGNNManager only supports single party")
-        super().add_party(party, is_sr=is_sr)
+        super().add_party(party, bank_type=bank_type)
         self._party = party
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):

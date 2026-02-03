@@ -376,7 +376,7 @@ def universal_features_restructure(df):
         'Payment Format', 'Amount_Sent_Normalized', 'Amount_Received_Normalized',
         'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
         'Amount_Difference_Pct', 'is_currency_exchange',
-        'From Bank', 'To Bank', 'Is Laundering']]
+        'From Bank', 'To Bank', 'Is Laundering', 'Pattern']]
     
     return df
 

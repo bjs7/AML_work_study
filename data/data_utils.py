@@ -21,12 +21,10 @@ def z_norm(data):
 # updating nodes -------------------------------------
 
 def update_nr_nodes(df):
-    # Handle empty edge_index case
-    """if df.edge_index.numel() == 0:
-        # If no edges, keep existing x or create single node
+    if df.edge_index.numel() == 0:
         if df.x is None or df.x.numel() == 0:
             df.x = torch.ones((1, 1), dtype=torch.float32)
-        return"""
+        return
 
     max_n_id = np.array(df.edge_index.max() + 1)
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
@@ -34,13 +32,11 @@ def update_nr_nodes(df):
     df.x = x
 
 def update_nr_nodes_for_gd(df):
-    # Handle empty edge_index case
-    """if df.edge_index.numel() == 0:
-        # If no edges, keep existing x or create single node
+    if df.edge_index.numel() == 0:
         if df.x is None or df.x.numel() == 0:
             df.x = torch.ones((1, 1), dtype=torch.float32)
         df.num_nodes = int(df.x.shape[0])
-        return"""
+        return
 
     max_n_id = np.array(df.edge_index.max() + 1)
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})

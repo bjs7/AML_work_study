@@ -25,13 +25,20 @@ utils.set_seed(parsers['data_parser'].seed, True)
 
 parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
-parsers['data_parser'].train_for_final = True
 parsers['data_parser'].add_ids = False
 
 #parsers['fl_parser'].fl_algo = 'FedVert'
-parsers['fl_parser'].fl_algo = 'full_info'
-parsers['data_parser'].scenario = 'full_info'
+#parsers['fl_parser'].fl_algo = 'full_info'
+#parsers['data_parser'].scenario = 'full_info'
+parsers['fl_parser'].fl_algo = 'FedAvg'
+parsers['data_parser'].batching = True
 
+parsers['fl_parser'].client_fraction = 0.25
+parsers['fl_parser'].num_local_epochs = 10
+
+
+parsers['fl_parser'].fl_algo = 'individual'
+parsers['data_parser'].scenario = 'individual_banks'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
@@ -57,13 +64,23 @@ laundering_values = laundering_values_vali
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 hyperparameters = tuned_hp
 
+self.parties[0].data['train_data']['df']
+
+#party = self.parties[0]
+party = self.parties[None]
+self = party
+
+
+
 self = manager
 #laundering_values = laundering_values_vali
 laundering_values = laundering_values_test
 
-self.args['data_parser'].testing_seeds = 2
+self.args['data_parser'].testing_seeds = 1
 
-results = self.train(tuned_hp, laundering_values_test)
+results = self.train(tuned_hp, laundering_values_vali, laundering_values_test)
+
+save_results(results, hyperparameters, manager)
 
 
 self.edge_feat_start

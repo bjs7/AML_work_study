@@ -19,18 +19,19 @@ class GNNMixinManager:
 
         return hp_list
     
-    def init_models(self, hyperparams, bank_id = None):
+    def init_models(self, hyperparams, bank_id=None):
 
         sample_party = next(iter(self.parties.values()))
         node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
         edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
         # Exclude ID column from edge dimension for FedGraph
         edge_dim -= self.edge_feat_start
-   
+
         if bank_id is not None:
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
         else:
-            for bank_id, party in self.parties.items():
+            include_test = self.mode == 'training'
+            for bank_id, party in self.iter_parties(include_test=include_test):
                 party.model = GNN(self, hyperparams, node_features, edge_dim)
 
         # need to 'save' parameters from model 1 as starting, or not, because the models will vary

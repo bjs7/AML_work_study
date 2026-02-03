@@ -1,11 +1,12 @@
 """Federated GNN Manager - coordinates training across all parties with weight aggregation."""
 
 import copy
+import random
 import utils
 import configs.configs as configs
 from inference import metrics
 import inference as flin
-from data.relevant_banks import get_relevant_banks
+from data.relevant_banks import load_relevant_banks
 from .communication import GNNCommunicationMixin
 from .manager_mixin import GNNMixinManager
 from training.utils import ibm_gnn
@@ -353,19 +354,21 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
 
-        #fr_banks, sr_banks = get_relevant_banks(parsers)
-        banks = get_relevant_banks(parsers)
+        fedavg_banks = load_relevant_banks(parsers).get('FedAvg')
+        train_banks = fedavg_banks['train_banks']
+        vali_banks = fedavg_banks['vali_banks']
+        test_banks = fedavg_banks['test_banks']
 
         if parsers['data_parser'].testing:
-            banks = banks[0:5]
-            #sr_banks = sr_banks[0:2]
+            train_banks = train_banks[0:5]
+            vali_banks = vali_banks[0:5]
+            test_banks = test_banks[0:5]
 
-        # Add and tune banks
-        utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
+        for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
+            if banks:
+                utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders, bank_type=bank_type, superset_merge=False)
+
         tuned_hp, _ = self.tuning(laundering_values)
-
-        # Add sr_banks
-        #utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders)
 
         return tuned_hp
 
@@ -378,7 +381,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         self.set_mode('tuning')
 
-        for bank_id, party in self.parties.items():
+        for bank_id, party in self.iter_parties(include_test=False):
             party.prep_data()
 
         return self._gnn_tuning(laundering_values)
@@ -417,7 +420,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         logger.info("Starting training with %d seeds for federated learning", seeds)
         logger.info("="*80)
 
-        for bank_id, party in self.parties.items():
+        for bank_id, party in self.iter_parties(include_test=True):
             party.prep_data()
 
         for seed in range(seeds):
@@ -451,6 +454,28 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         return self.fl_training(laundering_values_vali, laundering_values_test)
 
+    def _compute_party_weights(self, selected_parties, weighting):
+        """Compute aggregation weights for selected parties.
+
+        Args:
+            selected_parties: Dict of {bank_id: party} for this round's participants.
+            weighting: 'proportional' or 'uniform'.
+
+        Returns:
+            Dict mapping bank_id -> float weight (sums to 1.0).
+        """
+        if weighting == 'uniform':
+            n = len(selected_parties)
+            return {bank_id: 1.0 / n for bank_id in selected_parties}
+
+        # Proportional: w_k = n_k / sum(n_j for j in selected)
+        dataset_sizes = {}
+        for bank_id, party in selected_parties.items():
+            dataset_sizes[bank_id] = party.procs_data['train_data']['df'].num_edges
+
+        total = sum(dataset_sizes.values())
+        return {bank_id: n_k / total for bank_id, n_k in dataset_sizes.items()}
+
     def fl_training(self, laundering_values_vali, laundering_values_test):
 
         best_weights = None
@@ -458,21 +483,58 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         epochs = 20 if self.args['data_parser'].testing else configs.epochs
 
+        # Read FL config
+        fl_parser = self.args['fl_parser']
+        client_fraction = getattr(fl_parser, 'client_fraction', 1.0)
+        num_local_epochs = getattr(fl_parser, 'num_local_epochs', 1)
+        weighting = getattr(fl_parser, 'weighting', 'proportional')
+        mu = getattr(fl_parser, 'mu', 0.0)
+
+        # Party sampling setup
+        all_bank_ids = list(self.parties.keys())
+        num_total = len(all_bank_ids)
+        num_sampled = max(1, int(client_fraction * num_total))
+
+        # Setup loaders for train and eval parties (after model init)
+        for bank_id, party in self.parties.items():
+            party._setup_train_loader()
+        for bank_id, party in self.iter_parties(include_test=False):
+            party._setup_eval_loader(mode='eval')
+
+        logger.info("FL training: %d total parties, sampling %d per round, "
+                    "%d local epochs, weighting=%s, mu=%.4f",
+                    num_total, num_sampled, num_local_epochs, weighting, mu)
+
         # --- Epoch loop: train, validate on vali for model selection ---
         for epoch in range(epochs):
 
-            for bank_id, party in self.parties.items():
-                party.update_local_weights()
+            # Party sampling
+            if num_sampled < num_total:
+                sampled_bank_ids = random.sample(all_bank_ids, num_sampled)
+            else:
+                sampled_bank_ids = all_bank_ids
+
+            selected_parties = {bid: self.parties[bid] for bid in sampled_bank_ids}
+
+            # Clear parties_weights — only sampled parties contribute this round
+            self.parties_weights = {}
+
+            for bank_id, party in selected_parties.items():
+                if mu > 0:
+                    party._set_global_weight_reference()
+                party.update_local_weights(num_local_epochs=num_local_epochs)
                 party.send_local_weights(self)
 
-            self.update_global_weights()
+            # Weighted aggregation and broadcast
+            party_weights_map = self._compute_party_weights(selected_parties, weighting)
+            self.update_global_weights(party_weights_map)
             self.send_global_weights()
 
             # Evaluate on vali for model selection
             for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
                 laundering_values_vali[col] = 0
 
-            for bank_id, party in self.parties.items():
+            for bank_id, party in self.iter_parties(include_test=False):
                 flin.update_laundering_values(party, laundering_values_vali, mode='eval')
 
             f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
@@ -487,10 +549,13 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         self.global_weights = best_weights
         self.send_global_weights()
 
+        for bank_id, party in self.iter_parties(include_test=True):
+            party._setup_eval_loader(mode='test')
+
         for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
             laundering_values_test[col] = 0
 
-        for bank_id, party in self.parties.items():
+        for bank_id, party in self.iter_parties(include_test=True):
             flin.update_laundering_values(party, laundering_values_test, mode='test')
 
         best_metrics = metrics(y_true=laundering_values_test['true_y'],

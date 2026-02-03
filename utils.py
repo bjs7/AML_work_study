@@ -178,6 +178,17 @@ def fl_parser():
     parser.add_argument('--aggregation', default='shared', type=str,
                         help='Weight aggregation method: shared (single model), fedavg, fedprox, etc.')
 
+    # FedAvg / FedProx arguments
+    parser.add_argument('--client_fraction', default=1.0, type=float,
+                        help='Fraction C of clients sampled per round (1.0 = all clients)')
+    parser.add_argument('--num_local_epochs', default=1, type=int,
+                        help='Number of local training epochs E per FL round')
+    parser.add_argument('--mu', default=0.0, type=float,
+                        help='FedProx proximal term coefficient (0.0 = standard FedAvg)')
+    parser.add_argument('--weighting', default='proportional', type=str,
+                        choices=['proportional', 'uniform'],
+                        help='Aggregation weighting: proportional (by dataset size) or uniform (1/K)')
+
     return parser
 
 # data parser
@@ -244,32 +255,43 @@ def init_parties(df, parsers, manager, scaler_encoders = None):
 
 
 
-def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, bank_type='train'):
+def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, bank_type='train', superset_merge=True):
     # this part here is only used for individual banks settings
     if tuned_hp is not None:
         best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']
         tuned_hp = {bank_id: entry['hyperparameters'] for bank_id, entry in tuned_hp.items()}
 
     for bank in banks:
-        manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders), bank_type=bank_type)
+        # For non-superset scenarios (e.g. FedAvg): reuse existing party objects for overlapping banks
+        existing_party = None
+        if not superset_merge and bank_type != 'train':
+            existing_party = manager.parties.get(bank)
+            if existing_party is None:
+                existing_party = manager.vali_parties.get(bank)
+
+        if existing_party is not None:
+            manager.add_party(existing_party, bank_type=bank_type)
+        else:
+            manager._add_party(bank, df, parsers, copy.deepcopy(scaler_encoders), bank_type=bank_type)
 
         if tuned_hp is not None:
             tuned_hp[bank] = best_tuned_hp
 
     manager._num_parties = len(manager.parties)
 
-    if bank_type == 'vali':
-        manager.vali_parties = manager.parties | manager.vali_parties
-        # Sync parties to point to the same objects as vali_parties
-        for bank_id in manager.parties:
-            manager.parties[bank_id] = manager.vali_parties[bank_id]
-    elif bank_type == 'test':
-        manager.test_parties = manager.vali_parties | manager.test_parties
-        # Sync parties and vali_parties to point to the same objects as test_parties
-        for bank_id in manager.parties:
-            manager.parties[bank_id] = manager.test_parties[bank_id]
-        for bank_id in manager.vali_parties:
-            manager.vali_parties[bank_id] = manager.test_parties[bank_id]
+    if superset_merge:
+        if bank_type == 'vali':
+            manager.vali_parties = manager.parties | manager.vali_parties
+            # Sync parties to point to the same objects as vali_parties
+            for bank_id in manager.parties:
+                manager.parties[bank_id] = manager.vali_parties[bank_id]
+        elif bank_type == 'test':
+            manager.test_parties = manager.vali_parties | manager.test_parties
+            # Sync parties and vali_parties to point to the same objects as test_parties
+            for bank_id in manager.parties:
+                manager.parties[bank_id] = manager.test_parties[bank_id]
+            for bank_id in manager.vali_parties:
+                manager.vali_parties[bank_id] = manager.test_parties[bank_id]
 
     return tuned_hp
 

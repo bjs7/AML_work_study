@@ -94,7 +94,7 @@ class Manager(BaseFL, ABC):
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(parsers)
 
-    def add_party(self, party: Party, bank_type=False):
+    def add_party(self, party: Party, bank_type = 'train'):
         
         if bank_type == 'train':
             self.parties[party.bank_id] = party
@@ -135,17 +135,23 @@ class Manager(BaseFL, ABC):
         else:
             return self.test_parties
 
+    def iter_parties(self, include_test=False):
+        """Iterate over all relevant party groups dynamically.
+
+        Always yields from self.parties. Yields from self.vali_parties
+        if it has entries. Yields from self.test_parties only when
+        include_test=True and it has entries.
+        """
+        yield from self.parties.items()
+        if self.vali_parties:
+            yield from self.vali_parties.items()
+        if include_test and self.test_parties:
+            yield from self.test_parties.items()
+
     def set_mode(self, mode):
         self.mode = mode
-        if self.test_parties:
-            for _, party in self.test_parties.items():
-                party.mode = mode
-        elif self.vali_parties:
-            for _, party in self.vali_parties.items():
-                party.mode = mode
-        else:
-            for _, party in self.parties.items():
-                party.mode = mode
+        for _, party in self.iter_parties(include_test=True):
+            party.mode = mode
 
     @abstractmethod
     def init_models(self):
