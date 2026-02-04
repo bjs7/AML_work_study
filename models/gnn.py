@@ -45,7 +45,7 @@ class GNN(ABC):
         # FedGraph/FedAvg: parties compute locally with potentially very few observations,
         # so BatchNorm can fail. Always use LayerNorm for these algorithms.
         fl_algo = manager.args['fl_parser'].fl_algo
-        use_batchnorm = manager.args['data_parser'].batching and fl_algo not in ('FedGraph', 'FedAvg', 'FedProx')
+        use_batchnorm = manager.args['data_parser'].batching and manager.args['data_parser'].batchnorm and fl_algo not in ('FedGraph', 'FedAvg', 'FedProx')
 
         arguments = {'num_features': node_features, 'num_gnn_layers': hyperparams.get('num_gnn_layers'),
                     'n_classes': 2, 'n_hidden': hyperparams.get('hidden_embedding_size'),

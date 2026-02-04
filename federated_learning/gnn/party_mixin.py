@@ -296,6 +296,8 @@ class GNNMixinParty:
 
         best_model, best_f1 = None, -1
         laundering_values['pred_probabilities'], laundering_values['pred_label'] = 0, 0
+        if laundering_values_test is not None:
+            laundering_values_test['pred_probabilities'], laundering_values_test['pred_label'] = 0, 0
         bank_str = f" {self.bank_id}" if self.bank_id is not None else " full_info"
 
         (train_loader, vali_loader, test_loader,

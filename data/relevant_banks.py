@@ -30,6 +30,7 @@ def filter_banks(parsers):
     has_data_in_vali, has_data_in_test = [], []
     vali_min, test_min = [], []
     vali_min_2, test_min_2 = [], []
+    laundering_in_train_data_1, laundering_in_vali_data_1 = [], []
 
     for bank in unique_banks:
 
@@ -46,6 +47,11 @@ def filter_banks(parsers):
         if np.any(test_data['x']['Is Laundering'] == 1):
             laundering_in_test_data.append(bank)
 
+        if np.any(train_data['x']['Is Laundering'] == 1):
+            laundering_in_train_data_1.append(bank)
+        if np.any(vali_data['x']['Is Laundering'] == 1):
+            laundering_in_vali_data_1.append(bank)
+
         # check for any data in vali/test splits
         if bank_indices['vali_indices']:
             has_data_in_vali.append(bank)
@@ -56,7 +62,8 @@ def filter_banks(parsers):
         if len(bank_indices['test_indices']) < 5:
             test_min.append(bank)
 
-
+    #laundering_in_vali_data_1 == laundering_in_vali_data
+    #laundering_in_train_data_1 == laundering_in_train_data
     individual_banks = sorted(list(set(laundering_in_train_data) & set(laundering_in_vali_data) & set(has_data_in_test)))
 
     # FedAvg: three exclusive groups for add_banks_to_manager

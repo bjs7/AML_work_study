@@ -19,9 +19,9 @@ import data.data_functions as dfn
 
 # main function for extracting the data, used in main scripth -------------------------------------
 
-def get_data(df, data_paser, **kwargs):
+def get_data(df, data_parser, **kwargs):
 
-    if not data_paser.ibm_fe:
+    if not data_parser.ibm_fe:
         df = fe.universal_feature_engi(df)
         scaler_encoders = dfn.extract_enc_cats(df)
         edge_features = ['Timestamp', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
@@ -44,8 +44,9 @@ def get_data(df, data_paser, **kwargs):
     args = {key: kwargs[key] for key in valid_keys if key in kwargs}
 
 
-    if not data_paser.testing:
+    if not data_parser.testing:
         split_inds, test_perc = split_indices(timestamps, y, **args)
+        #split_inds, test_perc = split_indices(timestamps, y, [0.6, 0.2])
         indices = [np.concatenate(split_inds[i]) for i in range(0,3)]
     else:
         indices = sub_indices(df)
@@ -53,7 +54,7 @@ def get_data(df, data_paser, **kwargs):
     packed_data = {}
 
     # pack graph data
-    if data_paser.data_type == 'graph_data':
+    if data_parser.data_type == 'graph_data':
         packed_data['graph_data'] = pack_graph_data(df, y, timestamps, indices, edge_features)
 
     # pack non-graph data

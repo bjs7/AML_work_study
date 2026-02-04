@@ -36,9 +36,12 @@ def save_results(results, hyperparams, manager):
     else:
         algo_subfolder = ''
 
+    eval_mode = getattr(manager.args['data_parser'], 'eval_mode', 'system')
+
     save_direc = os.path.join(config.save_direc_training, str_testing,
                             manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
                             f'split_{config.split_perc[0]}_{config.split_perc[1]}',
+                            eval_mode,
                             fl_algo,
                             algo_subfolder)
 
@@ -208,6 +211,7 @@ def create_experiment_config(manager):
             "size": manager.args['data_parser'].size,
             "ir": manager.args['data_parser'].ir,
             "split": list(config.split_perc),
+            "eval_mode": getattr(manager.args['data_parser'], 'eval_mode', 'system'),
             "testing": manager.args['data_parser'].testing,
             "ibm_fe": manager.args['data_parser'].ibm_fe
         },

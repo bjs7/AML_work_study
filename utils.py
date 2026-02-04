@@ -50,7 +50,7 @@ def setup_get_data():
     df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
     if parsers['data_parser'].testing:
-        df = df.iloc[:round(df.shape[0] * 0.01),:]
+        df = df.iloc[:round(df.shape[0] * 0.05),:]
 
     df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
@@ -205,8 +205,11 @@ def data_parser():
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
     parser.add_argument('--use_global_stats', action='store_true', help='Use global statistics for standardization instead of local party statistics')
+    parser.add_argument('--eval_mode', default='system', type=str, choices=['system', 'comparable'],
+                        help="Evaluation mode: 'system' uses full test set; 'comparable' restricts to individual banks' data")
     parser.add_argument('--testing_seeds', default=4, type=int, help="The amount of seeds tested in the final evaluation of a model")
     #parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
+    parser.add_argument('--batchnorm', action='store_true', help="Set to True if BatchNorm should be used in the GNN model")
 
     # utils
     parser.add_argument('--testing', action='store_true')

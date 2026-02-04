@@ -30,6 +30,7 @@ parsers['data_parser'].add_ids = False
 #parsers['fl_parser'].fl_algo = 'FedVert'
 #parsers['fl_parser'].fl_algo = 'full_info'
 #parsers['data_parser'].scenario = 'full_info'
+
 parsers['fl_parser'].fl_algo = 'FedAvg'
 parsers['data_parser'].batching = True
 
@@ -45,6 +46,8 @@ df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions
 
 if parsers['data_parser'].testing:
     df = df.iloc[:round(df.shape[0] * 0.05),:]
+
+#data_paser = parsers['data_parser']
 
 df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_perc)
 
@@ -63,6 +66,28 @@ laundering_values = laundering_values_vali
 # dynamic for both full and individual
 tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 hyperparameters = tuned_hp
+
+
+testindiceslen = []
+
+for bank_id, party in self.parties.items():
+    if len(party.indices['test_indices']) < 5:
+        testindiceslen.append(bank_id)
+
+
+
+self = self.parties[0]
+
+len(self.parties[0].indices['test_indices'])
+
+
+sum(self.parties[0].data['train_data']['df'].y)
+sum(self.parties[0].data['vali_data']['df'].y)
+sum(self.parties[0].data['test_data']['df'].y)
+
+
+
+
 
 self.parties[0].data['train_data']['df']
 
@@ -94,4 +119,35 @@ self.parties[None].data['train_data']['df'].edge_attr[:,0] == self.parties[None]
 torch.all(self.parties[None].data['train_data']['df'].edge_attr[:,0] == self.parties[None].procs_data['train_data']['df'].edge_attr[:,0])
 self.parties[None].procs_data['train_data']['df'].edge_attr[:,0]
 
+
+
+
+# --------------------------
+
+
+if data_parser.eval_mode == 'comparable':
+    comparable_indices = load_comparable_indices(...)  # from JSON
+    indices = [
+        np.array([i for i in indices[0] if i in comparable_indices['train']]),
+        np.array([i for i in indices[1] if i in comparable_indices['vali']]),
+        np.array([i for i in indices[2] if i in comparable_indices['test']])
+    ]
+
+
+
+banks = get_relevant_banks(parsers)
+train_indices, vali_indices, test_indices = [], [], []
+
+for bank_id in banks:
+    indices = get_indices_bdt(df, bank_id)
+    train_indices += indices['train_indices']
+    vali_indices += indices['vali_indices']
+    test_indicies += indices['test_indicies']
+
+
+
+pack_graph_data
+
+
+# --------------------------
 
