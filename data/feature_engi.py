@@ -153,7 +153,7 @@ def get_updated_bank_indices(bank_indices):
 
 def update_data(data, bank_indices):
 
-    df = copy.copy(data)
+    df = copy.deepcopy(data)
 
     # get indices for the bank
     updated_train_indices, updated_vali_indices, updated_test_indices, bank_indices = get_updated_bank_indices(bank_indices)

@@ -16,12 +16,10 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup fr_banks, tune them, then add sr_banks with best hyperparameters."""
-        #fr_banks, sr_banks = get_relevant_banks(parsers)
         banks = get_relevant_banks(parsers)
 
         if parsers['data_parser'].testing:
             banks = banks[0:5]
-            #sr_banks = sr_banks[0:2]
             logger.info("Testing mode: Limited to %d banks", len(banks))
         else:
             logger.info("Production mode: Using %d banks", len(banks))
@@ -31,9 +29,6 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         logger.info("Starting hyperparameter tuning for banks")
         tuned_hp = self.tuning(laundering_values)
         logger.info("Hyperparameter tuning completed")
-
-        #logger.info("Adding %d sr_banks with tuned hyperparameters")
-        #tuned_hp = utils.add_banks_to_manager(parsers, sr_banks, self, df, scaler_encoders, tuned_hp)
 
         logger.info("Setup complete: Total %d banks", len(self.parties))
         return tuned_hp

@@ -115,6 +115,7 @@ class GNNMixinParty:
                 (self.data['train_data'], 'means_tr', 'std_tr'),
                 (self.data['vali_data'], 'means_vali', 'std_vali'))
             self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc}
+            assert 'test_data' not in self.procs_data, "Test data must not be processed during tuning!"
         elif self.mode == 'training':
             train_proc, vali_proc, test_proc = self.feature_engineering(
                 (self.data['train_data'], 'means_tr', 'std_tr'),
@@ -261,6 +262,15 @@ class GNNMixinParty:
         test_data = copy.deepcopy(self.procs_data['test_data']['df']) if has_test else None
         test_indices = self.procs_data['test_data']['pred_indices'] if has_test else None
 
+        # Invariant: train/vali/test indices must never overlap
+        tr_set = set(train_indices.tolist() if hasattr(train_indices, 'tolist') else train_indices)
+        va_set = set(vali_indices.tolist() if hasattr(vali_indices, 'tolist') else vali_indices)
+        assert tr_set.isdisjoint(va_set), "Train and vali indices overlap!"
+        if test_indices is not None:
+            te_set = set(test_indices.tolist() if hasattr(test_indices, 'tolist') else test_indices)
+            assert tr_set.isdisjoint(te_set), "Train and test indices overlap!"
+            assert va_set.isdisjoint(te_set), "Vali and test indices overlap!"
+
         if self.tr_configs['use_batching']:
             datasets = [train_data, vali_data] + ([test_data] if has_test else [])
             add_arange_ids(datasets)
@@ -305,6 +315,7 @@ class GNNMixinParty:
          train_indices, vali_indices, test_indices) = self._get_loaders()
         laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': vali_indices}), laundering_values], axis=1)
         epochs = 10 if self.args['data_parser'].testing else configs.epochs
+        epochs = 1
 
         # --- Epoch loop: train on train, select best model via vali ---
         for epoch in range(epochs):

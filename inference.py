@@ -104,9 +104,10 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None, 
 
     # get update mask
     update_mask = laundering_values['indices'].isin(original_indices)
+    pred_probabilities = np.asarray(pred_probabilities)
 
     # update max values
-    laundering_values.loc[update_mask, 'max_prob'] = np.maximum(laundering_values.loc[update_mask, 'max_prob'],  
+    laundering_values.loc[update_mask, 'max_prob'] = np.maximum(laundering_values.loc[update_mask, 'max_prob'].values,
                                                                 pred_probabilities)
 
     # update average probabilities

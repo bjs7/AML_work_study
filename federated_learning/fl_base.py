@@ -141,12 +141,23 @@ class Manager(BaseFL, ABC):
         Always yields from self.parties. Yields from self.vali_parties
         if it has entries. Yields from self.test_parties only when
         include_test=True and it has entries.
+
+        Deduplicates by bank_id - each bank is yielded only once,
+        prioritizing train > vali > test.
         """
-        yield from self.parties.items()
+        seen = set()
+        for bank_id, party in self.parties.items():
+            seen.add(bank_id)
+            yield bank_id, party
         if self.vali_parties:
-            yield from self.vali_parties.items()
+            for bank_id, party in self.vali_parties.items():
+                if bank_id not in seen:
+                    seen.add(bank_id)
+                    yield bank_id, party
         if include_test and self.test_parties:
-            yield from self.test_parties.items()
+            for bank_id, party in self.test_parties.items():
+                if bank_id not in seen:
+                    yield bank_id, party
 
     def set_mode(self, mode):
         self.mode = mode

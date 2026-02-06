@@ -37,7 +37,6 @@ def main():
     # Setup manager and parties ----------------------------------------------------------------------------------------
 
     # Manager
-    #print(parsers)
     manager = Manager.get_algo_class(parsers)
 
     # Setup parties and tune
@@ -49,9 +48,6 @@ def main():
     # Save restuls ----------------------------------------------------------------------------------------
 
     save_results(results, tuned_hp, manager)
-
-    #print(parsers['data_parser'].testing)
-    #print(parsers['data_parser'].ibm_fe)
 
 
 if __name__ == '__main__':

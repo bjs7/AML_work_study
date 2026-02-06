@@ -324,6 +324,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             )
 
         # --- Final test evaluation with best model ---
+        assert best_model_state is not None, "No best model found — model selection on vali never succeeded!"
         self.model.gnn.load_state_dict(best_model_state['best_model'])
         self.model.gnn.eval()
 
@@ -546,6 +547,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                 best_f1 = f1_vali
 
         # --- Final test evaluation with best weights ---
+        assert best_weights is not None, "No best weights found — model selection on vali never succeeded!"
         self.global_weights = best_weights
         self.send_global_weights()
 
