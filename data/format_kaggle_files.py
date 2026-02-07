@@ -39,9 +39,66 @@ def get_dict_val(name, collection):
         collection[name] = val
     return val
 
+
+# ---------------------------------------------------------------------------------------
+# Parse patterns file -------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
+inPathPatterns = '/home/nam_07/projects/AML_work_study/' + lr + '-' + size + '_Patterns.txt'
+
+# Pattern type mapping:
+# 0: NONE (no laundering pattern, Is Laundering=0)
+# 1: FAN-OUT
+# 2: FAN-IN
+# 3: CYCLE
+# 4: GATHER-SCATTER
+# 5: SCATTER-GATHER
+# 6: STACK
+# 7: RANDOM
+# 8: BIPARTITE
+# 9: UNKNOWN (Is Laundering=1 but no matching pattern in the patterns file)
+PATTERN_MAP = {
+    'FAN-OUT': 1,
+    'FAN-IN': 2,
+    'CYCLE': 3,
+    'GATHER-SCATTER': 4,
+    'SCATTER-GATHER': 5,
+    'STACK': 6,
+    'RANDOM': 7,
+    'BIPARTITE': 8,
+}
+
+# Parse the patterns txt file to build a lookup dict
+# Key: (Timestamp, From Bank, Account_from, To Bank, Account_to,
+#        Amount Received, Receiving Currency, Amount Paid, Payment Currency, Payment Format) -> pattern_id
+pattern_lookup = {}
+
+current_pattern = None
+with open(inPathPatterns, 'r') as f:
+    for line in f:
+        line = line.strip()
+        if line.startswith('BEGIN LAUNDERING ATTEMPT - '):
+            pattern_name = line.replace('BEGIN LAUNDERING ATTEMPT - ', '').split(':')[0].strip()
+            current_pattern = PATTERN_MAP.get(pattern_name, 0)
+        elif line.startswith('END LAUNDERING ATTEMPT'):
+            current_pattern = None
+        elif current_pattern is not None and line:
+            parts = line.split(',')
+            if len(parts) == 11:
+                key = (parts[0], parts[1], parts[2], parts[3], parts[4],
+                       parts[5], parts[6], parts[7], parts[8], parts[9])
+                pattern_lookup[key] = current_pattern
+
+print(f"Parsed {len(pattern_lookup)} pattern transactions from {inPathPatterns}")
+
+
+# ---------------------------------------------------------------------------------------
+# Format transactions -------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
+
 header = "EdgeID,from_id,to_id,Timestamp,\
 Amount Sent,Sent Currency,Amount Received,Received Currency,\
-Payment Format,From Bank,To Bank,Is Laundering\n"
+Payment Format,From Bank,To Bank,Is Laundering,Pattern\n"
 
 firstTs = -1
 i = 0
@@ -84,8 +141,16 @@ with open(outPath, 'w') as writer:
 
         isl = int(raw[i,"Is Laundering"])
 
-        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d\n' % \
-                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl)
+        # Look up pattern
+        key = (raw[i,"Timestamp"], raw[i,"From Bank"], raw[i,2], raw[i,"To Bank"], raw[i,4],
+               raw[i,"Amount Received"], raw[i,"Receiving Currency"],
+               raw[i,"Amount Paid"], raw[i,"Payment Currency"], raw[i,"Payment Format"])
+        pattern = pattern_lookup.get(key, 0)
+        if isl == 1 and pattern == 0:
+            pattern = 9
+
+        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d,%d\n' % \
+                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl,pattern)
 
         writer.write(line)
 

@@ -20550,3 +20550,1075 @@
 2026-02-06 17:10:38 [INFO ] save_results.py     :92   - Saving Federated Learning results
 2026-02-06 17:10:38 [INFO ] save_results.py     :98   - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260206_171038
 2026-02-06 17:10:38 [INFO ] save_results.py     :99   - ================================================================================
+2026-02-06 20:19:04 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-06 20:24:16 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-06 20:25:52 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-06 20:27:00 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-06 20:27:44 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 11:12:26 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 15:39:17 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 17:33:53 [INFO ] utils.py            :129  - Random seed set as 1
+2026-02-07 17:58:38 [INFO ] utils.py            :129  - Random seed set as 1
+2026-02-07 18:00:39 [INFO ] <stdin>             :12   - Random seed set as 1
+2026-02-07 18:00:54 [INFO ] utils.py            :129  - Random seed set as 1
+2026-02-07 18:01:11 [INFO ] utils.py            :129  - Random seed set as 1
+2026-02-07 18:13:52 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:19:37 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:21:27 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:21:46 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:36:41 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:37:25 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:47:37 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:49:37 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 18:49:55 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 19:38:02 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 19:38:30 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:40:34 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:40:45 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:40:52 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:40:52 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:40:52 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-07 21:40:52 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-07 21:40:52 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-07 21:40:52 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-07 21:40:52 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-07 21:40:52 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:40:52 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:40:52 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6839, Train F1: 0.0000
+2026-02-07 21:40:52 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:52 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6987, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7592, Train F1: 0.0014
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8513, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6470, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:40:53 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:40:53 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:40:53 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:53 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:40:53 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-07 21:40:53 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:40:53 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8313, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6097, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8123, Train F1: 0.0014
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7182, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8124, Train F1: 0.0000
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:53 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:40:53 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:40:53 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:40:54 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:40:54 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7861, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8037, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7058, Train F1: 0.0017
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6515, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8678, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:40:54 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:40:54 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-07 21:40:54 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:40:54 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8710, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8213, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5882, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6658, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7187, Train F1: 0.0000
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:40:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:40:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:40:54 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:40:54 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:40:54 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:40:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:40:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:40:55 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:55 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:40:55 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:40:55 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:40:55 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-07 21:40:55 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-07 21:40:55 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-07 21:40:55 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-07 21:40:55 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-07 21:40:55 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-07 21:40:55 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_hp/20260207_214055
+2026-02-07 21:40:55 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp
+2026-02-07 21:40:55 [INFO ] save_results.py     :101  - Saving Individual bank results
+2026-02-07 21:40:55 [INFO ] save_results.py     :139  - Saving results for 4 seeds
+2026-02-07 21:40:55 [INFO ] save_results.py     :161  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-07 21:40:55 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_hp/20260207_214055
+2026-02-07 21:40:55 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-07 21:41:06 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:41:11 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:41:11 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:41:11 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-07 21:41:11 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-07 21:41:11 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-07 21:41:11 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:41:11 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-07 21:41:11 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:41:11 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:41:11 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:41:11 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:41:11 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:41:11 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:41:12 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:41:13 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:41:14 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:41:14 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:41:14 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:41:14 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:41:48 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:41:50 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:41:50 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:41:50 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-07 21:41:50 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-07 21:41:50 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-07 21:41:50 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:41:50 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-07 21:41:50 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:41:51 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:41:51 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:41:51 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:41:51 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:41:51 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:41:52 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:41:52 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:41:52 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:41:52 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:41:52 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:41:53 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:41:53 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:41:53 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:41:53 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:41:53 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:41:54 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:41:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:41:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:41:55 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:41:55 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:41:55 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:41:55 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:41:55 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:41:55 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-07 21:41:55 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:41:55 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:41:55 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:41:55 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:41:55 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:41:56 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:41:56 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:41:56 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:41:56 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:41:56 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:41:57 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:41:58 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:41:59 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:41:59 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:41:59 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:41:59 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:41:59 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:41:59 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:41:59 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:41:59 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-07 21:41:59 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:41:59 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:41:59 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:41:59 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:41:59 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:41:59 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:42:00 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:42:01 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:42:02 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:42:02 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:42:02 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:42:02 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:02 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:42:02 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:42:02 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:02 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:02 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:42:02 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:02 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-07 21:42:02 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:42:02 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:42:02 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:42:03 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:42:04 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:42:05 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:42:06 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:06 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:42:06 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:42:06 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:06 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:06 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:42:06 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-07 21:42:06 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-07 21:42:06 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-07 21:42:06 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-07 21:42:06 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-07 21:42:06 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-07 21:42:06 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260207_214206
+2026-02-07 21:42:06 [INFO ] save_results.py     :80   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-07 21:42:06 [INFO ] save_results.py     :98   - Saving Federated Learning results
+2026-02-07 21:42:06 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260207_214206
+2026-02-07 21:42:06 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-07 21:42:17 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:42:20 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:42:20 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:42:20 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-07 21:42:20 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-07 21:42:21 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-07 21:42:21 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-07 21:42:21 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:21 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6839, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6987, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7592, Train F1: 0.0014
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8513, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6470, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:21 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:21 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-07 21:42:21 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:21 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8313, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6097, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8123, Train F1: 0.0014
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7182, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:21 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8124, Train F1: 0.0000
+2026-02-07 21:42:21 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:21 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:22 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:22 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:22 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:22 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:22 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-07 21:42:22 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:22 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7861, Train F1: 0.0000
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:22 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8037, Train F1: 0.0000
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:22 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7058, Train F1: 0.0017
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:22 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6515, Train F1: 0.0000
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:22 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8678, Train F1: 0.0000
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:22 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:22 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:22 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:22 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:23 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:23 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8710, Train F1: 0.0000
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:23 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8213, Train F1: 0.0000
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:23 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5882, Train F1: 0.0000
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:23 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6658, Train F1: 0.0000
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:23 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7187, Train F1: 0.0000
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:23 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:23 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:23 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:23 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:23 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:23 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-07 21:42:23 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-07 21:42:23 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-07 21:42:23 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-07 21:42:23 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-07 21:42:23 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_hp/20260207_214223
+2026-02-07 21:42:23 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp
+2026-02-07 21:42:23 [INFO ] save_results.py     :101  - Saving Individual bank results
+2026-02-07 21:42:23 [INFO ] save_results.py     :139  - Saving results for 4 seeds
+2026-02-07 21:42:23 [INFO ] save_results.py     :161  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-07 21:42:23 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_hp/20260207_214223
+2026-02-07 21:42:23 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-07 21:42:34 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:42:36 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:42:36 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:42:36 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-07 21:42:36 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-07 21:42:36 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-07 21:42:36 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-07 21:42:36 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-07 21:42:36 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:36 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:36 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7331, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6474, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5046, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6803, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6885, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:37 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:37 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:37 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:37 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:37 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-07 21:42:37 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:37 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8232, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6081, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7419, Train F1: 0.0015
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7036, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5679, Train F1: 0.0000
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:37 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:37 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:37 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:37 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:37 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:38 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:38 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7099, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5118, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6800, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6398, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6268, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:38 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:38 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-07 21:42:38 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-07 21:42:38 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.8016, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6912, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.7993, Train F1: 0.0014
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.5524, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:38 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-07 21:42:38 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :349  - Epoch 1/1 - Loss: 0.6782, Train F1: 0.0000
+2026-02-07 21:42:38 [INFO ] party_mixin.py      :365  - Vali F1: 0.0
+2026-02-07 21:42:39 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-07 21:42:39 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:39 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-07 21:42:39 [INFO ] party_mixin.py      :409  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-07 21:42:39 [WARNI] party_mixin.py      :414  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-07 21:42:39 [WARNI] party_mixin.py      :416  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-07 21:42:39 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-07 21:42:39 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:42:39 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-07 21:42:39 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:39 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:42:39 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:42:39 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-07 21:42:39 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-07 21:42:39 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-07 21:42:39 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-07 21:42:39 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-07 21:42:39 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-07 21:42:39 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-07 21:42:39 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260207_214239
+2026-02-07 21:42:39 [INFO ] save_results.py     :80   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-07 21:42:39 [INFO ] save_results.py     :101  - Saving Individual bank results
+2026-02-07 21:42:39 [INFO ] save_results.py     :139  - Saving results for 4 seeds
+2026-02-07 21:42:39 [INFO ] save_results.py     :161  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-07 21:42:39 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260207_214239
+2026-02-07 21:42:39 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-07 21:42:46 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:42:49 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:42:49 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:42:49 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-07 21:42:49 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-07 21:42:49 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-07 21:42:49 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:42:49 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-07 21:42:49 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:42:49 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:42:50 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:42:51 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:42:52 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:42:52 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:42:52 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:42:52 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:42:52 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:42:53 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:42:53 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:42:53 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:48:02 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-07 21:48:05 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-07 21:48:05 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-07 21:48:06 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-07 21:48:06 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-07 21:48:06 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-07 21:48:06 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:48:06 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-07 21:48:06 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:48:06 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:48:06 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:48:06 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:48:07 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:48:07 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:48:07 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:48:07 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:48:07 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:48:08 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:48:09 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:48:10 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:48:10 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:48:10 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:48:10 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:48:10 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:48:10 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:48:10 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:48:10 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:48:10 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-07 21:48:10 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:48:10 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:48:10 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:48:10 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:48:10 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:48:11 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:48:12 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:48:13 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:48:13 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:48:13 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:48:13 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:48:13 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:48:14 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:48:14 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:48:14 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:48:14 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:48:14 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:48:14 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:48:14 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:48:14 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-07 21:48:14 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:48:14 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:48:14 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:48:14 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:48:14 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:48:15 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:48:16 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:48:17 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:48:17 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:48:17 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:48:17 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:48:17 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:48:17 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:48:17 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:48:17 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:48:17 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:48:17 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:48:17 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-07 21:48:17 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-07 21:48:17 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-07 21:48:17 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-07 21:48:18 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-07 21:48:18 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-07 21:48:18 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-07 21:48:18 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-07 21:48:18 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-07 21:48:19 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-07 21:48:19 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-07 21:48:19 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-07 21:48:19 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-07 21:48:19 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-07 21:48:20 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-07 21:48:21 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-07 21:48:21 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-07 21:48:21 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-07 21:48:21 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-07 21:48:22 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-07 21:48:22 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-07 21:48:22 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-07 21:48:22 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-07 21:48:22 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-07 21:48:22 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-07 21:48:22 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-07 21:48:22 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-07 21:48:22 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-07 21:48:22 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-07 21:48:22 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-07 21:48:22 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-07 21:48:22 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_hp/20260207_214822
+2026-02-07 21:48:22 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp
+2026-02-07 21:48:22 [INFO ] save_results.py     :98   - Saving Federated Learning results
+2026-02-07 21:48:22 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_hp/20260207_214822
+2026-02-07 21:48:22 [INFO ] save_results.py     :105  - ================================================================================

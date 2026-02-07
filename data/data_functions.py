@@ -36,7 +36,7 @@ def prep_laundering_dfs(data_parser, data_copy):
 
     # Create validation laundering values dataframe
     vali_y = vali_data['x']['Is Laundering']
-    laundering_values_vali = pd.DataFrame({
+    vali_dict = {
         'indices': bank_indices['vali_indices'],
         'true_y': vali_y,
         'pred_probabilities': np.zeros(len(vali_y)),
@@ -44,11 +44,14 @@ def prep_laundering_dfs(data_parser, data_copy):
         'num_prob': np.zeros(len(vali_y)),
         'avg_prob': np.zeros(len(vali_y)),
         'max_prob': np.zeros(len(vali_y))
-    })
+    }
+    if 'Pattern' in vali_data['x'].columns:
+        vali_dict['Pattern'] = vali_data['x']['Pattern'].values
+    laundering_values_vali = pd.DataFrame(vali_dict)
 
     # Create test laundering values dataframe
     test_y = test_data['x']['Is Laundering']
-    laundering_values_test = pd.DataFrame({
+    test_dict = {
         'indices': bank_indices['test_indices'],
         'true_y': test_y,
         'pred_probabilities': np.zeros(len(test_y)),
@@ -56,7 +59,10 @@ def prep_laundering_dfs(data_parser, data_copy):
         'num_prob': np.zeros(len(test_y)),
         'avg_prob': np.zeros(len(test_y)),
         'max_prob': np.zeros(len(test_y))
-    })
+    }
+    if 'Pattern' in test_data['x'].columns:
+        test_dict['Pattern'] = test_data['x']['Pattern'].values
+    laundering_values_test = pd.DataFrame(test_dict)
 
     # Restore original scenario
     data_parser.scenario = original_scenario

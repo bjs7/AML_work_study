@@ -143,5 +143,6 @@ def setup_vertical(manager, batching=True):
         setup_non_batching_data(manager)
     else:
         from .batching import gen_batch_data
+        batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:
-            gen_batch_data(manager, mode)
+            gen_batch_data(manager, mode, batch_size=batch_size)

@@ -23,7 +23,7 @@ parsers = utils.parser_all()
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
-parsers['data_parser'].ibm_fe = True
+parsers['data_parser'].ibm_fe = False
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].add_ids = False
 
@@ -36,6 +36,7 @@ parsers['fl_parser'].fl_algo = 'FedAvg'
 parsers['data_parser'].batching = True
 parsers['fl_parser'].client_fraction = 0.25
 parsers['fl_parser'].num_local_epochs = 10
+#parsers['data_parser'].normalize_currency = True
 
 #parsers['fl_parser'].fl_algo = 'individual'
 #parsers['data_parser'].scenario = 'individual_banks'
@@ -46,9 +47,8 @@ df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions
 if parsers['data_parser'].testing:
     df = df.iloc[:round(df.shape[0] * 0.05),:]
 
-#data_paser = parsers['data_parser']
-
 df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_perc)
+
 
 # ------------------------------------------------------------------------------------------------
 laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
@@ -78,6 +78,15 @@ results = self.train(tuned_hp, laundering_values_vali, laundering_values_test)
 
 save_results(results, hyperparameters, manager)
 
+
+
+self = manager.parties[0]
+
+data_configs = (self.data['train_data'], 'means_tr', 'std_tr'),(self.data['vali_data'], 'means_vali', 'std_vali'), (self.data['test_data'], 'means_test', 'std_test')
+
+
+test123 = StandardScaler()
+df.edge_attr[:,0]
 
 
 

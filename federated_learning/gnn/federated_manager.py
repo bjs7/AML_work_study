@@ -6,7 +6,7 @@ import utils
 import configs.configs as configs
 from inference import metrics
 import inference as flin
-from data.relevant_banks import load_relevant_banks
+from data.relevant_banks import load_relevant_banks, apply_bank_filter
 from .communication import GNNCommunicationMixin
 from .manager_mixin import GNNMixinManager
 from training.utils import ibm_gnn
@@ -353,17 +353,30 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 # FedAvg
 class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
-    def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
+    def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis = False):
 
         fedavg_banks = load_relevant_banks(parsers).get('FedAvg')
         train_banks = fedavg_banks['train_banks']
         vali_banks = fedavg_banks['vali_banks']
         test_banks = fedavg_banks['test_banks']
 
+        if parsers['data_parser'].bank_filter:
+            train_banks = apply_bank_filter(
+                train_banks, df, parsers['data_parser'].bank_filter)
+
         if parsers['data_parser'].testing:
             train_banks = train_banks[0:5]
             vali_banks = vali_banks[0:5]
             test_banks = test_banks[0:5]
+
+        if analysis:
+            for banks, bank_type in zip([train_banks], ['train']):
+                if banks:
+                    utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders, bank_type=bank_type, superset_merge=False)
+
+            tuned_hp, _ = self.tuning(laundering_values)
+
+            return tuned_hp          
 
         for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
             if banks:

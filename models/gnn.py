@@ -76,7 +76,12 @@ class GNN(ABC):
         self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
         self.gnn.to(device)  # Move model to GPU
         self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([hyperparams.get('w_ce1'), hyperparams.get('w_ce2')]).to(device)) 
+
+        # Use loss_ratio override if set, otherwise use hyperparameters
+        w_ce1 = hyperparams.get('w_ce1')
+        loss_ratio_override = manager.args['data_parser'].loss_ratio
+        w_ce2 = loss_ratio_override if loss_ratio_override is not None else hyperparams.get('w_ce2')
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([w_ce1, w_ce2]).to(device)) 
 
     def update_weights(self, gd, mask):
 
@@ -182,39 +187,47 @@ import torch
 # and how it is used "outside"
 
 
-def batching_masker(batch, data, loader, indices):
+def batching_masker(batch, data, loader, indices, add_missing_edges=True):
+    """Create mask for seed edges in batch and optionally add missing edges.
 
+    Args:
+        batch: The batch from LinkNeighborLoader
+        data: The full graph data
+        loader: The LinkNeighborLoader
+        indices: Indices of edges to predict
+        add_missing_edges: If True, adds back missing seed edges that weren't
+            sampled by the loader. Set to False for IBM paper replication.
+
+    Returns:
+        mask: Boolean mask for seed edges in the batch
+        pred_ids: Edge IDs of the predicted edges
+    """
     indices = indices.detach().cpu()
     batch_edge_inds = indices[batch.input_id.detach().cpu()]
     batch_edge_ids = loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
-    #mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
-    
-    missing_seed_edges = ~torch.isin(batch_edge_ids, batch.edge_attr[:, 0].detach().cpu())
 
-    if missing_seed_edges.sum() != 0:
+    if add_missing_edges:
+        missing_seed_edges = ~torch.isin(batch_edge_ids, batch.edge_attr[:, 0].detach().cpu())
 
-        missing_ids = batch_edge_ids[missing_seed_edges].int()
-        ids_in_batch = batch_edge_ids[~missing_seed_edges].int()
+        if missing_seed_edges.sum() != 0:
 
-        n_ids = batch.n_id
-        add_edge_index = data.edge_index[:, missing_ids].detach().clone()
-        node_mapping = {value.item(): idx for idx, value in enumerate(n_ids)}
-        edge_labels_add = torch.tensor([[node_mapping[val.item()] for val in row] for row in add_edge_index])
+            missing_ids = batch_edge_ids[missing_seed_edges].int()
+            ids_in_batch = batch_edge_ids[~missing_seed_edges].int()
 
-        #edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
-        edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
-        y_add = data.y[missing_ids].detach().clone()
+            n_ids = batch.n_id
+            add_edge_index = data.edge_index[:, missing_ids].detach().clone()
+            node_mapping = {value.item(): idx for idx, value in enumerate(n_ids)}
+            edge_labels_add = torch.tensor([[node_mapping[val.item()] for val in row] for row in add_edge_index])
 
-        batch.edge_index = torch.cat([batch.edge_index, edge_labels_add], dim=1)
-        batch.edge_attr = torch.cat([batch.edge_attr, edge_attr_add], dim=0)
-        batch.y = torch.cat([batch.y, y_add], dim=0)
-        
-        #batch_edge_ids = torch.concat([ids_in_batch, missing_ids])
-        #mask = torch.cat((mask, torch.ones(y_add.shape[0], dtype=torch.bool)))
-    #torch.all(torch.sort(batch.edge_attr[mask,0])[0] == torch.sort(batch_edge_ids)[0])
-    
+            #edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
+            edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
+            y_add = data.y[missing_ids].detach().clone()
+
+            batch.edge_index = torch.cat([batch.edge_index, edge_labels_add], dim=1)
+            batch.edge_attr = torch.cat([batch.edge_attr, edge_attr_add], dim=0)
+            batch.y = torch.cat([batch.y, y_add], dim=0)
+
     mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch_edge_ids)
-    #batch.edge_attr[mask,0].int()
     pred_ids = batch.edge_attr[mask,0].int()
     batch.edge_attr = batch.edge_attr[:, 1:]
 

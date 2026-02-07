@@ -21,19 +21,28 @@ import data.data_functions as dfn
 
 def get_data(df, data_parser, **kwargs):
 
+    # Normalize currency if flag is set (heterogeneity experiment, applies to both FE paths)
+    if data_parser.normalize_currency:
+        from data.exchange_rates import load_or_extract
+        exchange_rates = load_or_extract(data_parser)
+        df = fe.normalize_amounts(df, exchange_rates)
+
     if not data_parser.ibm_fe:
-        df = fe.universal_feature_engi(df)
+        df = fe.universal_feature_engi(df, normalize_currency=data_parser.normalize_currency)
         scaler_encoders = dfn.extract_enc_cats(df)
-        edge_features = ['Timestamp', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
-                        'Sent Currency', 'Received Currency', 'Payment Format', 
-                        'Amount_Difference_Pct', 'is_currency_exchange']
+        edge_features = ['Timestamp', 'Amount Sent', 'Amount Received',
+                         'Sent Currency', 'Received Currency', 'Payment Format',
+                         'is_currency_exchange']
     else:
         scaler_encoders = None
-        edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
-        if 'Pattern' in df.columns:
-            edge_features.append('Pattern')
-        
-    
+        if data_parser.normalize_currency:
+            edge_features = ['Timestamp', 'Amount_Received_Normalized', 'Received Currency', 'Payment Format']
+        else:
+            edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
+
+    if 'Pattern' in df.columns:
+        edge_features.append('Pattern')
+
     df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()
 
     # get timestamps and labels

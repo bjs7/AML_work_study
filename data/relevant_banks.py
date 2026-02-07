@@ -170,6 +170,39 @@ def get_relevant_banks(parsers):
     return relevant_banks.get('banks')
 
 
+def apply_bank_filter(train_banks, df, bank_filter):
+    """Filter training bank list by edge count based on bank_filter setting.
+
+    Only filters training banks - vali/test banks are kept to evaluate on all banks.
+
+    Args:
+        train_banks: List of training bank IDs
+        df: Processed data dict containing regular_data with 'From Bank'/'To Bank' columns
+        bank_filter: One of 'no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct'
+
+    Returns:
+        Filtered train_banks
+    """
+    # Count edges per bank in training split (edge counted once even if bank is both sender and receiver)
+    train_data = df['regular_data']['train_data']['x'][['From Bank', 'To Bank']]
+    edge_counts = pd.Series({
+        bank: ((train_data['From Bank'] == bank) | (train_data['To Bank'] == bank)).sum()
+        for bank in train_banks
+    })
+
+    if bank_filter == 'no_top10':
+        banks_to_remove = set(edge_counts.nlargest(10).index)
+    elif bank_filter == 'no_top1':
+        banks_to_remove = set(edge_counts.nlargest(1).index)
+    elif bank_filter == 'no_bottom10':
+        banks_to_remove = set(edge_counts.nsmallest(10).index)
+    elif bank_filter == 'no_bottom5pct':
+        threshold = np.percentile(edge_counts, 5)
+        banks_to_remove = set(edge_counts[edge_counts <= threshold].index)
+
+    return [b for b in train_banks if b not in banks_to_remove]
+
+
 class BanksManager:
 
     def __init__(self, parsers):

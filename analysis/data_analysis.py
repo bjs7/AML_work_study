@@ -86,6 +86,64 @@ axes[1].set_title('Amount Received')
 plt.tight_layout()
 plt.show()
 
+# %%
+
+# Plot raw amounts
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+for i, col in enumerate(['Amount Sent', 'Amount Received']):
+    axes[i].hist(df[col], bins=100, edgecolor='black')
+    axes[i].set_xlabel('Value')
+    axes[i].set_ylabel('Frequency')
+    axes[i].set_title(f'{col} (Raw)')
+plt.tight_layout()
+plt.show()
+
+# %%
+
+# Log transform and plot
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+for i, col in enumerate(['Amount Sent', 'Amount Received']):
+    log_vals = np.log(df[col])
+    axes[i].hist(log_vals, bins=100, edgecolor='black')
+    axes[i].set_xlabel('Value')
+    axes[i].set_ylabel('Frequency')
+    axes[i].set_title(f'{col} (log)')
+plt.tight_layout()
+plt.show()
+
+# %%
+
+# Log1p transform and plot
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+for i, col in enumerate(['Amount Sent', 'Amount Received']):
+    log1p_vals = np.log1p(df[col])
+    axes[i].hist(log1p_vals, bins=100, edgecolor='black')
+    axes[i].set_xlabel('Value')
+    axes[i].set_ylabel('Frequency')
+    axes[i].set_title(f'{col} (log1p)')
+plt.tight_layout()
+plt.show()
+
+# %%
+
+# Standardize the log-transformed values and plot
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+for i, col in enumerate(['Amount Sent', 'Amount Received']):
+    log_vals = np.log(df[col])
+    log_std = (log_vals - log_vals.mean()) / log_vals.std()
+    axes[0, i].hist(log_std, bins=100, edgecolor='black')
+    axes[0, i].set_xlabel('Value')
+    axes[0, i].set_ylabel('Frequency')
+    axes[0, i].set_title(f'{col} (log + standardized)')
+
+    log1p_vals = np.log1p(df[col])
+    log1p_std = (log1p_vals - log1p_vals.mean()) / log1p_vals.std()
+    axes[1, i].hist(log1p_std, bins=100, edgecolor='black')
+    axes[1, i].set_xlabel('Value')
+    axes[1, i].set_ylabel('Frequency')
+    axes[1, i].set_title(f'{col} (log1p + standardized)')
+plt.tight_layout()
+plt.show()
 
 
 # %%

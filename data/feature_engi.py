@@ -210,72 +210,73 @@ def update_data(data, bank_indices):
 
 # function to process it, standardize etc.
 
-def feature_engi_graph_data(data, args, scaler_encoders = None):
+def feature_engi_graph_data(data, args, scaler_encoders=None):
+    """Per-party feature engineering for graph data.
 
+    Edge attr indices: 0=Timestamp, 1=Amount Sent, 2=Amount Received,
+    3=Sent Currency, 4=Received Currency, 5=Payment Format, 6=is_currency_exchange.
+    """
     data = copy.deepcopy(data)
     df = data['df']
 
-    # the names in this one also have to change accordingly
-    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt_sent', 'scaler_amt_rec', 'scaler_ports_tds', 'encoder_currency', 'encoder_payment_format')} if scaler_encoders else {}
+    if df is None:
+        return data
+    # Skip if too few edges to fit scalers AND no pre-fitted encoders to use
+    if df.edge_attr.shape[0] < 2 and not scaler_encoders:
+        return data
 
-    # time periods ---------------------------------------------------------------------------------------------------------    
+    scl_enc = {ele: scaler_encoders.get(ele) for ele in
+               ('scaler_amount', 'encoder_currency', 'encoder_payment_format')
+               } if scaler_encoders else {}
 
-    timestamps = df.edge_attr[:, 0]
-    time_freqs = {'hour': 60*60, 'day': 60*60*24, 'week': 60*60*24*7}
+    # Timestamp: scale to days ------------------------------------------------------------------------------
+    df.edge_attr[:, 0] = df.edge_attr[:, 0] / 86400.0
 
-    sin_comp = {key: torch.sin(2 * np.pi * timestamps / val).unsqueeze(1) 
-                for key, val in time_freqs.items()}
-    cos_comp = {key: torch.cos(2 * np.pi * timestamps / val).unsqueeze(1) 
-                for key, val in time_freqs.items()}
-    
-    # standardization ------------------------------------------------------------------------------------------------------
-    
-    for feat, index in zip(['scaler_amt_sent', 'scaler_amt_rec'], [1,2]):
-        if not scl_enc.get(feat):
-            scl_enc[feat] = StandardScaler()
-            scaler_amt_values = scl_enc[feat].fit_transform(torch.reshape(df.edge_attr[:,index], (df.edge_attr[:,index].shape[0],1)))
-        else:
-            scaler_amt_values = scl_enc[feat].transform(torch.reshape(df.edge_attr[:,index], (df.edge_attr[:,index].shape[0],1)))
-        df.edge_attr[:,index] = torch.reshape(torch.tensor(scaler_amt_values), (-1,))
+    # Amounts: log transform then standardize (shared scaler for sent & received) ---------------------------
+    df.edge_attr[:, 1] = torch.log(df.edge_attr[:, 1])
+    df.edge_attr[:, 2] = torch.log(df.edge_attr[:, 2])
 
-    df.x = du.z_norm(df.x)
+    if not scl_enc.get('scaler_amount'):
+        scl_enc['scaler_amount'] = StandardScaler()
+        combined = torch.cat([df.edge_attr[:, 1], df.edge_attr[:, 2]]).reshape(-1, 1)
+        scl_enc['scaler_amount'].fit(combined)
 
-    if args.ports or args.tds:
+    for index in [1, 2]:
+        reshaped = df.edge_attr[:, index].reshape(-1, 1)
+        scaled = scl_enc['scaler_amount'].transform(reshaped)
+        df.edge_attr[:, index] = torch.reshape(torch.tensor(scaled), (-1,))
 
-        if not scl_enc.get('scaler_ports_tds'):
-            scl_enc['scaler_ports_tds'] = StandardScaler()        
-            scaler_ports_tds_values = scl_enc['scaler_ports_tds'].fit_transform(df.edge_attr[:,4:])
-        else:
-            scaler_ports_tds_values = scl_enc['scaler_ports_tds'].transform(df.edge_attr[:,4:])
-        
-        df.edge_attr[:,4:] = torch.tensor(scaler_ports_tds_values)
+    # Node features: z-normalize ---------------------------------------------------------------------------
+    if df.x.shape[0] > 1:
+        df.x = du.z_norm(df.x)
+    else:
+        df.x = torch.tensor([[0.]])
 
-    # Encoding -------------------------------------------------------------------------------------------------------------
-
-    column_encoders = {'currency': 3, 'currency': 4, 'payment_format': 5}
+    # Encoding: OneHotEncode currencies and payment format -------------------------------------------------
+    # Use distinct keys so both Sent Currency (3) and Received Currency (4) are encoded
+    column_encoders = {'currency_sent': 3, 'currency_received': 4, 'payment_format': 5}
     encoded = {}
 
     for feature, col_idx in column_encoders.items():
-        encoder_key = f'encoder_{feature}'
+        if feature in ('currency_sent', 'currency_received'):
+            encoder_key = 'encoder_currency'
+        else:
+            encoder_key = 'encoder_payment_format'
 
         column_data = df.edge_attr[:, col_idx].reshape(-1, 1)
-        if not scl_enc.get(encoder_key): #hasattr(scl_enc[encoder_key], 'categories_')
+        if not scl_enc.get(encoder_key):
             scl_enc[encoder_key] = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
             encoded[feature] = scl_enc[encoder_key].fit_transform(column_data)
-            #raise ValueError('Encoders not predefined')
         else:
             encoded[feature] = scl_enc[encoder_key].transform(column_data)
 
-    # Pack -----------------------------------------------------------------------------------------------------------------
+    # Pack: Timestamp(0), Amount Sent(1), Amount Received(2), is_currency_exchange(6) + encoded cats -------
+    cols_to_keep = [0, 1, 2, 6]
 
-    cols_to_keep = [0,1,2,6,7]
-    if configs.include_time:
-        cols_to_keep.append(0)
+    df.edge_attr = torch.cat([df.edge_attr[:, cols_to_keep],
+                              *[torch.tensor(enc_val).float() for enc_val in encoded.values()]
+                              ], dim=1).float()
 
-    df.edge_attr = torch.cat([df.edge_attr[:, cols_to_keep], 
-                            *[torch.tensor(encoded_val) for encoded_val in encoded.values()],
-                            *sin_comp.values(), *cos_comp.values()], axis=1).float()
-    
     data['scaler_encoders'] = scl_enc
 
     return data
@@ -359,33 +360,28 @@ def log_transformer(df):
 
 def universal_features_restructure(df):
 
-    # Apply feature engineering and add more features
-
-    # Include the percentage difference between sent and received, for the non-log transformed values
-    df['Amount_Difference_Pct'] = (df['Amount_Sent_Normalized'] - df['Amount_Received_Normalized']) / df['Amount_Sent_Normalized']
-
     # Boolean to check whether the currency sent is the same as the received one.
     df['is_currency_exchange'] = (df['Sent Currency'] != df['Received Currency']).astype(int)
 
-    # One could include currency but different amounts (suspicious), but there are not such 
-    # observations, so this is not included as it would just result in a column of 0's
+    # Restructure the dataframe
+    columns = ['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent',
+               'Sent Currency', 'Amount Received', 'Received Currency',
+               'Payment Format', 'is_currency_exchange',
+               'From Bank', 'To Bank', 'Is Laundering']
+    if 'Pattern' in df.columns:
+        columns.append('Pattern')
 
-    # restructure the dataframe
-    df = df[['EdgeID', 'from_id', 'to_id', 'Timestamp', 'Amount Sent',
-        'Sent Currency', 'Amount Received', 'Received Currency',
-        'Payment Format', 'Amount_Sent_Normalized', 'Amount_Received_Normalized',
-        'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
-        'Amount_Difference_Pct', 'is_currency_exchange',
-        'From Bank', 'To Bank', 'Is Laundering', 'Pattern']]
-    
+    df = df[columns]
     return df
 
 
-def universal_feature_engi(df):
+def universal_feature_engi(df, normalize_currency=False):
 
-    exchange_rates = get_exchange_rates(df)
-    df = normalize_amounts(df, exchange_rates)
-    df = log_transformer(df)
+    if normalize_currency:
+        # normalize_amounts already called in get_data, just overwrite raw columns
+        df['Amount Sent'] = df['Amount_Sent_Normalized']
+        df['Amount Received'] = df['Amount_Received_Normalized']
+
     df = universal_features_restructure(df)
     return df
 

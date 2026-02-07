@@ -52,7 +52,7 @@ def setup_get_data():
     if parsers['data_parser'].testing:
         df = df.iloc[:round(df.shape[0] * 0.05),:]
 
-    df, scaler_encoders  = get_data(df, parsers['data_parser'], split_perc = split_perc)
+    df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc=split_perc)
 
     return parsers, df, scaler_encoders
 
@@ -164,6 +164,14 @@ def parser_all():
     all_parsers['fl_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
     all_parsers['data_parser'].data_type = data_types.get(all_parsers['fl_parser'].model_type)
 
+    # Apply replicate_ibm settings: full_info, batching, batchnorm, ibm_fe, ibm_hp
+    if all_parsers['data_parser'].replicate_ibm:
+        all_parsers['fl_parser'].fl_algo = 'full_info'
+        all_parsers['data_parser'].batching = True
+        all_parsers['data_parser'].batchnorm = True
+        all_parsers['data_parser'].ibm_fe = True
+        all_parsers['data_parser'].ibm_hp = True
+
     all_parsers['data_parser'].scenario = 'individual_banks' if all_parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
     return all_parsers
@@ -204,12 +212,24 @@ def data_parser():
     parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
+    parser.add_argument('--batch_size', default=8192, type=int, help='Batch size for LinkNeighborLoader (default: 8192)')
     parser.add_argument('--use_global_stats', action='store_true', help='Use global statistics for standardization instead of local party statistics')
     parser.add_argument('--eval_mode', default='system', type=str, choices=['system', 'comparable'],
                         help="Evaluation mode: 'system' uses full test set; 'comparable' restricts to individual banks' data")
     parser.add_argument('--testing_seeds', default=4, type=int, help="The amount of seeds tested in the final evaluation of a model")
     #parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
     parser.add_argument('--batchnorm', action='store_true', help="Set to True if BatchNorm should be used in the GNN model")
+    parser.add_argument('--replicate_ibm', action='store_true',
+                        help="Replicate IBM paper settings: sets full_info, batching, batchnorm, ibm_fe, ibm_hp")
+
+    # Heterogeneity experiments
+    parser.add_argument('--loss_ratio', default=None, type=int,
+                        help='Override w_ce2 loss weight (w_ce1=1). If not set, uses hyperparameter value')
+    parser.add_argument('--normalize_currency', action='store_true',
+                        help='Normalize amounts to same currency (heterogeneity experiment, applies to both FE paths)')
+    parser.add_argument('--bank_filter', default=None, type=str,
+                        choices=['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct'],
+                        help='Filter banks by edge count: no_top10, no_top1 (outlier), no_bottom10, no_bottom5pct')
 
     # utils
     parser.add_argument('--testing', action='store_true')

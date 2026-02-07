@@ -62,6 +62,12 @@ def save_results(results, hyperparams, manager):
     # add data flags to folder name
     data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp', 'use_global_stats'] #'add_ids',
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
+    if manager.args['data_parser'].normalize_currency:
+        data_settings.append('normalize_currency')
+    if manager.args['data_parser'].bank_filter:
+        data_settings.append(f'bank_filter_{manager.args["data_parser"].bank_filter}')
+    if manager.args['data_parser'].loss_ratio is not None:
+        data_settings.append(f'loss_ratio_{manager.args["data_parser"].loss_ratio}')
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 
     # create the folder
@@ -214,7 +220,10 @@ def create_experiment_config(manager):
             "eval_mode": getattr(manager.args['data_parser'], 'eval_mode', 'system'),
             "testing": manager.args['data_parser'].testing,
             "ibm_fe": manager.args['data_parser'].ibm_fe,
-            "batchnorm": manager.args['data_parser'].batchnorm
+            "batchnorm": manager.args['data_parser'].batchnorm,
+            "normalize_currency": manager.args['data_parser'].normalize_currency,
+            "bank_filter": manager.args['data_parser'].bank_filter,
+            "loss_ratio": manager.args['data_parser'].loss_ratio
         },
         "fl": {
             "fl_algo": manager.args['fl_parser'].fl_algo,

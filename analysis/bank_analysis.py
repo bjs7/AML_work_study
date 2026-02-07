@@ -89,7 +89,7 @@ df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc = split_pe
 laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
 manager = Manager.get_algo_class(parsers)
 self = manager
-tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
+tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali, analysis = True)
 
 
 # %%
@@ -218,6 +218,55 @@ stats_df = stats_df.rename(columns={**PATTERN_LABELS, **CURRENCY_LABELS, **PAYME
 pattern_cols = [PATTERN_LABELS[f'Pattern_{i}'] for i in range(1, 10)]
 currency_cols = list(CURRENCY_LABELS.values())
 payment_cols = list(PAYMENT_LABELS.values())
+
+
+# %% ========== Find lower/upper cuts for heterogeneity impact measures ==========
+
+
+stats_df['n_edges']
+
+def analyze_edge_distribution(edge_counts):
+    """Analyze edge count distribution for bank filtering decisions."""
+    
+    # Sort for top/bottom analysis
+    sorted_counts = edge_counts.sort_values(ascending=False)
+    
+    print("=== Top/Bottom Banks by Edge Count ===")
+    print(f"\nTop 10:\n{sorted_counts.head(10)}")
+    print(f"\nTop 15:\n{sorted_counts.head(15)}")
+    print(f"\nBottom 10:\n{sorted_counts.tail(10)}")
+    print(f"\nBottom 15:\n{sorted_counts.tail(15)}")
+    
+    print("\n=== Percentile Thresholds ===")
+    percentiles = [1, 5, 10, 25, 50, 75, 90, 95, 99]
+    for p in percentiles:
+        val = np.percentile(edge_counts, p)
+        count_below = (edge_counts <= val).sum()
+        print(f"  {p:2d}th percentile: {val:,.0f} edges ({count_below} banks below)")
+    
+    print("\n=== Summary Stats ===")
+    print(f"  Total banks: {len(edge_counts)}")
+    print(f"  Mean: {edge_counts.mean():,.0f}")
+    print(f"  Median: {edge_counts.median():,.0f}")
+    print(f"  Std: {edge_counts.std():,.0f}")
+    print(f"  Min: {edge_counts.min():,.0f}")
+    print(f"  Max: {edge_counts.max():,.0f}")
+    
+    # Threshold-based counts
+    print("\n=== Banks by Edge Count Thresholds ===")
+    thresholds = [100, 500, 1000, 5000, 10000, 50000, 100000]
+    for t in thresholds:
+        below = (edge_counts < t).sum()
+        above = (edge_counts >= t).sum()
+        print(f"  <{t:,}: {below} banks | >={t:,}: {above} banks")
+    
+    return sorted_counts
+
+# Usage:
+#edge_counts = df.groupby('From Bank').size() + df.groupby('To Bank').size()  # or however you count
+analyze_edge_distribution(stats_df['n_edges'])
+
+
 
 
 

@@ -24,6 +24,7 @@ class GNNMixinParty:
         self._ibm_fe = self.manager.args['data_parser'].ibm_fe
         self._batching = self.manager.args['data_parser'].batching
         self._use_global_stats = self.manager.args['data_parser'].use_global_stats
+        self._add_missing_edges = not self.manager.args['data_parser'].replicate_ibm
 
     def _get_batch_configs(self):
         """Determine per-party batch configuration based on training data size.
@@ -42,7 +43,7 @@ class GNNMixinParty:
 
         num_edges = self.procs_data['train_data']['df'].num_edges
         num_gnn_layers = self.model.gnn.num_gnn_layers
-        batch_size = 8192
+        batch_size = self.manager.args['data_parser'].batch_size
 
         if num_edges >= 100_000:
             self.tr_configs['use_batching'] = True
@@ -100,9 +101,29 @@ class GNNMixinParty:
 
         # Non-ibm_fe path
         train_data = data_configs[0][0]
+
+        # If train data is insufficient to fit scalers, use global encoders for OHE
+        # and fit amount scaler on the first available eval split (eval-only parties)
+        if train_data['df'] is None or train_data['df'].edge_attr.shape[0] < 2:
+            fitted_encoders = self.scaler_encoders
+            results = []
+            for data_dict, _, _ in data_configs:
+                if data_dict['df'] is None:
+                    results.append(data_dict)
+                    continue
+                processed = feature_engi_graph_data(data_dict, self.args['gnn_parser'], fitted_encoders)
+                fitted_encoders = processed.get('scaler_encoders', fitted_encoders)
+                results.append(processed)
+            return results
+
+        # Pre-fitted encoders (from extract_enc_cats) ensure categories use global encoders,
+        # while amount scalers are fitted per-party on the train split
         processed_train = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
         results = [processed_train]
         for data_dict, _, _ in data_configs[1:]:
+            if data_dict['df'] is None:
+                results.append(data_dict)
+                continue
             results.append(feature_engi_graph_data(data_dict, self.args['gnn_parser'],
                                                    scaler_encoders=processed_train.get('scaler_encoders')))
 
@@ -200,7 +221,8 @@ class GNNMixinParty:
             if self.tr_configs.get('use_batching'):
                 for batch in self._train_loader:
                     mask, _ = batching_masker(batch, self._train_loader_data,
-                                              self._train_loader, self._train_indices)
+                                              self._train_loader, self._train_indices,
+                                              add_missing_edges=self._add_missing_edges)
                     _, _, loss = self.model.update_weights(batch, mask)
             else:
                 loss = self.model.update_weights_no_batching(tr_data)
@@ -323,7 +345,7 @@ class GNNMixinParty:
             preds, ground_truths, total_loss = [], [], 0
 
             for batch in train_loader:
-                mask, _ = batching_masker(batch, train_data, train_loader, train_indices) if self.tr_configs['use_batching'] else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
+                mask, _ = batching_masker(batch, train_data, train_loader, train_indices, add_missing_edges=self._add_missing_edges) if self.tr_configs['use_batching'] else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
                 pred, true_y, loss = self.model.update_weights(batch, mask)
                 total_loss += loss
                 preds.append(pred.argmax(dim=-1))
