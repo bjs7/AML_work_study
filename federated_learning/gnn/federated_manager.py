@@ -495,7 +495,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         best_weights = None
         best_f1 = -1
 
-        epochs = 20 if self.args['data_parser'].testing else configs.epochs
+        epochs = 20 if self.args['data_parser'].testing else self.args['fl_parser'].num_rounds
 
         # Read FL config
         fl_parser = self.args['fl_parser']
@@ -577,6 +577,17 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                                y_pred_probabilities=laundering_values_test['avg_prob'],
                                y_pred_binary=laundering_values_test['pred_label'])
 
+        # Per-party test metrics (global model evaluated on each bank's local test data)
+        party_performance = {}
+        for bank_id, party in self.iter_parties(include_test=True):
+            pred_probs = party.get_predictions(mode='test')
+            party_indices = party.get_test_indices()
+            mask = laundering_values_test['indices'].isin(party_indices)
+            true_y = laundering_values_test.loc[mask, 'true_y']
+            if true_y.sum() > 0:
+                party_performance[bank_id] = metrics(
+                    y_true=true_y, y_pred_probabilities=pred_probs)
+
         logger.info("Test F1: %.4f", best_metrics['f1'])
 
         if best_metrics['f1'] < 0.1:
@@ -584,5 +595,6 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         if (best_metrics['precision'] == 0 or best_metrics['recall'] == 0):
             logger.warning("Zero precision or recall - Model may not be learning properly")
 
-        return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': laundering_values_test}
+        return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': laundering_values_test,
+                'best_vali_f1': best_f1, 'party_performance': party_performance}
 

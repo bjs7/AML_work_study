@@ -71,7 +71,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
                                                'hyperparameters': hyperparameters[bank_id]['hyperparameters']}
 
             party_predictions[bank_id] = tmp_model['laundering_values']['pred_probabilities']
-            party_individual_performans[bank_id] = tmp_model['metrics']
+            party_individual_performans[bank_id] = {**tmp_model['metrics'], 'best_vali_f1': tmp_model['best_vali_f1']}
 
             if np.all(party_predictions[bank_id] == 0):
                 logger.warning("Bank %s: All predictions are zero!", bank_id)

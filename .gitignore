@@ -64,6 +64,7 @@ tests/
 archive/
 docs/
 notes/
+scripts/
 
 # Local scratch/test files
 main_test.py

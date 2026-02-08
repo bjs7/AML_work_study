@@ -30,7 +30,10 @@ def save_results(results, hyperparams, manager):
         C = getattr(fl_p, 'client_fraction', 1.0)
         E = getattr(fl_p, 'num_local_epochs', 1)
         mu = getattr(fl_p, 'mu', 0.0)
+        R = getattr(fl_p, 'num_rounds', 100)
         algo_subfolder = f'{weighting}_C{C}_E{E}'
+        if R != 100:
+            algo_subfolder += f'_R{R}'
         if mu > 0:
             algo_subfolder += f'_mu{mu}'
     else:
@@ -121,7 +124,9 @@ def save_FL(save_direc, results, hyperparams, manager):
             folder_path.mkdir(parents=True, exist_ok=True)
 
             with open(f'{seed_folder}/metrics_laundering_values.pkl', 'wb') as f:
-                pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values']}, f)
+                pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values'],
+                             'best_vali_f1': seed_result.get('best_vali_f1'),
+                             'party_performance': seed_result.get('party_performance')}, f)
 
             torch.save(seed_result['weights'], f'{seed_folder}/model.pth')
 
@@ -184,7 +189,8 @@ def save_full_info(save_direc, results, hyperparams, manager):
             folder_path.mkdir(parents=True, exist_ok=True)
 
             with open(f'{seed_folder}/metrics_laundering_values.pkl', 'wb') as f:
-                pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values']}, f)
+                pickle.dump({'metrics': seed_result['metrics'], 'laundering_values': seed_result['laundering_values'],
+                             'best_vali_f1': seed_result.get('best_vali_f1')}, f)
 
             torch.save(seed_result['model'], f'{seed_folder}/model.pth')
 
@@ -232,6 +238,7 @@ def create_experiment_config(manager):
             "weighting": getattr(manager.args['fl_parser'], 'weighting', 'proportional'),
             "client_fraction": getattr(manager.args['fl_parser'], 'client_fraction', 1.0),
             "num_local_epochs": getattr(manager.args['fl_parser'], 'num_local_epochs', 1),
+            "num_rounds": getattr(manager.args['fl_parser'], 'num_rounds', 100),
             "mu": getattr(manager.args['fl_parser'], 'mu', 0.0)
         },
         "model": {

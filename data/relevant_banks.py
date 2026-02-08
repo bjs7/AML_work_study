@@ -123,6 +123,33 @@ def filter_banks(parsers):
     fedavg_laundering, fedavg_data_pct, fedavg_laundering_pct = count_split_stats(all_indices_FedAvg)
     fedavg_alt_laundering, fedavg_alt_data_pct, fedavg_alt_laundering_pct = count_split_stats(alternative_FedAvg)
 
+    # Bank filter coverage stats for each filter scenario
+    bank_filter_stats = {}
+    for filter_name in ['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct']:
+        filtered_train = apply_bank_filter(fedavg_train_banks, df, filter_name)
+        removed_banks = sorted(set(fedavg_train_banks) - set(filtered_train))
+
+        filtered_indices = []
+        for bank in filtered_train:
+            bank_indices = get_indices_bdt(df, bank=bank)
+            filtered_indices.extend(bank_indices['train_indices'])
+        
+        bank_idx = set(filtered_indices)
+        overlap = split_data['train_data']['x'].index.isin(bank_idx)
+        laundering_counts = int(split_data['train_data']['x'].loc[overlap, 'Is Laundering'].sum())
+        data_pct = float(np.mean(overlap))
+        laundering_pct = laundering_counts / train_laundering
+        #f_laundering, f_data_pct, f_laundering_pct = count_split_stats(filtered_indices)
+        
+        bank_filter_stats[filter_name] = {
+            'train_banks_remaining': len(filtered_train),
+            'train_banks_removed': len(removed_banks),
+            'removed_banks': removed_banks,
+            'laundering_counts_left':laundering_counts, 
+            'data_pct_left': data_pct, 
+            'laundering_pct_left': laundering_pct
+        }
+
     relevant_banks = {
         'total_observations': df_length, 'total_laundering': total_laundering,
         'train_laundering': train_laundering, 'vali_laundering': vali_laundering, 'test_laundering': test_laundering,
@@ -136,7 +163,8 @@ def filter_banks(parsers):
         'FedAvg_alt': {'banks': fedavg_train_banks,
                        'obs_ava': obs_available_alternative_FedAvg,
                        'percentage': obs_available_alternative_FedAvg/df_length,
-                       **fedavg_alt_laundering, **fedavg_alt_data_pct, **fedavg_alt_laundering_pct}
+                       **fedavg_alt_laundering, **fedavg_alt_data_pct, **fedavg_alt_laundering_pct},
+        'bank_filter': bank_filter_stats
     }
 
     # save the data

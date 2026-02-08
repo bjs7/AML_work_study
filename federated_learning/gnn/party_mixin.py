@@ -337,7 +337,6 @@ class GNNMixinParty:
          train_indices, vali_indices, test_indices) = self._get_loaders()
         laundering_values = pd.concat([pd.DataFrame(data = {'party_indices': vali_indices}), laundering_values], axis=1)
         epochs = 10 if self.args['data_parser'].testing else configs.epochs
-        epochs = 1
 
         # --- Epoch loop: train on train, select best model via vali ---
         for epoch in range(epochs):
@@ -426,7 +425,8 @@ class GNNMixinParty:
 
         return {'metrics': perform_metrics,
                 'laundering_values': laundering_values_test if laundering_values_test is not None else laundering_values,
-                'model': best_model}
+                'model': best_model,
+                'best_vali_f1': best_f1}
 
 
 class GNNMixinPartyVert(GNNMixinParty):

@@ -23,7 +23,7 @@ parsers = utils.parser_all()
 utils.set_seed(parsers['data_parser'].seed, True)
 # -------------
 
-parsers['data_parser'].ibm_fe = False
+#parsers['data_parser'].ibm_fe = True
 parsers['data_parser'].ibm_hp = True
 parsers['data_parser'].add_ids = False
 
@@ -32,14 +32,14 @@ parsers['data_parser'].add_ids = False
 #parsers['data_parser'].scenario = 'full_info'
 #parsers['data_parser'].batching = True
 
-parsers['fl_parser'].fl_algo = 'FedAvg'
-parsers['data_parser'].batching = True
-parsers['fl_parser'].client_fraction = 0.25
-parsers['fl_parser'].num_local_epochs = 10
+#parsers['fl_parser'].fl_algo = 'FedAvg'
+#parsers['data_parser'].batching = True
+#parsers['fl_parser'].client_fraction = 0.25
+#parsers['fl_parser'].num_local_epochs = 10
 #parsers['data_parser'].normalize_currency = True
 
-#parsers['fl_parser'].fl_algo = 'individual'
-#parsers['data_parser'].scenario = 'individual_banks'
+parsers['fl_parser'].fl_algo = 'individual'
+parsers['data_parser'].scenario = 'individual_banks'
 
 # Get data ---------------------------------------------------------------------------------------
 df = pd.read_csv(f"{utils.get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")

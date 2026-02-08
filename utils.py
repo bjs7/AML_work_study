@@ -196,6 +196,8 @@ def fl_parser():
     parser.add_argument('--weighting', default='proportional', type=str,
                         choices=['proportional', 'uniform'],
                         help='Aggregation weighting: proportional (by dataset size) or uniform (1/K)')
+    parser.add_argument('--num_rounds', default=100, type=int,
+                        help='Number of FL communication rounds (default: 100)')
 
     return parser
 

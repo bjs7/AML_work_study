@@ -21622,3 +21622,1556 @@
 2026-02-07 21:48:22 [INFO ] save_results.py     :98   - Saving Federated Learning results
 2026-02-07 21:48:22 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_hp/20260207_214822
 2026-02-07 21:48:22 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-08 12:14:58 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:16:32 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:36:46 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:38:25 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:38:48 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:44:18 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:44:21 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 12:44:21 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-08 12:44:21 [INFO ] full_info_manager.py:21   - Setting up Full Info model (single party with complete dataset)
+2026-02-08 12:44:21 [INFO ] full_info_manager.py:24   - Starting hyperparameter tuning
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-08 12:44:21 [INFO ] full_info_manager.py:26   - Setup complete
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for full info
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-08 12:44:21 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-08 12:44:23 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 2.0140, Train F1: 0.0000
+2026-02-08 12:44:23 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:24 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.1431, Train F1: 0.0000
+2026-02-08 12:44:24 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:26 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1009, Train F1: 0.0000
+2026-02-08 12:44:26 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:27 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0673, Train F1: 0.0000
+2026-02-08 12:44:27 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:29 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0580, Train F1: 0.0000
+2026-02-08 12:44:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:30 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0488, Train F1: 0.0000
+2026-02-08 12:44:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:32 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0459, Train F1: 0.0000
+2026-02-08 12:44:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:33 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0469, Train F1: 0.0000
+2026-02-08 12:44:34 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:35 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0451, Train F1: 0.0000
+2026-02-08 12:44:35 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:36 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0398, Train F1: 0.0000
+2026-02-08 12:44:37 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:37 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:44:37 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.6519, PR-AUC: 0.0001
+2026-02-08 12:44:37 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  full_info
+2026-02-08 12:44:37 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  full_info
+2026-02-08 12:44:37 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.6519, PR-AUC: 0.0001
+2026-02-08 12:44:37 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:44:37 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-08 12:44:37 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-08 12:44:39 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 2.5547, Train F1: 0.0006
+2026-02-08 12:44:39 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:40 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.1386, Train F1: 0.0000
+2026-02-08 12:44:40 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:42 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0836, Train F1: 0.0000
+2026-02-08 12:44:42 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:43 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0702, Train F1: 0.0000
+2026-02-08 12:44:44 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:45 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0607, Train F1: 0.0000
+2026-02-08 12:44:45 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:46 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0592, Train F1: 0.0000
+2026-02-08 12:44:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:48 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0507, Train F1: 0.0000
+2026-02-08 12:44:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:50 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0510, Train F1: 0.0000
+2026-02-08 12:44:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:51 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0449, Train F1: 0.0000
+2026-02-08 12:44:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:53 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0429, Train F1: 0.0000
+2026-02-08 12:44:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:44:53 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.7485, PR-AUC: 0.0002
+2026-02-08 12:44:53 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  full_info
+2026-02-08 12:44:53 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  full_info
+2026-02-08 12:44:53 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.7485, PR-AUC: 0.0002
+2026-02-08 12:44:53 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:44:53 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-08 12:44:53 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-08 12:44:55 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 3.0102, Train F1: 0.0005
+2026-02-08 12:44:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:56 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.1459, Train F1: 0.0000
+2026-02-08 12:44:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:58 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0851, Train F1: 0.0000
+2026-02-08 12:44:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:44:59 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0606, Train F1: 0.0000
+2026-02-08 12:45:00 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:01 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0499, Train F1: 0.0000
+2026-02-08 12:45:01 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:03 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0473, Train F1: 0.0000
+2026-02-08 12:45:03 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:04 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0421, Train F1: 0.0000
+2026-02-08 12:45:05 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:06 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0420, Train F1: 0.0000
+2026-02-08 12:45:06 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:07 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0446, Train F1: 0.0000
+2026-02-08 12:45:08 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:09 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0386, Train F1: 0.0000
+2026-02-08 12:45:09 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:09 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:45:09 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.3696) - model performs worse than random
+2026-02-08 12:45:09 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.3696, PR-AUC: 0.0000
+2026-02-08 12:45:09 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  full_info
+2026-02-08 12:45:09 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  full_info
+2026-02-08 12:45:09 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.3696, PR-AUC: 0.0000
+2026-02-08 12:45:09 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:45:09 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-08 12:45:09 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-08 12:45:11 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 1.9314, Train F1: 0.0002
+2026-02-08 12:45:11 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:12 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.1349, Train F1: 0.0000
+2026-02-08 12:45:13 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:14 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0828, Train F1: 0.0000
+2026-02-08 12:45:14 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:15 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0655, Train F1: 0.0000
+2026-02-08 12:45:16 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:17 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0518, Train F1: 0.0000
+2026-02-08 12:45:17 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:18 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0552, Train F1: 0.0000
+2026-02-08 12:45:19 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:20 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0551, Train F1: 0.0000
+2026-02-08 12:45:20 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:21 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0472, Train F1: 0.0000
+2026-02-08 12:45:22 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:23 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0481, Train F1: 0.0000
+2026-02-08 12:45:23 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:24 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0426, Train F1: 0.0000
+2026-02-08 12:45:25 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-08 12:45:25 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:45:25 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.6607, PR-AUC: 0.0001
+2026-02-08 12:45:25 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  full_info
+2026-02-08 12:45:25 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  full_info
+2026-02-08 12:45:25 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.6607, PR-AUC: 0.0001
+2026-02-08 12:45:25 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-08 12:45:25 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-08 12:45:25 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-08 12:45:25 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-08 12:45:25 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-08 12:45:25 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-08 12:45:25 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/full_info/GINe/batching__batchnorm__ibm_fe__ibm_hp/20260208_124525
+2026-02-08 12:45:25 [INFO ] save_results.py     :80   - Data settings: batching__batchnorm__ibm_fe__ibm_hp
+2026-02-08 12:45:25 [INFO ] save_results.py     :95   - Saving Full Info results
+2026-02-08 12:45:25 [INFO ] save_results.py     :179  - Saving results for 4 seeds
+2026-02-08 12:45:25 [INFO ] save_results.py     :198  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-08 12:45:25 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/full_info/GINe/batching__batchnorm__ibm_fe__ibm_hp/20260208_124525
+2026-02-08 12:45:25 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-08 12:47:20 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:47:24 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 12:47:24 [INFO ] main.py             :32   - train size: 3248921, validation size: 965524, test size: 863900
+2026-02-08 12:47:38 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:47:40 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 12:47:40 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-08 12:47:40 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-08 12:47:40 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-08 12:47:40 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-08 12:47:40 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:47:40 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-08 12:47:40 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:47:40 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:47:41 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:42 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:43 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:47:44 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:47:44 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:47:44 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:47:44 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:47:44 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:47:44 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:47:44 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:47:44 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:47:44 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:47:44 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-08 12:47:44 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:47:44 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:47:44 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:47:44 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:47:45 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:47:46 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:47:47 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:47:47 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:47:47 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:47:47 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:47:47 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:47:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:47:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:47:48 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:47:48 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:47:48 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:47:48 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:47:48 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:47:48 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-08 12:47:48 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:47:48 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:47:48 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:47:48 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:47:48 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:47:48 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:47:49 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:47:50 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:47:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:47:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:47:51 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:47:51 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:47:51 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:47:51 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:47:51 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-08 12:47:51 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:47:51 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:47:51 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:47:52 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:47:53 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:47:54 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:47:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:47:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:47:55 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:47:55 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:47:55 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:47:55 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:47:55 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-08 12:47:55 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-08 12:47:55 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-08 12:47:55 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-08 12:47:55 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-08 12:47:55 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-08 12:47:55 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe/batching__ibm_hp/20260208_124755
+2026-02-08 12:47:55 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp
+2026-02-08 12:47:55 [INFO ] save_results.py     :98   - Saving Federated Learning results
+2026-02-08 12:47:55 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe/batching__ibm_hp/20260208_124755
+2026-02-08 12:47:55 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-08 12:49:48 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:49:51 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 12:49:51 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-08 12:49:51 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-08 12:49:51 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-08 12:49:51 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-08 12:49:51 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:49:51 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-08 12:49:51 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:49:51 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:49:51 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:51 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:52 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:49:52 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:49:52 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:49:52 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:49:52 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:49:53 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:49:53 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:53 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:54 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:55 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:49:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:49:56 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:49:56 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:49:56 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:49:56 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:49:56 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:49:56 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:49:56 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-08 12:49:56 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:49:56 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:49:56 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:49:56 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:49:56 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:56 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:56 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:56 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:56 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:56 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:49:56 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:49:57 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:57 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:57 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:57 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:57 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:58 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:49:59 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:50:00 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:50:00 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:50:00 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:50:00 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:50:00 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:50:00 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:50:00 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:50:00 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-08 12:50:00 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:50:00 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:50:00 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:00 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:50:00 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:01 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:01 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:01 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:01 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:01 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:50:01 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:50:01 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:50:01 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:50:01 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:50:02 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:03 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:04 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:04 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:04 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:04 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:50:04 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:50:04 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:50:04 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:50:04 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:50:04 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:50:04 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:50:04 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:50:04 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-08 12:50:04 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:50:04 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:50:04 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:50:04 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:05 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:06 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:50:07 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:50:07 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:50:07 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:50:08 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:50:08 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:50:08 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:50:08 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 12:50:08 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:50:08 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:50:08 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:50:08 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 12:50:08 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-08 12:50:08 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-08 12:50:08 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-08 12:50:08 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-08 12:50:08 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-08 12:50:08 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-08 12:50:08 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe__emlps/batching__ibm_hp/20260208_125008
+2026-02-08 12:50:08 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp
+2026-02-08 12:50:08 [INFO ] save_results.py     :98   - Saving Federated Learning results
+2026-02-08 12:50:08 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe__emlps/batching__ibm_hp/20260208_125008
+2026-02-08 12:50:08 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-08 12:53:20 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 12:53:22 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 12:53:22 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-08 12:53:23 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-08 12:53:23 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-08 12:53:23 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-08 12:53:23 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:53:23 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-08 12:53:23 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:53:23 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:53:23 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:23 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:24 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:25 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:26 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:27 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:53:27 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:53:27 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4840) - model performs worse than random
+2026-02-08 12:53:27 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:53:27 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:53:27 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:53:27 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4840, PR-AUC: 0.0000
+2026-02-08 12:53:27 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:53:27 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-08 12:53:27 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:53:27 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:53:27 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:28 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:29 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:30 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:31 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:53:32 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:53:32 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4840) - model performs worse than random
+2026-02-08 12:53:32 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:53:32 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:53:32 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:53:32 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4840, PR-AUC: 0.0000
+2026-02-08 12:53:32 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:53:32 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-08 12:53:32 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:53:32 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:53:32 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:32 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:33 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:34 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:35 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:36 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:53:36 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:53:36 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4840) - model performs worse than random
+2026-02-08 12:53:36 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:53:36 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:53:36 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:53:36 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4840, PR-AUC: 0.0000
+2026-02-08 12:53:36 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 12:53:36 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-08 12:53:36 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 12:53:36 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.0000
+2026-02-08 12:53:36 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:37 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:38 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:39 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [WARNI] inference.py        :86   - Party has all zero predictions - model may not be learning
+2026-02-08 12:53:40 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 12:53:40 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 12:53:40 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4840) - model performs worse than random
+2026-02-08 12:53:40 [INFO ] federated_manager.py:580  - Test F1: 0.0000
+2026-02-08 12:53:40 [WARNI] federated_manager.py:583  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 12:53:40 [WARNI] federated_manager.py:585  - Zero precision or recall - Model may not be learning properly
+2026-02-08 12:53:40 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4840, PR-AUC: 0.0000
+2026-02-08 12:53:40 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-08 12:53:40 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-08 12:53:40 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-08 12:53:40 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-08 12:53:40 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-08 12:53:40 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-08 12:53:40 [INFO ] save_results.py     :79   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe__emlps/batching__ibm_hp__bank_filter_no_top10/20260208_125340
+2026-02-08 12:53:40 [INFO ] save_results.py     :80   - Data settings: batching__ibm_hp__bank_filter_no_top10
+2026-02-08 12:53:40 [INFO ] save_results.py     :98   - Saving Federated Learning results
+2026-02-08 12:53:40 [INFO ] save_results.py     :104  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C0.1_E5/GINe__emlps/batching__ibm_hp__bank_filter_no_top10/20260208_125340
+2026-02-08 12:53:40 [INFO ] save_results.py     :105  - ================================================================================
+2026-02-08 16:01:09 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 16:02:16 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 17:20:30 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 17:20:36 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 17:20:36 [INFO ] main.py             :32   - train size: 3248921, validation size: 965524, test size: 863900
+2026-02-08 17:21:10 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 17:21:12 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-08 17:21:12 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-08 17:21:13 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-08 17:21:13 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-08 17:21:13 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-08 17:21:13 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 17:21:13 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-08 17:21:13 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 17:21:13 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.1000
+2026-02-08 17:21:13 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 17:21:13 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 17:21:13 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 17:21:13 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 17:21:14 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 17:21:14 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 17:21:14 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 17:21:14 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 17:21:14 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 17:21:15 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 17:21:15 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 17:21:15 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 17:21:15 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 17:21:15 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 17:21:16 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 17:21:17 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 17:21:17 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 17:21:17 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-08 17:21:17 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 17:21:17 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-08 17:21:17 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 17:21:17 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 17:21:17 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-08 17:21:17 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 17:21:17 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.1000
+2026-02-08 17:21:17 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 17:21:17 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 17:21:17 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 17:21:18 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 17:21:18 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 17:21:18 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 17:21:18 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 17:21:18 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 17:21:19 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 17:21:19 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 17:21:19 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 17:21:19 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 17:21:19 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 17:21:20 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 17:21:21 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 17:21:21 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 17:21:21 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 17:21:21 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-08 17:21:21 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 17:21:21 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-08 17:21:21 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 17:21:21 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 17:21:21 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-08 17:21:21 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 17:21:21 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.1000
+2026-02-08 17:21:21 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 17:21:21 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 17:21:22 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 17:21:23 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 17:21:23 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 17:21:23 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 17:21:23 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 17:21:23 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 17:21:24 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 17:21:25 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 17:21:25 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 17:21:25 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 17:21:25 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-08 17:21:25 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 17:21:25 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-08 17:21:25 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 17:21:25 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-08 17:21:25 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-08 17:21:25 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-08 17:21:25 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 1 per round, 5 local epochs, weighting=proportional, mu=0.1000
+2026-02-08 17:21:25 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-08 17:21:25 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-08 17:21:26 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-08 17:21:27 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-08 17:21:28 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-08 17:21:28 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-08 17:21:28 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-08 17:21:28 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-08 17:21:28 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-08 17:21:29 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-08 17:21:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-08 17:21:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-08 17:21:29 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-08 17:21:29 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-08 17:21:29 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-08 17:21:29 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-08 17:21:29 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-08 17:21:29 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-08 17:21:29 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-08 17:21:29 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-08 17:21:29 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-08 17:21:29 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-08 17:21:29 [INFO ] save_results.py     :82   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedProx/proportional_C0.1_E5_mu0.1/GINe/batching__ibm_hp/20260208_172129
+2026-02-08 17:21:29 [INFO ] save_results.py     :83   - Data settings: batching__ibm_hp
+2026-02-08 17:21:29 [INFO ] save_results.py     :101  - Saving Federated Learning results
+2026-02-08 17:21:29 [INFO ] save_results.py     :107  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedProx/proportional_C0.1_E5_mu0.1/GINe/batching__ibm_hp/20260208_172129
+2026-02-08 17:21:29 [INFO ] save_results.py     :108  - ================================================================================
+2026-02-08 18:04:48 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 18:35:04 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-08 18:37:22 [INFO ] utils.py            :123  - Random seed set as 1
