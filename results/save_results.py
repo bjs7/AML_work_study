@@ -71,6 +71,8 @@ def save_results(results, hyperparams, manager):
         data_settings.append(f'bank_filter_{manager.args["data_parser"].bank_filter}')
     if manager.args['data_parser'].loss_ratio is not None:
         data_settings.append(f'loss_ratio_{manager.args["data_parser"].loss_ratio}')
+    if manager.args['data_parser'].batch_size != 8192:
+        data_settings.append(f'batch_size_{manager.args["data_parser"].batch_size}')
     data_folder = '__'.join(data_settings) if data_settings else 'default'
 
     # create the folder
@@ -229,7 +231,8 @@ def create_experiment_config(manager):
             "batchnorm": manager.args['data_parser'].batchnorm,
             "normalize_currency": manager.args['data_parser'].normalize_currency,
             "bank_filter": manager.args['data_parser'].bank_filter,
-            "loss_ratio": manager.args['data_parser'].loss_ratio
+            "loss_ratio": manager.args['data_parser'].loss_ratio,
+            "batch_size": manager.args['data_parser'].batch_size
         },
         "fl": {
             "fl_algo": manager.args['fl_parser'].fl_algo,

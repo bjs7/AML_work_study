@@ -3,6 +3,7 @@ import json
 import pickle
 import torch
 import io
+import re
 from pathlib import Path
 
 # Custom unpickler to force all PyTorch objects to CPU
@@ -27,24 +28,58 @@ class ExperimentResults:
     def __repr__(self):
         return f"ExperimentResults(path='{self.path}', seeds={list(self.seed_results.keys())})"
 
-def load_experiment(experiment_path):
+def _resolve_run_folder(exp_path, run_id=None):
+    """Resolve the actual run folder inside an experiment path.
+
+    If exp_path directly contains experiment files, returns exp_path.
+    If it contains timestamp subfolders (YYYYMMDD_HHMMSS), returns the
+    latest one (or the one matching run_id).
+    """
+    if not exp_path.exists():
+        return exp_path  # Path doesn't exist yet, return as-is
+
+    # Check if experiment files exist directly (backward compat)
+    if (exp_path / 'experiment_config.json').exists():
+        return exp_path
+
+    # Look for timestamp subfolders
+    timestamp_pattern = re.compile(r'^\d{8}_\d{6}$')
+    run_folders = sorted(
+        [d for d in exp_path.iterdir() if d.is_dir() and timestamp_pattern.match(d.name)],
+        key=lambda d: d.name
+    )
+
+    if not run_folders:
+        return exp_path  # No runs found, return as-is (will just have empty results)
+
+    if run_id is not None:
+        match = [d for d in run_folders if d.name == run_id]
+        if not match:
+            raise FileNotFoundError(f"Run '{run_id}' not found in {exp_path}. "
+                                    f"Available: {[d.name for d in run_folders]}")
+        return match[0]
+
+    # Default: latest run
+    return run_folders[-1]
+
+
+def load_experiment(experiment_path, run_id=None):
     """Load all results from an experiment directory.
-    
+
     Args:
-        experiment_path: Path to experiment folder
-        
+        experiment_path: Path to experiment folder (up to the data_flags level)
+        run_id: Specific run to load (e.g. '20260208_143022'). None = latest.
+
     Returns:
         ExperimentResults object with all loaded data
-    
+
     Example:
         results = load_experiment('/path/to/experiments/.../GINe/default')
-        print(results.config)
-        print(results.aggregated_stats['f1']['mean'])
-        best_seed_num = results.aggregated_stats['best_seed']
-        best_metrics = results.seed_results[best_seed_num]['metrics']
+        results = load_experiment('/path/to/...', run_id='20260208_143022')
     """
     exp_path = Path(experiment_path)
-    results = ExperimentResults(experiment_path)
+    exp_path = _resolve_run_folder(exp_path, run_id)
+    results = ExperimentResults(str(exp_path))
     
     # Load experiment config
     config_file = exp_path / 'experiment_config.json'
