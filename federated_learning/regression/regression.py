@@ -1,7 +1,7 @@
 
 # packages
 import pandas as pd
-from data.feature_engi import feature_engi_regular_data, feature_engi_graph_data
+from data.feature_engineering import feature_engi_regular_data, feature_engi_graph_data
 # packages for FL
 from typing import Dict, List, Optional, Any
 import utils
@@ -59,7 +59,7 @@ class RegressionMixinParty:
 
         return train_data
     
-    def update_local_w(self, num_local_epochs = 1):
+    def update_local_weights(self, num_local_epochs = 1):
 
         tr_data = self.procs_data['train_data']
 
@@ -68,8 +68,8 @@ class RegressionMixinParty:
         for epoch in range(num_local_epochs):
             self.model.update_w(tr_data['x'], tr_data['y'])
 
-    def send_local_w(self, manager):
-        manager.parties_w[self.bank_id] = self.model.current_w
+    def send_local_weights(self, manager):
+        manager.parties_weights[self.bank_id] = self.model.current_w
     
     def get_eval_data(self):
         return self.procs_data['vali_data']['x'] if self.mode == 'tuning' else self.procs_data['test_data']['x']
@@ -91,8 +91,8 @@ class RegressionMixinManager:
 
         return hp_list
     
-    def get_global_w(self):
-        self.global_w = self._init_w
+    def get_global_weights(self):
+        self.global_weights = self._init_w
     
     def _get_reg_model_class(self):
         
@@ -118,8 +118,8 @@ class RegressionMixinManager:
             party.model = model(hyperparams['params']['eta'])
             #party.model = models[bank_id]
     
-    def update_global_w(self):
-        self.global_w = sum(self.parties_w.values()) / len(self.parties_w)
+    def update_global_weights(self):
+        self.global_weights = sum(self.parties_weights.values()) / len(self.parties_weights)
 
     # tuning for regular
     def tuning(self, laundering_values_vali):

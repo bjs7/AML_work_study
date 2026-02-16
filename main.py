@@ -13,7 +13,7 @@ from models.gnn import add_arange_ids
 import models.gnn_models
 from federated_learning.fl_base import Manager, Party
 import federated_learning.fl_algos
-import data.feature_engi as fe
+import data.feature_engineering as fe
 from results.save_results import save_results
 
 

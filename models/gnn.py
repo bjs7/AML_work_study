@@ -1,13 +1,11 @@
 
 # packages for FL
 
-from abc import ABC, abstractmethod
+from abc import ABC
 import logging
-import utils as fl_utils
 import torch
 from federated_learning.registry import GNN_REGISTRY
 
-import torch
 from torch_geometric.transforms import BaseTransform
 from typing import Union
 from torch_geometric.data import Data, HeteroData
@@ -15,14 +13,6 @@ from torch_geometric.loader import LinkNeighborLoader
 
 logger = logging.getLogger(__name__)
 
-
-
-# potentially split this up, so that it is in two, like one where parameters are extracted once
-# and then used to get the model in the register.
-# need to sort how to init about parties and whether they need batching or not, and
-# also how to adjust the data set size, such that copy can be avoided.
-
-# maybe move get_gnn out of GNN, and into manager 100%, and then send to parties?
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -127,15 +117,11 @@ class GNN(ABC):
     @torch.no_grad()
     def predict(self, gd, mask):
 
-        #df = gd.get('df')
-        #pred_indices = graph_data.get('pred_indices')
-
         self.gnn.eval()
         with torch.no_grad():
             gd = gd.to(device)
             out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
             pred = out[mask]
-            #pred = pred[pred_indices] if pred_indices is not None else pred
 
         return pred.softmax(dim=1)[:,1].detach().cpu()
     
@@ -171,22 +157,6 @@ class GNN(ABC):
 # Util functions for the gnn models -----------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
-import torch
-
-# if using batch.e_id then one would also need to add the original edges indices for the added edges
-
-#data = eval_data
-#loader = eval_loader
-#indices = eval_indices
-# current approach doesn't work
-# compare 
-# batch_edge_ids = torch.concat([ids_in_batch, missing_ids])
-# and 
-# batch.edge_attr[mask,0].int()
-# and what they drag out
-# and how it is used "outside"
-
-
 def batching_masker(batch, data, loader, indices, add_missing_edges=True):
     """Create mask for seed edges in batch and optionally add missing edges.
 
@@ -219,7 +189,6 @@ def batching_masker(batch, data, loader, indices, add_missing_edges=True):
             node_mapping = {value.item(): idx for idx, value in enumerate(n_ids)}
             edge_labels_add = torch.tensor([[node_mapping[val.item()] for val in row] for row in add_edge_index])
 
-            #edge_labels_add = batch.edge_label_index[:,missing_seed_edges].detach().clone()
             edge_attr_add = data.edge_attr[missing_ids, :].detach().clone()
             y_add = data.y[missing_ids].detach().clone()
 
@@ -232,37 +201,6 @@ def batching_masker(batch, data, loader, indices, add_missing_edges=True):
     batch.edge_attr = batch.edge_attr[:, 1:]
 
     return mask, pred_ids
-
-
-#inds = self._party.procs_data['train_data']['pred_indices'].detach().cpu()
-#batch_edge_inds = inds[batch.input_id]
-#batch_edge_ids = train_loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
-
-#mask = torch.isin(batch.edge_attr[:, 0], batch_edge_ids)
-#mask.sum()
-
-
-#inds = self._party.procs_data['train_data']['pred_indices'].detach().cpu()
-#batch_edge_inds = inds[batch.input_id.detach().cpu()]
-#batch_edge_ids = train_loader.data.edge_attr.detach().cpu()[batch_edge_inds, 0]
-
-#mask = torch.isin(batch.edge_attr[:, 0].detach().cpu(), batch.input_id.detach().cpu())
-#sum(mask)
-
-
-# select loader for sampling edges ---------------------------------------------------------------------------------------------------------
-
-
-
-#train_loader = LinkNeighborLoader(tr_data, num_neighbors=num_neighbors, 
-#                                    edge_label_index = tr_data.edge_index,
-#                                    edge_label = tr_data.y, 
-#                                    batch_size=8192, shuffle=True, transform=None)
-
-#eval_loader = LinkNeighborLoader(ev_data, num_neighbors=num_neighbors, 
-#                                    edge_label_index=ev_data.edge_index[:, ev_pred_indices],
-#                                    edge_label=ev_data.y[ev_pred_indices],
-#                                    batch_size=8192, shuffle=False, transform=None)
 
 
 def get_loaders(train_data, eval_data, eval_indices, num_neighbors, batch_size, transform = None):

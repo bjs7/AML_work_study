@@ -1,6 +1,6 @@
 """GNN-specific Party mixin providing data preparation and weight updates."""
 
-from data.feature_engi import feature_engi_regular_data
+from data.feature_engineering import feature_engi_regular_data
 
 
 class BoosterMixinParty:
@@ -33,17 +33,17 @@ class BoosterMixinParty:
         self.procs_data = {'train_data': train_proc, 'eval_data': eval_proc}
     
 
-    def update_local_w(self, num_local_epochs = 1):
+    def update_local_weights(self, num_local_epochs = 1):
 
         tr_data = self.procs_data['train_data']['df']
         # can add FL-specifics here
         for epoch in range(num_local_epochs):
             self.model.update_w(tr_data)
 
-    def send_local_w(self, manager):
+    def send_local_weights(self, manager):
         # in theory this functions could be dropped and the manager could just collect the parameters itself
         # though here one would apply some encrypt?
-        manager.parties_w[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
+        manager.parties_weights[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
     
     def get_eval_data(self):
         return {'df': self.procs_data['eval_data']['df'], 

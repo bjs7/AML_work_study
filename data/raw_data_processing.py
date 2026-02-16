@@ -5,7 +5,7 @@ import inspect
 import torch
 from torch_geometric.data import Data
 import data.data_utils as du
-import data.feature_engi as fe
+import data.feature_engineering as fe
 import data.data_functions as dfn
 
 

@@ -28,7 +28,7 @@ class Party(BaseFL):
         self.manager = manager
         self.scaler_encoders = scaler_encoders
         self.model = None
-        self.tr_configs = {}
+        self.train_configs = {}
         self.bank_type = bank_type  # Flag to indicate if this is an sr_party
         self.edge_feat_start = self.manager.edge_feat_start
 
@@ -44,7 +44,7 @@ class Party(BaseFL):
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(args = parsers, **kwargs)
     
-    def get_eval_indices(self):
+    def get_vali_indices(self):
         return self.indices['vali_indices']
 
     def get_test_indices(self):
@@ -56,12 +56,12 @@ class Party(BaseFL):
         pass
 
     @abstractmethod
-    def get_eval_data(self):
-        """Get evaluation data based on current mode (tuning/training)."""
+    def get_vali_data(self):
+        """Get validation data based on current mode (tuning/training)."""
         pass
 
     @abstractmethod
-    def update_local_w(self):
+    def update_local_weights(self):
         """Update local model weights."""
         pass
 

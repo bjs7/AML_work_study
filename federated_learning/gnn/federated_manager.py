@@ -509,11 +509,11 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         num_total = len(all_bank_ids)
         num_sampled = max(1, int(client_fraction * num_total))
 
-        # Setup loaders for train and eval parties (after model init)
+        # Setup loaders for train and vali parties (after model init)
         for bank_id, party in self.parties.items():
             party._setup_train_loader()
         for bank_id, party in self.iter_parties(include_test=False):
-            party._setup_eval_loader(mode='eval')
+            party._setup_eval_loader(mode='vali')
 
         logger.info("FL training: %d total parties, sampling %d per round, "
                     "%d local epochs, weighting=%s, mu=%.4f",
@@ -549,7 +549,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                 laundering_values_vali[col] = 0
 
             for bank_id, party in self.iter_parties(include_test=False):
-                flin.update_laundering_values(party, laundering_values_vali, mode='eval')
+                flin.update_laundering_values(party, laundering_values_vali, mode='vali')
 
             f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
 

@@ -6,7 +6,7 @@ from pathlib import Path
 from configs.configs import split_perc
 import utils
 import configs.configs as config
-from data.feature_engi import get_exchange_rates
+from data.feature_engineering import get_exchange_rates
 from data.raw_data_processing import get_data
 
 

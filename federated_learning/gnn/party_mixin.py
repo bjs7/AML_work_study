@@ -2,7 +2,7 @@
 
 from models.gnn import add_arange_ids, batching_masker, get_loaders
 from torch_geometric.loader import LinkNeighborLoader
-from data.feature_engi import feature_engi_graph_data
+from data.feature_engineering import feature_engi_graph_data
 from data.data_utils import z_norm
 from inference import metrics, probs_to_binary
 from sklearn.metrics import f1_score
@@ -36,9 +36,9 @@ class GNNMixinParty:
           < 8192 edges:  no batching
         """
         if not self._batching:
-            self.tr_configs['use_batching'] = False
-            self.tr_configs['batch_size'] = 0
-            self.tr_configs['num_neighbors'] = None
+            self.train_configs['use_batching'] = False
+            self.train_configs['batch_size'] = 0
+            self.train_configs['num_neighbors'] = None
             return
 
         num_edges = self.procs_data['train_data']['df'].num_edges
@@ -46,17 +46,17 @@ class GNNMixinParty:
         batch_size = self.manager.args['data_parser'].batch_size
 
         if num_edges >= 100_000:
-            self.tr_configs['use_batching'] = True
-            self.tr_configs['batch_size'] = batch_size
-            self.tr_configs['num_neighbors'] = [100] * num_gnn_layers
+            self.train_configs['use_batching'] = True
+            self.train_configs['batch_size'] = batch_size
+            self.train_configs['num_neighbors'] = [100] * num_gnn_layers
         elif num_edges >= batch_size:
-            self.tr_configs['use_batching'] = True
-            self.tr_configs['batch_size'] = batch_size
-            self.tr_configs['num_neighbors'] = [25] * num_gnn_layers
+            self.train_configs['use_batching'] = True
+            self.train_configs['batch_size'] = batch_size
+            self.train_configs['num_neighbors'] = [25] * num_gnn_layers
         else:
-            self.tr_configs['use_batching'] = False
-            self.tr_configs['batch_size'] = 0
-            self.tr_configs['num_neighbors'] = None
+            self.train_configs['use_batching'] = False
+            self.train_configs['batch_size'] = 0
+            self.train_configs['num_neighbors'] = None
 
 
     def feature_engineering(self, *data_configs):
@@ -152,7 +152,7 @@ class GNNMixinParty:
         """
         self._get_batch_configs()
 
-        if not self.tr_configs['use_batching']:
+        if not self.train_configs['use_batching']:
             self._train_loader = None
             return
 
@@ -163,27 +163,27 @@ class GNNMixinParty:
         self._train_indices = self.procs_data['train_data']['pred_indices']
         self._train_loader = LinkNeighborLoader(
             tr_data,
-            num_neighbors=self.tr_configs['num_neighbors'],
+            num_neighbors=self.train_configs['num_neighbors'],
             edge_label_index=tr_data.edge_index,
             edge_label=tr_data.y,
-            batch_size=self.tr_configs['batch_size'],
+            batch_size=self.train_configs['batch_size'],
             shuffle=True
         )
 
-    def _setup_eval_loader(self, mode='eval'):
-        """Set up and cache an eval/test loader for batched prediction.
+    def _setup_eval_loader(self, mode='vali'):
+        """Set up and cache a vali/test loader for batched prediction.
 
-        Must be called after _setup_train_loader (needs tr_configs).
+        Must be called after _setup_train_loader (needs train_configs).
 
         Args:
-            mode: 'eval' for validation loader, 'test' for test loader.
+            mode: 'vali' for validation loader, 'test' for test loader.
         """
         data_key = 'test_data' if mode == 'test' else 'vali_data'
         loader_attr = f'_{mode}_loader'
         data_attr = f'_{mode}_loader_data'
         indices_attr = f'_{mode}_pred_indices'
 
-        if not self.tr_configs.get('use_batching'):
+        if not self.train_configs.get('use_batching'):
             setattr(self, loader_attr, None)
             setattr(self, data_attr, None)
             setattr(self, indices_attr, None)
@@ -197,10 +197,10 @@ class GNNMixinParty:
         setattr(self, indices_attr, pred_indices)
         setattr(self, loader_attr, LinkNeighborLoader(
             data_copy,
-            num_neighbors=self.tr_configs['num_neighbors'],
+            num_neighbors=self.train_configs['num_neighbors'],
             edge_label_index=data_copy.edge_index[:, pred_indices],
             edge_label=data_copy.y[pred_indices],
-            batch_size=self.tr_configs['batch_size'],
+            batch_size=self.train_configs['batch_size'],
             shuffle=False
         ))
 
@@ -218,7 +218,7 @@ class GNNMixinParty:
         loss = None
 
         for epoch in range(num_local_epochs):
-            if self.tr_configs.get('use_batching'):
+            if self.train_configs.get('use_batching'):
                 for batch in self._train_loader:
                     mask, _ = batching_masker(batch, self._train_loader_data,
                                               self._train_loader, self._train_indices,
@@ -232,7 +232,7 @@ class GNNMixinParty:
     def send_local_weights(self, manager):
         manager.parties_weights[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
     
-    def get_eval_data(self):
+    def get_vali_data(self):
         return {'df': self.procs_data['vali_data']['df'],
                 'pred_indices': self.procs_data['vali_data']['pred_indices']}
 
@@ -240,16 +240,16 @@ class GNNMixinParty:
         return {'df': self.procs_data['test_data']['df'],
                 'pred_indices': self.procs_data['test_data']['pred_indices']}
 
-    def get_predictions(self, mode='eval'):
-        """Get predictions for eval or test data, handling batching internally.
+    def get_predictions(self, mode='vali'):
+        """Get predictions for vali or test data, handling batching internally.
 
         Uses cached loaders from _setup_eval_loader() when batching is enabled.
         Falls back to predict_no_batching() otherwise.
 
         Args:
-            mode: 'eval' for validation data, 'test' for test data.
+            mode: 'vali' for validation data, 'test' for test data.
         Returns:
-            pred_probabilities as numpy array, aligned with get_eval_indices()/get_test_indices().
+            pred_probabilities as numpy array, aligned with get_vali_indices()/get_test_indices().
         """
         loader = getattr(self, f'_{mode}_loader', None)
 
@@ -260,7 +260,7 @@ class GNNMixinParty:
             preds, _, pred_ids = self._eval_on_loader(loader, data_copy, pred_indices, "")
 
             # Reorder predictions to match pred_indices order so they
-            # align with get_eval_indices()/get_test_indices()
+            # align with get_vali_indices()/get_test_indices()
             pred_indices_np = pred_indices.numpy() if isinstance(pred_indices, torch.Tensor) else np.array(pred_indices)
             pred_map = dict(zip(pred_ids.astype(int).tolist(), preds.tolist()))
             ordered_preds = np.array([pred_map[int(pi)] for pi in pred_indices_np])
@@ -293,11 +293,11 @@ class GNNMixinParty:
             assert tr_set.isdisjoint(te_set), "Train and test indices overlap!"
             assert va_set.isdisjoint(te_set), "Vali and test indices overlap!"
 
-        if self.tr_configs['use_batching']:
+        if self.train_configs['use_batching']:
             datasets = [train_data, vali_data] + ([test_data] if has_test else [])
             add_arange_ids(datasets)
-            num_neighbors = self.tr_configs['num_neighbors']
-            batch_size = self.tr_configs['batch_size']
+            num_neighbors = self.train_configs['num_neighbors']
+            batch_size = self.train_configs['batch_size']
             train_loader, vali_loader = get_loaders(train_data, vali_data, vali_indices, num_neighbors, batch_size)
             test_loader = get_loaders(train_data, test_data, test_indices, num_neighbors, batch_size)[1] if has_test else None
         else:
@@ -313,7 +313,7 @@ class GNNMixinParty:
         """Run evaluation on a given loader, return predictions and ground truths."""
         preds_list, gt_list, id_list = [], [], []
         for batch in loader:
-            mask, pred_ids = batching_masker(batch, data, loader, indices) if self.tr_configs['use_batching'] else (torch.zeros(data.y.shape[0], dtype=torch.bool).index_fill_(0, indices, True), indices)
+            mask, pred_ids = batching_masker(batch, data, loader, indices) if self.train_configs['use_batching'] else (torch.zeros(data.y.shape[0], dtype=torch.bool).index_fill_(0, indices, True), indices)
             pred = self.model.predict(batch, mask)
             preds_list.append(pred)
             gt_list.append(batch.y[mask])
@@ -344,7 +344,7 @@ class GNNMixinParty:
             preds, ground_truths, total_loss = [], [], 0
 
             for batch in train_loader:
-                mask, _ = batching_masker(batch, train_data, train_loader, train_indices, add_missing_edges=self._add_missing_edges) if self.tr_configs['use_batching'] else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
+                mask, _ = batching_masker(batch, train_data, train_loader, train_indices, add_missing_edges=self._add_missing_edges) if self.train_configs['use_batching'] else (torch.ones(train_data.y.shape[0], dtype=torch.bool), None)
                 pred, true_y, loss = self.model.update_weights(batch, mask)
                 total_loss += loss
                 preds.append(pred.argmax(dim=-1))

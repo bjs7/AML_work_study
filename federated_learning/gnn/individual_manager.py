@@ -38,7 +38,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         return self._gnn_tuning(party_laundering_values, bank_id = bank_id)
 
     def _helper_party_tuning(self, party, laundering_values):
-        mask = np.isin(laundering_values['indices'], party.get_eval_indices())
+        mask = np.isin(laundering_values['indices'], party.get_vali_indices())
         return laundering_values.iloc[mask,].reset_index(drop=True)
 
     def _train_party(self, laundering_values, **kwargs):

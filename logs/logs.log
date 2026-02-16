@@ -23175,3 +23175,1928 @@
 2026-02-08 18:04:48 [INFO ] utils.py            :123  - Random seed set as 1
 2026-02-08 18:35:04 [INFO ] utils.py            :123  - Random seed set as 1
 2026-02-08 18:37:22 [INFO ] utils.py            :123  - Random seed set as 1
+2026-02-16 13:34:43 [INFO ] utils.py            :115  - Random seed set as 1
+2026-02-16 13:34:46 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-16 13:34:46 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-16 13:34:46 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-16 13:34:46 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-16 13:34:46 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-16 13:34:46 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-16 13:34:46 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-16 13:34:46 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 13:34:46 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 13:34:46 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7331, Train F1: 0.0000
+2026-02-16 13:34:46 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:46 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5584, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3190, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1263, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0344, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:47 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:47 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7393, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6017, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4253, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2612, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1373, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0574, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0201, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0063, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0019, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0006, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:47 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:47 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7254, Train F1: 0.0016
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4858, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2710, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1187, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0443, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0329, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0305, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0410, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0500, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:47 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:47 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6013, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3930, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2132, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0849, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0068, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:47 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:47 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 13:34:47 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7296, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4341, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1980, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0663, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0171, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0048, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:47 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:47 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 13:34:48 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 13:34:48 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:48 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 13:34:48 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 13:34:48 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:48 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 13:34:48 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-16 13:34:48 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 13:34:48 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8232, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6087, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4052, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2251, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0937, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0331, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0105, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0031, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0013, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.2447, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0744, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0123, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6190, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3902, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1876, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0644, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0294, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0323, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0399, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0487, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0481, Train F1: 0.0000
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:48 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:48 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:48 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 13:34:48 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 13:34:48 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5732, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3660, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1777, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0658, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0169, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:49 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:49 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7888, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6844, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5713, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.4422, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2963, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1742, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0856, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0333, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0118, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0036, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:49 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:49 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 13:34:49 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 13:34:49 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:49 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 13:34:49 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:49 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 13:34:49 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 13:34:49 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:49 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 13:34:49 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-16 13:34:49 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 13:34:49 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7099, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6497, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5255, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.3818, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2449, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1337, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0609, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0231, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0076, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:49 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:49 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 13:34:49 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5733, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3466, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1593, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0513, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0127, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0026, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0005, Train F1: 0.0000
+2026-02-16 13:34:49 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:50 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:50 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7580, Train F1: 0.0014
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5394, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3432, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1834, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0783, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0402, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0271, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0328, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0439, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:50 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:50 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6749, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4387, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2221, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0776, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0234, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:50 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:50 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7077, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4989, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2770, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1156, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0319, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:50 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:50 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:50 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:50 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 13:34:50 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 13:34:50 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 13:34:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 13:34:51 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:51 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 13:34:51 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 13:34:51 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:51 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 13:34:51 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-16 13:34:51 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 13:34:51 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8016, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5476, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2514, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0705, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0135, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5814, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3689, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1964, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0730, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0223, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0060, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7082, Train F1: 0.0019
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4919, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3077, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1485, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0603, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0265, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0287, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0506, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0488, Train F1: 0.0000
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:51 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:51 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 13:34:51 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7522, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2797, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1198, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0376, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0087, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0018, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:52 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 13:34:52 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7688, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5951, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4057, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2313, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1076, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0111, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0029, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0007, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 13:34:52 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 13:34:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 13:34:52 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 13:34:52 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 13:34:52 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 13:34:52 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 13:34:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 13:34:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 13:34:52 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:52 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 13:34:52 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 13:34:52 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 13:34:52 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-16 13:34:52 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-16 13:34:52 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-16 13:34:52 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-16 13:34:52 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-16 13:34:52 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-16 13:34:52 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_133452
+2026-02-16 13:34:52 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-16 13:34:52 [INFO ] save_results.py     :106  - Saving Individual bank results
+2026-02-16 13:34:52 [INFO ] save_results.py     :146  - Saving results for 4 seeds
+2026-02-16 13:34:52 [INFO ] save_results.py     :168  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-16 13:34:52 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_133452
+2026-02-16 13:34:52 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-16 15:04:23 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-16 15:04:27 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-16 15:04:27 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-16 15:04:27 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-16 15:04:27 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-16 15:04:27 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-16 15:04:27 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-16 15:04:27 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-16 15:04:27 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 15:04:27 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7331, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5584, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3190, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1263, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0344, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:28 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:28 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7393, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6017, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4253, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2612, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1373, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0574, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0201, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0063, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0019, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0006, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:28 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:28 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7254, Train F1: 0.0016
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4858, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2710, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1187, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0443, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0329, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0305, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0410, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0500, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:28 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:28 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6013, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3930, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2132, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0849, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0068, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:28 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:28 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 15:04:28 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7296, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4341, Train F1: 0.0000
+2026-02-16 15:04:28 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1980, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0663, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0171, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0048, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 15:04:29 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 15:04:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 15:04:29 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:29 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 15:04:29 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 15:04:29 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:29 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 15:04:29 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-16 15:04:29 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 15:04:29 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8232, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6087, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4052, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2251, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0937, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0331, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0105, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0031, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0013, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.2447, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0744, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0123, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 15:04:29 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6190, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3902, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1876, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0644, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 15:04:29 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0294, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0323, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0399, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0487, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0481, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:30 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:30 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5732, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3660, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1777, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0658, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0169, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:30 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:30 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7888, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6844, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5713, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.4422, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2963, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1742, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0856, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0333, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0118, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0036, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:30 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:30 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 15:04:30 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 15:04:30 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 15:04:30 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:30 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 15:04:30 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:30 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 15:04:30 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 15:04:30 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:30 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 15:04:30 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-16 15:04:30 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 15:04:30 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7099, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6497, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5255, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.3818, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2449, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1337, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0609, Train F1: 0.0000
+2026-02-16 15:04:30 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0231, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0076, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:31 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:31 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5733, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3466, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1593, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0513, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0127, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0026, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0005, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:31 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:31 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7580, Train F1: 0.0014
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5394, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3432, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1834, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0783, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0402, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0271, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0328, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0439, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:31 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:31 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6749, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4387, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2221, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0776, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0234, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:31 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:31 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 15:04:31 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7077, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4989, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2770, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1156, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0319, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:31 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:32 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:32 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:32 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 15:04:32 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 15:04:32 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 15:04:32 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:32 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 15:04:32 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:32 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 15:04:32 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 15:04:32 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:32 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 15:04:32 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-16 15:04:32 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 15:04:32 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8016, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5476, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2514, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0705, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0135, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:32 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:32 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:32 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 15:04:32 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5814, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3689, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1964, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0730, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0223, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0060, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:32 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:33 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:33 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7082, Train F1: 0.0019
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4919, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3077, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1485, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0603, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0265, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0287, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0506, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0488, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:33 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:33 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7522, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2797, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1198, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0376, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0087, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0018, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:33 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:33 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7688, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5951, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4057, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2313, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1076, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0111, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0029, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0007, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 15:04:33 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 15:04:33 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:33 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 15:04:33 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 15:04:33 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 15:04:33 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 15:04:34 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 15:04:34 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 15:04:34 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:34 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 15:04:34 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 15:04:34 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 15:04:34 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-16 15:04:34 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-16 15:04:34 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-16 15:04:34 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-16 15:04:34 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-16 15:04:34 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-16 15:04:34 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_150434
+2026-02-16 15:04:34 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-16 15:04:34 [INFO ] save_results.py     :106  - Saving Individual bank results
+2026-02-16 15:04:34 [INFO ] save_results.py     :146  - Saving results for 4 seeds
+2026-02-16 15:04:34 [INFO ] save_results.py     :168  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-16 15:04:34 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_150434
+2026-02-16 15:04:34 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-16 16:42:46 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-16 16:42:51 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-16 16:42:51 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-16 16:42:51 [INFO ] individual_manager.py:23   - Testing mode: Limited to 5 banks
+2026-02-16 16:42:51 [INFO ] individual_manager.py:27   - Adding 5 banks to manager
+2026-02-16 16:42:52 [INFO ] individual_manager.py:29   - Starting hyperparameter tuning for banks
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :151  - Using IBM hyperparameters (skipping tuning)
+2026-02-16 16:42:52 [INFO ] individual_manager.py:31   - Hyperparameter tuning completed
+2026-02-16 16:42:52 [INFO ] individual_manager.py:33   - Setup complete: Total 5 banks
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :110  - ================================================================================
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :111  - Starting training with 4 seeds for 5 banks
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :112  - ================================================================================
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :120  - Training with seed 1/4
+2026-02-16 16:42:52 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 16:42:52 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7331, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5584, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3190, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1263, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0344, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:52 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 16:42:52 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7393, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6017, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4253, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2612, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1373, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0574, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0201, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0063, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0019, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0006, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:52 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:52 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:52 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 16:42:52 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7254, Train F1: 0.0016
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4858, Train F1: 0.0000
+2026-02-16 16:42:52 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2710, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1187, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0443, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0329, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0305, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0410, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0500, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6013, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3930, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2132, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0849, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0068, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0014, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7296, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4341, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1980, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0663, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0171, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0048, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:53 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:53 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:53 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:53 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 16:42:53 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 16:42:53 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 16:42:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 16:42:54 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:54 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:42:54 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:42:54 [INFO ] manager_mixin.py    :127  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:54 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:42:54 [INFO ] manager_mixin.py    :120  - Training with seed 2/4
+2026-02-16 16:42:54 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 16:42:54 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8232, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6087, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4052, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2251, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0937, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0331, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0105, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0031, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0013, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:54 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 16:42:54 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.2447, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.0744, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0123, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:54 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 16:42:54 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6190, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3902, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1876, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0644, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0296, Train F1: 0.0000
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:54 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0294, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0323, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0399, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0487, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0481, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5732, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3660, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1777, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0658, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0169, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7888, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6844, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5713, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.4422, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2963, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1742, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0856, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0333, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0118, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0036, Train F1: 0.0000
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:55 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:55 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:55 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:55 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 16:42:55 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 16:42:55 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 16:42:56 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:56 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 16:42:56 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:56 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:42:56 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:42:56 [INFO ] manager_mixin.py    :127  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:56 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:42:56 [INFO ] manager_mixin.py    :120  - Training with seed 3/4
+2026-02-16 16:42:56 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 16:42:56 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7099, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.6497, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.5255, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.3818, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.2449, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.1337, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0609, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0231, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0076, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:56 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:56 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:56 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 16:42:56 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5733, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3466, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1593, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0513, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0127, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0026, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0005, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:56 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:56 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:56 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 16:42:56 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7580, Train F1: 0.0014
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5394, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3432, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1834, Train F1: 0.0000
+2026-02-16 16:42:56 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0783, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0402, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0271, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0328, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0439, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:57 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:57 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.6749, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4387, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2221, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0776, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0234, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0042, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0010, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:57 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:57 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7077, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4989, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2770, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1156, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0319, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0073, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0015, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0002, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:57 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:57 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:57 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:57 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 16:42:57 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 16:42:57 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 16:42:58 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:58 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 16:42:58 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:58 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:42:58 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:42:58 [INFO ] manager_mixin.py    :127  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:42:58 [INFO ] manager_mixin.py    :119  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:42:58 [INFO ] manager_mixin.py    :120  - Training with seed 4/4
+2026-02-16 16:42:58 [INFO ] manager_mixin.py    :121  - --------------------------------------------------------------------------------
+2026-02-16 16:42:58 [INFO ] individual_manager.py:61   - Training 5 individual banks
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.8016, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5476, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2514, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0705, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0135, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0021, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:58 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:58 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:58 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  0
+2026-02-16 16:42:58 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.5814, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.3689, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.1964, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.0730, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0223, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0060, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0012, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0003, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:58 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:58 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:58 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  2
+2026-02-16 16:42:58 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  2
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7082, Train F1: 0.0019
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.4919, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.3077, Train F1: 0.0000
+2026-02-16 16:42:58 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1485, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0603, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0265, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0287, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0264, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0506, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0488, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:59 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:59 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  4
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  4
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7522, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5020, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.2797, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.1198, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.0376, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0087, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0018, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0004, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0000, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:59 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:59 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  5
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  5
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 1/10 - Loss: 0.7688, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 2/10 - Loss: 0.5951, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 3/10 - Loss: 0.4057, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 4/10 - Loss: 0.2313, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 5/10 - Loss: 0.1076, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 6/10 - Loss: 0.0392, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 7/10 - Loss: 0.0111, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 8/10 - Loss: 0.0029, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 9/10 - Loss: 0.0007, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :357  - Epoch 10/10 - Loss: 0.0001, Train F1: 0.0000
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :373  - Vali F1: 0.0
+2026-02-16 16:42:59 [WARNI] inference.py        :33   - Only one class present in y_true - ROC-AUC and PR-AUC are undefined
+2026-02-16 16:42:59 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:42:59 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.0000) - model performs worse than random
+2026-02-16 16:42:59 [INFO ] party_mixin.py      :417  - Training complete - Best Vali F1: 0.0000 | Test F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.0000, PR-AUC: 0.0000
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :422  - Very low F1 score: 0.0000 - Check data and model configuration in bank  10
+2026-02-16 16:42:59 [WARNI] party_mixin.py      :424  - Zero precision or recall - Model may not be learning properly in bank  10
+2026-02-16 16:42:59 [INFO ] individual_manager.py:81   - Loading best models and aggregating predictions
+2026-02-16 16:43:00 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:43:00 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4855) - model performs worse than random
+2026-02-16 16:43:00 [INFO ] individual_manager.py:91   - Final metrics - F1: 0.0000, Precision: 0.0000, Recall: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:43:00 [WARNI] individual_manager.py:97   - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:43:00 [WARNI] individual_manager.py:99   - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:43:00 [INFO ] manager_mixin.py    :127  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4855, PR-AUC: 0.0000
+2026-02-16 16:43:00 [INFO ] manager_mixin.py    :133  - 
+================================================================================
+2026-02-16 16:43:00 [INFO ] manager_mixin.py    :134  - All seeds completed
+2026-02-16 16:43:00 [INFO ] manager_mixin.py    :135  - ================================================================================
+2026-02-16 16:43:00 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-16 16:43:00 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-16 16:43:00 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-16 16:43:00 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_164300
+2026-02-16 16:43:00 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-16 16:43:00 [INFO ] save_results.py     :106  - Saving Individual bank results
+2026-02-16 16:43:00 [INFO ] save_results.py     :146  - Saving results for 4 seeds
+2026-02-16 16:43:00 [INFO ] save_results.py     :168  - Aggregated results: Mean F1=0.0000 (±0.0000), Best F1=0.0000 (seed 1)
+2026-02-16 16:43:00 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/individual/GINe/batching__ibm_fe__ibm_hp/20260216_164300
+2026-02-16 16:43:00 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-16 16:43:16 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-16 16:43:19 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-16 16:43:19 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-16 16:43:20 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-16 16:43:20 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-16 16:43:20 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-16 16:43:20 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:43:20 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-16 16:43:20 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-16 16:43:20 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-16 16:43:20 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-16 16:43:20 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-16 16:43:20 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-16 16:43:21 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-16 16:43:21 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-16 16:43:21 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-16 16:43:21 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-16 16:43:21 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-16 16:43:22 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-16 16:43:22 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-16 16:43:22 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-16 16:43:22 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-16 16:43:23 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-16 16:43:23 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-16 16:43:23 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-16 16:43:23 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-16 16:43:23 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-16 16:43:24 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-16 16:43:24 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-16 16:43:24 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-16 16:43:24 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:43:24 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-16 16:43:25 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-16 16:43:25 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:43:25 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:43:25 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-16 16:43:25 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:43:25 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-16 16:43:25 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-16 16:43:25 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-16 16:43:25 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-16 16:43:25 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-16 16:43:25 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-16 16:43:25 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-16 16:43:26 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-16 16:43:26 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-16 16:43:26 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-16 16:43:26 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-16 16:43:26 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-16 16:43:27 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-16 16:43:27 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-16 16:43:27 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-16 16:43:27 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-16 16:43:28 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-16 16:43:28 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-16 16:43:28 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-16 16:43:28 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-16 16:43:28 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-16 16:43:29 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-16 16:43:29 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-16 16:43:29 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:43:29 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-16 16:43:29 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-16 16:43:29 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:43:29 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:43:29 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-16 16:43:29 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:43:29 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-16 16:43:29 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-16 16:43:29 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-16 16:43:29 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-16 16:43:30 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-16 16:43:30 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-16 16:43:30 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-16 16:43:30 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-16 16:43:30 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-16 16:43:31 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-16 16:43:31 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-16 16:43:31 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-16 16:43:31 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-16 16:43:31 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-16 16:43:32 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-16 16:43:32 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-16 16:43:32 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-16 16:43:32 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-16 16:43:32 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-16 16:43:33 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-16 16:43:33 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-16 16:43:33 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-16 16:43:33 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-16 16:43:34 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:43:34 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-16 16:43:34 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-16 16:43:34 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:43:34 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:43:34 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-16 16:43:34 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-16 16:43:34 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-16 16:43:34 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-16 16:43:34 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-16 16:43:34 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-16 16:43:34 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-16 16:43:34 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-16 16:43:34 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-16 16:43:35 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-16 16:43:35 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-16 16:43:35 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-16 16:43:35 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-16 16:43:35 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-16 16:43:36 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-16 16:43:36 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-16 16:43:36 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-16 16:43:36 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-16 16:43:36 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-16 16:43:37 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-16 16:43:37 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-16 16:43:37 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-16 16:43:37 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-16 16:43:37 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-16 16:43:38 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-16 16:43:38 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-16 16:43:38 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-16 16:43:38 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-16 16:43:38 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-16 16:43:38 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-16 16:43:38 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-16 16:43:38 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-16 16:43:38 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-16 16:43:38 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-16 16:43:38 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-16 16:43:38 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-16 16:43:38 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-16 16:43:38 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260216_164338
+2026-02-16 16:43:38 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-16 16:43:38 [INFO ] save_results.py     :103  - Saving Federated Learning results
+2026-02-16 16:43:38 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260216_164338
+2026-02-16 16:43:38 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-16 17:00:31 [INFO ] utils.py            :87   - Random seed set as 1

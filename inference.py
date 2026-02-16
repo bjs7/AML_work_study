@@ -55,22 +55,18 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
     return results
 
 
-# only f1 and auccuracy are including, because they use binary values
-# if we are to include ROC/AUC probability predictions would also be needed
-# Maybe include ROC/AUC too? Because it might be relevant to look at observations that are "close enough",
-# like above a certain threshold
-def update_laundering_values(party, laundering_values, pred_probabilities=None, mode='eval'):
+def update_laundering_values(party, laundering_values, pred_probabilities=None, mode='vali'):
     """Update laundering values with predictions from a party.
 
     Args:
         party: Party object with model for predictions
         laundering_values: DataFrame to update with predictions
         pred_probabilities: Pre-computed predictions (optional). If None, will compute via predict.
-        mode: 'eval' for vali data (default), 'test' for test data.
+        mode: 'vali' for validation data (default), 'test' for test data.
     """
 
     # Get indices based on mode
-    get_indices_fn = party.get_test_indices if mode == 'test' else party.get_eval_indices
+    get_indices_fn = party.get_test_indices if mode == 'test' else party.get_vali_indices
 
     # make predictions
     if pred_probabilities is None:
@@ -93,12 +89,6 @@ def update_laundering_values(party, laundering_values, pred_probabilities=None, 
     positive_indices = pred_labels_df['original_indices'][np.array(pred_labels) == 1]
     update_mask = laundering_values['indices'].isin(positive_indices)
     laundering_values.loc[update_mask, 'pred_label'] = 1
-
-
-    # average and max probabilities
-    #for txt in ['avg_prob', 'num_prob']:
-        #if txt not in laundering_values.columns:
-            #laundering_values[txt] = 0
 
     # update observations max probabilities and average
 
