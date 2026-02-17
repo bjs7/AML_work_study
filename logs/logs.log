@@ -25100,3 +25100,429 @@
 2026-02-16 16:43:38 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260216_164338
 2026-02-16 16:43:38 [INFO ] save_results.py     :110  - ================================================================================
 2026-02-16 17:00:31 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-17 13:52:05 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-17 13:52:08 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-17 13:52:08 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-17 13:52:08 [INFO ] federated_manager.py:433  - ================================================================================
+2026-02-17 13:52:08 [INFO ] federated_manager.py:434  - Starting training with 4 seeds for federated learning
+2026-02-17 13:52:08 [INFO ] federated_manager.py:435  - ================================================================================
+2026-02-17 13:52:08 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-17 13:52:08 [INFO ] federated_manager.py:443  - Training with seed 1/4
+2026-02-17 13:52:08 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-17 13:52:08 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 13:52:09 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 13:52:10 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 13:52:11 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 13:52:11 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 13:52:11 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 13:52:11 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 13:52:11 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 13:52:12 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 13:52:12 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 13:52:12 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 13:52:12 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 13:52:12 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-17 13:52:12 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 13:52:12 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-17 13:52:12 [INFO ] federated_manager.py:450  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 13:52:12 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-17 13:52:12 [INFO ] federated_manager.py:443  - Training with seed 2/4
+2026-02-17 13:52:12 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-17 13:52:12 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 13:52:12 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 13:52:12 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 13:52:13 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 13:52:14 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 13:52:15 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 13:52:16 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 13:52:16 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 13:52:16 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-17 13:52:16 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 13:52:16 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-17 13:52:16 [INFO ] federated_manager.py:450  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 13:52:16 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-17 13:52:16 [INFO ] federated_manager.py:443  - Training with seed 3/4
+2026-02-17 13:52:16 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-17 13:52:16 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 13:52:16 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 13:52:16 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 13:52:16 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 13:52:16 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 13:52:17 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 13:52:18 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 13:52:19 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 13:52:19 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 13:52:19 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 13:52:19 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 13:52:19 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 13:52:19 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-17 13:52:19 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 13:52:19 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-17 13:52:19 [INFO ] federated_manager.py:450  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 13:52:19 [INFO ] federated_manager.py:442  - 
+--------------------------------------------------------------------------------
+2026-02-17 13:52:19 [INFO ] federated_manager.py:443  - Training with seed 4/4
+2026-02-17 13:52:19 [INFO ] federated_manager.py:444  - --------------------------------------------------------------------------------
+2026-02-17 13:52:19 [INFO ] federated_manager.py:518  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 13:52:19 [INFO ] federated_manager.py:556  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 13:52:20 [INFO ] federated_manager.py:556  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 13:52:21 [INFO ] federated_manager.py:556  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 13:52:22 [INFO ] federated_manager.py:556  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 13:52:23 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 13:52:23 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 13:52:23 [INFO ] federated_manager.py:591  - Test F1: 0.0000
+2026-02-17 13:52:23 [WARNI] federated_manager.py:594  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 13:52:23 [WARNI] federated_manager.py:596  - Zero precision or recall - Model may not be learning properly
+2026-02-17 13:52:23 [INFO ] federated_manager.py:450  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 13:52:23 [INFO ] federated_manager.py:456  - 
+================================================================================
+2026-02-17 13:52:23 [INFO ] federated_manager.py:457  - All seeds completed
+2026-02-17 13:52:23 [INFO ] federated_manager.py:458  - ================================================================================
+2026-02-17 13:52:23 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-17 13:52:23 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-17 13:52:23 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-17 13:52:23 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_135223
+2026-02-17 13:52:23 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-17 13:52:23 [INFO ] save_results.py     :103  - Saving Federated Learning results
+2026-02-17 13:52:23 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_135223
+2026-02-17 13:52:23 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-17 15:54:39 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-17 15:54:43 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-17 15:54:43 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-17 15:54:44 [INFO ] federated_manager.py:434  - ================================================================================
+2026-02-17 15:54:44 [INFO ] federated_manager.py:435  - Starting training with 4 seeds for federated learning
+2026-02-17 15:54:44 [INFO ] federated_manager.py:436  - ================================================================================
+2026-02-17 15:54:44 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 15:54:44 [INFO ] federated_manager.py:444  - Training with seed 1/4
+2026-02-17 15:54:44 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 15:54:44 [INFO ] federated_manager.py:519  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 15:54:44 [INFO ] federated_manager.py:564  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 15:54:44 [INFO ] federated_manager.py:564  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 15:54:44 [INFO ] federated_manager.py:564  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 15:54:44 [INFO ] federated_manager.py:564  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 15:54:44 [INFO ] federated_manager.py:564  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 15:54:45 [INFO ] federated_manager.py:564  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 15:54:46 [INFO ] federated_manager.py:564  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 15:54:47 [INFO ] federated_manager.py:564  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 15:54:47 [INFO ] federated_manager.py:564  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 15:54:47 [INFO ] federated_manager.py:564  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 15:54:47 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 15:54:47 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 15:54:47 [INFO ] federated_manager.py:599  - Test F1: 0.0000
+2026-02-17 15:54:47 [WARNI] federated_manager.py:602  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 15:54:47 [WARNI] federated_manager.py:604  - Zero precision or recall - Model may not be learning properly
+2026-02-17 15:54:47 [INFO ] federated_manager.py:451  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 15:54:47 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 15:54:47 [INFO ] federated_manager.py:444  - Training with seed 2/4
+2026-02-17 15:54:47 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 15:54:47 [INFO ] federated_manager.py:519  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 15:54:47 [INFO ] federated_manager.py:564  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 15:54:48 [INFO ] federated_manager.py:564  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 15:54:49 [INFO ] federated_manager.py:564  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 15:54:50 [INFO ] federated_manager.py:564  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 15:54:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 15:54:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 15:54:51 [INFO ] federated_manager.py:599  - Test F1: 0.0000
+2026-02-17 15:54:51 [WARNI] federated_manager.py:602  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 15:54:51 [WARNI] federated_manager.py:604  - Zero precision or recall - Model may not be learning properly
+2026-02-17 15:54:51 [INFO ] federated_manager.py:451  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 15:54:51 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 15:54:51 [INFO ] federated_manager.py:444  - Training with seed 3/4
+2026-02-17 15:54:51 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 15:54:51 [INFO ] federated_manager.py:519  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 15:54:51 [INFO ] federated_manager.py:564  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 15:54:51 [INFO ] federated_manager.py:564  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 15:54:51 [INFO ] federated_manager.py:564  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 15:54:51 [INFO ] federated_manager.py:564  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 15:54:52 [INFO ] federated_manager.py:564  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 15:54:53 [INFO ] federated_manager.py:564  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 15:54:54 [INFO ] federated_manager.py:564  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 15:54:54 [INFO ] federated_manager.py:564  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 15:54:54 [INFO ] federated_manager.py:564  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 15:54:54 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 15:54:54 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 15:54:54 [INFO ] federated_manager.py:599  - Test F1: 0.0000
+2026-02-17 15:54:54 [WARNI] federated_manager.py:602  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 15:54:54 [WARNI] federated_manager.py:604  - Zero precision or recall - Model may not be learning properly
+2026-02-17 15:54:54 [INFO ] federated_manager.py:451  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 15:54:54 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 15:54:54 [INFO ] federated_manager.py:444  - Training with seed 4/4
+2026-02-17 15:54:54 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 15:54:54 [INFO ] federated_manager.py:519  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 15:54:54 [INFO ] federated_manager.py:564  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 15:54:55 [INFO ] federated_manager.py:564  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 15:54:56 [INFO ] federated_manager.py:564  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 15:54:57 [INFO ] federated_manager.py:564  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 15:54:58 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 15:54:58 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 15:54:58 [INFO ] federated_manager.py:599  - Test F1: 0.0000
+2026-02-17 15:54:58 [WARNI] federated_manager.py:602  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 15:54:58 [WARNI] federated_manager.py:604  - Zero precision or recall - Model may not be learning properly
+2026-02-17 15:54:58 [INFO ] federated_manager.py:451  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 15:54:58 [INFO ] federated_manager.py:457  - 
+================================================================================
+2026-02-17 15:54:58 [INFO ] federated_manager.py:458  - All seeds completed
+2026-02-17 15:54:58 [INFO ] federated_manager.py:459  - ================================================================================
+2026-02-17 15:54:58 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-17 15:54:58 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-17 15:54:58 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-17 15:54:58 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_155458
+2026-02-17 15:54:58 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-17 15:54:58 [INFO ] save_results.py     :103  - Saving Federated Learning results
+2026-02-17 15:54:58 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_155458
+2026-02-17 15:54:58 [INFO ] save_results.py     :110  - ================================================================================
+2026-02-17 16:06:31 [INFO ] utils.py            :87   - Random seed set as 1
+2026-02-17 16:06:34 [INFO ] main.py             :31   - Parsers, data and scalers loaded
+2026-02-17 16:06:34 [INFO ] main.py             :32   - train size: 152350, validation size: 50784, test size: 50783
+2026-02-17 16:06:35 [INFO ] federated_manager.py:434  - ================================================================================
+2026-02-17 16:06:35 [INFO ] federated_manager.py:435  - Starting training with 4 seeds for federated learning
+2026-02-17 16:06:35 [INFO ] federated_manager.py:436  - ================================================================================
+2026-02-17 16:06:35 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 16:06:35 [INFO ] federated_manager.py:444  - Training with seed 1/4
+2026-02-17 16:06:35 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 16:06:35 [INFO ] federated_manager.py:521  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 16:06:35 [INFO ] federated_manager.py:566  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 16:06:35 [INFO ] federated_manager.py:566  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 16:06:36 [INFO ] federated_manager.py:566  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 16:06:36 [INFO ] federated_manager.py:566  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 16:06:37 [INFO ] federated_manager.py:566  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 16:06:37 [INFO ] federated_manager.py:566  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 16:06:38 [INFO ] federated_manager.py:566  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 16:06:38 [INFO ] federated_manager.py:566  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 16:06:39 [INFO ] federated_manager.py:566  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 16:06:39 [INFO ] federated_manager.py:566  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 16:06:39 [INFO ] federated_manager.py:566  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 16:06:40 [INFO ] federated_manager.py:566  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 16:06:40 [INFO ] federated_manager.py:566  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 16:06:41 [INFO ] federated_manager.py:566  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 16:06:41 [INFO ] federated_manager.py:566  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 16:06:41 [INFO ] federated_manager.py:566  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 16:06:42 [INFO ] federated_manager.py:566  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 16:06:42 [INFO ] federated_manager.py:566  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 16:06:43 [INFO ] federated_manager.py:566  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 16:06:43 [INFO ] federated_manager.py:566  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 16:06:43 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 16:06:43 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 16:06:43 [INFO ] federated_manager.py:601  - Test F1: 0.0000
+2026-02-17 16:06:43 [WARNI] federated_manager.py:604  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 16:06:43 [WARNI] federated_manager.py:606  - Zero precision or recall - Model may not be learning properly
+2026-02-17 16:06:43 [INFO ] federated_manager.py:451  - Seed 1 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 16:06:43 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 16:06:43 [INFO ] federated_manager.py:444  - Training with seed 2/4
+2026-02-17 16:06:43 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 16:06:43 [INFO ] federated_manager.py:521  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 16:06:44 [INFO ] federated_manager.py:566  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 16:06:44 [INFO ] federated_manager.py:566  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 16:06:44 [INFO ] federated_manager.py:566  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 16:06:45 [INFO ] federated_manager.py:566  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 16:06:45 [INFO ] federated_manager.py:566  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 16:06:45 [INFO ] federated_manager.py:566  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 16:06:46 [INFO ] federated_manager.py:566  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 16:06:46 [INFO ] federated_manager.py:566  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 16:06:46 [INFO ] federated_manager.py:566  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 16:06:47 [INFO ] federated_manager.py:566  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 16:06:47 [INFO ] federated_manager.py:566  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 16:06:47 [INFO ] federated_manager.py:566  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 16:06:48 [INFO ] federated_manager.py:566  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 16:06:48 [INFO ] federated_manager.py:566  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 16:06:48 [INFO ] federated_manager.py:566  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 16:06:49 [INFO ] federated_manager.py:566  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 16:06:49 [INFO ] federated_manager.py:566  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 16:06:49 [INFO ] federated_manager.py:566  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 16:06:50 [INFO ] federated_manager.py:566  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 16:06:50 [INFO ] federated_manager.py:566  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 16:06:51 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 16:06:51 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 16:06:51 [INFO ] federated_manager.py:601  - Test F1: 0.0000
+2026-02-17 16:06:51 [WARNI] federated_manager.py:604  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 16:06:51 [WARNI] federated_manager.py:606  - Zero precision or recall - Model may not be learning properly
+2026-02-17 16:06:51 [INFO ] federated_manager.py:451  - Seed 2 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 16:06:51 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 16:06:51 [INFO ] federated_manager.py:444  - Training with seed 3/4
+2026-02-17 16:06:51 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 16:06:51 [INFO ] federated_manager.py:521  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 16:06:51 [INFO ] federated_manager.py:566  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 16:06:51 [INFO ] federated_manager.py:566  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 16:06:52 [INFO ] federated_manager.py:566  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 16:06:52 [INFO ] federated_manager.py:566  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 16:06:52 [INFO ] federated_manager.py:566  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 16:06:53 [INFO ] federated_manager.py:566  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 16:06:53 [INFO ] federated_manager.py:566  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 16:06:53 [INFO ] federated_manager.py:566  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 16:06:53 [INFO ] federated_manager.py:566  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 16:06:54 [INFO ] federated_manager.py:566  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 16:06:54 [INFO ] federated_manager.py:566  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 16:06:54 [INFO ] federated_manager.py:566  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 16:06:55 [INFO ] federated_manager.py:566  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 16:06:55 [INFO ] federated_manager.py:566  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 16:06:55 [INFO ] federated_manager.py:566  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 16:06:56 [INFO ] federated_manager.py:566  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 16:06:56 [INFO ] federated_manager.py:566  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 16:06:57 [INFO ] federated_manager.py:566  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 16:06:57 [INFO ] federated_manager.py:566  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 16:06:57 [INFO ] federated_manager.py:566  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 16:06:58 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 16:06:58 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 16:06:58 [INFO ] federated_manager.py:601  - Test F1: 0.0000
+2026-02-17 16:06:58 [WARNI] federated_manager.py:604  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 16:06:58 [WARNI] federated_manager.py:606  - Zero precision or recall - Model may not be learning properly
+2026-02-17 16:06:58 [INFO ] federated_manager.py:451  - Seed 3 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 16:06:58 [INFO ] federated_manager.py:443  - 
+--------------------------------------------------------------------------------
+2026-02-17 16:06:58 [INFO ] federated_manager.py:444  - Training with seed 4/4
+2026-02-17 16:06:58 [INFO ] federated_manager.py:445  - --------------------------------------------------------------------------------
+2026-02-17 16:06:58 [INFO ] federated_manager.py:521  - FL training: 5 total parties, sampling 5 per round, 1 local epochs, weighting=proportional, mu=0.0000
+2026-02-17 16:06:58 [INFO ] federated_manager.py:566  - Epoch 1/20 - Vali F1: 0.0000
+2026-02-17 16:06:58 [INFO ] federated_manager.py:566  - Epoch 2/20 - Vali F1: 0.0000
+2026-02-17 16:06:59 [INFO ] federated_manager.py:566  - Epoch 3/20 - Vali F1: 0.0000
+2026-02-17 16:06:59 [INFO ] federated_manager.py:566  - Epoch 4/20 - Vali F1: 0.0000
+2026-02-17 16:06:59 [INFO ] federated_manager.py:566  - Epoch 5/20 - Vali F1: 0.0000
+2026-02-17 16:06:59 [INFO ] federated_manager.py:566  - Epoch 6/20 - Vali F1: 0.0000
+2026-02-17 16:07:00 [INFO ] federated_manager.py:566  - Epoch 7/20 - Vali F1: 0.0000
+2026-02-17 16:07:00 [INFO ] federated_manager.py:566  - Epoch 8/20 - Vali F1: 0.0000
+2026-02-17 16:07:00 [INFO ] federated_manager.py:566  - Epoch 9/20 - Vali F1: 0.0000
+2026-02-17 16:07:01 [INFO ] federated_manager.py:566  - Epoch 10/20 - Vali F1: 0.0000
+2026-02-17 16:07:01 [INFO ] federated_manager.py:566  - Epoch 11/20 - Vali F1: 0.0000
+2026-02-17 16:07:02 [INFO ] federated_manager.py:566  - Epoch 12/20 - Vali F1: 0.0000
+2026-02-17 16:07:02 [INFO ] federated_manager.py:566  - Epoch 13/20 - Vali F1: 0.0000
+2026-02-17 16:07:02 [INFO ] federated_manager.py:566  - Epoch 14/20 - Vali F1: 0.0000
+2026-02-17 16:07:03 [INFO ] federated_manager.py:566  - Epoch 15/20 - Vali F1: 0.0000
+2026-02-17 16:07:03 [INFO ] federated_manager.py:566  - Epoch 16/20 - Vali F1: 0.0000
+2026-02-17 16:07:04 [INFO ] federated_manager.py:566  - Epoch 17/20 - Vali F1: 0.0000
+2026-02-17 16:07:04 [INFO ] federated_manager.py:566  - Epoch 18/20 - Vali F1: 0.0000
+2026-02-17 16:07:04 [INFO ] federated_manager.py:566  - Epoch 19/20 - Vali F1: 0.0000
+2026-02-17 16:07:05 [INFO ] federated_manager.py:566  - Epoch 20/20 - Vali F1: 0.0000
+2026-02-17 16:07:05 [WARNI] inference.py        :46   - All metrics are zero - model may not be making any positive predictions
+2026-02-17 16:07:05 [WARNI] inference.py        :53   - ROC-AUC < 0.5 (0.4862) - model performs worse than random
+2026-02-17 16:07:05 [INFO ] federated_manager.py:601  - Test F1: 0.0000
+2026-02-17 16:07:05 [WARNI] federated_manager.py:604  - Very low F1 score: 0.0000 - Check data and model configuration
+2026-02-17 16:07:05 [WARNI] federated_manager.py:606  - Zero precision or recall - Model may not be learning properly
+2026-02-17 16:07:05 [INFO ] federated_manager.py:451  - Seed 4 complete - F1: 0.0000, ROC-AUC: 0.4862, PR-AUC: 0.0000
+2026-02-17 16:07:05 [INFO ] federated_manager.py:457  - 
+================================================================================
+2026-02-17 16:07:05 [INFO ] federated_manager.py:458  - All seeds completed
+2026-02-17 16:07:05 [INFO ] federated_manager.py:459  - ================================================================================
+2026-02-17 16:07:05 [INFO ] save_results.py     :16   - ================================================================================
+2026-02-17 16:07:05 [INFO ] save_results.py     :17   - Saving experiment results
+2026-02-17 16:07:05 [INFO ] save_results.py     :18   - ================================================================================
+2026-02-17 16:07:05 [INFO ] save_results.py     :84   - Save directory: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_160705
+2026-02-17 16:07:05 [INFO ] save_results.py     :85   - Data settings: batching__ibm_fe__ibm_hp
+2026-02-17 16:07:05 [INFO ] save_results.py     :103  - Saving Federated Learning results
+2026-02-17 16:07:05 [INFO ] save_results.py     :109  - Results saved successfully to: /home/nam_07/projects/AML_work_study/experiments/testing/small_HI/split_0.6_0.2/system/FedAvg/proportional_C1.0_E1/GINe/batching__ibm_fe__ibm_hp/20260217_160705
+2026-02-17 16:07:05 [INFO ] save_results.py     :110  - ================================================================================

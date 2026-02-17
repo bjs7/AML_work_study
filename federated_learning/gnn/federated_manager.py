@@ -12,6 +12,7 @@ from .manager_mixin import GNNMixinManager
 from training.utils import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
+from training.parallel import parallel_party_execute
 
 from models.gnn import add_arange_ids, batching_masker, get_loaders
 from data.get_indices_type_data import get_indices_bdt
@@ -490,7 +491,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         total = sum(dataset_sizes.values())
         return {bank_id: n_k / total for bank_id, n_k in dataset_sizes.items()}
 
-    def fl_training(self, laundering_values_vali, laundering_values_test):
+    def fl_training(self, laundering_values_vali, laundering_values_test, max_workers=None):
 
         best_weights = None
         best_f1 = -1
@@ -499,6 +500,8 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         # Read FL config
         fl_parser = self.args['fl_parser']
+        if max_workers is None:
+            max_workers = getattr(fl_parser, 'max_workers', 1)
         client_fraction = getattr(fl_parser, 'client_fraction', 1.0)
         num_local_epochs = getattr(fl_parser, 'num_local_epochs', 1)
         weighting = getattr(fl_parser, 'weighting', 'proportional')
@@ -533,11 +536,13 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             # Clear parties_weights — only sampled parties contribute this round
             self.parties_weights = {}
 
-            for bank_id, party in selected_parties.items():
+            def _train_party(bank_id, party):
                 if mu > 0:
                     party._set_global_weight_reference()
                 party.update_local_weights(num_local_epochs=num_local_epochs)
                 party.send_local_weights(self)
+
+            parallel_party_execute(selected_parties, _train_party, max_workers=max_workers)
 
             # Weighted aggregation and broadcast
             party_weights_map = self._compute_party_weights(selected_parties, weighting)
@@ -548,8 +553,13 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
                 laundering_values_vali[col] = 0
 
-            for bank_id, party in self.iter_parties(include_test=False):
-                flin.update_laundering_values(party, laundering_values_vali, mode='vali')
+            # Parallel predictions, sequential DataFrame updates
+            vali_parties = dict(self.iter_parties(include_test=False))
+            vali_preds = parallel_party_execute(
+                vali_parties, lambda bid, p: p.get_predictions(mode='vali'), max_workers=max_workers)
+            for bank_id, party in vali_parties.items():
+                flin.update_laundering_values(party, laundering_values_vali,
+                                              pred_probabilities=vali_preds[bank_id], mode='vali')
 
             f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
 

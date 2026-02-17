@@ -4,6 +4,7 @@ from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
 from federated_learning.gnn import GNNMixinParty, GNNMixinPartyVert, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical #GNNMixinParty_Individual, GNNMixinParty_Full_info, 
 from federated_learning.booster.individual_manager import IndividualBoosterManager
+from federated_learning.booster.federated_manager import FLBoosterManager
 from federated_learning.booster.party_mixin import BoosterMixinParty
 
 # Regression classes - to be implemented later
@@ -220,44 +221,31 @@ class Individual_Booster_Party(BoosterMixinParty, Party):
 
 
 
-#class BoosterMixinParty:
-    #def __init__(self, **kwargs):
-        #super().__init__(**kwargs)
-
-
-
-
-
 # Manager ---------------
 
-class BoosterMixinManager:
-
-
-    def init_hyperparams(self):
-        pass
-
-    def _get_relevant_parameters(self):
-        pass
-
-
 @regi_algo_manager("individual_booster")
-class Individual_Booster_Manager(IndividualBoosterManager, Manager): #FLGNNManager #GNNMixinManager
+class Individual_Booster_Manager(IndividualBoosterManager, Manager):
 
     @staticmethod
     def return_class(args):
         return Individual_Booster_Manager(args)
 
 
+@regi_algo_party("FedAvg_booster")
+class FedAvg_Booster_Party(BoosterMixinParty, FedAvg_party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return FedAvg_Booster_Party(**kwargs)
 
 
+@regi_algo_manager("FedAvg_booster")
+class FedAvg_Booster_Manager(FLBoosterManager, FedAvg_manager):
 
-"""
-    def _get_relevant_parameters(self):
-
-        self.params_update = []
-        _, bank_0 = next(iter(self.parties.items()))
-
-        for name, param in bank_0.model.gnn.named_parameters():
-            self.params_update.append(name)
-"""
+    @staticmethod
+    def return_class(args):
+        return FedAvg_Booster_Manager(args)
 

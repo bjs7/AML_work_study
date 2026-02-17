@@ -138,6 +138,10 @@ def parser_all():
 
     all_parsers['data_parser'].scenario = 'individual_banks' if all_parsers['fl_parser'].fl_algo != 'full_info' else 'full_info'
 
+    # Default max_workers to CPU count if not specified
+    if all_parsers['fl_parser'].max_workers is None:
+        all_parsers['fl_parser'].max_workers = os.cpu_count() or 1
+
     return all_parsers
 
 
@@ -162,6 +166,8 @@ def fl_parser():
                         help='Aggregation weighting: proportional (by dataset size) or uniform (1/K)')
     parser.add_argument('--num_rounds', default=100, type=int,
                         help='Number of FL communication rounds (default: 100)')
+    parser.add_argument('--max_workers', default=None, type=int,
+                        help='Number of parallel workers for party training (default: number of CPUs)')
 
     return parser
 

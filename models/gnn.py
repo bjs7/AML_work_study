@@ -14,12 +14,11 @@ from torch_geometric.loader import LinkNeighborLoader
 logger = logging.getLogger(__name__)
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 class GNN(ABC):
 
-    def __init__(self, manager, hyperparams, node_features, edge_dim):
+    def __init__(self, manager, hyperparams, node_features, edge_dim, device=None):
         super().__init__()
+        self.device = device or torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self._get_gnn_loss_optimizer(manager, hyperparams, node_features, edge_dim)
         self._mu = getattr(manager.args['fl_parser'], 'mu', 0.0)
         self._global_weight_ref = None
@@ -64,14 +63,14 @@ class GNN(ABC):
 
     def _get_gnn_loss_optimizer(self, manager, hyperparams, node_features, edge_dim):
         self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
-        self.gnn.to(device)  # Move model to GPU
+        self.gnn.to(self.device)
         self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
 
         # Use loss_ratio override if set, otherwise use hyperparameters
         w_ce1 = hyperparams.get('w_ce1')
         loss_ratio_override = manager.args['data_parser'].loss_ratio
         w_ce2 = loss_ratio_override if loss_ratio_override is not None else hyperparams.get('w_ce2')
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([w_ce1, w_ce2]).to(device)) 
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([w_ce1, w_ce2]).to(self.device)) 
 
     def update_weights(self, gd, mask):
 
@@ -79,7 +78,7 @@ class GNN(ABC):
         self.optimizer.zero_grad()
 
         # Move data to device
-        gd = gd.to(device)
+        gd = gd.to(self.device)
 
         out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
         pred = out[mask]
@@ -102,7 +101,7 @@ class GNN(ABC):
         self.optimizer.zero_grad()
 
         # Move data to device
-        gd = gd.to(device)
+        gd = gd.to(self.device)
         pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
         loss = self.loss_fn(pred, gd.y)
 
@@ -119,7 +118,7 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            gd = gd.to(device)
+            gd = gd.to(self.device)
             out = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
             pred = out[mask]
 
@@ -133,7 +132,7 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            gd = gd.to(device)
+            gd = gd.to(self.device)
             pred = self.gnn(gd.x, gd.edge_index, gd.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
 
@@ -147,7 +146,7 @@ class GNN(ABC):
 
         self.gnn.eval()
         with torch.no_grad():
-            df = df.to(device)
+            df = df.to(self.device)
             pred = self.gnn(df.x, df.edge_index, df.edge_attr)
             pred = pred[pred_indices] if pred_indices is not None else pred
 

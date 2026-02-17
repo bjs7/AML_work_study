@@ -2,6 +2,7 @@
 
 from .manager_mixin import GNNMixinManager_Fullinfo_Indi
 from data.relevant_banks import get_relevant_banks
+from training.parallel import parallel_party_execute
 from inference import metrics
 import inference as flin
 import numpy as np
@@ -52,23 +53,36 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
     def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
         return self._train(hyperparameters, laundering_values_vali, laundering_values_test)
 
-    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test, max_workers=None):
 
         models_hyperparameters = {}
         party_predictions = {}
         party_individual_performans = {}
 
-        logger.info("Training %d individual banks", len(self.parties))
-        for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
-            logger.debug("Training bank %s (%d/%d)", bank_id, idx, len(self.parties))
-            
-            self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
-            party_lv_vali = self._helper_party_tuning(party, laundering_values_vali)
-            party_lv_test = self._helper_party_test(party, laundering_values_test)
+        if max_workers is None:
+            max_workers = getattr(self.args['fl_parser'], 'max_workers', 1)
 
-            tmp_model = party.train(party_lv_vali, party_lv_test)
+        # Setup: init models and prepare per-party data (sequential — modifies manager state)
+        party_data = {}
+        logger.info("Training %d individual banks", len(self.parties))
+        for bank_id, party in self.parties.items():
+            self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
+            party_data[bank_id] = {
+                'lv_vali': self._helper_party_tuning(party, laundering_values_vali),
+                'lv_test': self._helper_party_test(party, laundering_values_test),
+                'hyperparameters': hyperparameters[bank_id]['hyperparameters']
+            }
+
+        # Training: run party.train() in parallel
+        def _train_party(bank_id, party):
+            return party.train(party_data[bank_id]['lv_vali'], party_data[bank_id]['lv_test'])
+
+        train_results = parallel_party_execute(self.parties, _train_party, max_workers=max_workers)
+
+        # Collect results (sequential)
+        for bank_id, tmp_model in train_results.items():
             models_hyperparameters[bank_id] = {'model': tmp_model['model'],
-                                               'hyperparameters': hyperparameters[bank_id]['hyperparameters']}
+                                               'hyperparameters': party_data[bank_id]['hyperparameters']}
 
             party_predictions[bank_id] = tmp_model['laundering_values']['pred_probabilities']
             party_individual_performans[bank_id] = {**tmp_model['metrics'], 'best_vali_f1': tmp_model['best_vali_f1']}
