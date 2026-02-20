@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class GNNMixinParty:
+    """Base GNN party mixin — shared by all algorithms (FL and individual)."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -57,7 +58,6 @@ class GNNMixinParty:
             self.train_configs['use_batching'] = False
             self.train_configs['batch_size'] = 0
             self.train_configs['num_neighbors'] = None
-
 
     def feature_engineering(self, *data_configs):
         """Process multiple data splits with feature engineering.
@@ -143,132 +143,29 @@ class GNNMixinParty:
                 (self.data['vali_data'], 'means_vali', 'std_vali'),
                 (self.data['test_data'], 'means_test', 'std_test'))
             self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc, 'test_data': test_proc}
-    
 
-    def _setup_train_loader(self):
-        """Set up batch configs and create train loader if batching is needed.
-
-        Must be called after model init (needs num_gnn_layers).
-        """
-        self._get_batch_configs()
-
-        if not self.train_configs['use_batching']:
-            self._train_loader = None
-            return
-
-        tr_data = copy.deepcopy(self.procs_data['train_data']['df'])
-        add_arange_ids([tr_data])
-
-        self._train_loader_data = tr_data
-        self._train_indices = self.procs_data['train_data']['pred_indices']
-        self._train_loader = LinkNeighborLoader(
-            tr_data,
-            num_neighbors=self.train_configs['num_neighbors'],
-            edge_label_index=tr_data.edge_index,
-            edge_label=tr_data.y,
-            batch_size=self.train_configs['batch_size'],
-            shuffle=True
-        )
-
-    def _setup_eval_loader(self, mode='vali'):
-        """Set up and cache a vali/test loader for batched prediction.
-
-        Must be called after _setup_train_loader (needs train_configs).
-
-        Args:
-            mode: 'vali' for validation loader, 'test' for test loader.
-        """
-        data_key = 'test_data' if mode == 'test' else 'vali_data'
-        loader_attr = f'_{mode}_loader'
-        data_attr = f'_{mode}_loader_data'
-        indices_attr = f'_{mode}_pred_indices'
-
-        if not self.train_configs.get('use_batching'):
-            setattr(self, loader_attr, None)
-            setattr(self, data_attr, None)
-            setattr(self, indices_attr, None)
-            return
-
-        data_copy = copy.deepcopy(self.procs_data[data_key]['df'])
-        pred_indices = self.procs_data[data_key]['pred_indices']
-        add_arange_ids([data_copy])
-
-        setattr(self, data_attr, data_copy)
-        setattr(self, indices_attr, pred_indices)
-        setattr(self, loader_attr, LinkNeighborLoader(
-            data_copy,
-            num_neighbors=self.train_configs['num_neighbors'],
-            edge_label_index=data_copy.edge_index[:, pred_indices],
-            edge_label=data_copy.y[pred_indices],
-            batch_size=self.train_configs['batch_size'],
-            shuffle=False
-        ))
-
-    def _set_global_weight_reference(self):
-        """Snapshot current (global) weights as reference for FedProx proximal term.
-
-        Called by the manager before update_local_weights() each round.
-        At this point, the party's model holds the freshly-distributed global weights.
-        """
-        self.model.set_global_weight_reference()
-
-    def update_local_weights(self, num_local_epochs=1):
-
-        tr_data = self.procs_data['train_data']['df']
-        loss = None
-
-        for epoch in range(num_local_epochs):
-            if self.train_configs.get('use_batching'):
-                for batch in self._train_loader:
-                    mask, _ = batching_masker(batch, self._train_loader_data,
-                                              self._train_loader, self._train_indices,
-                                              add_missing_edges=self._add_missing_edges)
-                    _, _, loss = self.model.update_weights(batch, mask)
-            else:
-                loss = self.model.update_weights_no_batching(tr_data)
-
-        return loss
-
-    def send_local_weights(self, manager):
-        manager.parties_weights[self.bank_id] = {param: value.data.clone() for param, value in self.model.gnn.named_parameters()}
-    
     def get_vali_data(self):
         return {'df': self.procs_data['vali_data']['df'],
                 'pred_indices': self.procs_data['vali_data']['pred_indices']}
 
-    def get_test_data(self):
-        return {'df': self.procs_data['test_data']['df'],
-                'pred_indices': self.procs_data['test_data']['pred_indices']}
+    def _eval_on_loader(self, loader, data, indices, bank_str):
+        """Run evaluation on a given loader, return predictions and ground truths."""
+        preds_list, gt_list, id_list = [], [], []
+        for batch in loader:
+            mask, pred_ids = batching_masker(batch, data, loader, indices) if self.train_configs['use_batching'] else (torch.zeros(data.y.shape[0], dtype=torch.bool).index_fill_(0, indices, True), indices)
+            pred = self.model.predict(batch, mask)
+            preds_list.append(pred)
+            gt_list.append(batch.y[mask])
+            id_list.append(pred_ids)
 
-    def get_predictions(self, mode='vali'):
-        """Get predictions for vali or test data, handling batching internally.
+        preds = torch.cat(preds_list, dim=0).detach().cpu().numpy()
+        ground_truths = torch.cat(gt_list, dim=0).detach().cpu().numpy()
+        pred_ids = torch.cat(id_list).detach().cpu().numpy()
+        return preds, ground_truths, pred_ids
 
-        Uses cached loaders from _setup_eval_loader() when batching is enabled.
-        Falls back to predict_no_batching() otherwise.
 
-        Args:
-            mode: 'vali' for validation data, 'test' for test data.
-        Returns:
-            pred_probabilities as numpy array, aligned with get_vali_indices()/get_test_indices().
-        """
-        loader = getattr(self, f'_{mode}_loader', None)
-
-        if loader is not None:
-            data_copy = getattr(self, f'_{mode}_loader_data')
-            pred_indices = getattr(self, f'_{mode}_pred_indices')
-
-            preds, _, pred_ids = self._eval_on_loader(loader, data_copy, pred_indices, "")
-
-            # Reorder predictions to match pred_indices order so they
-            # align with get_vali_indices()/get_test_indices()
-            pred_indices_np = pred_indices.numpy() if isinstance(pred_indices, torch.Tensor) else np.array(pred_indices)
-            pred_map = dict(zip(pred_ids.astype(int).tolist(), preds.tolist()))
-            ordered_preds = np.array([pred_map[int(pi)] for pi in pred_indices_np])
-
-            return ordered_preds
-        else:
-            data_key = 'test_data' if mode == 'test' else 'vali_data'
-            return self.model.predict_no_batching(self.procs_data[data_key])
+class GNNMixinPartyIndi(GNNMixinParty):
+    """Individual/FullInfo party mixin — used by individual and full_info algorithms."""
 
     def _get_loaders(self):
 
@@ -307,22 +204,6 @@ class GNNMixinParty:
         return (train_loader, vali_loader, test_loader,
                 train_data, vali_data, test_data,
                 train_indices, vali_indices, test_indices)
-    
-
-    def _eval_on_loader(self, loader, data, indices, bank_str):
-        """Run evaluation on a given loader, return predictions and ground truths."""
-        preds_list, gt_list, id_list = [], [], []
-        for batch in loader:
-            mask, pred_ids = batching_masker(batch, data, loader, indices) if self.train_configs['use_batching'] else (torch.zeros(data.y.shape[0], dtype=torch.bool).index_fill_(0, indices, True), indices)
-            pred = self.model.predict(batch, mask)
-            preds_list.append(pred)
-            gt_list.append(batch.y[mask])
-            id_list.append(pred_ids)
-
-        preds = torch.cat(preds_list, dim=0).detach().cpu().numpy()
-        ground_truths = torch.cat(gt_list, dim=0).detach().cpu().numpy()
-        pred_ids = torch.cat(id_list).detach().cpu().numpy()
-        return preds, ground_truths, pred_ids
 
     def train(self, laundering_values, laundering_values_test=None):
 
@@ -429,8 +310,129 @@ class GNNMixinParty:
                 'best_vali_f1': best_f1}
 
 
-class GNNMixinPartyVert(GNNMixinParty):
+class GNNMixinPartyFL(GNNMixinParty):
+    """FL-specific party mixin — used by FedAvg, FedProx, FedGraph."""
+
+    def _setup_train_loader(self):
+        """Set up batch configs and create train loader if batching is needed.
+
+        Must be called after model init (needs num_gnn_layers).
+        """
+        self._get_batch_configs()
+
+        if not self.train_configs['use_batching']:
+            self._train_loader = None
+            return
+
+        tr_data = copy.deepcopy(self.procs_data['train_data']['df'])
+        add_arange_ids([tr_data])
+
+        self._train_loader_data = tr_data
+        self._train_indices = self.procs_data['train_data']['pred_indices']
+        self._train_loader = LinkNeighborLoader(
+            tr_data,
+            num_neighbors=self.train_configs['num_neighbors'],
+            edge_label_index=tr_data.edge_index,
+            edge_label=tr_data.y,
+            batch_size=self.train_configs['batch_size'],
+            shuffle=True
+        )
+
+    def _setup_eval_loader(self, mode='vali'):
+        """Set up and cache a vali/test loader for batched prediction.
+
+        Must be called after _setup_train_loader (needs train_configs).
+
+        Args:
+            mode: 'vali' for validation loader, 'test' for test loader.
+        """
+        data_key = 'test_data' if mode == 'test' else 'vali_data'
+        loader_attr = f'_{mode}_loader'
+        data_attr = f'_{mode}_loader_data'
+        indices_attr = f'_{mode}_pred_indices'
+
+        if not self.train_configs.get('use_batching'):
+            setattr(self, loader_attr, None)
+            setattr(self, data_attr, None)
+            setattr(self, indices_attr, None)
+            return
+
+        data_copy = copy.deepcopy(self.procs_data[data_key]['df'])
+        pred_indices = self.procs_data[data_key]['pred_indices']
+        add_arange_ids([data_copy])
+
+        setattr(self, data_attr, data_copy)
+        setattr(self, indices_attr, pred_indices)
+        setattr(self, loader_attr, LinkNeighborLoader(
+            data_copy,
+            num_neighbors=self.train_configs['num_neighbors'],
+            edge_label_index=data_copy.edge_index[:, pred_indices],
+            edge_label=data_copy.y[pred_indices],
+            batch_size=self.train_configs['batch_size'],
+            shuffle=False
+        ))
+
+    def _set_global_weight_reference(self):
+        """Snapshot current (global) weights as reference for FedProx proximal term.
+
+        Called by the manager before update_local_weights() each round.
+        At this point, the party's model holds the freshly-distributed global weights.
+        """
+        self.model.set_global_weight_reference()
+
+    def update_local_weights(self, num_local_epochs=1):
+
+        tr_data = self.procs_data['train_data']['df']
+        loss = None
+
+        for epoch in range(num_local_epochs):
+            if self.train_configs.get('use_batching'):
+                for batch in self._train_loader:
+                    mask, _ = batching_masker(batch, self._train_loader_data,
+                                              self._train_loader, self._train_indices,
+                                              add_missing_edges=self._add_missing_edges)
+                    _, _, loss = self.model.update_weights(batch, mask)
+            else:
+                loss = self.model.update_weights_no_batching(tr_data)
+
+        return loss
+
+    def send_local_weights(self, manager):
+        manager.parties_weights[self.bank_id] = {param: value.data.clone().cpu() for param, value in self.model.gnn.named_parameters()}
+
+    def get_predictions(self, mode='vali'):
+        """Get predictions for vali or test data, handling batching internally.
+
+        Uses cached loaders from _setup_eval_loader() when batching is enabled.
+        Falls back to predict_no_batching() otherwise.
+
+        Args:
+            mode: 'vali' for validation data, 'test' for test data.
+        Returns:
+            pred_probabilities as numpy array, aligned with get_vali_indices()/get_test_indices().
+        """
+        loader = getattr(self, f'_{mode}_loader', None)
+
+        if loader is not None:
+            data_copy = getattr(self, f'_{mode}_loader_data')
+            pred_indices = getattr(self, f'_{mode}_pred_indices')
+
+            preds, _, pred_ids = self._eval_on_loader(loader, data_copy, pred_indices, "")
+
+            # Reorder predictions to match pred_indices order so they
+            # align with get_vali_indices()/get_test_indices()
+            pred_indices_np = pred_indices.numpy() if isinstance(pred_indices, torch.Tensor) else np.array(pred_indices)
+            pred_map = dict(zip(pred_ids.astype(int).tolist(), preds.tolist()))
+            ordered_preds = np.array([pred_map[int(pi)] for pi in pred_indices_np])
+
+            return ordered_preds
+        else:
+            data_key = 'test_data' if mode == 'test' else 'vali_data'
+            return self.model.predict_no_batching(self.procs_data[data_key])
+
+
+class GNNMixinPartyVert(GNNMixinPartyFL):
+    """Vertical FL party mixin for FedGraph."""
 
     def set_up_parties(self):
         pass
-

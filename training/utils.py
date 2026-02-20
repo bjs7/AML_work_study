@@ -2,6 +2,7 @@
 import random
 import json
 from configs.paths import get_data_path, get_tuning_configs
+from sklearn.metrics import f1_score
 
 # --------------------------------------------------------------------------------------------------
 # tuning functions
@@ -28,6 +29,13 @@ def update_interval(param, interval):
             new_interval[1] = param
         return new_interval
 
+def f1_eval(preds, dtrain):
+    labels = dtrain.get_label()
+    preds_binary = (preds > 0.5).astype(int)
+    f1 = f1_score(labels, preds_binary, average='binary', zero_division=0)
+    return 'f1', f1
+
+
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # function for sampling hyperparameter values for gnn and boosters, used in the tuning phase ---------------------------------------------
 
@@ -43,7 +51,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
             "num_rounds": random.randint(10, 1000),
             "params": {
                 "objective":  "binary:logistic",
-                "eval_metric": "logloss",
+                #"eval_metric": "auc",
                 
                 "max_depth": random.randint(1, 15),
                 "learning_rate": random.uniform(10**(-2.5), 10**(-1)),
@@ -66,7 +74,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
                 'params': {
 
                 'objective': 'binary',
-                'metric': 'binary_logloss',
+                #'metric': 'auc',
                 'boosting_type': 'gbdt',
 
                 'num_leaves': random.randint(32, 256),

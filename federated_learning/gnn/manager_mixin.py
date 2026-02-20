@@ -2,6 +2,7 @@
 
 from training.utils import ibm_gnn
 import training.utils as tr_utils
+from training.parallel import get_available_gpus, get_device_for_party
 from models.gnn import GNN
 import logging
 import utils
@@ -11,6 +12,44 @@ logger = logging.getLogger(__name__)
 
 
 class GNNMixinManager:
+
+    def _prep_parties_data(self):
+        for _, party in self.parties.items():
+            party.prep_data()
+
+    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
+
+        self.set_mode('training')
+        seeds = self.args['data_parser'].testing_seeds
+        results_by_seed = {}
+
+        logger.info("="*80)
+        logger.info("Starting training with %d seeds", seeds)
+        logger.info("="*80)
+
+        self._prep_parties_data()
+
+        for seed in range(seeds):
+            seed_value = seed + 1
+            logger.info("\n" + "-"*80)
+            logger.info("Training with seed %d/%d", seed_value, seeds)
+            logger.info("-"*80)
+            utils.set_seed(seed_value)
+
+            results_by_seed[seed_value] = self._train(
+                hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
+
+            logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
+                       seed_value,
+                       results_by_seed[seed_value]['metrics']['f1'],
+                       results_by_seed[seed_value]['metrics']['roc_auc'],
+                       results_by_seed[seed_value]['metrics']['pr_auc'])
+
+        logger.info("\n" + "="*80)
+        logger.info("All seeds completed")
+        logger.info("="*80)
+
+        return results_by_seed
 
     def init_hyperparams(self, sample_intervals = None):
             
@@ -30,9 +69,11 @@ class GNNMixinManager:
         if bank_id is not None:
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
         else:
+            available_gpus = get_available_gpus()
             include_test = self.mode == 'training'
-            for bank_id, party in self.iter_parties(include_test=include_test):
-                party.model = GNN(self, hyperparams, node_features, edge_dim)
+            for idx, (_, party) in enumerate(self.iter_parties(include_test=include_test)):
+                device = get_device_for_party(idx, available_gpus)
+                party.model = GNN(self, hyperparams, node_features, edge_dim, device=device)
 
         # need to 'save' parameters from model 1 as starting, or not, because the models will vary
         # Here get the relevant parameters etc. or it can be placed in get_global_w
@@ -98,45 +139,8 @@ class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
 
     def _train_party(self, laundering_values, **kwargs):
         raise NotImplementedError
-    
-    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
-        self.set_mode('training')
-        seeds = self.args['data_parser'].testing_seeds
-
-        results_by_seed = {}
-        bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
-
-        logger.info("="*80)
-        logger.info("Starting training with %d seeds for %s", seeds, bank_str)
-        logger.info("="*80)
-
-        for bank_id, party in self.parties.items():
-            party.prep_data()
-
-        for seed in range(seeds):
-            seed_value = seed + 1
-            logger.info("\n" + "-"*80)
-            logger.info("Training with seed %d/%d", seed_value, seeds)
-            logger.info("-"*80)
-            utils.set_seed(seed_value)
-
-            results_by_seed[seed_value] = self._train_helper(
-                hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
-
-            logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
-                       seed_value,
-                       results_by_seed[seed_value]['metrics']['f1'],
-                       results_by_seed[seed_value]['metrics']['roc_auc'],
-                       results_by_seed[seed_value]['metrics']['pr_auc'])
-
-        logger.info("\n" + "="*80)
-        logger.info("All seeds completed")
-        logger.info("="*80)
-
-        return results_by_seed
-
-    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
         raise NotImplementedError
 
     def _tuning_helper(self, laundering_values, party, bank_id):

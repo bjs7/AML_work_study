@@ -50,9 +50,6 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         mask = np.isin(laundering_values_test['indices'], party.get_test_indices())
         return laundering_values_test.iloc[mask,].reset_index(drop=True)
 
-    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
-        return self._train(hyperparameters, laundering_values_vali, laundering_values_test)
-
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test, max_workers=None):
 
         models_hyperparameters = {}

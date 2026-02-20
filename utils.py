@@ -77,7 +77,7 @@ def set_seed(seed: int = 0, log = False) -> None:
     np.random.seed(seed)
     random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
     # When running on the CuDNN backend, two further options must be set
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
@@ -166,7 +166,7 @@ def fl_parser():
                         help='Aggregation weighting: proportional (by dataset size) or uniform (1/K)')
     parser.add_argument('--num_rounds', default=100, type=int,
                         help='Number of FL communication rounds (default: 100)')
-    parser.add_argument('--max_workers', default=None, type=int,
+    parser.add_argument('--max_workers', default=4, type=int,
                         help='Number of parallel workers for party training (default: number of CPUs)')
 
     return parser

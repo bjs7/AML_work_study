@@ -158,6 +158,9 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         """
         setup.setup_vertical(self, batching=batching)
 
+    def _prep_parties_data(self):
+        pass  # Parties already prepped in add_parties_prep_data()
+
     def setup_model(self, hyperparameters, laundering_values):
         """Initialize the shared model and optimizer.
 
@@ -205,41 +208,10 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         """Execute forward pass with embedding exchange."""
         return forward.forward_pass(self, mode, batch_num, batch_banks, batch_data)
     
-    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
-
-        self.set_mode('training')
-        seeds = self.args['data_parser'].testing_seeds
-        results_by_seed = {}
-
-        logger.info("="*80)
-        logger.info("Starting training with %d seeds for federated learning", seeds)
-        logger.info("="*80)
-
-        for seed in range(seeds):
-            seed_value = seed + 1
-            logger.info("\n" + "-"*80)
-            logger.info("Training with seed %d/%d", seed_value, seeds)
-            logger.info("-"*80)
-            utils.set_seed(seed_value)
-
-            results_by_seed[seed_value] = self._train(hyperparameters, copy.deepcopy(laundering_values_test))
-
-            logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
-            seed_value,
-            results_by_seed[seed_value]['metrics']['f1'],
-            results_by_seed[seed_value]['metrics']['roc_auc'],
-            results_by_seed[seed_value]['metrics']['pr_auc'])
-
-        logger.info("\n" + "="*80)
-        logger.info("All seeds completed")
-        logger.info("="*80)
-
-        return results_by_seed
-
-    def _train(self, hyperparameters, laundering_values):
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
         self.setup_vertical(batching=self.args['data_parser'].batching)
-        self.setup_model(hyperparameters, laundering_values)
-        return self.train_vertical(laundering_values, batching=self.args['data_parser'].batching)
+        self.setup_model(hyperparameters, laundering_values_test)
+        return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching)
 
     def _forward_eval(self, mode, batching, precomputed_batch_data=None):
         """Run a forward pass on vali or test mode and return preds/labels."""
@@ -401,6 +373,10 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
         return self._gnn_tuning(laundering_values)
 
+    def _prep_parties_data(self):
+        for _, party in self.iter_parties(include_test=True):
+            party.prep_data()
+
     def tuning_loop(self, hyperparameters_tuning, laundering_values):
 
         best_f1 = -1
@@ -408,7 +384,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         scores = []
 
         for hyperparams in hyperparameters_tuning:
-            
+
             self.init_models(hyperparams)
             self.get_global_weights()
             self.send_global_weights_params()
@@ -416,49 +392,14 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             # if reg or graph epochs is used. Or also is for decision trees, yes?
             # just update in one, and then another for sending to manager?
             results = self.fl_training(laundering_values)
-            
+
             if results['metrics']['f1'] > best_f1:
                 best_hyperparameters = hyperparams
                 best_f1 = results['metrics']['f1']
-            
+
             scores.append(results['metrics']['f1'])
 
         return best_hyperparameters, scores, best_f1
-    
-    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
-
-        self.set_mode('training')
-        seeds = self.args['data_parser'].testing_seeds
-        results_by_seed = {}
-
-        logger.info("="*80)
-        logger.info("Starting training with %d seeds for federated learning", seeds)
-        logger.info("="*80)
-
-        for bank_id, party in self.iter_parties(include_test=True):
-            party.prep_data()
-
-        for seed in range(seeds):
-            seed_value = seed + 1
-            logger.info("\n" + "-"*80)
-            logger.info("Training with seed %d/%d", seed_value, seeds)
-            logger.info("-"*80)
-            utils.set_seed(seed_value)
-
-            results_by_seed[seed_value] = self._train(
-                hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
-
-            logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
-            seed_value,
-            results_by_seed[seed_value]['metrics']['f1'],
-            results_by_seed[seed_value]['metrics']['roc_auc'],
-            results_by_seed[seed_value]['metrics']['pr_auc'])
-
-        logger.info("\n" + "="*80)
-        logger.info("All seeds completed")
-        logger.info("="*80)
-
-        return results_by_seed
 
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 

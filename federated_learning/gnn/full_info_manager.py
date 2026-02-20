@@ -33,7 +33,7 @@ class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
     def _train_party(self, laundering_values, **kwargs):
         return self._party.train(laundering_values)
         
-    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
         self.init_models(hyperparameters)
         return self._party.train(laundering_values_vali, laundering_values_test)
     

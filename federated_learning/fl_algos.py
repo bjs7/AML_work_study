@@ -2,9 +2,10 @@
 
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
-from federated_learning.gnn import GNNMixinParty, GNNMixinPartyVert, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical #GNNMixinParty_Individual, GNNMixinParty_Full_info, 
+from federated_learning.gnn import GNNMixinParty, GNNMixinPartyFL, GNNMixinPartyIndi, GNNMixinPartyVert, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical
 from federated_learning.booster.individual_manager import IndividualBoosterManager
 from federated_learning.booster.federated_manager import FLBoosterManager
+from federated_learning.booster.full_info_manager import FullInfoBoosterManager
 from federated_learning.booster.party_mixin import BoosterMixinParty
 
 # Regression classes - to be implemented later
@@ -101,11 +102,11 @@ class FedAvg_Regression_Manager(RegressionMixinManager, FedAvg_manager):
 # Party --------------------------
 
 @regi_algo_party("full_info_gnn")
-class FullInfo_GNN_Party(GNNMixinParty, Party):
-    
+class FullInfo_GNN_Party(GNNMixinPartyIndi, Party):
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     @staticmethod
     def return_class(**kwargs):
         return FullInfo_GNN_Party(**kwargs)
@@ -113,11 +114,11 @@ class FullInfo_GNN_Party(GNNMixinParty, Party):
 #FullInfo_GNN_Party.__mro__
 
 @regi_algo_party("individual_gnn")
-class Individual_GNN_Party(GNNMixinParty, Party):
+class Individual_GNN_Party(GNNMixinPartyIndi, Party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
+
     @staticmethod
     def return_class(**kwargs):
         return Individual_GNN_Party(**kwargs)
@@ -125,7 +126,7 @@ class Individual_GNN_Party(GNNMixinParty, Party):
 #Individual_GNN_Party.__mro__
 
 @regi_algo_party("FedAvg_gnn")
-class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
+class FedAvg_GNN_Party(GNNMixinPartyFL, FedAvg_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -136,7 +137,7 @@ class FedAvg_GNN_Party(GNNMixinParty, FedAvg_party):
     
 
 @regi_algo_party("FedProx_gnn")
-class FedProx_GNN_Party(GNNMixinParty, FedProx_party):
+class FedProx_GNN_Party(GNNMixinPartyFL, FedProx_party):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -248,4 +249,23 @@ class FedAvg_Booster_Manager(FLBoosterManager, FedAvg_manager):
     @staticmethod
     def return_class(args):
         return FedAvg_Booster_Manager(args)
+
+
+@regi_algo_party("full_info_booster")
+class FullInfo_Booster_Party(BoosterMixinParty, Party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return FullInfo_Booster_Party(**kwargs)
+
+
+@regi_algo_manager("full_info_booster")
+class FullInfo_Booster_Manager(FullInfoBoosterManager, Manager):
+
+    @staticmethod
+    def return_class(args):
+        return FullInfo_Booster_Manager(args)
 

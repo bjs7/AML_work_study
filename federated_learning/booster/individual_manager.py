@@ -3,7 +3,7 @@
 import copy
 import numpy as np
 import utils
-from inference import metrics
+from inference import metrics, probs_to_binary
 import inference as flin
 from .manager_mixin import BoosterMixinManager
 from data.relevant_banks import get_relevant_banks
@@ -11,10 +11,31 @@ from training.parallel import parallel_party_execute
 from federated_learning.gnn.manager_mixin import GNNMixinManager_Fullinfo_Indi
 import logging
 
+from training.utils import hyper_sampler, f1_eval
+from configs.paths import get_tuning_configs
+import xgboost as xgb
+from sklearn.metrics import f1_score
+
+
 logger = logging.getLogger(__name__)
 
+#party_laundering_values = self._helper_party_tuning(party, laundering_values)
+#tuned_hyparameters = self.tune(party, party_laundering_values)
+#tuned_hyparameters, f1_score_for_hp = self._tuning_helper(laundering_values, party, bank_id)
 
-class IndividualBoosterManager(BoosterMixinManager, GNNMixinManager_Fullinfo_Indi):
+class IndividualBoosterManager(BoosterMixinManager):
+
+    def _helper_party_tuning(self, party, laundering_values):
+        mask = np.isin(laundering_values['indices'], party.get_vali_indices())
+        return laundering_values.iloc[mask,].reset_index(drop=True)
+    
+    def _helper_party_test(self, party, laundering_values_test):
+        mask = np.isin(laundering_values_test['indices'], party.get_test_indices())
+        return laundering_values_test.iloc[mask,].reset_index(drop=True)
+
+    def _tuning_helper(self, laundering_values, party, bank_id):
+        party_laundering_values = self._helper_party_tuning(party, laundering_values)
+        return self.tune(party, party_laundering_values)
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup banks, tune them."""
@@ -35,55 +56,9 @@ class IndividualBoosterManager(BoosterMixinManager, GNNMixinManager_Fullinfo_Ind
         logger.info("Setup complete: Total %d banks", len(self.parties))
         return tuned_hp
 
-    def _tuning_helper(self, laundering_values, party, bank_id):
-        party_laundering_values = self._helper_party_tuning(party, laundering_values)
-        return self._booster_tuning(party_laundering_values, bank_id=bank_id)
-
-    def _booster_tuning(self, laundering_values, **kwargs):
-        hyperparameters_tuning = self.init_hyperparams()
-        _, scores, _ = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
-
-        # Get top 5 and refine
-        params_to_keep = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:5]
-        top_parameters = [hyperparameters_tuning[i] for i in params_to_keep]
-        sample_space = self._get_search_space(top_parameters)
-
-        hyperparameters_tuning = self.init_hyperparams(sample_space)
-        tuned_hyperparameters, _, f1_score_for_hp = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
-
-        return tuned_hyperparameters, f1_score_for_hp
-
-    def _get_search_space(self, hyperparameters_tuning):
-        """Extract search intervals from top hyperparameters for refinement."""
-        intervals = {}
-        keys_to_track = ['num_rounds', 'max_depth', 'learning_rate', 'lambda', 'scale_pos_weight',
-                         'colsample_bytree', 'subsample']
-
-        for key in keys_to_track:
-            vals = []
-            for hp in hyperparameters_tuning:
-                val = hp.get(key) or hp.get('params', {}).get(key)
-                if val is not None:
-                    vals.append(val)
-            if vals:
-                intervals[f'{key}_interval'] = [min(vals), max(vals)]
-
-        return intervals
-
-    def _helper_party_tuning(self, party, laundering_values):
-        mask = np.isin(laundering_values['indices'], party.get_vali_indices())
-        return laundering_values.iloc[mask,].reset_index(drop=True)
-
-    def _helper_party_test(self, party, laundering_values_test):
-        mask = np.isin(laundering_values_test['indices'], party.get_test_indices())
-        return laundering_values_test.iloc[mask,].reset_index(drop=True)
-
     def _train_party(self, laundering_values, **kwargs):
         bank_id = kwargs.get('bank_id')
         return self.parties[bank_id].train(laundering_values)
-
-    def _train_helper(self, hyperparameters, laundering_values_vali, laundering_values_test):
-        return self._train(hyperparameters, laundering_values_vali, laundering_values_test)
 
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test, max_workers=None):
 
@@ -96,7 +71,7 @@ class IndividualBoosterManager(BoosterMixinManager, GNNMixinManager_Fullinfo_Ind
 
         # Setup: init models and prepare per-party data (sequential)
         party_data = {}
-        logger.info("Training %d individual banks", len(self.parties))
+        #logger.info("Training %d individual banks", len(self.parties))
         for bank_id, party in self.parties.items():
             self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
             party_data[bank_id] = {
@@ -107,7 +82,7 @@ class IndividualBoosterManager(BoosterMixinManager, GNNMixinManager_Fullinfo_Ind
 
         # Training: run party.train() in parallel
         def _train_party(bank_id, party):
-            return party.train(party_data[bank_id]['lv_vali'], party_data[bank_id]['lv_test'])
+            return party.train(party_data[bank_id]['hyperparameters'], party_data[bank_id]['lv_vali'], party_data[bank_id]['lv_test'])
 
         train_results = parallel_party_execute(self.parties, _train_party, max_workers=max_workers)
 
@@ -144,3 +119,10 @@ class IndividualBoosterManager(BoosterMixinManager, GNNMixinManager_Fullinfo_Ind
             'models': models_hyperparameters,
             'party_performance': party_individual_performans
         }
+    
+
+
+
+#booster = xgb.Booster()
+#booster.load_model(bytearray(models_hyperparameters[bank_id]['model']))
+#party.model = booster

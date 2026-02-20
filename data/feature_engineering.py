@@ -41,19 +41,29 @@ def update_regular_data(df, bank_indices):
 
 
 # For now no update to the from_id and to_id variables, as these are just id's so the value should be irrelevant
-def feature_engi_regular_data(df, scaler_encoders = None):
+
+def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
 
     #df = copy.copy(data)
     #df = train_data
 
-    data = copy.deepcopy(data)
-    df = data['df']
+    df = copy.deepcopy(data)
+    #df = data['df']
 
-    scl_enc = {ele: scaler_encoders.get(ele) for ele in ('scaler_amt', 'encoder_currency', 'encoder_payment_format', 'gfp')}
+    scl_enc = {ele: scaler_encoders.get(ele) for ele in 
+               ('scaler_amount', 'encoder_currency', 'encoder_payment_format', 'gfp')
+               } if scaler_encoders else {}
+    
+    data_features = ['EdgeID', 'from_id', 'to_id']
+    if not data_parser.ibm_fe:
+        data_features += ['Timestamp', 'Amount Sent', 'Amount Received', 'Sent Currency', 
+                          'Received Currency', 'Payment Format', 'is_currency_exchange']
+    else:
+        if data_parser.normalize_currency:
+            data_features += ['Timestamp', 'Amount_Received_Normalized', 'Received Currency', 'Payment Format']
+        else:
+            data_features += ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
 
-    data_features = ['EdgeID', 'from_id', 'to_id', 'Amount_Sent_Normalized_Log', 'Amount_Received_Normalized_Log',
-                     'Sent Currency', 'Received Currency', 'Payment Format', 
-                     'Amount_Difference_Pct', 'is_currency_exchange']
     x = df['x'].loc[:,data_features]
     y = df['y']
 
@@ -61,7 +71,7 @@ def feature_engi_regular_data(df, scaler_encoders = None):
     # graph_feature_preprocessing using snapML
 
     # switch the position of graph feature process and the other features? To include those features in graph features processing?
-    if not scl_enc['gfp']:
+    if not scl_enc.get('gfp'):
         scl_enc['gfp'] = GraphFeaturePreprocessor()
         scl_enc['gfp'].set_params(tu.gfpparams)
         x_gf = scl_enc['gfp'].fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
@@ -71,66 +81,62 @@ def feature_engi_regular_data(df, scaler_encoders = None):
     
     # remove EdgeID as it is no longer needed
     x = x.drop('EdgeID', axis='columns')
+    x = x.drop('from_id', axis='columns')
+    x = x.drop('to_id', axis='columns')
 
-    # Count the amount of times an account sends or receives
-    for ID in ['from_id', 'to_id']:
-        x.iloc[:, np.where(x.columns == ID)[0][0]] = x.iloc[:, np.where(x.columns == ID)[0][0]].map(x.iloc[:, np.where(x.columns == ID)[0][0]].value_counts())
+    if data_parser.ibm_fe:
+        x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
+        x = pd.concat([x, x_gf], axis=1)
+        return {'x': x, 'y': y, 'scaler_encoders': scl_enc}        
+    
+    # Timestamp: scale to days ------------------------------------------------------------------------------
+    x.loc[:, 'Timestamp'] = x.loc[:, 'Timestamp'] / 86400.0
 
+    # Amounts: log transform then standardize (shared scaler for sent & received) ---------------------------
+    x.loc[:,'Amount Sent'] = np.log(x.loc[:,'Amount Sent'])
+    x.loc[:,'Amount Received'] = np.log(x.loc[:,'Amount Received'])
 
-    # time periods ---------------------------------------------------------------------------------------------------------
+    if not scl_enc.get('scaler_amount'):
+        scl_enc['scaler_amount'] = StandardScaler()
+        combined = np.concatenate([x.loc[:,'Amount Sent'], x.loc[:,'Amount Received']]).reshape(-1,1)
+        scl_enc['scaler_amount'].fit(combined)
 
-    timestamps = x.loc[:, 'Timestamp']
-    time_freqs = {'hour': 60*60, 'day': 60*60*24, 'week': 60*60*24*7}
+    for index in ['Amount Sent', 'Amount Received']:
+        reshaped = np.array(x.loc[:,index]).reshape(-1,1)
+        scaled = scl_enc['scaler_amount'].transform(reshaped)
+        x.loc[:,index] = scaled
 
-    sin_comp = {key: torch.sin(2 * np.pi * timestamps / val) 
-            for key, val in time_freqs.items()}
-    cos_comp = {key: torch.cos(2 * np.pi * timestamps / val) 
-                for key, val in time_freqs.items()}
+    # Encoding: OneHotEncode currencies and payment format -------------------------------------------------
+    features = ['Sent Currency', 'Received Currency', 'Payment Format']
+    encoded = {}
 
-    # standardization ------------------------------------------------------------------------------------------------------
-
-    if not scl_enc['scaler_amt']:
-        scl_enc['scaler_amt'] = StandardScaler()
-        scaled_values = scl_enc['scaler_amt'].fit_transform(x.loc[:,['Amount Received']])
-    else:
-        scaled_values = scl_enc['scaler_amt'].transform(x.loc[:,['Amount Received']])
-    x.loc[:, ['Amount Received']] = scaled_values[:,0]
-
-    # Encoding -------------------------------------------------------------------------------------------------------------
-
-    if not encoder_cur:
-        encoder_cur = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded = encoder_cur.fit_transform(np.array([x.loc[:, 'Received Currency']]).T)
-    else:
-        encoded = encoder_cur.transform(np.array([x.loc[:, 'Received Currency']]).T)
-    encoded_df = pd.DataFrame(encoded, columns=encoder_cur.get_feature_names_out(["Received Currency"]))
-    x = pd.concat([x.drop(columns=['Received Currency']), encoded_df], axis=1)
-
-    if not encoder_pay:
-        encoder_pay = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
-        encoded = encoder_pay.fit_transform(np.array([x.loc[:, 'Payment Format']]).T)
-    else:
-        encoded = encoder_pay.transform(np.array([x.loc[:, 'Payment Format']]).T)
-    encoded_df = pd.DataFrame(encoded, columns=encoder_pay.get_feature_names_out(["Payment Format"]))
-    x = pd.concat([x.drop(columns = ['Payment Format']), encoded_df], axis=1)
+    for feature in features:
+        if feature in ('Sent Currency', 'Received Currency'):
+            encoder_key = 'encoder_currency'
+        else:
+            encoder_key = 'encoder_payment_format'
+        column_data = x.loc[:,feature]
+        if not scl_enc.get(encoder_key):
+            scl_enc[encoder_key] = OneHotEncoder(sparse_output=False, drop='first', handle_unknown='ignore')
+            encoded[feature] = scl_enc[encoder_key].fit_transform(np.array(column_data).reshape(-1,1))
+        else:
+            encoded[feature] = scl_enc[encoder_key].transform(np.array(column_data).reshape(-1,1))
 
     # Pack -----------------------------------------------------------------------------------------------------------------
 
-    sin_cos = pd.concat([
-                         pd.DataFrame({'sin_component_hour': sin_component_hour.values}), 
-                         pd.DataFrame({'cos_component_hour': cos_component_hour.values}),
-                         pd.DataFrame({'sin_component_day': sin_component_day.values}),
-                         pd.DataFrame({'cos_component_day': cos_component_day.values}),
-                         pd.DataFrame({'sin_component_week': sin_component_week.values}),
-                         pd.DataFrame({'cos_component_week': cos_component_week.values}),
-                         ], axis=1)
-    x = pd.concat([x, sin_cos], axis = 1)
+    for feature in features:
+        if feature in ('Sent Currency', 'Received Currency'):
+            encoder_key = 'encoder_currency'
+        else:
+            encoder_key = 'encoder_payment_format'
+        encoded_df = pd.DataFrame(encoded[feature], columns=scl_enc[encoder_key].get_feature_names_out([feature]))
+        x = pd.concat([x.drop(columns=[feature]), encoded_df], axis=1)
 
     # finally concat X and the graph features
     x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
     x = pd.concat([x, x_gf], axis=1)
 
-    return {'x': x, 'y': y, 'scaler_encoders': {'scaler': scaler, 'encoder_pay': encoder_pay, 'encoder_cur': encoder_cur, 'gfp': gp}} #'bank_indices': np.array(bank_indices)
+    return {'x': x, 'y': y, 'scaler_encoders': scl_enc}
 
 
 # function to first 'update' data

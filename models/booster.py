@@ -2,8 +2,8 @@
 
 import xgboost as xgb
 import numpy as np
-import io
 import logging
+from training.utils import hyper_sampler, f1_eval
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class Booster:
             self
         """
         dtrain = xgb.DMatrix(X_train, label=y_train)
-        evals = [(dtrain, 'train')]
+        evals = []
 
         if X_eval is not None and y_eval is not None:
             deval = xgb.DMatrix(X_eval, label=y_eval)
@@ -47,7 +47,9 @@ class Booster:
             self.params,
             dtrain,
             num_boost_round=self.num_rounds,
-            evals=evals,
+            evals=evals if len(evals) > 0 else None,
+            custom_metric = f1_eval,
+            maximize=True,
             early_stopping_rounds=early_stopping_rounds if X_eval is not None else None,
             verbose_eval=False
         )
@@ -82,14 +84,11 @@ class Booster:
             numpy array of probabilities.
         """
         dmat = xgb.DMatrix(X)
-        return self.booster.predict(dmat)
+        return self.booster.predict(dmat, iteration_range=(0, self.booster.best_iteration + 1))
 
     def get_model_raw(self):
         """Serialize model to bytes for federated transfer."""
-        buf = io.BytesIO()
-        self.booster.save_raw(raw_format='json')
-        buf.write(self.booster.save_raw(raw_format='json'))
-        return buf.getvalue()
+        return self.booster.save_raw(raw_format='json')
 
     def load_model_raw(self, raw_bytes):
         """Load model from serialized bytes."""
