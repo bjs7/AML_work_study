@@ -8,6 +8,7 @@ import data.data_utils as du
 import data.feature_engineering as fe
 import data.data_functions as dfn
 
+from data.relevant_banks import load_relevant_banks
 
 #from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
@@ -57,18 +58,31 @@ def get_data(df, data_parser, **kwargs):
     else:
         indices = sub_indices(df)
 
+    # need to make sure that indices do not need to be reset etc.
+    if data_parser.eval_mode == 'comparable':
+
+        individual_indices = load_relevant_banks(data_parser).get('individual').get('indices')
+        
+        new_train_indices = indices[0][np.isin(indices[0], individual_indices)]
+        new_vali_indices = indices[1][np.isin(indices[1], individual_indices)]
+        new_test_indices = indices[2][np.isin(indices[2], individual_indices)]
+
+        indices = [new_train_indices, new_vali_indices, new_test_indices]
+
     packed_data = {}
 
     # pack graph data
     if data_parser.data_type == 'graph_data':
-        packed_data['graph_data'] = pack_graph_data(df, y, timestamps, indices, edge_features)
+        packed_data['graph_data'] = pack_graph_data(df, y, timestamps, indices, edge_features, data_parser.eval_mode)
 
     # pack non-graph data
-    packed_data['regular_data'] = pack_regular_data(df, y, indices)
+    packed_data['regular_data'] = pack_regular_data(df, y, indices, data_parser.eval_mode)
 
     return packed_data, scaler_encoders
 
-
+#import copy
+#indices_holder = copy.deepcopy(indices)
+#df_edges = copy.deepcopy(df)
 
 def sub_indices(sub_df):
     
@@ -146,14 +160,20 @@ def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
 
 # pack regular data function -------------------------------------
 
-def pack_regular_data(df, y, indices):
+def pack_regular_data(df, y, indices, eval_mode = 'system'):
 
     if isinstance(y, torch.Tensor):
         y = np.array(y)
 
+    max_idx = 0
     packed_data = {}
     for idx, data  in enumerate(['train_data', 'vali_data', 'test_data']):
         packed_data[data] = {'x': df.iloc[indices[idx],:], 'y': y[indices[idx]]}
+        if eval_mode != 'system':
+            tmp_index = pd.Index(range(max_idx, packed_data[data]['x'].shape[0] + max_idx))
+            packed_data[data]['x'] = packed_data[data]['x'].set_index(tmp_index)
+            max_idx = packed_data[data]['x'].index.max() + 1
+            
 
     return packed_data
 
@@ -161,9 +181,9 @@ def pack_regular_data(df, y, indices):
 
 # pack graph data function -------------------------------------
 
-def pack_graph_data(df_edges, y, timestamps, indices, edge_features):
+def pack_graph_data(df_edges, y, timestamps, indices, edge_features, eval_mode = 'system'):
 
-    train_indices, vali_indices,test_indices = indices
+    train_indices, vali_indices, test_indices = indices
 
     max_n_id = df_edges.loc[:, ['from_id', 'to_id']].to_numpy().max() + 1
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
@@ -182,10 +202,15 @@ def pack_graph_data(df_edges, y, timestamps, indices, edge_features):
     train_x, vali_x, test_x = x, x, x
     edge_train = train_indices
     edge_vali = np.concatenate([train_indices, vali_indices])
+    if eval_mode != 'system':
+        edge_test = np.concatenate([train_indices, vali_indices, test_indices])
 
     train_edge_index, train_edge_attr, train_y, train_edge_times = edge_index[:, edge_train], edge_attr[edge_train], y[edge_train], timestamps[edge_train]
     vali_edge_index, vali_edge_attr, vali_y, vali_edge_times = edge_index[:, edge_vali], edge_attr[edge_vali], y[edge_vali], timestamps[edge_vali]
-    test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
+    if eval_mode != 'system':
+        test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index[:, edge_test], edge_attr[edge_test], y[edge_test], timestamps[edge_test]
+    else:
+        test_edge_index, test_edge_attr, test_y, test_edge_times = edge_index, edge_attr, y, timestamps
 
     train_data = du.GraphData(x=train_x, y=train_y, edge_index=train_edge_index, edge_attr=train_edge_attr, timestamps=train_edge_times)
     vali_data = du.GraphData(x=vali_x, y=vali_y, edge_index=vali_edge_index, edge_attr=vali_edge_attr, timestamps=vali_edge_times)
@@ -198,11 +223,11 @@ def pack_graph_data(df_edges, y, timestamps, indices, edge_features):
                 'vali_data': {'df': vali_data},
                 'test_data': {'df': test_data}}
 
+    max_idx = 0
     for index, name in zip([train_indices, vali_indices, test_indices], list(packed_data)):
-        packed_data[name]['pred_indices'] = torch.tensor(index)
-
+        packed_data[name]['pred_indices'] = torch.tensor(range(max_idx, len(index) + max_idx))
+        max_idx = int(packed_data[name]['pred_indices'].max()) + 1
+            
     return packed_data
 
-    
-    
 

@@ -328,10 +328,14 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis = False):
 
-        fedavg_banks = load_relevant_banks(parsers).get('FedAvg')
-        train_banks = fedavg_banks['train_banks']
-        vali_banks = fedavg_banks['vali_banks']
-        test_banks = fedavg_banks['test_banks']
+        if parsers['data_parser'].eval_mode == 'comparable':
+            train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
+            vali_banks, test_banks = [], []
+        else:
+            fedavg_banks = load_relevant_banks(parsers['data_parser']).get('FedAvg')
+            train_banks = fedavg_banks['train_banks']
+            vali_banks = fedavg_banks['vali_banks']
+            test_banks = fedavg_banks['test_banks']
 
         if parsers['data_parser'].bank_filter:
             train_banks = apply_bank_filter(

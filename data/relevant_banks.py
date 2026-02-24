@@ -1,26 +1,27 @@
 import os
-import utils
 import pandas as pd
 import configs.configs as config
-from data.raw_data_processing import get_data
 import numpy as np
 from pathlib import Path
 import json
 from configs.configs import split_perc
+from configs.paths import get_data_path
 from data.get_indices_type_data import get_bank_indices
 from data.get_indices_type_data import get_indices_bdt, get_booster_data, get_graph_data
 import data.data_functions as dfn
 
 
 def filter_banks(parsers):
+    from data.raw_data_processing import get_data
 
     # set up ----------------------------------------------------------------------------------------
     #parsers = utils.parser_all()
     parsers['data_parser'].ibm_fe = True
     parsers['data_parser'].scenario = 'individual_banks'
+    parsers['data_parser'].eval_mode = 'system'  # this function generates individual_indices, so comparable filtering would be circular
 
     # data ----------------------------------------------------------------------------------------
-    df_raw = pd.read_csv(utils.get_data_path() + f"/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+    df_raw = pd.read_csv(get_data_path() + f"/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
     df_length = df_raw.shape[0]
     unique_banks = sorted(pd.concat([df_raw['From Bank'], df_raw['To Bank']]).unique().tolist())
     df, scaler_encoders = get_data(df_raw, parsers['data_parser'], split_perc = split_perc)
@@ -123,11 +124,49 @@ def filter_banks(parsers):
     fedavg_laundering, fedavg_data_pct, fedavg_laundering_pct = count_split_stats(all_indices_FedAvg)
     fedavg_alt_laundering, fedavg_alt_data_pct, fedavg_alt_laundering_pct = count_split_stats(alternative_FedAvg)
 
+    bank_filter_stats_system = _compute_bank_filter_stats(df, split_data, fedavg_train_banks, train_laundering)
+    bank_filter_stats_comparable = _compute_bank_filter_stats(df, split_data, individual_banks, train_laundering)
+
+    relevant_banks = {
+        'total_observations': df_length, 'total_laundering': total_laundering,
+        'train_laundering': train_laundering, 'vali_laundering': vali_laundering, 'test_laundering': test_laundering,
+        'individual': {'banks': individual_banks, 'obs_ava': obs_available_for_individual_banks,
+                       'percentage': obs_available_for_individual_banks/df_length,
+                       **individual_laundering, **individual_data_pct, **individual_laundering_pct,
+                       'indices': sorted(set(all_indices_individual))},
+        'FedAvg': {'train_banks': fedavg_train_banks, 'vali_banks': has_data_in_vali, 'test_banks': has_data_in_test,
+                   'obs_ava': obs_available_for_FedAvg_banks,
+                   'percentage': obs_available_for_FedAvg_banks/df_length,
+                   **fedavg_laundering, **fedavg_data_pct, **fedavg_laundering_pct},
+        'FedAvg_alt': {'banks': fedavg_train_banks,
+                       'obs_ava': obs_available_alternative_FedAvg,
+                       'percentage': obs_available_alternative_FedAvg/df_length,
+                       **fedavg_alt_laundering, **fedavg_alt_data_pct, **fedavg_alt_laundering_pct},
+        'bank_filter_system': bank_filter_stats_system,
+        'bank_filter_comparable': bank_filter_stats_comparable
+    }
+
+    # save the data
+    save_direc = config.save_direc_training
+    save_direc = os.path.join(save_direc, 'relevant_banks')
+    folder_path = Path(save_direc)
+
+    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
+    file_path = folder_path / str_folder
+    folder_path.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(json.dumps(relevant_banks, indent=4))
+
+    return relevant_banks
+
+#relevant_banks['individual']['train_data_pct']
+
+def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
+
     # Bank filter coverage stats for each filter scenario
     bank_filter_stats = {}
     for filter_name in ['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct']:
-        filtered_train = apply_bank_filter(fedavg_train_banks, df, filter_name)
-        removed_banks = sorted(set(fedavg_train_banks) - set(filtered_train))
+        filtered_train = apply_bank_filter(train_banks, df, filter_name)
+        removed_banks = sorted(set(train_banks) - set(filtered_train))
 
         filtered_indices = []
         for bank in filtered_train:
@@ -149,43 +188,16 @@ def filter_banks(parsers):
             'data_pct_left': data_pct, 
             'laundering_pct_left': laundering_pct
         }
-
-    relevant_banks = {
-        'total_observations': df_length, 'total_laundering': total_laundering,
-        'train_laundering': train_laundering, 'vali_laundering': vali_laundering, 'test_laundering': test_laundering,
-        'individual': {'banks': individual_banks, 'obs_ava': obs_available_for_individual_banks,
-                       'percentage': obs_available_for_individual_banks/df_length,
-                       **individual_laundering, **individual_data_pct, **individual_laundering_pct},
-        'FedAvg': {'train_banks': fedavg_train_banks, 'vali_banks': has_data_in_vali, 'test_banks': has_data_in_test,
-                   'obs_ava': obs_available_for_FedAvg_banks,
-                   'percentage': obs_available_for_FedAvg_banks/df_length,
-                   **fedavg_laundering, **fedavg_data_pct, **fedavg_laundering_pct},
-        'FedAvg_alt': {'banks': fedavg_train_banks,
-                       'obs_ava': obs_available_alternative_FedAvg,
-                       'percentage': obs_available_alternative_FedAvg/df_length,
-                       **fedavg_alt_laundering, **fedavg_alt_data_pct, **fedavg_alt_laundering_pct},
-        'bank_filter': bank_filter_stats
-    }
-
-    # save the data
-    save_direc = config.save_direc_training
-    save_direc = os.path.join(save_direc, 'relevant_banks')
-    folder_path = Path(save_direc)
-
-    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
-    file_path = folder_path / str_folder
-    folder_path.mkdir(parents=True, exist_ok=True)
-    file_path.write_text(json.dumps(relevant_banks, indent=4))
-
-    return relevant_banks
-
-
-def load_relevant_banks(parsers):
-
-    save_direc = config.save_direc_training
-    save_direc = os.path.join(save_direc, 'relevant_banks')
-    str_folder = f"{parsers['data_parser'].size}_{parsers['data_parser'].ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
     
+    return bank_filter_stats
+
+
+def load_relevant_banks(data_parser):
+
+    save_direc = config.save_direc_training
+    save_direc = os.path.join(save_direc, 'relevant_banks')
+    str_folder = f"{data_parser.size}_{data_parser.ir}__split_{config.split_perc[0:2][0]}_{config.split_perc[0:2][1]}.json"
+
     file_location = os.path.join(save_direc, str_folder)
 
     with open(file_location, 'r') as file:
@@ -194,7 +206,7 @@ def load_relevant_banks(parsers):
     return relevant_banks
 
 def get_relevant_banks(parsers):
-    relevant_banks = load_relevant_banks(parsers).get(parsers['fl_parser'].fl_algo)
+    relevant_banks = load_relevant_banks(parsers['data_parser']).get(parsers['fl_parser'].fl_algo)
     return relevant_banks.get('banks')
 
 
@@ -246,7 +258,7 @@ class BanksManager:
         if not os.path.isfile(file_location) or self.parsers['data_parser'].overwrite:
             self.relevant_banks = filter_banks(self.parsers)
         else:
-            self.relevant_banks = load_relevant_banks(self.parsers)
+            self.relevant_banks = load_relevant_banks(self.parsers['data_parser'])
 
     def print_numbers(self):
 
@@ -262,6 +274,7 @@ class BanksManager:
 
 
 def main():
+    import utils
 
     parsers = utils.parser_all()
 
