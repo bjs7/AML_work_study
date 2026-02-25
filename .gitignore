@@ -62,6 +62,11 @@ tests/
 
 # Local notes, docs, and archive (not for GitHub)
 archive/
+
+# Environment files - only environment.yml and post_install_hpc.sh are tracked
+environments/environment_hpc_export.yml
+environments/post_install_local.sh
+environments/requirements_hpc_freeze.txt
 docs/
 notes/
 scripts/
