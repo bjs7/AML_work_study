@@ -32,7 +32,7 @@ def main():
     logging.info(f"train size: {df['regular_data']['train_data']['x'].shape[0]}, validation size: {df['regular_data']['vali_data']['x'].shape[0]}, test size: {df['regular_data']['test_data']['x'].shape[0]}")
     
     # Laudering values -------
-    laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], copy.deepcopy(df))
+    laundering_values_vali, laundering_values_test = dfn.prep_laundering_dfs(parsers['data_parser'], {'regular_data': copy.deepcopy(df['regular_data'])})
 
     # Setup manager and parties ----------------------------------------------------------------------------------------
 

@@ -7,6 +7,7 @@ from models.gnn import GNN
 import logging
 import utils
 import copy
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -65,14 +66,21 @@ class GNNMixinManager:
         edge_dim = sample_party.procs_data['train_data']['df'].edge_attr.shape[1]
         # Exclude ID column from edge dimension for FedGraph
         edge_dim -= self.edge_feat_start
+        device = None
 
         if bank_id is not None:
-            self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim)
+            if torch.cuda.is_available():
+                gpu_idx = self.bank_device[bank_id]
+                device = torch.device(f"cuda:{gpu_idx}")
+            self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim, device=device)
         else:
-            available_gpus = get_available_gpus()
+            #available_gpus = get_available_gpus()
             include_test = self.mode == 'training'
-            for idx, (_, party) in enumerate(self.iter_parties(include_test=include_test)):
-                device = get_device_for_party(idx, available_gpus)
+            for idx, (bank_id, party) in enumerate(self.iter_parties(include_test=include_test)):
+                if torch.cuda.is_available():
+                    gpu_idx = self.bank_device[bank_id]
+                    device = torch.device(f"cuda:{gpu_idx}")
+                    #device = get_device_for_party(idx, available_gpus)
                 party.model = GNN(self, hyperparams, node_features, edge_dim, device=device)
 
         # need to 'save' parameters from model 1 as starting, or not, because the models will vary

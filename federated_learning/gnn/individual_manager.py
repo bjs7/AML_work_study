@@ -7,6 +7,7 @@ from inference import metrics
 import inference as flin
 import numpy as np
 import logging
+import torch
 import utils
 import copy
 
@@ -27,6 +28,10 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
 
         logger.info("Adding %d banks to manager", len(banks))
         utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
+
+        if torch.cuda.is_available():
+            self.assign_device_to_party()
+
         logger.info("Starting hyperparameter tuning for banks")
         tuned_hp = self.tuning(laundering_values)
         logger.info("Hyperparameter tuning completed")
@@ -62,7 +67,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         # Setup: init models and prepare per-party data (sequential — modifies manager state)
         party_data = {}
         logger.info("Training %d individual banks", len(self.parties))
-        for bank_id, party in self.parties.items():
+        for bank_id, party in self.parties.items():    
             self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
             party_data[bank_id] = {
                 'lv_vali': self._helper_party_tuning(party, laundering_values_vali),

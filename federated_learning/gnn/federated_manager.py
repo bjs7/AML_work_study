@@ -358,6 +358,9 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
             if banks:
                 utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders, bank_type=bank_type, superset_merge=False)
+        
+        if torch.cuda.is_available():
+            self.assign_device_to_party()
 
         tuned_hp, _ = self.tuning(laundering_values)
 

@@ -3,6 +3,7 @@ import argparse
 from typing import Dict, Any
 from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
 from abc import ABC, abstractmethod
+import torch
 
 
 class BaseFL:
@@ -84,6 +85,7 @@ class Manager(BaseFL, ABC):
         self.parties_weights: Dict[int, Any] = {}
         self.global_weights = None
         self.edge_feat_start = 1 if self.args['fl_parser'].fl_algo == 'FedGraph' else 0
+        self.bank_device = {}
 
     @classmethod
     def get_algo_class(cls, parsers):
@@ -163,6 +165,39 @@ class Manager(BaseFL, ABC):
         self.mode = mode
         for _, party in self.iter_parties(include_test=True):
             party.mode = mode
+
+    def assign_device_to_party(self):
+
+        data_type = ['train_data', 'vali_data']
+        parties_holder = [self.parties, self.vali_parties]
+        num_gpus = torch.cuda.device_count()
+        sums = [0] * num_gpus
+
+        if self.test_parties:
+            data_type += ['test_data']
+            parties_holder += [self.test_parties]
+
+        for parties, type_data in zip(parties_holder, data_type):
+            sums = self._assign_device_to_party(sums, parties, type_data)
+
+    def _assign_device_to_party(self, sums, parties, type_data):
+        
+        party_lengths = {}        
+        for bank_id, party in parties.items():
+            if bank_id in self.bank_device:
+                continue
+            party_lengths[bank_id] = party.data[type_data]['df'].edge_attr.shape[0]
+        sorted_party_lengths = sorted(party_lengths.items(), key=lambda item: item[1], reverse=True)
+
+        for bank_id, length in sorted_party_lengths:
+            if bank_id in self.bank_device:
+                continue
+            add_index = sums.index(min(sums))
+            sums[add_index] += length
+            self.bank_device[bank_id] = add_index
+
+        return sums
+
 
     @abstractmethod
     def init_models(self):
