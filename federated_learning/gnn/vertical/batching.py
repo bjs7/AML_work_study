@@ -374,15 +374,93 @@ def gen_batch_data_link_neighbor(manager, mode, batch_size=8192, sample_neighbor
         get_nodes_to_send(mode, manager, banks_to_use, batch_num)
 
 
-    
 
 
+def setup_lazy_batch_loader(manager, mode, batch_size=8192, sample_neighbors=None):
+    """Set up the lazy LinkNeighborLoader for a mode. Called once at setup time.
+
+    Builds a minimal manager-level graph and creates a LinkNeighborLoader.
+    Stores the loader on manager.loaders[mode] so the training loop can iterate
+    it each epoch (getting fresh neighbor samples and shuffled batches each time).
+    Does NOT pre-compute any batch subgraphs — those are computed on-the-fly
+    per batch via process_lazy_batch().
+    """
+    if sample_neighbors is None:
+        sample_neighbors = [100, 100]
+
+    if not hasattr(manager, 'loaders'):
+        manager.loaders = {}
+
+    df = manager.data[f'{mode}_data']
+    df_labels = df[['From Bank', 'To Bank', 'Is Laundering']]
+
+    from_ids = torch.tensor(df['from_id'].values, dtype=torch.long)
+    to_ids = torch.tensor(df['to_id'].values, dtype=torch.long)
+    edge_index = torch.stack([from_ids, to_ids], dim=0)
+    global_ids = torch.tensor(df.index.values, dtype=torch.float)
+    ref_graph = GraphData(
+        x=torch.zeros(edge_index.max().item() + 1, 1),
+        edge_index=edge_index,
+        edge_attr=global_ids.unsqueeze(1),
+    )
+
+    if mode == 'train':
+        label_index = list(range(0, manager.data['train_data'].shape[0]))
+    elif mode == 'vali':
+        label_index = list(range(manager.data['train_data'].shape[0], manager.data['vali_data'].shape[0]))
+    else:
+        label_index = list(range(manager.data['vali_data'].shape[0], manager.data['test_data'].shape[0]))
+
+    loader = LinkNeighborLoader(
+        ref_graph,
+        num_neighbors=sample_neighbors,
+        edge_label_index=ref_graph.edge_index[:, label_index],
+        edge_label=ref_graph.edge_attr[label_index, 0].float(),  # global IDs for seed edges only
+        batch_size=batch_size,
+        shuffle=(mode == 'train'),
+    )
+
+    manager.loaders[mode] = loader
+    manager.ctx[mode]['num_batches'] = len(loader)
+    manager.ctx[mode]['df_labels'] = df_labels
 
 
-    
+LAZY_BATCH_KEY = 'current_batch'
+def process_lazy_batch(manager, mode, batch, mode_parties):
+    """Process one loader batch into manager.ctx[mode][LAZY_BATCH_KEY].
 
+    Called per batch per epoch in the training loop. Overwrites the previous
+    batch's data, so only one batch worth of subgraphs is in memory at a time.
+    """
+    seed_global_ids = batch.edge_label.long().numpy()
+    manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
 
-        
-        
+    batch_global_ids = batch.edge_attr[:, 0].long()
 
+    banks_to_use = []
+    for bank_id, party in mode_parties.items():
+        party_graph = party.procs_data[f'{mode}_data']['df']
+        mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+
+        if mask.sum() == 0:
+            continue
+
+        matched_edge_index = party_graph.edge_index[:, mask]
+        matched_edge_attr = party_graph.edge_attr[mask]
+
+        sub_nodes = matched_edge_index.reshape(-1).unique()
+        node_remap = torch.zeros(party_graph.x.shape[0], dtype=torch.long)
+        node_remap[sub_nodes] = torch.arange(len(sub_nodes), dtype=torch.long)
+
+        party.ctx[mode][LAZY_BATCH_KEY]['graph_data'] = GraphData(
+            x=party_graph.x[sub_nodes],
+            edge_index=node_remap[matched_edge_index],
+            edge_attr=matched_edge_attr,
+        )
+        banks_to_use.append(bank_id)
+
+    manager.ctx[mode][LAZY_BATCH_KEY]['batch_parties'] = banks_to_use
+    get_batch_intersects(manager, banks_to_use, mode, LAZY_BATCH_KEY)
+    get_ownership_mappings(mode, manager, banks_to_use, LAZY_BATCH_KEY)
+    get_nodes_to_send(mode, manager, banks_to_use, LAZY_BATCH_KEY)
 

@@ -25,6 +25,7 @@ import torch.nn.functional as F
 import torch
 
 from .vertical import setup, forward, training_utils
+from .vertical.batching import process_lazy_batch, LAZY_BATCH_KEY
 
 
 logger = logging.getLogger(__name__)
@@ -213,21 +214,36 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         self.setup_model(hyperparameters, laundering_values_test)
         return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching)
 
+    def _iter_batches(self, mode, batching, precomputed_batch_data=None):
+        """Yield (batch_key, batch_banks, batch_data) for any batching mode.
+
+        Handles lazy (LinkNeighborLoader per batch), pre-computed batching,
+        and non-batching uniformly so training and eval loops stay clean.
+        """
+        if hasattr(self, 'loaders') and mode in self.loaders:
+            mode_parties = self.get_parties_for_mode(mode)
+            for batch in self.loaders[mode]:
+                process_lazy_batch(self, mode, batch, mode_parties)
+                batch_banks = self.ctx[mode][LAZY_BATCH_KEY]['batch_parties']
+                batch_data = self.get_batch_data(mode, LAZY_BATCH_KEY, batch_banks)
+                yield LAZY_BATCH_KEY, batch_banks, batch_data
+        elif batching:
+            for batch_num in range(self.ctx[mode]['num_batches']):
+                batch_banks = self.ctx[mode][batch_num]['batch_parties']
+                batch_data = self.get_batch_data(mode, batch_num, batch_banks)
+                yield batch_num, batch_banks, batch_data
+        else:
+            batch_banks = self.ctx[mode][None]['batch_parties']
+            yield None, batch_banks, precomputed_batch_data
+
     def _forward_eval(self, mode, batching, precomputed_batch_data=None):
         """Run a forward pass on vali or test mode and return preds/labels."""
         all_preds, all_labels = [], []
-        batch_iter = range(self.ctx[mode]['num_batches']) if batching else [None]
 
         with torch.no_grad():
-            for batch_num in batch_iter:
-                if batching:
-                    batch_banks = self.ctx[mode][batch_num]['batch_parties']
-                    batch_data = self.get_batch_data(mode, batch_num, batch_banks)
-                else:
-                    batch_banks = self.ctx[mode][None]['batch_parties']
-                    batch_data = precomputed_batch_data
-
-                preds, labels = self.forward_pass(mode, batch_num, batch_banks, batch_data)
+            for batch_key, batch_banks, batch_data in \
+                    self._iter_batches(mode, batching, precomputed_batch_data):
+                preds, labels = self.forward_pass(mode, batch_key, batch_banks, batch_data)
                 all_preds.append(preds)
                 all_labels.append(labels)
 
@@ -260,19 +276,12 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             # Training phase
             self.model.gnn.train()
             train_loss = 0
-            batch_iter = range(self.ctx['train']['num_batches']) if batching else [None]
             all_preds, all_labels = [], []
 
-            for batch_num in batch_iter:
-                if batching:
-                    batch_banks = self.ctx['train'][batch_num]['batch_parties']
-                    batch_data = self.get_batch_data('train', batch_num, batch_banks)
-                else:
-                    batch_banks = self.ctx['train'][None]['batch_parties']
-                    batch_data = batch_data_train
-
+            for batch_key, batch_banks, batch_data in \
+                    self._iter_batches('train', batching, batch_data_train if not batching else None):
                 self.optimizer.zero_grad()
-                preds, labels = self.forward_pass('train', batch_num, batch_banks, batch_data)
+                preds, labels = self.forward_pass('train', batch_key, batch_banks, batch_data)
                 all_preds.append(preds)
                 all_labels.append(labels)
 

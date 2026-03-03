@@ -162,6 +162,11 @@ def setup_vertical(manager, batching=True, batching_mode='neighbor_sample'):
         batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:
             gen_batch_data_link_neighbor(manager, mode, batch_size=batch_size)
+    elif batching_mode == 'lazy_link_neighbor':
+        from .batching import setup_lazy_batch_loader
+        batch_size = manager.args['data_parser'].batch_size
+        for mode in all_modes:
+            setup_lazy_batch_loader(manager, mode, batch_size=batch_size)
     else:  # 'neighbor_sample'
         from .batching import gen_batch_data
         batch_size = manager.args['data_parser'].batch_size

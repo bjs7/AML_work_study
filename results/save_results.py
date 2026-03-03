@@ -65,6 +65,9 @@ def save_results(results, hyperparams, manager):
     # add data flags to folder name
     data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp', 'use_global_stats'] #'add_ids',
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
+    batching_mode = getattr(manager.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
+    if manager.args['data_parser'].batching and batching_mode != 'lazy_link_neighbor':
+        data_settings.append(f'bm_{batching_mode}')
     if manager.args['data_parser'].normalize_currency:
         data_settings.append('normalize_currency')
     if manager.args['data_parser'].bank_filter:
@@ -232,7 +235,8 @@ def create_experiment_config(manager):
             "normalize_currency": manager.args['data_parser'].normalize_currency,
             "bank_filter": manager.args['data_parser'].bank_filter,
             "loss_ratio": manager.args['data_parser'].loss_ratio,
-            "batch_size": manager.args['data_parser'].batch_size
+            "batch_size": manager.args['data_parser'].batch_size,
+            "batching_mode": getattr(manager.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
         },
         "fl": {
             "fl_algo": manager.args['fl_parser'].fl_algo,
