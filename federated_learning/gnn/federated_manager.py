@@ -63,11 +63,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         vali_banks = list(vali_banks - train_banks)
         train_banks = list(train_banks)
 
-        #full_key = 'test_data' if 'test_data' in self.data else 'vali_data'
-        #sr_banks = set(self.data[full_key][['From Bank', 'To Bank']].stack())
-        #sr_banks = list(sr_banks - fr_banks)
-        #fr_banks = list(fr_banks)
-
         return train_banks, vali_banks, test_banks
 
     def set_manager_data(self, reg_df, mode):
@@ -91,24 +86,28 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
                 'test': pd.concat([train_vali, test]).index[train_vali.shape[0]:]
             }
 
-    def add_parties_prep_data(self, mode, df, scaler_encoders):
+    def add_parties_prep_data(self, mode, df, parsers, scaler_encoders):
 
-        self.set_manager_data(df['regular_data'], mode)
+        #if parsers['data_parser'].ibm_fe:
+        self.set_manager_data(df['regular_data'], mode) #TODO need to change this such that it adjust for eval mode
         self.cal_global_sats()
+        self.graph = df['graph_data']
 
-        #fr_banks, sr_banks = self.get_relevant_banks_vert()
-        train_banks, vali_banks, test_banks = self.get_relevant_banks_vert()
+        if parsers['data_parser'].eval_mode == 'comparable':
+            train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
+            #vali_banks, test_banks = [], []
+            vali_banks, test_banks = train_banks, train_banks
+        else:
+            train_banks, vali_banks, test_banks = self.get_relevant_banks_vert()
+        
         for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
             if banks:
                 utils.add_banks_to_manager(self.args, banks, self, df, scaler_encoders, bank_type=bank_type)
 
-        #utils.add_banks_to_manager(self.args, fr_banks, self, df, scaler_encoders)
-        #utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
-        #utils.add_banks_to_manager(self.args, sr_banks, self, df, scaler_encoders, is_sr=True)
-
         self.set_mode(mode)
         parties = self.test_parties if mode == 'training' else self.vali_parties
-        for bank_id, party in parties.items(): #TODO Needs to only be self.parties when tuning?
+        #include_test = mode == 'training'
+        for bank_id, party in parties.items(): #self.iter_parties(include_test): #TODO Needs to only be self.parties when tuning?
             party.prep_data()
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
@@ -121,17 +120,18 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             laundering_values: Laundering values DataFrame for evaluation
         """
 
+
         add_arange_ids([df['graph_data']['train_data']['df'], 
                         df['graph_data']['vali_data']['df'],
                         df['graph_data']['test_data']['df']])
 
         if not self.args['data_parser'].ibm_hp:
-            self.add_parties_prep_data('tuning', df, scaler_encoders)
+            self.add_parties_prep_data('tuning', df, parsers, scaler_encoders)
             #self.label_data = laundering_values
             
         tuned_hp, _ = self.tuning(laundering_values)
 
-        self.add_parties_prep_data('training', df, scaler_encoders)
+        self.add_parties_prep_data('training', df, parsers, scaler_encoders)
 
         return tuned_hp
     
@@ -141,8 +141,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         return ibm_gnn, None
 
-        
-
         #if self.args['data_parser'].ibm_hp:
         #    return ibm_gnn, None
         #self.set_mode('tuning')
@@ -150,13 +148,14 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         #    party.prep_data()
         #return 0 #self._gnn_tuning(laundering_values)
 
-    def setup_vertical(self, batching=True):
+    def setup_vertical(self, batching=True, batching_mode='neighbor_sample'):
         """Set up vertical FL structures (intersects, mappings, batches).
 
         Args:
             batching: Whether to use batching (True) or process all data at once (False)
+            batching_mode: 'neighbor_sample' | 'simple' | 'link_neighbor'
         """
-        setup.setup_vertical(self, batching=batching)
+        setup.setup_vertical(self, batching=batching, batching_mode=batching_mode)
 
     def _prep_parties_data(self):
         pass  # Parties already prepped in add_parties_prep_data()
@@ -209,7 +208,8 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         return forward.forward_pass(self, mode, batch_num, batch_banks, batch_data)
     
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
-        self.setup_vertical(batching=self.args['data_parser'].batching)
+        batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'neighbor_sample')
+        self.setup_vertical(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
         self.setup_model(hyperparameters, laundering_values_test)
         return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching)
 

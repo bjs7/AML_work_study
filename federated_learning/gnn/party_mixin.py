@@ -111,21 +111,22 @@ class GNNMixinParty:
                 if data_dict['df'] is None:
                     results.append(data_dict)
                     continue
-                processed = feature_engi_graph_data(data_dict, self.args['gnn_parser'], fitted_encoders)
+                processed = feature_engi_graph_data(data_dict, self.args, fitted_encoders, edge_feat_start=self.edge_feat_start)
                 fitted_encoders = processed.get('scaler_encoders', fitted_encoders)
                 results.append(processed)
             return results
 
         # Pre-fitted encoders (from extract_enc_cats) ensure categories use global encoders,
         # while amount scalers are fitted per-party on the train split
-        processed_train = feature_engi_graph_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
+        processed_train = feature_engi_graph_data(train_data, self.args, self.scaler_encoders, edge_feat_start=self.edge_feat_start)
         results = [processed_train]
         for data_dict, _, _ in data_configs[1:]:
             if data_dict['df'] is None:
                 results.append(data_dict)
                 continue
-            results.append(feature_engi_graph_data(data_dict, self.args['gnn_parser'],
-                                                   scaler_encoders=processed_train.get('scaler_encoders')))
+            results.append(feature_engi_graph_data(data_dict, self.args,
+                                                   scaler_encoders=processed_train.get('scaler_encoders'),
+                                                   edge_feat_start=self.edge_feat_start))
 
         return results
 

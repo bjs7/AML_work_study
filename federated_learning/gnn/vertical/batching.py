@@ -5,14 +5,17 @@ import numpy as np
 import torch
 import warnings
 from collections import defaultdict
-from torch_geometric.loader import NeighborLoader
+from torch_geometric.loader import NeighborLoader, LinkNeighborLoader
 from torch_geometric.utils import subgraph
 from data.data_utils import GraphData
 
 from .ownership import get_ownership_mappings, get_nodes_to_send
 
 # Silence pyg-lib deprecation warning (show only once)
-warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")
+#warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")
+
+
+
 
 
 def gen_seed_values(manager, mode, banks_to_sample, df):
@@ -226,3 +229,160 @@ def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
 
         get_ownership_mappings(mode, manager, manager.ctx[mode][batch_num]['batch_parties'], batch_num)
         get_nodes_to_send(mode, manager, manager.ctx[mode][batch_num]['batch_parties'], batch_num)
+
+
+def gen_batch_data_simple(manager, mode, batch_size=8192):
+    """Alternative batch generation: manager-driven index batching.
+
+    The manager generates batches from global transaction indices. Each party
+    extracts its local subgraph by matching global IDs in edge_attr[:,0],
+    without iterative neighbor sampling between parties.
+
+    Can be called per-epoch during training for fresh random batches.
+    """
+    mode_parties = manager.get_parties_for_mode(mode)
+    indices = manager.data[f'{mode}_data'].index.to_numpy().copy()
+
+    if mode == 'train':
+        np.random.shuffle(indices)
+
+    batch_starts = range(0, len(indices), batch_size)
+    manager.ctx[mode]['num_batches'] = len(batch_starts)
+
+    df_labels = manager.data[f'{mode}_data'][['From Bank', 'To Bank', 'Is Laundering']]
+
+    for batch_num, start in enumerate(batch_starts):
+        print(batch_num)
+        batch_indices = indices[start:start + batch_size]
+        manager.ctx[mode][batch_num]['batch_labels'] = df_labels.loc[batch_indices]
+
+        batch_global_ids = torch.tensor(batch_indices, dtype=torch.long)
+
+        banks_to_use = []
+        for bank_id, party in mode_parties.items():
+            party_graph = party.procs_data[f'{mode}_data']['df']
+            mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+
+            if mask.sum() == 0:
+                continue
+
+            sub_nodes = party_graph.edge_index[:, mask].unique()
+            final_edge_index, final_edge_attr = subgraph(
+                subset=sub_nodes,
+                edge_index=party_graph.edge_index,
+                edge_attr=party_graph.edge_attr,
+                relabel_nodes=True,
+            )
+
+            party.ctx[mode][batch_num]['graph_data'] = GraphData(
+                x=party_graph.x[sub_nodes],
+                edge_index=final_edge_index,
+                edge_attr=final_edge_attr,
+            )
+            banks_to_use.append(bank_id)
+
+        manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
+        get_batch_intersects(manager, banks_to_use, mode, batch_num)
+        get_ownership_mappings(mode, manager, banks_to_use, batch_num)
+        get_nodes_to_send(mode, manager, banks_to_use, batch_num)
+
+
+def gen_batch_data_link_neighbor(manager, mode, batch_size=8192, sample_neighbors=None):
+    """Batch generation using LinkNeighborLoader on the manager's full transaction graph.
+
+    Builds a minimal reference graph from the manager's data (all transactions for
+    the mode, with global IDs as edge_attr[:,0]) and uses LinkNeighborLoader to
+    generate batches with k-hop neighborhood context. Each party then extracts only
+    their edges matching the batch's global IDs, with manual node relabeling — no
+    subgraph() call, so only the matched edges are included (not all edges of those nodes).
+
+    batch_labels: seed transactions only (the batch_size edges LinkNeighborLoader
+    was asked to predict on).
+    Party subgraphs: edges matching seed + neighbor global IDs from the reference.
+
+    Note: the loader reshuffles automatically each time it is iterated (shuffle=True
+    for train). Calling this function per-epoch is supported but incurs the full cost
+    of get_batch_intersects/get_ownership_mappings/get_nodes_to_send per batch.
+    """
+    if sample_neighbors is None:
+        sample_neighbors = [100, 100]
+
+    mode_parties = manager.get_parties_for_mode(mode)
+    df = manager.data[f'{mode}_data']
+    df_labels = df[['From Bank', 'To Bank', 'Is Laundering']]
+
+    # Build a minimal manager-level graph for sampling (no party-specific features needed)
+    from_ids = torch.tensor(df['from_id'].values, dtype=torch.long)
+    to_ids = torch.tensor(df['to_id'].values, dtype=torch.long)
+    edge_index = torch.stack([from_ids, to_ids], dim=0)
+    global_ids = torch.tensor(df.index.values, dtype=torch.float)
+    ref_graph = GraphData(
+        x=torch.zeros(edge_index.max().item() + 1, 1),  # dummy node features
+        edge_index=edge_index,
+        edge_attr=global_ids.unsqueeze(1),              # edge_attr[:,0] = global IDs
+    )
+
+    # Pass global transaction IDs as edge_label so each batch reports its seed IDs
+    loader = LinkNeighborLoader(
+        ref_graph,
+        num_neighbors=sample_neighbors,
+        edge_label_index=ref_graph.edge_index,
+        edge_label=ref_graph.edge_attr[:, 0].float(),
+        batch_size=batch_size,
+        shuffle=(mode == 'train'),
+    )
+
+    manager.ctx[mode]['num_batches'] = len(loader)
+    df_index_set = set(df_labels.index)
+
+    for batch_num, batch in enumerate(loader):
+        print(batch_num)
+        # Seed global IDs → batch_labels (what we predict on)
+        seed_global_ids = batch.edge_label.long().numpy()
+        valid_seed_ids = seed_global_ids[np.isin(seed_global_ids, list(df_index_set))]
+        manager.ctx[mode][batch_num]['batch_labels'] = df_labels.loc[valid_seed_ids]
+
+        # All global IDs in the batch (seed + neighbors) → party matching
+        batch_global_ids = batch.edge_attr[:, 0].long()
+
+        banks_to_use = []
+        for bank_id, party in mode_parties.items():
+            party_graph = party.procs_data[f'{mode}_data']['df']
+            mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+
+            if mask.sum() == 0:
+                continue
+
+            # Manual node relabeling: only keep matched edges, no subgraph() expansion
+            matched_edge_index = party_graph.edge_index[:, mask]
+            matched_edge_attr = party_graph.edge_attr[mask]
+
+            sub_nodes = matched_edge_index.reshape(-1).unique()
+            node_remap = torch.zeros(party_graph.x.shape[0], dtype=torch.long)
+            node_remap[sub_nodes] = torch.arange(len(sub_nodes), dtype=torch.long)
+
+            party.ctx[mode][batch_num]['graph_data'] = GraphData(
+                x=party_graph.x[sub_nodes],
+                edge_index=node_remap[matched_edge_index],
+                edge_attr=matched_edge_attr,
+            )
+            banks_to_use.append(bank_id)
+
+        manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
+        get_batch_intersects(manager, banks_to_use, mode, batch_num)
+        get_ownership_mappings(mode, manager, banks_to_use, batch_num)
+        get_nodes_to_send(mode, manager, banks_to_use, batch_num)
+
+
+    
+
+
+
+
+    
+
+
+        
+        
+
+

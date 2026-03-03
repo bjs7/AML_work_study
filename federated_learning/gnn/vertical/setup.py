@@ -33,10 +33,17 @@ def setup_intersects(manager):
     mask = manager.data[full_key]['From Bank'] != manager.data[full_key]['To Bank']
     subset = manager.data[full_key][mask]
 
+    if manager.args['data_parser'].eval_mode == 'comparable':
+        mask = np.isin([subset['From Bank'], subset['To Bank']], list(manager.parties.keys()))
+        mask = mask[0,:] & mask[1,:]
+        subset = subset[mask]
+    
     train_idx_set = set(manager.data['train_data'].index)
     vali_idx_set = set(manager.data['vali_data'].index)
 
     all_parties = manager.get_parties_for_mode(all_modes[-1])
+    # list(manager.iter_parties())
+    # all_parties = {bank_id: party for bank_id, party in list(manager.iter_parties())}
 
     for idx, from_bank, to_bank in zip(subset.index, subset['From Bank'].values, subset['To Bank'].values):
         from_bank, to_bank = int(from_bank), int(to_bank)
@@ -115,12 +122,16 @@ def setup_non_batching_data(manager):
         manager.ctx['test'][None]['batch_parties'] = manager.get_parties_for_mode('test').keys()
 
 
-def setup_vertical(manager, batching=True):
+def setup_vertical(manager, batching=True, batching_mode='neighbor_sample'):
     """Complete setup for vertical federated learning.
 
     Args:
         manager: The FL manager instance
         batching: Whether to use batching (True) or process all data at once (False)
+        batching_mode: Which batch generation strategy to use when batching=True:
+            'neighbor_sample' (default): iterative per-party neighbor sampling
+            'simple': manager-driven index batching with subgraph() expansion
+            'link_neighbor': LinkNeighborLoader on reference party + manual relabeling
     """
     all_modes = ['train', 'vali', 'test'] if 'test_data' in manager.data else ['train', 'vali']
 
@@ -141,7 +152,17 @@ def setup_vertical(manager, batching=True):
     # Set up batch data
     if not batching:
         setup_non_batching_data(manager)
-    else:
+    elif batching_mode == 'simple':
+        from .batching import gen_batch_data_simple
+        batch_size = manager.args['data_parser'].batch_size
+        for mode in all_modes:
+            gen_batch_data_simple(manager, mode, batch_size=batch_size)
+    elif batching_mode == 'link_neighbor':
+        from .batching import gen_batch_data_link_neighbor
+        batch_size = manager.args['data_parser'].batch_size
+        for mode in all_modes:
+            gen_batch_data_link_neighbor(manager, mode, batch_size=batch_size)
+    else:  # 'neighbor_sample'
         from .batching import gen_batch_data
         batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:

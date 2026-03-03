@@ -216,11 +216,16 @@ def update_data(data, bank_indices):
 
 # function to process it, standardize etc.
 
-def feature_engi_graph_data(data, args, scaler_encoders=None):
+def feature_engi_graph_data(data, args, scaler_encoders=None, edge_feat_start=0):
     """Per-party feature engineering for graph data.
 
-    Edge attr indices: 0=Timestamp, 1=Amount Sent, 2=Amount Received,
-    3=Sent Currency, 4=Received Currency, 5=Payment Format, 6=is_currency_exchange.
+    Standard layout (edge_feat_start=0):
+      0=Timestamp, 1=Amount Sent, 2=Amount Received,
+      3=Sent Currency, 4=Received Currency, 5=Payment Format, 6=is_currency_exchange.
+
+    With edge_feat_start=1 (FedGraph/vertical FL, arange ID prepended):
+      0=ID, 1=Timestamp, 2=Amount Sent, ..., 7=is_currency_exchange.
+    The ID column is preserved as-is in the output.
     """
     data = copy.deepcopy(data)
     df = data['df']
@@ -235,19 +240,21 @@ def feature_engi_graph_data(data, args, scaler_encoders=None):
                ('scaler_amount', 'encoder_currency', 'encoder_payment_format')
                } if scaler_encoders else {}
 
+    s = edge_feat_start  # column offset
+
     # Timestamp: scale to days ------------------------------------------------------------------------------
-    df.edge_attr[:, 0] = df.edge_attr[:, 0] / 86400.0
+    df.edge_attr[:, s + 0] = df.edge_attr[:, s + 0] / 86400.0
 
     # Amounts: log transform then standardize (shared scaler for sent & received) ---------------------------
-    df.edge_attr[:, 1] = torch.log(df.edge_attr[:, 1])
-    df.edge_attr[:, 2] = torch.log(df.edge_attr[:, 2])
+    df.edge_attr[:, s + 1] = torch.log(df.edge_attr[:, s + 1])
+    df.edge_attr[:, s + 2] = torch.log(df.edge_attr[:, s + 2])
 
     if not scl_enc.get('scaler_amount'):
         scl_enc['scaler_amount'] = StandardScaler()
-        combined = torch.cat([df.edge_attr[:, 1], df.edge_attr[:, 2]]).reshape(-1, 1)
+        combined = torch.cat([df.edge_attr[:, s + 1], df.edge_attr[:, s + 2]]).reshape(-1, 1)
         scl_enc['scaler_amount'].fit(combined)
 
-    for index in [1, 2]:
+    for index in [s + 1, s + 2]:
         reshaped = df.edge_attr[:, index].reshape(-1, 1)
         scaled = scl_enc['scaler_amount'].transform(reshaped)
         df.edge_attr[:, index] = torch.reshape(torch.tensor(scaled), (-1,))
@@ -259,8 +266,8 @@ def feature_engi_graph_data(data, args, scaler_encoders=None):
         df.x = torch.tensor([[0.]])
 
     # Encoding: OneHotEncode currencies and payment format -------------------------------------------------
-    # Use distinct keys so both Sent Currency (3) and Received Currency (4) are encoded
-    column_encoders = {'currency_sent': 3, 'currency_received': 4, 'payment_format': 5}
+    # Use distinct keys so both Sent Currency and Received Currency are encoded
+    column_encoders = {'currency_sent': s + 3, 'currency_received': s + 4, 'payment_format': s + 5}
     encoded = {}
 
     for feature, col_idx in column_encoders.items():
@@ -276,8 +283,8 @@ def feature_engi_graph_data(data, args, scaler_encoders=None):
         else:
             encoded[feature] = scl_enc[encoder_key].transform(column_data)
 
-    # Pack: Timestamp(0), Amount Sent(1), Amount Received(2), is_currency_exchange(6) + encoded cats -------
-    cols_to_keep = [0, 1, 2, 6]
+    # Pack: ID col(s) (if any) + Timestamp, Amount Sent, Amount Received, is_currency_exchange + encoded cats
+    cols_to_keep = list(range(edge_feat_start)) + [s + i for i in [0, 1, 2, 6]]
 
     df.edge_attr = torch.cat([df.edge_attr[:, cols_to_keep],
                               *[torch.tensor(enc_val).float() for enc_val in encoded.values()]
