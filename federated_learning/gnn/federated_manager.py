@@ -13,6 +13,7 @@ from training.utils import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
 from training.parallel import parallel_party_execute
+from torch.profiler import profile, record_function, ProfilerActivity
 
 from models.gnn import add_arange_ids, batching_masker, get_loaders
 from data.get_indices_type_data import get_indices_bdt
@@ -482,6 +483,8 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         # --- Epoch loop: train, validate on vali for model selection ---
         for epoch in range(epochs):
 
+            _profile = (epoch == 0)
+
             # Party sampling
             if num_sampled < num_total:
                 sampled_bank_ids = random.sample(all_bank_ids, num_sampled)
@@ -499,26 +502,43 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                 party.update_local_weights(num_local_epochs=num_local_epochs)
                 party.send_local_weights(self)
 
-            parallel_party_execute(selected_parties, _train_party, max_workers=max_workers)
+            if _profile:
+                logging.disable(logging.INFO)
+                _prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+                                profile_memory=True)
+                _prof.__enter__()
 
-            # Weighted aggregation and broadcast
-            party_weights_map = self._compute_party_weights(selected_parties, weighting)
-            self.update_global_weights(party_weights_map)
-            self.send_global_weights()
+            with record_function("local_training"):
+                parallel_party_execute(selected_parties, _train_party, max_workers=max_workers)
 
-            # Evaluate on vali for model selection
-            for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
-                laundering_values_vali[col] = 0
+            with record_function("weight_aggregation"):
+                # Weighted aggregation and broadcast
+                party_weights_map = self._compute_party_weights(selected_parties, weighting)
+                self.update_global_weights(party_weights_map)
+                self.send_global_weights()
 
-            # Parallel predictions, sequential DataFrame updates
-            vali_parties = dict(self.iter_parties(include_test=False))
-            vali_preds = parallel_party_execute(
-                vali_parties, lambda bid, p: p.get_predictions(mode='vali'), max_workers=max_workers)
-            for bank_id, party in vali_parties.items():
-                flin.update_laundering_values(party, laundering_values_vali,
-                                              pred_probabilities=vali_preds[bank_id], mode='vali')
+            with record_function("vali_predictions"):
+                # Evaluate on vali for model selection
+                for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
+                    laundering_values_vali[col] = 0
 
-            f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
+                # Parallel predictions, sequential DataFrame updates
+                vali_parties = dict(self.iter_parties(include_test=False))
+                vali_preds = parallel_party_execute(
+                    vali_parties, lambda bid, p: p.get_predictions(mode='vali'), max_workers=max_workers)
+                for bank_id, party in vali_parties.items():
+                    flin.update_laundering_values(party, laundering_values_vali,
+                                                  pred_probabilities=vali_preds[bank_id], mode='vali')
+
+            with record_function("f1_compute"):
+                f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
+
+            if _profile:
+                _prof.__exit__(None, None, None)
+                logging.disable(logging.NOTSET)
+                print("\n=== Profiler: Round 1 breakdown (cpu_time_total) ===")
+                print(_prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
+                print("====================================================\n")
 
             logger.info("Epoch %d/%d - Vali F1: %.4f", epoch + 1, epochs, f1_vali)
 
