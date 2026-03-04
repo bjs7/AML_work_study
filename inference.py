@@ -30,7 +30,7 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
     # roc_auc_score and average_precision_score require both classes in y_true
     n_classes = len(np.unique(y_true))
     if n_classes < 2:
-        logger.warning("Only one class present in y_true - ROC-AUC and PR-AUC are undefined")
+        logger.debug("Only one class present in y_true - ROC-AUC and PR-AUC are undefined")
 
     results = {
         'f1': f1_score(y_true=y_true, y_pred=y_pred_binary, average='binary', zero_division = 0),
@@ -41,16 +41,16 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
         'pr_auc': average_precision_score(y_true, y_pred_probabilities) if n_classes >= 2 else 0.0
     }
 
-    # Warn about unusual metric values
+    # Log unusual metric values at DEBUG — expected for small/limited-data banks
     if results['f1'] == 0 and results['precision'] == 0 and results['recall'] == 0:
-        logger.warning("All metrics are zero - model may not be making any positive predictions")
+        logger.debug("All metrics are zero - model may not be making any positive predictions")
     elif results['precision'] == 0:
-        logger.warning("Precision is zero - all positive predictions are false positives")
+        logger.debug("Precision is zero - all positive predictions are false positives")
     elif results['recall'] == 0:
-        logger.warning("Recall is zero - model is not detecting any true positives")
+        logger.debug("Recall is zero - model is not detecting any true positives")
 
     if results['roc_auc'] < 0.5:
-        logger.warning("ROC-AUC < 0.5 (%.4f) - model performs worse than random", results['roc_auc'])
+        logger.debug("ROC-AUC < 0.5 (%.4f) - model performs worse than random", results['roc_auc'])
 
     return results
 

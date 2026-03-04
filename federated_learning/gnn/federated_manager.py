@@ -13,7 +13,6 @@ from training.utils import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
 from training.parallel import parallel_party_execute
-from torch.profiler import profile, record_function, ProfilerActivity
 
 from models.gnn import add_arange_ids, batching_masker, get_loaders
 from data.get_indices_type_data import get_indices_bdt
@@ -53,20 +52,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             self.data['std_test'] = self.data['test_data'][cols].apply(np.std)
 
 
-    def get_relevant_banks_vert(self):
-
-        # Get banks for first round (train) and second round (vali/test only)
-        train_banks = set(self.data['train_data'][['From Bank', 'To Bank']].stack())
-        vali_banks = set(self.data['vali_data'][['From Bank', 'To Bank']].stack())
-        test_banks = None
-        if 'test_data' in self.data:
-            test_banks = set(self.data['test_data'][['From Bank', 'To Bank']].stack())
-            test_banks = list(test_banks - vali_banks - train_banks)
-        vali_banks = list(vali_banks - train_banks)
-        train_banks = list(train_banks)
-
-        return train_banks, vali_banks, test_banks
-
     def set_manager_data(self, reg_df, mode):
 
         train = reg_df['train_data']['x']
@@ -97,10 +82,12 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         if parsers['data_parser'].eval_mode == 'comparable':
             train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
-            #vali_banks, test_banks = [], []
             vali_banks, test_banks = train_banks, train_banks
         else:
-            train_banks, vali_banks, test_banks = self.get_relevant_banks_vert()
+            fedgraph_banks = load_relevant_banks(parsers['data_parser']).get('FedGraph')
+            train_banks = fedgraph_banks['train_banks']
+            vali_banks = fedgraph_banks['vali_banks']
+            test_banks = fedgraph_banks['test_banks'] if mode == 'training' else None
         
         for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
             if banks:
@@ -464,6 +451,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         num_local_epochs = getattr(fl_parser, 'num_local_epochs', 1)
         weighting = getattr(fl_parser, 'weighting', 'proportional')
         mu = getattr(fl_parser, 'mu', 0.0)
+        validate_every = getattr(fl_parser, 'validate_every', 2)
 
         # Party sampling setup
         all_bank_ids = list(self.parties.keys())
@@ -483,8 +471,6 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         # --- Epoch loop: train, validate on vali for model selection ---
         for epoch in range(epochs):
 
-            _profile = (epoch == 0)
-
             # Party sampling
             if num_sampled < num_total:
                 sampled_bank_ids = random.sample(all_bank_ids, num_sampled)
@@ -502,23 +488,15 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                 party.update_local_weights(num_local_epochs=num_local_epochs)
                 party.send_local_weights(self)
 
-            if _profile:
-                logging.disable(logging.INFO)
-                _prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
-                                profile_memory=True)
-                _prof.__enter__()
+            parallel_party_execute(selected_parties, _train_party, max_workers=max_workers)
 
-            with record_function("local_training"):
-                parallel_party_execute(selected_parties, _train_party, max_workers=max_workers)
+            # Weighted aggregation and broadcast
+            party_weights_map = self._compute_party_weights(selected_parties, weighting)
+            self.update_global_weights(party_weights_map)
+            self.send_global_weights()
 
-            with record_function("weight_aggregation"):
-                # Weighted aggregation and broadcast
-                party_weights_map = self._compute_party_weights(selected_parties, weighting)
-                self.update_global_weights(party_weights_map)
-                self.send_global_weights()
-
-            with record_function("vali_predictions"):
-                # Evaluate on vali for model selection
+            # Validate every N rounds and always on the final round
+            if (epoch + 1) % validate_every == 0 or epoch == epochs - 1:
                 for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
                     laundering_values_vali[col] = 0
 
@@ -530,21 +508,15 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
                     flin.update_laundering_values(party, laundering_values_vali,
                                                   pred_probabilities=vali_preds[bank_id], mode='vali')
 
-            with record_function("f1_compute"):
                 f1_vali = f1_score(laundering_values_vali['true_y'], laundering_values_vali['pred_label'])
 
-            if _profile:
-                _prof.__exit__(None, None, None)
-                logging.disable(logging.NOTSET)
-                print("\n=== Profiler: Round 1 breakdown (cpu_time_total) ===")
-                print(_prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
-                print("====================================================\n")
+                if f1_vali > best_f1:
+                    best_weights = copy.deepcopy(self.global_weights)
+                    best_f1 = f1_vali
 
-            logger.info("Epoch %d/%d - Vali F1: %.4f", epoch + 1, epochs, f1_vali)
-
-            if f1_vali > best_f1:
-                best_weights = copy.deepcopy(self.global_weights)
-                best_f1 = f1_vali
+                logger.info("Epoch %d/%d - Vali F1: %.4f", epoch + 1, epochs, f1_vali)
+            else:
+                logger.info("Epoch %d/%d - (skipping validation)", epoch + 1, epochs)
 
         # --- Final test evaluation with best weights ---
         assert best_weights is not None, "No best weights found — model selection on vali never succeeded!"
