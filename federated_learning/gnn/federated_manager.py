@@ -429,9 +429,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             return {bank_id: 1.0 / n for bank_id in selected_parties}
 
         # Proportional: w_k = n_k / sum(n_j for j in selected)
-        dataset_sizes = {}
-        for bank_id, party in selected_parties.items():
-            dataset_sizes[bank_id] = party.procs_data['train_data']['df'].num_edges
+        dataset_sizes = {bank_id: self._party_sizes[bank_id] for bank_id in selected_parties}
 
         total = sum(dataset_sizes.values())
         return {bank_id: n_k / total for bank_id, n_k in dataset_sizes.items()}
@@ -457,6 +455,10 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         all_bank_ids = list(self.parties.keys())
         num_total = len(all_bank_ids)
         num_sampled = max(1, int(client_fraction * num_total))
+
+        # Cache dataset sizes once for proportional weighting
+        self._party_sizes = {bid: p.procs_data['train_data']['df'].num_edges
+                             for bid, p in self.parties.items()}
 
         # Setup loaders for train and vali parties (after model init)
         for bank_id, party in self.parties.items():
