@@ -29,7 +29,7 @@ class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
         logger.info("Adding %d banks to manager", len(banks))
         utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
 
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and torch.cuda.device_count() > 1:
             self.assign_device_to_party()
 
         logger.info("Starting hyperparameter tuning for banks")

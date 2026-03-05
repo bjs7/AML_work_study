@@ -168,8 +168,8 @@ def fl_parser():
                         help='Number of FL communication rounds (default: 100)')
     parser.add_argument('--max_workers', default=4, type=int,
                         help='Number of parallel workers for party training (default: number of CPUs)')
-    parser.add_argument('--validate_every', default=2, type=int,
-                        help='Run validation every N rounds for model selection (default: 2)')
+    parser.add_argument('--validate_every', default=1, type=int,
+                        help='Run validation every N rounds for model selection (default: 1)')
 
     return parser
 

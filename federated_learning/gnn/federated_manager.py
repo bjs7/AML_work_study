@@ -356,7 +356,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
             if banks:
                 utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders, bank_type=bank_type, superset_merge=False)
         
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and torch.cuda.device_count() > 1:
             self.assign_device_to_party()
 
         tuned_hp, _ = self.tuning(laundering_values)
@@ -449,7 +449,7 @@ class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
         num_local_epochs = getattr(fl_parser, 'num_local_epochs', 1)
         weighting = getattr(fl_parser, 'weighting', 'proportional')
         mu = getattr(fl_parser, 'mu', 0.0)
-        validate_every = getattr(fl_parser, 'validate_every', 2)
+        validate_every = getattr(fl_parser, 'validate_every', 1)
 
         # Party sampling setup
         all_bank_ids = list(self.parties.keys())

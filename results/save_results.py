@@ -36,6 +36,9 @@ def save_results(results, hyperparams, manager):
             algo_subfolder += f'_R{R}'
         if mu > 0:
             algo_subfolder += f'_mu{mu}'
+        validate_every = getattr(fl_p, 'validate_every', 1)
+        if validate_every != 1:
+            algo_subfolder += f'_ve{validate_every}'
     else:
         algo_subfolder = ''
 
@@ -246,7 +249,8 @@ def create_experiment_config(manager):
             "client_fraction": getattr(manager.args['fl_parser'], 'client_fraction', 1.0),
             "num_local_epochs": getattr(manager.args['fl_parser'], 'num_local_epochs', 1),
             "num_rounds": getattr(manager.args['fl_parser'], 'num_rounds', 100),
-            "mu": getattr(manager.args['fl_parser'], 'mu', 0.0)
+            "mu": getattr(manager.args['fl_parser'], 'mu', 0.0),
+            "validate_every": getattr(manager.args['fl_parser'], 'validate_every', 1)
         },
         "model": {
             "model_type": manager.args['fl_parser'].model_type,
