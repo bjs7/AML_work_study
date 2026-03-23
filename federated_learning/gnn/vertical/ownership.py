@@ -6,24 +6,25 @@ and what data needs to be exchanged between parties.
 
 import numpy as np
 import torch
+from training.parallel import parallel_party_execute
 
 # batch_banks = parties
 # batch_banks = manager.sr_parties.keys()
 # batch_num = None
 # get_ownership_mappings(mode, manager, parties, None)
 
-def get_ownership_mappings(mode, manager, batch_banks, batch_num):
+def get_ownership_mappings(mode, manager, batch_banks, batch_num, max_workers=None):
     """Get ownership mappings for all banks in a batch."""
     df_ids = manager.data[f'{mode}_data']
     mode_parties = manager.get_parties_for_mode(mode)
+    batch_parties = {bid: mode_parties[bid] for bid in batch_banks}
 
-    for bank_id in batch_banks:
-
-        party = mode_parties[bank_id]
+    def _map(bank_id, party):
         graph_df = party.procs_data[f'{mode}_data']['df'] if batch_num is None else party.ctx[mode][batch_num]['graph_data']
-        indices = graph_df.edge_attr[:,0].tolist()
-
+        indices = graph_df.edge_attr[:, 0].tolist()
         _get_ownership_mappings(mode, party, bank_id, df_ids, graph_df, indices, batch_num)
+
+    parallel_party_execute(batch_parties, _map, max_workers=max_workers)
 
 
 def _get_ownership_mappings(mode, party, bank_id, df_ids, graph_df, indices, batch_num):

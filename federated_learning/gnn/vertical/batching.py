@@ -10,6 +10,7 @@ from torch_geometric.utils import subgraph
 from data.data_utils import GraphData
 
 from .ownership import get_ownership_mappings, get_nodes_to_send
+from training.parallel import parallel_party_execute
 
 # Silence pyg-lib deprecation warning (show only once)
 #warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")
@@ -149,23 +150,27 @@ def gen_batch_graph(manager, all_nodes, mode, batch_num=0, bank_id=0):
     mode_parties[bank_id].ctx[mode][batch_num]['graph_data'] = final_subgraph
 
 
-def get_batch_intersects(manager, banks_to_sample, mode, batch_num):
+def get_batch_intersects(manager, banks_to_sample, mode, batch_num, max_workers=None):
     """Calculate intersections for a batch."""
     mode_parties = manager.get_parties_for_mode(mode)
-    for bank_id in banks_to_sample:
+    batch_parties = {bid: mode_parties[bid] for bid in banks_to_sample}
 
-        party = mode_parties[bank_id]
-        party.ctx[mode][batch_num]['batch_overlaps'] = np.array(party.ctx[mode][batch_num]['graph_data'].edge_attr[:,0])[np.isin(
-                                                                    np.array(party.ctx[mode][batch_num]['graph_data'].edge_attr[:,0]),
-                                                                    party.ctx[mode][None]['ints_indices'])]
+    def _compute_overlaps(bank_id, party):
+        edge_ids = np.array(party.ctx[mode][batch_num]['graph_data'].edge_attr[:, 0])
+        party.ctx[mode][batch_num]['batch_overlaps'] = edge_ids[
+            np.isin(edge_ids, party.ctx[mode][None]['ints_indices'])]
 
-    for bank_id in banks_to_sample:
-        party = mode_parties[bank_id]
+    parallel_party_execute(batch_parties, _compute_overlaps, max_workers=max_workers)
+
+    def _compute_intersects(bank_id, party):
         for inner_bank_id, idx in party.ctx[mode][None]['ints_indices_by_bank'].items():
             if np.any(np.isin(idx, party.ctx[mode][batch_num]['batch_overlaps'])):
                 party.ctx[mode][batch_num]['intersects'][inner_bank_id] = np.where(np.isin(
-                    party.ctx[mode][batch_num]['graph_data'].edge_attr[:,0], idx))[0]
-                party.ctx[mode][batch_num]['ints_indices_by_bank'][inner_bank_id] = party.ctx[mode][batch_num]['graph_data'].edge_attr[party.ctx[mode][batch_num]['intersects'][inner_bank_id],0].tolist()
+                    party.ctx[mode][batch_num]['graph_data'].edge_attr[:, 0], idx))[0]
+                party.ctx[mode][batch_num]['ints_indices_by_bank'][inner_bank_id] = party.ctx[mode][batch_num]['graph_data'].edge_attr[
+                    party.ctx[mode][batch_num]['intersects'][inner_bank_id], 0].tolist()
+
+    parallel_party_execute(batch_parties, _compute_intersects, max_workers=max_workers)
 
 
 def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
@@ -241,6 +246,7 @@ def gen_batch_data_simple(manager, mode, batch_size=8192):
     Can be called per-epoch during training for fresh random batches.
     """
     mode_parties = manager.get_parties_for_mode(mode)
+    max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
     indices = manager.data[f'{mode}_data'].index.to_numpy().copy()
 
     if mode == 'train':
@@ -252,20 +258,16 @@ def gen_batch_data_simple(manager, mode, batch_size=8192):
     df_labels = manager.data[f'{mode}_data'][['From Bank', 'To Bank', 'Is Laundering']]
 
     for batch_num, start in enumerate(batch_starts):
-        print(batch_num)
         batch_indices = indices[start:start + batch_size]
         manager.ctx[mode][batch_num]['batch_labels'] = df_labels.loc[batch_indices]
 
         batch_global_ids = torch.tensor(batch_indices, dtype=torch.long)
 
-        banks_to_use = []
-        for bank_id, party in mode_parties.items():
+        def _build_subgraph(bank_id, party):
             party_graph = party.procs_data[f'{mode}_data']['df']
             mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
-
             if mask.sum() == 0:
-                continue
-
+                return None
             sub_nodes = party_graph.edge_index[:, mask].unique()
             final_edge_index, final_edge_attr = subgraph(
                 subset=sub_nodes,
@@ -273,17 +275,19 @@ def gen_batch_data_simple(manager, mode, batch_size=8192):
                 edge_attr=party_graph.edge_attr,
                 relabel_nodes=True,
             )
-
             party.ctx[mode][batch_num]['graph_data'] = GraphData(
                 x=party_graph.x[sub_nodes],
                 edge_index=final_edge_index,
                 edge_attr=final_edge_attr,
             )
-            banks_to_use.append(bank_id)
+            return bank_id
+
+        results = parallel_party_execute(mode_parties, _build_subgraph, max_workers=max_workers)
+        banks_to_use = [bid for bid, result in results.items() if result is not None]
 
         manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
-        get_batch_intersects(manager, banks_to_use, mode, batch_num)
-        get_ownership_mappings(mode, manager, banks_to_use, batch_num)
+        get_batch_intersects(manager, banks_to_use, mode, batch_num, max_workers=max_workers)
+        get_ownership_mappings(mode, manager, banks_to_use, batch_num, max_workers=max_workers)
         get_nodes_to_send(mode, manager, banks_to_use, batch_num)
 
 
@@ -432,35 +436,35 @@ def process_lazy_batch(manager, mode, batch, mode_parties):
     Called per batch per epoch in the training loop. Overwrites the previous
     batch's data, so only one batch worth of subgraphs is in memory at a time.
     """
+    max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
+
     seed_global_ids = batch.edge_label.long().numpy()
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
 
     batch_global_ids = batch.edge_attr[:, 0].long()
 
-    banks_to_use = []
-    for bank_id, party in mode_parties.items():
+    def _build_subgraph(bank_id, party):
         party_graph = party.procs_data[f'{mode}_data']['df']
         mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
-
         if mask.sum() == 0:
-            continue
-
+            return None
         matched_edge_index = party_graph.edge_index[:, mask]
         matched_edge_attr = party_graph.edge_attr[mask]
-
         sub_nodes = matched_edge_index.reshape(-1).unique()
         node_remap = torch.zeros(party_graph.x.shape[0], dtype=torch.long)
         node_remap[sub_nodes] = torch.arange(len(sub_nodes), dtype=torch.long)
-
         party.ctx[mode][LAZY_BATCH_KEY]['graph_data'] = GraphData(
             x=party_graph.x[sub_nodes],
             edge_index=node_remap[matched_edge_index],
             edge_attr=matched_edge_attr,
         )
-        banks_to_use.append(bank_id)
+        return bank_id
+
+    results = parallel_party_execute(mode_parties, _build_subgraph, max_workers=max_workers)
+    banks_to_use = [bid for bid, result in results.items() if result is not None]
 
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_parties'] = banks_to_use
-    get_batch_intersects(manager, banks_to_use, mode, LAZY_BATCH_KEY)
-    get_ownership_mappings(mode, manager, banks_to_use, LAZY_BATCH_KEY)
+    get_batch_intersects(manager, banks_to_use, mode, LAZY_BATCH_KEY, max_workers=max_workers)
+    get_ownership_mappings(mode, manager, banks_to_use, LAZY_BATCH_KEY, max_workers=max_workers)
     get_nodes_to_send(mode, manager, banks_to_use, LAZY_BATCH_KEY)
 
