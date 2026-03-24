@@ -439,7 +439,10 @@ def process_lazy_batch(manager, mode, batch, mode_parties):
     max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
 
     seed_global_ids = batch.edge_label.long().numpy()
-    manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
+    bl = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
+    mode_party_set = set(mode_parties.keys())
+    manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = bl[
+        bl['From Bank'].isin(mode_party_set) & bl['To Bank'].isin(mode_party_set)]
 
     batch_global_ids = batch.edge_attr[:, 0].long()
 
