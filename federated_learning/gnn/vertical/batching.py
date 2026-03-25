@@ -163,6 +163,9 @@ def get_batch_intersects(manager, banks_to_sample, mode, batch_num, max_workers=
     parallel_party_execute(batch_parties, _compute_overlaps, max_workers=max_workers)
 
     def _compute_intersects(bank_id, party):
+        # Clear stale entries from previous batch before recomputing
+        party.ctx[mode][batch_num]['intersects'] = {}
+        party.ctx[mode][batch_num]['ints_indices_by_bank'] = {}
         for inner_bank_id, idx in party.ctx[mode][None]['ints_indices_by_bank'].items():
             if np.any(np.isin(idx, party.ctx[mode][batch_num]['batch_overlaps'])):
                 party.ctx[mode][batch_num]['intersects'][inner_bank_id] = np.where(np.isin(
