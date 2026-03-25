@@ -170,21 +170,34 @@ def run_benchmark():
         t_epoch = time.perf_counter()
         manager.model.gnn.train()
 
-        mode_parties = manager.get_parties_for_mode('train')
-        for batch in manager.loaders['train']:
-            bat.process_lazy_batch(manager, 'train', batch, mode_parties)
+        if batching_mode == 'lazy_link_neighbor':
+            mode_parties = manager.get_parties_for_mode('train')
+            for batch in manager.loaders['train']:
+                bat.process_lazy_batch(manager, 'train', batch, mode_parties)
+                batch_banks = manager.ctx['train'][LAZY_BATCH_KEY]['batch_parties']
+                batch_key = LAZY_BATCH_KEY
+                batch_data = manager.get_batch_data('train', batch_key, batch_banks)
 
-            batch_banks = manager.ctx['train'][LAZY_BATCH_KEY]['batch_parties']
-            batch_data = manager.get_batch_data('train', LAZY_BATCH_KEY, batch_banks)
+                manager.optimizer.zero_grad()
+                with timer.section('forward_pass'):
+                    preds, labels = manager.forward_pass('train', batch_key, batch_banks, batch_data)
+                with timer.section('backward_pass'):
+                    loss = manager.loss_fn(preds, labels)
+                    loss.backward()
+                    manager.optimizer.step()
 
-            manager.optimizer.zero_grad()
-            with timer.section('forward_pass'):
-                preds, labels = manager.forward_pass('train', LAZY_BATCH_KEY, batch_banks, batch_data)
+        else:  # simple / link_neighbor / neighbor_sample — batches pre-computed
+            for batch_key in range(manager.ctx['train']['num_batches']):
+                batch_banks = manager.ctx['train'][batch_key]['batch_parties']
+                batch_data = manager.get_batch_data('train', batch_key, batch_banks)
 
-            with timer.section('backward_pass'):
-                loss = manager.loss_fn(preds, labels)
-                loss.backward()
-                manager.optimizer.step()
+                manager.optimizer.zero_grad()
+                with timer.section('forward_pass'):
+                    preds, labels = manager.forward_pass('train', batch_key, batch_banks, batch_data)
+                with timer.section('backward_pass'):
+                    loss = manager.loss_fn(preds, labels)
+                    loss.backward()
+                    manager.optimizer.step()
 
         epoch_time = time.perf_counter() - t_epoch
         timer.times['epoch'].append(epoch_time)
