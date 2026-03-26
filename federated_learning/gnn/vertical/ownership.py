@@ -55,6 +55,10 @@ def get_nodes_to_send(mode, manager, batch_banks, batch_num):
     """Determine which nodes each party needs to send to other parties."""
     df_ids = manager.data[f'{mode}_data']
     mode_parties = manager.get_parties_for_mode(mode)
+    # Reset nodes_to_send for all batch parties so stale entries from previous
+    # batches (same batch_num key) don't carry over.
+    for bank_id in batch_banks:
+        mode_parties[bank_id].ctx[mode][batch_num]['nodes_to_send'] = {}
     processed_pairs = set()
     for bank_id in batch_banks:
         party = mode_parties[bank_id]
