@@ -112,7 +112,8 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
                     if global_id not in own_acc:
                         nodes_clone[local_idx] = embedding
 
-                edges_clone[not_owned_edges] = received['edges']
+                if len(received['edges']) == len(not_owned_edges):
+                    edges_clone[not_owned_edges] = received['edges']
 
             party.current_embeddings['nodes'] = nodes_clone
             party.current_embeddings['edges'] = edges_clone

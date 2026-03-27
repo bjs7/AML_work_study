@@ -42,27 +42,35 @@ def setup_intersects(manager):
     vali_idx_set = set(manager.data['vali_data'].index)
 
     all_parties = manager.get_parties_for_mode(all_modes[-1])
-    # list(manager.iter_parties())
-    # all_parties = {bank_id: party for bank_id, party in list(manager.iter_parties())}
 
-    for idx, from_bank, to_bank in zip(subset.index, subset['From Bank'].values, subset['To Bank'].values):
-        from_bank, to_bank = int(from_bank), int(to_bank)
+    # Vectorized mode assignment: label each row by the earliest mode it belongs to.
+    # train rows  → appear in all modes
+    # vali rows   → appear in vali + test
+    # test rows   → appear in test only
+    train_mask = subset.index.isin(train_idx_set)
+    vali_mask  = subset.index.isin(vali_idx_set)
 
-        # Determine which modes this transaction belongs to
-        if idx in train_idx_set:
-            modes = all_modes  # train, vali, test
-        elif idx in vali_idx_set:
-            modes = [m for m in all_modes if m != 'train']  # vali, test
-        else:
-            modes = [all_modes[-1]]  # test only (or vali if no test)
+    mode_subsets = {}
+    for mode in all_modes:
+        if mode == 'train':
+            mode_subsets[mode] = subset[train_mask]
+        elif mode == 'vali':
+            mode_subsets[mode] = subset[train_mask | vali_mask]
+        else:  # test (or last mode when there is no test split)
+            mode_subsets[mode] = subset
 
-        for mode in modes:
+    # Group by bank pair once per mode and extend lists in bulk.
+    for mode, mode_subset in mode_subsets.items():
+        for (from_bank, to_bank), group in mode_subset.groupby(['From Bank', 'To Bank']):
+            from_bank, to_bank = int(from_bank), int(to_bank)
+            indices = group.index.tolist()
+
             for txt in ['intersects', 'ints_indices_by_bank']:
-                all_parties[from_bank].ctx[mode][None][txt].setdefault(to_bank, []).append(idx)
-                all_parties[to_bank].ctx[mode][None][txt].setdefault(from_bank, []).append(idx)
+                all_parties[from_bank].ctx[mode][None][txt].setdefault(to_bank, []).extend(indices)
+                all_parties[to_bank].ctx[mode][None][txt].setdefault(from_bank, []).extend(indices)
 
-            all_parties[from_bank].ctx[mode][None].setdefault('ints_indices', []).append(idx)
-            all_parties[to_bank].ctx[mode][None].setdefault('ints_indices', []).append(idx)
+            all_parties[from_bank].ctx[mode][None].setdefault('ints_indices', []).extend(indices)
+            all_parties[to_bank].ctx[mode][None].setdefault('ints_indices', []).extend(indices)
 
 
 def setup_mappings(manager):
@@ -138,16 +146,21 @@ def setup_vertical(manager, batching=True, batching_mode='neighbor_sample'):
     # Initialize context structures
     init_context(manager)
 
-    # Set up intersection tracking
+    # Set up intersection tracking (always needed — populates ints_indices and
+    # ints_indices_by_bank used by all batching modes)
     setup_intersects(manager)
-    setup_mappings(manager)
 
-    # Get ownership mappings, nodes to send, and node overlaps for each mode
-    for mode in all_modes:
-        parties = manager.get_parties_for_mode(mode).keys()
-        get_ownership_mappings(mode, manager, parties, None)
-        get_nodes_to_send(mode, manager, parties, None)
-        get_nodes_overlap(manager, mode=mode, batch_num=None)
+    # setup_mappings and the batch_num=None ownership/overlap steps are only
+    # needed for neighbor_sample batching and non-batching (batch_num=None
+    # forward pass). Skip them for batching modes that compute per-batch data.
+    needs_none_batch_setup = not batching or batching_mode == 'neighbor_sample'
+    if needs_none_batch_setup:
+        setup_mappings(manager)
+        for mode in all_modes:
+            parties = manager.get_parties_for_mode(mode).keys()
+            get_ownership_mappings(mode, manager, parties, None)
+            get_nodes_to_send(mode, manager, parties, None)
+            get_nodes_overlap(manager, mode=mode, batch_num=None)
 
     # Set up batch data
     if not batching:
