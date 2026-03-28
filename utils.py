@@ -50,7 +50,14 @@ def setup_get_data():
     df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
 
     if parsers['data_parser'].testing:
-        df = df.iloc[:round(df.shape[0] * 0.05),:]
+        # df = df.iloc[:round(df.shape[0] * 0.05),:]
+        # Stratified 10% sample: preserves class ratio (0s and 1s) across the
+        # full dataset before the temporal split, then re-sort to keep temporal
+        # ordering so the 60/20/20 split remains meaningful.
+        df = pd.concat([
+            df[df['Is Laundering'] == 0].sample(frac=0.10, random_state=parsers['data_parser'].seed),
+            df[df['Is Laundering'] == 1].sample(frac=0.10, random_state=parsers['data_parser'].seed),
+        ]).sort_index()
 
     df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc=split_perc)
 

@@ -106,6 +106,8 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
                 not_owned_edges = party.ctx[mode][batch_num]['intersects'][inner_bank_id][manager.data[f'{mode}_data'].iloc[idx, :]['From Bank'] == inner_bank_id]
 
                 for global_id, embedding in received['nodes'].items():
+                    if global_id not in party.ctx[mode][batch_num]['global_to_local']:
+                        continue
                     local_idx = party.ctx[mode][batch_num]['global_to_local'][global_id]
                     own_acc = party.ctx[mode][batch_num]['owned_accounts'] if isinstance(party.ctx[mode][batch_num]['owned_accounts'], set) else party.ctx[mode][batch_num]['owned_accounts'][0]
 
