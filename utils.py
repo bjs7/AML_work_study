@@ -57,7 +57,7 @@ def setup_get_data():
         df = pd.concat([
             df[df['Is Laundering'] == 0].sample(frac=0.10, random_state=parsers['data_parser'].seed),
             df[df['Is Laundering'] == 1].sample(frac=0.10, random_state=parsers['data_parser'].seed),
-        ]).sort_index()
+        ]).sort_index().reset_index(drop=True)
 
     df, scaler_encoders = get_data(df, parsers['data_parser'], split_perc=split_perc)
 
