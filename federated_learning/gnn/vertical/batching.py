@@ -259,10 +259,13 @@ def gen_batch_data_simple(manager, mode, batch_size=8192):
     manager.ctx[mode]['num_batches'] = len(batch_starts)
 
     df_labels = manager.data[f'{mode}_data'][['From Bank', 'To Bank', 'Is Laundering']]
+    mode_party_set = set(mode_parties.keys())
 
     for batch_num, start in enumerate(batch_starts):
         batch_indices = indices[start:start + batch_size]
-        manager.ctx[mode][batch_num]['batch_labels'] = df_labels.loc[batch_indices]
+        batch_bl = df_labels.loc[batch_indices]
+        manager.ctx[mode][batch_num]['batch_labels'] = batch_bl[
+            batch_bl['From Bank'].isin(mode_party_set) | batch_bl['To Bank'].isin(mode_party_set)]
 
         batch_global_ids = torch.tensor(batch_indices, dtype=torch.long)
 
@@ -441,11 +444,12 @@ def process_lazy_batch(manager, mode, batch, mode_parties):
     """
     max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
 
+    #manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
     seed_global_ids = batch.edge_label.long().numpy()
     bl = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
     mode_party_set = set(mode_parties.keys())
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = bl[
-        bl['From Bank'].isin(mode_party_set) & bl['To Bank'].isin(mode_party_set)]
+        bl['From Bank'].isin(mode_party_set) | bl['To Bank'].isin(mode_party_set)]
 
     batch_global_ids = batch.edge_attr[:, 0].long()
 

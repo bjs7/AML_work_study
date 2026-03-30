@@ -160,6 +160,8 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
     # Process each bank's transactions
     unique_from_banks = np.unique(from_banks)
     for bank in unique_from_banks:
+        if bank not in index_to_position:
+            continue
         mask = from_banks == bank
         bank_indices = indices[mask]
         positions = [index_to_position[bank][idx] for idx in bank_indices]
@@ -167,14 +169,24 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
 
     unique_to_banks = np.unique(to_banks)
     for bank in unique_to_banks:
+        if bank not in index_to_position:
+            continue
         mask = to_banks == bank
         bank_indices = indices[mask]
         positions = [index_to_position[bank][idx] for idx in bank_indices]
         to_embeds[mask] = embeddings_tensor[bank][positions]
 
-    # Handle same-bank transactions (set to_embed to zero)
-    same_bank_mask = from_banks == to_banks
-    to_embeds[same_bank_mask] = 0
+    # For non-party counterparties: the participating party's per-edge embedding
+    # already incorporates the counterparty's node representation (it appears in
+    # the local subgraph). Use the available side's embedding as the fallback so
+    # both halves carry real information rather than zeros.
+    non_party_from_mask = np.isin(from_banks, list(index_to_position.keys()), invert=True)
+    if non_party_from_mask.any():
+        from_embeds[non_party_from_mask] = to_embeds[non_party_from_mask]
+
+    non_party_to_mask = np.isin(to_banks, list(index_to_position.keys()), invert=True)
+    if non_party_to_mask.any():
+        to_embeds[non_party_to_mask] = from_embeds[non_party_to_mask]
 
     # Concatenate and predict
     embeds = torch.cat([from_embeds, to_embeds], dim=1)
