@@ -26,6 +26,8 @@ import torch
 
 from .vertical import setup, forward, training_utils
 from .vertical.batching import process_lazy_batch, LAZY_BATCH_KEY
+from .vertical_simple import setup as simple_setup, forward as simple_forward
+from .vertical_simple.batching import process_lazy_batch_simple
 
 
 logger = logging.getLogger(__name__)
@@ -318,6 +320,45 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             'laundering_values': laundering_values
         }
 
+
+
+class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
+    """Vertical FL manager with no per-layer embedding exchange.
+
+    Each party runs all GNN layers locally on its own graph and provides
+    only final per-edge embeddings. The manager concatenates the from-bank
+    and to-bank embeddings per transaction and classifies via mlp_vert.
+
+    Simpler and cheaper than FLGNNManagerVertical (O(1) communication rounds
+    per epoch vs O(num_gnn_layers)), at the cost of no cross-bank context
+    during message passing.
+    """
+
+    def setup_vertical(self, batching=True, batching_mode='simple'):
+        """Set up simplified vertical FL (no intersection tracking)."""
+        simple_setup.setup_vertical_simple(self, batching=batching, batching_mode=batching_mode)
+
+    def forward_pass(self, mode, batch_num, batch_banks, batch_data):
+        """Run full local GNN per party, collect and concatenate final embeddings."""
+        return simple_forward.forward_pass_simple(self, mode, batch_num, batch_banks, batch_data)
+
+    def _iter_batches(self, mode, batching, precomputed_batch_data=None):
+        """Same as parent but uses process_lazy_batch_simple for lazy mode."""
+        if hasattr(self, 'loaders') and mode in self.loaders:
+            mode_parties = self.get_parties_for_mode(mode)
+            for batch in self.loaders[mode]:
+                process_lazy_batch_simple(self, mode, batch, mode_parties)
+                batch_banks = self.ctx[mode][LAZY_BATCH_KEY]['batch_parties']
+                batch_data = self.get_batch_data(mode, LAZY_BATCH_KEY, batch_banks)
+                yield LAZY_BATCH_KEY, batch_banks, batch_data
+        elif batching:
+            for batch_num in range(self.ctx[mode]['num_batches']):
+                batch_banks = self.ctx[mode][batch_num]['batch_parties']
+                batch_data = self.get_batch_data(mode, batch_num, batch_banks)
+                yield batch_num, batch_banks, batch_data
+        else:
+            batch_banks = self.ctx[mode][None]['batch_parties']
+            yield None, batch_banks, precomputed_batch_data
 
 
 # FedAvg

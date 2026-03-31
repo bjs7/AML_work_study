@@ -2,7 +2,7 @@
 
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
-from federated_learning.gnn import GNNMixinParty, GNNMixinPartyFL, GNNMixinPartyIndi, GNNMixinPartyVert, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical
+from federated_learning.gnn import GNNMixinParty, GNNMixinPartyFL, GNNMixinPartyIndi, GNNMixinPartyVert, FLGNNManager, IndividualGNNManager, FullInfoGNNManager, FLGNNManagerVertical, FLGNNManagerVerticalSimple
 from federated_learning.booster.individual_manager import IndividualBoosterManager
 from federated_learning.booster.federated_manager import FLBoosterManager
 from federated_learning.booster.full_info_manager import FullInfoBoosterManager
@@ -201,6 +201,25 @@ class FedGraph_GNN_Manager(FLGNNManagerVertical, FedGraph_manager): #FLGNNManage
         return FedGraph_GNN_Manager(args)
 
 
+@regi_algo_party("FedGraphSimple_gnn")
+class FedGraphSimple_GNN_Party(GNNMixinPartyVert, FedGraph_party):
+    """Party for simplified vertical FL — same data prep as FedGraph."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return FedGraphSimple_GNN_Party(**kwargs)
+
+
+@regi_algo_manager("FedGraphSimple_gnn")
+class FedGraphSimple_GNN_Manager(FLGNNManagerVerticalSimple, FedGraph_manager):
+    """Manager for simplified vertical FL (no per-layer embedding exchange)."""
+
+    @staticmethod
+    def return_class(args):
+        return FedGraphSimple_GNN_Manager(args)
 
 
 # Booster -------------------------------------------------------------------------------------------

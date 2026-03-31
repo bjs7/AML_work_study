@@ -153,44 +153,30 @@ def forward_pass(manager, mode, batch_num, batch_banks, batch_data):
     n_samples = manager.ctx[mode][batch_num]['batch_labels'].shape[0]
     indices = batch_df.index.values
 
-    # Pre-allocate full embeddings tensor
-    from_embeds = torch.zeros(n_samples, embed_dim, device=device)
-    to_embeds = torch.zeros(n_samples, embed_dim, device=device)
+    # After per-layer exchange both parties hold identical embeddings for shared
+    # transactions, so one party's prep_nodes_edges output is sufficient.
+    # Use From Bank as primary; fall back to To Bank when From Bank is absent.
+    single_embeds = torch.zeros(n_samples, embed_dim, device=device)
 
-    # Process each bank's transactions
-    unique_from_banks = np.unique(from_banks)
-    for bank in unique_from_banks:
+    for bank in np.unique(from_banks):
         if bank not in index_to_position:
             continue
         mask = from_banks == bank
         bank_indices = indices[mask]
         positions = [index_to_position[bank][idx] for idx in bank_indices]
-        from_embeds[mask] = embeddings_tensor[bank][positions]
+        single_embeds[mask] = embeddings_tensor[bank][positions]
 
-    unique_to_banks = np.unique(to_banks)
-    for bank in unique_to_banks:
-        if bank not in index_to_position:
-            continue
-        mask = to_banks == bank
-        bank_indices = indices[mask]
-        positions = [index_to_position[bank][idx] for idx in bank_indices]
-        to_embeds[mask] = embeddings_tensor[bank][positions]
-
-    # For non-party counterparties: the participating party's per-edge embedding
-    # already incorporates the counterparty's node representation (it appears in
-    # the local subgraph). Use the available side's embedding as the fallback so
-    # both halves carry real information rather than zeros.
     non_party_from_mask = np.isin(from_banks, list(index_to_position.keys()), invert=True)
     if non_party_from_mask.any():
-        from_embeds[non_party_from_mask] = to_embeds[non_party_from_mask]
+        for bank in np.unique(to_banks[non_party_from_mask]):
+            if bank not in index_to_position:
+                continue
+            mask = non_party_from_mask & (to_banks == bank)
+            bank_indices = indices[mask]
+            positions = [index_to_position[bank][idx] for idx in bank_indices]
+            single_embeds[mask] = embeddings_tensor[bank][positions]
 
-    non_party_to_mask = np.isin(to_banks, list(index_to_position.keys()), invert=True)
-    if non_party_to_mask.any():
-        to_embeds[non_party_to_mask] = from_embeds[non_party_to_mask]
-
-    # Concatenate and predict
-    embeds = torch.cat([from_embeds, to_embeds], dim=1)
-    preds_tensor = manager.model.gnn.mlp_vert(embeds)
+    preds_tensor = manager.model.gnn.mlp(single_embeds)
     true_y_tensor = torch.tensor(true_y, dtype=torch.long, device=device)
 
     return preds_tensor, true_y_tensor

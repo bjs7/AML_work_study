@@ -84,7 +84,7 @@ class Manager(BaseFL, ABC):
         self.test_parties: Dict[int, Party] = {}
         self.parties_weights: Dict[int, Any] = {}
         self.global_weights = None
-        self.edge_feat_start = 1 if self.args['fl_parser'].fl_algo == 'FedGraph' else 0
+        self.edge_feat_start = 1 if self.args['fl_parser'].fl_algo in ('FedGraph', 'FedGraphSimple') else 0
         self.bank_device = {}
 
     @classmethod
