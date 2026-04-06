@@ -24,6 +24,7 @@ model_types = {
     'GINe_vert': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
+    'secureboost': 'booster',
     'regression': 'regression'
 }
 

@@ -12,6 +12,8 @@ import copy
 logger = logging.getLogger(__name__)
 
 
+import numpy as np
+import pandas as pd
 import xgboost as xgb
 
 
@@ -35,14 +37,13 @@ class BoosterMixinParty:
 
         train_data = data_configs[0]
         processed_train = feature_engi_regular_data(train_data, self.args['data_parser'], self.scaler_encoders)
+        # If train split was empty, fall back to global scaler_encoders for eval splits
+        fitted_encoders = processed_train.get('scaler_encoders') or self.scaler_encoders
         results = [processed_train]
         for data_dict in data_configs[1:]:
-            results.append(feature_engi_regular_data(data_dict, self.args['data_parser'], scaler_encoders=processed_train.get('scaler_encoders')))
-    
-        #train_data = feature_engi_regular_data(train_data, self.args['gnn_parser'], self.scaler_encoders)
-        #eval_data = feature_engi_regular_data(eval_data, self.args['gnn_parser'], scaler_encoders = train_data.get('scaler_encoders'))
+            results.append(feature_engi_regular_data(data_dict, self.args['data_parser'], scaler_encoders=fitted_encoders))
 
-        return results #train_data, eval_data
+        return results
 
     def prep_data(self):
 
@@ -101,6 +102,154 @@ class BoosterMixinParty:
 
 
 
+
+
+class SecureBoostPartyMixin(BoosterMixinParty):
+    """Party mixin for SecureBoost vertical FL.
+
+    Extends BoosterMixinParty with the three operations the manager needs
+    during tree building and inference:
+      - find_best_split: histogram-based split search over local features
+      - route_samples:   left/right assignment for a given split
+      - get_feature_value: single feature lookup by global index (inference)
+
+    _global_to_local is populated by setup_secureboost_post_prep (vertical/setup.py)
+    after prep_data() has been called.
+    """
+
+    def get_feature_value(self, global_idx: int, feature: str):
+        """Return the value of a feature for a transaction by global index.
+
+        Returns None if this party has no data for that transaction (triggers
+        the node's default routing direction in the tree).
+
+        Args:
+            global_idx: global DataFrame index of the transaction.
+            feature: column name in this party's procs_data.
+
+        Returns:
+            float value, or None if not held by this party.
+        """
+        if not hasattr(self, '_global_to_local') or global_idx not in self._global_to_local:
+            return None
+        mode, local_row = self._global_to_local[global_idx]
+        data_key = f'{mode}_data'
+        if data_key not in self.procs_data:
+            return None
+        x = self.procs_data[data_key]['x']
+        if feature not in x.columns:
+            return None
+        return float(x.iloc[local_row][feature])
+
+    def find_best_split(
+        self,
+        global_indices: list,
+        g_dict: dict,
+        h_dict: dict,
+        lambda_reg: float,
+        n_bins: int = 32,
+    ):
+        """Find the best (feature, threshold) split for this party's transactions.
+
+        Only considers transactions in global_indices that this party holds.
+        Returns only summary statistics (gain, feature name, threshold) —
+        never raw feature values. This is what would be encrypted in a
+        production SecureBoost deployment.
+
+        Args:
+            global_indices: global transaction indices in this tree node
+                            that this party holds data for.
+            g_dict: {global_idx: g_i} first-order gradient values.
+            h_dict: {global_idx: h_i} second-order gradient (Hessian) values.
+            lambda_reg: L2 regularisation term.
+            n_bins: number of candidate threshold bins per feature.
+
+        Returns:
+            (best_gain, best_feature, best_threshold)
+            best_gain is 0.0 if no improving split is found.
+        """
+        if not global_indices:
+            return 0.0, None, None
+
+        # Collect local rows grouped by mode
+        rows_by_mode = {}
+        for gidx in global_indices:
+            mode, local_row = self._global_to_local[gidx]
+            rows_by_mode.setdefault(mode, []).append((gidx, local_row))
+
+        # Build feature matrix and aligned gradient arrays
+        x_parts, g_vals, h_vals = [], [], []
+        for mode, pairs in rows_by_mode.items():
+            x          = self.procs_data[f'{mode}_data']['x']
+            local_rows = [lr for _, lr in pairs]
+            gidxs      = [gi for gi, _ in pairs]
+            x_parts.append(x.iloc[local_rows].reset_index(drop=True))
+            g_vals.extend(g_dict[gi] for gi in gidxs)
+            h_vals.extend(h_dict[gi] for gi in gidxs)
+
+        X     = pd.concat(x_parts, ignore_index=True)
+        g_arr = np.array(g_vals)
+        h_arr = np.array(h_vals)
+        G_tot = g_arr.sum()
+        H_tot = h_arr.sum()
+
+        best_gain      = 0.0
+        best_feature   = None
+        best_threshold = None
+
+        for feature in X.columns:
+            vals = X[feature].values.astype(float)
+            if np.unique(vals).size <= 1:
+                continue
+
+            pcts       = np.linspace(0, 100, n_bins + 2)[1:-1]
+            thresholds = np.unique(np.percentile(vals, pcts))
+
+            for thr in thresholds:
+                left  = vals <= thr
+                right = ~left
+                if not left.any() or not right.any():
+                    continue
+
+                GL = g_arr[left].sum()
+                GR = g_arr[right].sum()
+                HL = h_arr[left].sum()
+                HR = h_arr[right].sum()
+
+                gain = 0.5 * (
+                    GL ** 2 / (HL + lambda_reg)
+                    + GR ** 2 / (HR + lambda_reg)
+                    - G_tot ** 2 / (H_tot + lambda_reg)
+                )
+
+                if gain > best_gain:
+                    best_gain      = gain
+                    best_feature   = feature
+                    best_threshold = float(thr)
+
+        return best_gain, best_feature, best_threshold
+
+    def route_samples(self, global_indices: list, feature: str, threshold: float):
+        """Assign global indices left or right based on feature <= threshold.
+
+        Args:
+            global_indices: indices that this party holds (all must be in _global_to_local).
+            feature: feature name.
+            threshold: split threshold.
+
+        Returns:
+            (left_indices, right_indices): two lists of global indices.
+        """
+        left, right = [], []
+        for gidx in global_indices:
+            val = self.get_feature_value(gidx, feature)
+            if val is None:
+                continue
+            if val <= threshold:
+                left.append(gidx)
+            else:
+                right.append(gidx)
+        return left, right
 
 
 #self = self.parties[0]

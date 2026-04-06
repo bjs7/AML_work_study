@@ -6,7 +6,8 @@ from federated_learning.gnn import GNNMixinParty, GNNMixinPartyFL, GNNMixinParty
 from federated_learning.booster.individual_manager import IndividualBoosterManager
 from federated_learning.booster.federated_manager import FLBoosterManager
 from federated_learning.booster.full_info_manager import FullInfoBoosterManager
-from federated_learning.booster.party_mixin import BoosterMixinParty
+from federated_learning.booster.secureboost_manager import SecureBoostManager
+from federated_learning.booster.party_mixin import BoosterMixinParty, SecureBoostPartyMixin
 
 # Regression classes - to be implemented later
 # Placeholder stubs for now
@@ -287,4 +288,23 @@ class FullInfo_Booster_Manager(FullInfoBoosterManager, Manager):
     @staticmethod
     def return_class(args):
         return FullInfo_Booster_Manager(args)
+
+
+@regi_algo_party("SecureBoost_booster")
+class SecureBoost_Party(SecureBoostPartyMixin, Party):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return SecureBoost_Party(**kwargs)
+
+
+@regi_algo_manager("SecureBoost_booster")
+class SecureBoost_Manager(SecureBoostManager, Manager):
+
+    @staticmethod
+    def return_class(args):
+        return SecureBoost_Manager(args)
 

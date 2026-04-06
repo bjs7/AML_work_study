@@ -48,6 +48,10 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     #df = train_data
 
     df = copy.deepcopy(data)
+
+    # Guard: return as-is if the split is empty (some parties have no data in a given split)
+    if df.get('x') is None or df['x'].shape[0] == 0:
+        return df
     #df = data['df']
 
     scl_enc = {ele: scaler_encoders.get(ele) for ele in 

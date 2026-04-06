@@ -63,7 +63,8 @@ def save_results(results, hyperparams, manager):
 
     # get booster folder
     elif manager.args['fl_parser'].model_type == 'booster':
-        x_0_fi, r_0_fi = model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('x_0'), model_tuning_configs.get('full_info').get(manager.args['data_parser'].size).get('r_0')
+        fi_cfg = (model_tuning_configs or {}).get('full_info', {}).get(manager.args['data_parser'].size, {})
+        x_0_fi, r_0_fi = fi_cfg.get('x_0'), fi_cfg.get('r_0')
 
     # add data flags to folder name
     data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp', 'use_global_stats'] #'add_ids',
@@ -123,7 +124,32 @@ def save_FL(save_direc, results, hyperparams, manager):
     with open(file_path, 'w') as file:
         json.dump(hyperparams, file, indent=4)
 
-    if manager.args['fl_parser'].model_type == 'gnn':
+    if manager.args['fl_parser'].model_type == 'booster':
+
+        for seed, seed_result in results.items():
+
+            seed_folder = os.path.join(save_direc, f'seed_{seed}')
+            folder_path = Path(seed_folder)
+            folder_path.mkdir(parents=True, exist_ok=True)
+
+            with open(f'{seed_folder}/metrics_laundering_values.pkl', 'wb') as f:
+                pickle.dump({'metrics': seed_result['metrics'],
+                             'laundering_values': seed_result['laundering_values']}, f)
+
+            logger.debug("Seed %d saved - F1: %.4f", seed, seed_result['metrics']['f1'])
+
+        aggregated_results = aggregate_seed_results(results)
+        file_path = os.path.join(save_direc, 'aggregated_results.json')
+        with open(file_path, 'w') as file:
+            json.dump(aggregated_results, file, indent=4)
+
+        logger.info("Aggregated results: Mean F1=%.4f (±%.4f), Best F1=%.4f (seed %d)",
+                    aggregated_results['f1']['mean'],
+                    aggregated_results['f1']['std'],
+                    aggregated_results['best_f1'],
+                    aggregated_results['best_seed'])
+
+    elif manager.args['fl_parser'].model_type == 'gnn':
 
         for seed, seed_result in results.items():
 
