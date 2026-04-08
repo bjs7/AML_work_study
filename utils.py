@@ -24,7 +24,6 @@ model_types = {
     'GINe_vert': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
-    'secureboost': 'booster',
     'regression': 'regression'
 }
 
@@ -79,6 +78,15 @@ def logger_setup():
             logging.StreamHandler(sys.stdout)          ## log also to stdout (i.e., print to screen)
         ]
     )
+
+
+def get_cpu_count() -> int:
+    """Return available CPUs. On SLURM uses SLURM_CPUS_PER_TASK if set,
+    so we don't oversubscribe beyond the allocated job resources."""
+    slurm_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
+    if slurm_cpus:
+        return int(slurm_cpus)
+    return os.cpu_count() or 1
 
 
 def set_seed(seed: int = 0, log = False) -> None:
@@ -178,6 +186,10 @@ def fl_parser():
                         help='Number of parallel workers for party training (default: number of CPUs)')
     parser.add_argument('--validate_every', default=1, type=int,
                         help='Run validation every N rounds for model selection (default: 1)')
+    parser.add_argument('--tune', action='store_true',
+                        help='Run hyperparameter tuning. For boosters: full_info saves the result; '
+                             'other scenarios run their own tuning. Without this flag, '
+                             'previously saved full_info HPs are loaded instead.')
 
     return parser
 

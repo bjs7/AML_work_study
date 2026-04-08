@@ -49,9 +49,20 @@ class IndividualBoosterManager(BoosterMixinManager):
 
         logger.info("Adding %d banks to manager", len(banks))
         utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders)
-        logger.info("Starting hyperparameter tuning for banks")
-        tuned_hp = self.tuning(laundering_values)
-        logger.info("Hyperparameter tuning completed")
+
+        if parsers['fl_parser'].tune:
+            logger.info("Starting per-bank hyperparameter tuning (--tune flag set)")
+            tuned_hp = self.tuning(laundering_values)
+            logger.info("Hyperparameter tuning completed")
+        else:
+            loaded_hp = self._load_tuned_hp()
+            if loaded_hp is None:
+                raise FileNotFoundError(
+                    f"No saved hyperparameters found. "
+                    f"Run full_info with --tune first to generate them."
+                )
+            logger.info("Using full_info tuned hyperparameters (skipping per-bank tuning)")
+            tuned_hp = {bank_id: {'hyperparameters': loaded_hp} for bank_id in self.parties}
 
         logger.info("Setup complete: Total %d banks", len(self.parties))
         return tuned_hp

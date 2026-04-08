@@ -1,11 +1,14 @@
 import copy
+import json
 import os
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 import training.utils as tr_utils
 import utils
 from models.booster import Booster
 from training.utils import hyper_sampler, f1_eval
-from configs.paths import get_tuning_configs
+from configs.paths import get_tuning_configs, get_full_info_hp_path
 import xgboost as xgb
 from sklearn.metrics import f1_score
 from inference import metrics, probs_to_binary
@@ -13,7 +16,42 @@ from inference import metrics, probs_to_binary
 logger = logging.getLogger(__name__)
 
 
+def _eval_hp(hp, sliced_x, sliced_y, vali_x, vali_y, nthread):
+    """Fit one HP config and return its validation F1. Module-level so it
+    can be submitted to a ThreadPoolExecutor without pickling issues."""
+    try:
+        booster = Booster(hp, nthread=nthread)
+        booster.fit(sliced_x, sliced_y, X_eval=vali_x, y_eval=vali_y)
+        preds = booster.predict(vali_x)
+        return f1_score(vali_y, probs_to_binary(preds))
+    except Exception as e:
+        logger.warning("HP eval failed: %s", e)
+        return 0.0
+
+
 class BoosterMixinManager:
+
+    def _save_tuned_hp(self, hp, model=None):
+        """Save tuned hyperparameters to a shared location for reuse by other scenarios."""
+        path = get_full_info_hp_path(self.args, model=model)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(hp, f, indent=4)
+        logger.info("Saved full_info tuned hyperparameters to %s", path)
+
+    def _load_tuned_hp(self, model=None):
+        """Load tuned hyperparameters saved by the full_info scenario.
+
+        Returns None if no saved HPs are found, in which case the caller
+        should fall back to running its own tuning.
+        """
+        path = get_full_info_hp_path(self.args, model=model)
+        if not os.path.exists(path):
+            return None
+        with open(path, 'r') as f:
+            hp = json.load(f)
+        logger.info("Loaded full_info tuned hyperparameters from %s", path)
+        return hp
 
     def init_hyperparams(self):
 
@@ -34,7 +72,7 @@ class BoosterMixinManager:
         """
         # Divide CPU threads across parties when running in parallel
         num_parties = len(self.parties)
-        total_cpus = os.cpu_count() or 1
+        total_cpus = utils.get_cpu_count()
         nthread = max(1, total_cpus // num_parties)
 
         if bank_id is not None:
@@ -48,25 +86,45 @@ class BoosterMixinManager:
 
         frac_not_reached = True
         model_hyper_params, x_0, eta, r_0 = self.init_hyperparams()
-        
+
+        total_cpus = utils.get_cpu_count()
+        vali_x = party.procs_data['vali_data']['x']
+        vali_y = laundering_values['true_y']
+
+        # GPU fits: XGBoost handles the GPU internally; running multiple
+        # instances simultaneously risks OOM errors, so keep sequential.
+        first_params = model_hyper_params[0].get('params', {}) if model_hyper_params else {}
+        using_gpu = first_params.get('device') in ('cuda', 'gpu')
+
         while frac_not_reached:
 
-            f1s = []
             r_0 = min(r_0, 1)
             index_slice = round(party.procs_data['train_data']['x'].shape[0] * r_0)
-            sliced_data = {'x': party.procs_data['train_data']['x'].iloc[:index_slice,:], 'y': party.procs_data['train_data']['y'][:index_slice]}
+            sliced_x = party.procs_data['train_data']['x'].iloc[:index_slice]
+            sliced_y = party.procs_data['train_data']['y'][:index_slice]
 
-            for hp in model_hyper_params:
-                try:
-                    booster = Booster(hp)
-                    booster.fit(sliced_data['x'], sliced_data['y'],
-                                X_eval=party.procs_data['vali_data']['x'],
-                                y_eval=laundering_values['true_y'])
-                    preds = booster.predict(party.procs_data['vali_data']['x'])
-                    f1s.append(f1_score(laundering_values['true_y'], probs_to_binary(preds)))
-                except Exception as e:
-                    print(f"Error with hyperparameters {hp}: {str(e)}")
-                    f1s.append(0)
+            n_configs = len(model_hyper_params)
+
+            if using_gpu:
+                # Sequential: each fit uses the full GPU
+                nthread  = total_cpus
+                f1s = [_eval_hp(hp, sliced_x, sliced_y, vali_x, vali_y, nthread)
+                       for hp in model_hyper_params]
+            else:
+                # Parallel CPU fits: cap threads per fit to avoid oversubscription
+                max_workers = min(n_configs, total_cpus)
+                nthread     = max(1, total_cpus // max_workers)
+                logger.info("SHA round: %d configs, %d parallel workers, %d threads/fit",
+                            n_configs, max_workers, nthread)
+
+                f1s = [None] * n_configs
+                with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    future_to_idx = {
+                        executor.submit(_eval_hp, hp, sliced_x, sliced_y, vali_x, vali_y, nthread): i
+                        for i, hp in enumerate(model_hyper_params)
+                    }
+                    for future in as_completed(future_to_idx):
+                        f1s[future_to_idx[future]] = future.result()
 
             x_0 = max(1, round(x_0/eta))
             params_to_keep = sorted(range(len(f1s)), key=lambda i: f1s[i], reverse=True)[:x_0]
@@ -75,7 +133,7 @@ class BoosterMixinManager:
             if r_0 >= 1 or x_0 == 1:
                 frac_not_reached = False
             r_0 *= eta
-        
+
         return model_hyper_params[0]
     
     def tuning(self, laundering_values):

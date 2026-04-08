@@ -83,12 +83,24 @@ class SecureBoostManager(BoosterMixinManager):
         return self.tuning(laundering_values)
 
     def tuning(self, laundering_values):
-        """Return a single default hyperparameter configuration.
+        """Return hyperparameters for SecureBoost tree building.
 
-        Full tuning is omitted for now — building the full vertical ensemble
-        per HP config would be prohibitively expensive. A proper tuning loop
-        can be added later once the core training is validated.
+        SecureBoost uses the same HP space as xgboost, so it reuses HPs
+        tuned by the full_info xgboost scenario. Pass --tune on the full_info
+        xgboost run to generate (or refresh) the saved HPs.
         """
+        loaded_hp = self._load_tuned_hp()
+        if loaded_hp is not None:
+            logger.info("Loaded tuned hyperparameters for SecureBoost")
+            return loaded_hp
+
+        if not self.args['fl_parser'].tune:
+            raise FileNotFoundError(
+                "No saved hyperparameters found for SecureBoost. "
+                "Run --fl_algo full_info --model xgboost --tune first to generate them."
+            )
+
+        logger.warning("No full_info tuned HPs found — using SecureBoost defaults.")
         return {
             "num_rounds": 100,
             "params": {

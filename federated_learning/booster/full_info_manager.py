@@ -26,11 +26,22 @@ class FullInfoBoosterManager(BoosterMixinManager):
         logger.info("Setting up Full Info Booster model (single party with complete dataset)")
         self._add_party(None, df, parsers, scaler_encoders)
 
-        logger.info("Starting hyperparameter tuning")
-        tuned_hp = self.tuning(laundering_values)
-        logger.info("Setup complete")
+        if parsers['fl_parser'].tune:
+            logger.info("Starting hyperparameter tuning (--tune flag set)")
+            tuned_hp = self.tuning(laundering_values)
+            best_hp = tuned_hp[None]['hyperparameters']
+            self._save_tuned_hp(best_hp)
+        else:
+            best_hp = self._load_tuned_hp()
+            if best_hp is None:
+                raise FileNotFoundError(
+                    f"No saved hyperparameters found. "
+                    f"Run full_info with --tune first to generate them."
+                )
+            logger.info("Loaded saved hyperparameters (skipping tuning)")
 
-        return tuned_hp[None]['hyperparameters']
+        logger.info("Setup complete")
+        return best_hp
 
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
         self.init_models(hyperparameters)

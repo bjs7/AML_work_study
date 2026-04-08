@@ -42,6 +42,11 @@ def main():
     # Setup parties and tune
     tuned_hp = manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
+    # Tune-only mode: HPs have been saved, skip training
+    if parsers['fl_parser'].tune and parsers['fl_parser'].model_type == 'booster':
+        logging.info("Tune-only mode complete. Hyperparameters saved. Run without --tune to train.")
+        return
+
     # Train the model ----------------------------------------------------------------------------------------
     results = manager.train(tuned_hp, laundering_values_vali, laundering_values_test)
 

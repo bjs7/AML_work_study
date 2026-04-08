@@ -111,29 +111,6 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
             }
 
-    elif args.model == 'secureboost':
-        # Same hyperparameter space as xgboost — SecureBoost uses identical
-        # tree structure and gradient mechanics.
-        device = None
-        if get_data_path() == "/data/leuven/362/vsc36278":
-            device = "cuda"
-
-        parameters = {
-            "num_rounds": random.randint(10, 1000),
-            "params": {
-                "objective": "binary:logistic",
-                "max_depth": random.randint(1, 15),
-                "learning_rate": random.uniform(10**(-2.5), 10**(-1)),
-                "lambda": random.uniform(10**(-2), 10**(2)),
-                "scale_pos_weight": random.uniform(1, 10),
-                "colsample_bytree": random.uniform(0.5, 1.0),
-                "subsample": random.uniform(0.5, 1.0),
-                "tree_method": "hist",
-                "device": device,
-                "random_state": 1,
-            }
-        }
-
     #args.model
     elif args.model == 'GINe':
 

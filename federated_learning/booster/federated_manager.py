@@ -42,8 +42,19 @@ class FLBoosterManager(BoosterMixinManager):
                 utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders,
                                            bank_type=bank_type, superset_merge=False)
 
-        tuned_hp = self.tuning(laundering_values)
-        return tuned_hp
+        if parsers['fl_parser'].tune:
+            logger.info("Starting FL booster hyperparameter tuning (--tune flag set)")
+            tuned_hp, _ = self.tuning(laundering_values)
+            return tuned_hp
+
+        loaded_hp = self._load_tuned_hp()
+        if loaded_hp is None:
+            raise FileNotFoundError(
+                f"No saved hyperparameters found. "
+                f"Run full_info with --tune first to generate them."
+            )
+        logger.info("Using full_info tuned hyperparameters (skipping FL booster tuning)")
+        return loaded_hp
 
     def tuning(self, laundering_values):
 
