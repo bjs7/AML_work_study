@@ -1,6 +1,7 @@
 
 import random
 import json
+import torch
 from configs.paths import get_data_path, get_tuning_configs
 from sklearn.metrics import f1_score
 
@@ -42,10 +43,8 @@ def f1_eval(preds, dtrain):
 def hyper_sampler(args, num_nodes = None, sample_intervals = None):
 
     if args.model == 'xgboost':
-        
-        device = None
-        if get_data_path() == "/data/leuven/362/vsc36278":
-            device = "cuda"
+
+        device = "cuda" if torch.cuda.is_available() else None
 
         parameters = {
             "num_rounds": random.randint(10, 1000),

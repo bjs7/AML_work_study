@@ -149,8 +149,13 @@ class BoosterMixinManager:
             bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'
 
             for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
+                import time as _time
+                t0 = _time.time()
                 party.prep_data()
+                logger.info("prep_data done in %.1fs", _time.time() - t0)
+                t1 = _time.time()
                 tuned_hyparameters = self._tuning_helper(laundering_values, party, bank_id)
+                logger.info("HP tuning done in %.1fs", _time.time() - t1)
                 results[bank_id] = {'hyperparameters': tuned_hyparameters}
 
         return results
