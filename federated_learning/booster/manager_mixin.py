@@ -91,11 +91,6 @@ class BoosterMixinManager:
         vali_x = party.procs_data['vali_data']['x']
         vali_y = laundering_values['true_y']
 
-        # GPU fits: XGBoost handles the GPU internally; running multiple
-        # instances simultaneously risks OOM errors, so keep sequential.
-        first_params = model_hyper_params[0].get('params', {}) if model_hyper_params else {}
-        using_gpu = first_params.get('device') in ('cuda', 'gpu')
-
         while frac_not_reached:
 
             r_0 = min(r_0, 1)
@@ -104,27 +99,19 @@ class BoosterMixinManager:
             sliced_y = party.procs_data['train_data']['y'][:index_slice]
 
             n_configs = len(model_hyper_params)
+            max_workers = min(n_configs, total_cpus)
+            nthread     = max(1, total_cpus // max_workers)
+            logger.info("SHA round: %d configs, %d parallel workers, %d threads/fit",
+                        n_configs, max_workers, nthread)
 
-            if using_gpu:
-                # Sequential: each fit uses the full GPU
-                nthread  = total_cpus
-                f1s = [_eval_hp(hp, sliced_x, sliced_y, vali_x, vali_y, nthread)
-                       for hp in model_hyper_params]
-            else:
-                # Parallel CPU fits: cap threads per fit to avoid oversubscription
-                max_workers = min(n_configs, total_cpus)
-                nthread     = max(1, total_cpus // max_workers)
-                logger.info("SHA round: %d configs, %d parallel workers, %d threads/fit",
-                            n_configs, max_workers, nthread)
-
-                f1s = [None] * n_configs
-                with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                    future_to_idx = {
-                        executor.submit(_eval_hp, hp, sliced_x, sliced_y, vali_x, vali_y, nthread): i
-                        for i, hp in enumerate(model_hyper_params)
-                    }
-                    for future in as_completed(future_to_idx):
-                        f1s[future_to_idx[future]] = future.result()
+            f1s = [None] * n_configs
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_idx = {
+                    executor.submit(_eval_hp, hp, sliced_x, sliced_y, vali_x, vali_y, nthread): i
+                    for i, hp in enumerate(model_hyper_params)
+                }
+                for future in as_completed(future_to_idx):
+                    f1s[future_to_idx[future]] = future.result()
 
             x_0 = max(1, round(x_0/eta))
             params_to_keep = sorted(range(len(f1s)), key=lambda i: f1s[i], reverse=True)[:x_0]
