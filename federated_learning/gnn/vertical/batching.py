@@ -444,14 +444,16 @@ def process_lazy_batch(manager, mode, batch, mode_parties):
     """
     max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
 
-    #manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
     seed_global_ids = batch.edge_label.long().numpy()
     bl = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
     mode_party_set = set(mode_parties.keys())
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = bl[
         bl['From Bank'].isin(mode_party_set) | bl['To Bank'].isin(mode_party_set)]
 
-    batch_global_ids = batch.edge_attr[:, 0].long()
+    # Include seed IDs so that seed edges dropped by neighbor sampling are still
+    # matched in the party's graph (same logic as batching_masker).
+    seed_ids_tensor = torch.tensor(seed_global_ids, dtype=torch.long)
+    batch_global_ids = torch.cat([batch.edge_attr[:, 0].long(), seed_ids_tensor]).unique()
 
     def _build_subgraph(bank_id, party):
         party_graph = party.procs_data[f'{mode}_data']['df']

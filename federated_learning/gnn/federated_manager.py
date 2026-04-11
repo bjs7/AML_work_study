@@ -227,8 +227,15 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             yield None, batch_banks, precomputed_batch_data
 
     def _forward_eval(self, mode, batching, precomputed_batch_data=None):
-        """Run a forward pass on vali or test mode and return preds/labels."""
+        """Run a forward pass on vali or test mode and return preds/labels.
+
+        Also stores self._last_eval_global_ids: the ordered list of global
+        transaction IDs that were actually evaluated (may be a subset of all
+        mode transactions when the mode_party_set filter drops some seeds, e.g.
+        in --testing mode with comparable eval).
+        """
         all_preds, all_labels = [], []
+        all_global_ids = []
 
         with torch.no_grad():
             for batch_key, batch_banks, batch_data in \
@@ -236,7 +243,9 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
                 preds, labels = self.forward_pass(mode, batch_key, batch_banks, batch_data)
                 all_preds.append(preds)
                 all_labels.append(labels)
+                all_global_ids.extend(self.ctx[mode][batch_key]['batch_labels'].index.tolist())
 
+        self._last_eval_global_ids = all_global_ids
         return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
     def train_vertical(self, laundering_values, epochs=None, batching=True):
@@ -251,7 +260,10 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             Dict with best model state and metrics
         """
         if epochs is None:
-            epochs = 2 if self.args['data_parser'].testing else configs.epochs
+            if self.args['data_parser'].testing:
+                epochs = 2
+            else:
+                epochs = self.args['fl_parser'].num_rounds
 
         best_f1 = -1
         best_model_state = None
@@ -309,12 +321,18 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         final_metrics = training_utils.compute_final_metrics_from_preds(labels_np, preds_probs)
         logger.info(f'Test F1: {final_metrics["f1"]:.4f}')
 
-        # In lazy batching some transactions may not be covered by any party subgraph;
-        # _forward_eval optionally stores the evaluated global IDs so we can filter.
-        covered_ids = getattr(self, '_last_eval_indices', None)
-        if covered_ids is not None and len(covered_ids) != len(laundering_values):
-            id_to_row = {gid: pos for pos, gid in enumerate(laundering_values['indices'].values)}
-            row_positions = [id_to_row[gid] for gid in covered_ids]
+        eval_ids = getattr(self, '_last_eval_global_ids', None)
+        if eval_ids is not None and len(eval_ids) != len(laundering_values):
+            # Some test seeds were filtered out by the mode_party_set check (typically
+            # only in --testing mode where comparable-eval index filtering is inconsistent
+            # with the reset-index subsampled data). On HPC with full data this never fires.
+            logger.warning(
+                f"Test evaluation covered {len(eval_ids)} of {len(laundering_values)} "
+                f"transactions. Restricting laundering_values to covered rows. "
+                f"This is expected in --testing mode but should not occur on full data."
+            )
+            id_to_lv_pos = {gid: pos for pos, gid in enumerate(laundering_values['indices'].values)}
+            row_positions = [id_to_lv_pos[gid] for gid in eval_ids if gid in id_to_lv_pos]
             laundering_values = laundering_values.iloc[row_positions].copy()
 
         laundering_values['true_y'] = labels_np
@@ -349,26 +367,6 @@ class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
     def forward_pass(self, mode, batch_num, batch_banks, batch_data):
         """Run full local GNN per party, collect and concatenate final embeddings."""
         return simple_forward.forward_pass_simple(self, mode, batch_num, batch_banks, batch_data)
-
-    def _forward_eval(self, mode, batching, precomputed_batch_data=None):
-        """Like parent, but tracks which transaction indices were actually evaluated.
-
-        Stores covered indices in self._last_eval_indices so train_vertical can
-        filter laundering_values to only evaluated rows (lazy mode may skip some).
-        """
-        all_preds, all_labels = [], []
-        covered_indices = []
-
-        with torch.no_grad():
-            for batch_key, batch_banks, batch_data in \
-                    self._iter_batches(mode, batching, precomputed_batch_data):
-                preds, labels = self.forward_pass(mode, batch_key, batch_banks, batch_data)
-                all_preds.append(preds)
-                all_labels.append(labels)
-                covered_indices.extend(self.ctx[mode][batch_key]['batch_labels'].index.tolist())
-
-        self._last_eval_indices = covered_indices
-        return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
         """Same as parent but uses process_lazy_batch_simple for lazy mode."""

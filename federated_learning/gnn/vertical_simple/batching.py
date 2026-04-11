@@ -35,7 +35,10 @@ def process_lazy_batch_simple(manager, mode, batch, mode_parties):
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = bl[
         bl['From Bank'].isin(mode_party_set) | bl['To Bank'].isin(mode_party_set)]
 
-    batch_global_ids = batch.edge_attr[:, 0].long()
+    # Include seed IDs in the lookup set so that seed edges dropped by neighbor
+    # sampling are still matched in the party's graph (same logic as batching_masker).
+    seed_ids_tensor = torch.tensor(seed_global_ids, dtype=torch.long)
+    batch_global_ids = torch.cat([batch.edge_attr[:, 0].long(), seed_ids_tensor]).unique()
 
     def _build_subgraph(bank_id, party):
         party_graph = party.procs_data[f'{mode}_data']['df']
@@ -57,17 +60,5 @@ def process_lazy_batch_simple(manager, mode, batch, mode_parties):
     results = parallel_party_execute(mode_parties, _build_subgraph, max_workers=max_workers)
     banks_to_use = [bid for bid, result in results.items() if result is not None]
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_parties'] = banks_to_use
-
-    # Refilter batch_labels to only transactions covered by at least one party's
-    # actual subgraph. The initial filter (mode_party_set) can include transactions
-    # that a bank is associated with in df_labels but doesn't have in its local
-    # party graph for this specific batch neighborhood.
-    covered_ids = set()
-    for bank_id in banks_to_use:
-        party = mode_parties[bank_id]
-        subgraph = party.ctx[mode][LAZY_BATCH_KEY]['graph_data']
-        covered_ids.update(subgraph.edge_attr[:, 0].cpu().long().tolist())
-    bl = manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels']
-    manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels'] = bl[bl.index.isin(covered_ids)]
     # No get_batch_intersects, get_ownership_mappings, or get_nodes_to_send —
     # the simple forward pass does not need cross-party exchange metadata.
