@@ -9,11 +9,46 @@ import utils
 from models.booster import Booster
 from training.utils import hyper_sampler, f1_eval
 from configs.paths import get_tuning_configs, get_full_info_hp_path
+from results.save_results import build_save_dir, save_seed_result
 import xgboost as xgb
 from sklearn.metrics import f1_score
 from inference import metrics, probs_to_binary
 
 logger = logging.getLogger(__name__)
+
+# Simple fallback hyperparameters for fast local test runs (--testing mode).
+# Used by _load_tuned_hp when no saved HP file is found.
+_FALLBACK_HP = {
+    'xgboost': {
+        'num_rounds': 10,
+        'params': {
+            'objective': 'binary:logistic',
+            'max_depth': 4,
+            'learning_rate': 0.1,
+            'lambda': 1.0,
+            'scale_pos_weight': 5.0,
+            'colsample_bytree': 0.8,
+            'subsample': 0.8,
+            'tree_method': 'hist',
+            'random_state': 1,
+        }
+    },
+    'light_gbm': {
+        'num_rounds': 10,
+        'params': {
+            'objective': 'binary',
+            'metric': 'binary_logloss',
+            'boosting_type': 'gbdt',
+            'num_leaves': 31,
+            'learning_rate': 0.1,
+            'lambda_l2': 0.1,
+            'scale_pos_weight': 5.0,
+            'lambda_l1': 1.0,
+            'random_state': 1,
+            'verbose': -1,
+        }
+    },
+}
 
 
 def _eval_hp(hp, sliced_x, sliced_y, vali_x, vali_y, nthread):
@@ -44,14 +79,22 @@ class BoosterMixinManager:
 
         Returns None if no saved HPs are found, in which case the caller
         should fall back to running its own tuning.
+
+        When --testing is set and no file is found, returns simple fallback
+        hyperparameters so local test runs skip tuning entirely.
         """
         path = get_full_info_hp_path(self.args, model=model)
-        if not os.path.exists(path):
-            return None
-        with open(path, 'r') as f:
-            hp = json.load(f)
-        logger.info("Loaded full_info tuned hyperparameters from %s", path)
-        return hp
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                hp = json.load(f)
+            logger.info("Loaded full_info tuned hyperparameters from %s", path)
+            return hp
+        if self.args['data_parser'].testing:
+            fallback = _FALLBACK_HP.get(self.args['fl_parser'].model)
+            if fallback is not None:
+                logger.info("No saved HPs found; using fallback hyperparameters (--testing mode)")
+                return fallback
+        return None
 
     def init_hyperparams(self):
 
@@ -163,6 +206,8 @@ class BoosterMixinManager:
         logger.info("="*80)
 
         results_by_seed = {}
+        self.save_dir = build_save_dir(self, hyperparameters)
+
         for seed in range(seeds):
             seed_value = seed + 1
             logger.info("\n" + "-"*80)
@@ -176,6 +221,8 @@ class BoosterMixinManager:
                 copy.deepcopy(laundering_values_test)
             )
             results_by_seed[seed_value] = result
+
+            save_seed_result(self.save_dir, seed_value, result, self)
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
                         seed_value,

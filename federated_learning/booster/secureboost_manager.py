@@ -27,6 +27,7 @@ from .manager_mixin import BoosterMixinManager
 from .vertical.setup import set_manager_data, setup_secureboost_post_prep
 from data.relevant_banks import load_relevant_banks
 from models.secureboost_tree import SecureBoostEnsemble, SBSplitNode, SBLeafNode, _sigmoid
+from results.save_results import build_save_dir, save_seed_result
 from sklearn.metrics import f1_score
 
 logger = logging.getLogger(__name__)
@@ -152,6 +153,8 @@ class SecureBoostManager(BoosterMixinManager):
         logger.info("Starting SecureBoost training with %d seeds", seeds)
         logger.info("=" * 80)
 
+        self.save_dir = build_save_dir(self, hyperparameters)
+
         for seed in range(seeds):
             seed_value = seed + 1
             logger.info("-" * 80)
@@ -164,6 +167,7 @@ class SecureBoostManager(BoosterMixinManager):
                 copy.deepcopy(laundering_values_vali),
                 copy.deepcopy(laundering_values_test),
             )
+            save_seed_result(self.save_dir, seed_value, results_by_seed[seed_value], self)
             m = results_by_seed[seed_value]['metrics']
             logger.info("Seed %d — F1: %.4f  ROC-AUC: %.4f  PR-AUC: %.4f",
                         seed_value, m['f1'], m['roc_auc'], m['pr_auc'])

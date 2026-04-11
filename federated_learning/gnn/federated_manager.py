@@ -309,6 +309,14 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         final_metrics = training_utils.compute_final_metrics_from_preds(labels_np, preds_probs)
         logger.info(f'Test F1: {final_metrics["f1"]:.4f}')
 
+        # In lazy batching some transactions may not be covered by any party subgraph;
+        # _forward_eval optionally stores the evaluated global IDs so we can filter.
+        covered_ids = getattr(self, '_last_eval_indices', None)
+        if covered_ids is not None and len(covered_ids) != len(laundering_values):
+            id_to_row = {gid: pos for pos, gid in enumerate(laundering_values['indices'].values)}
+            row_positions = [id_to_row[gid] for gid in covered_ids]
+            laundering_values = laundering_values.iloc[row_positions].copy()
+
         laundering_values['true_y'] = labels_np
         laundering_values['pred_probabilities'] = preds_probs
         laundering_values['pred_label'] = preds_binary
@@ -341,6 +349,26 @@ class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
     def forward_pass(self, mode, batch_num, batch_banks, batch_data):
         """Run full local GNN per party, collect and concatenate final embeddings."""
         return simple_forward.forward_pass_simple(self, mode, batch_num, batch_banks, batch_data)
+
+    def _forward_eval(self, mode, batching, precomputed_batch_data=None):
+        """Like parent, but tracks which transaction indices were actually evaluated.
+
+        Stores covered indices in self._last_eval_indices so train_vertical can
+        filter laundering_values to only evaluated rows (lazy mode may skip some).
+        """
+        all_preds, all_labels = [], []
+        covered_indices = []
+
+        with torch.no_grad():
+            for batch_key, batch_banks, batch_data in \
+                    self._iter_batches(mode, batching, precomputed_batch_data):
+                preds, labels = self.forward_pass(mode, batch_key, batch_banks, batch_data)
+                all_preds.append(preds)
+                all_labels.append(labels)
+                covered_indices.extend(self.ctx[mode][batch_key]['batch_labels'].index.tolist())
+
+        self._last_eval_indices = covered_indices
+        return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
         """Same as parent but uses process_lazy_batch_simple for lazy mode."""

@@ -4,6 +4,7 @@ from training.utils import ibm_gnn
 import training.utils as tr_utils
 from training.parallel import get_available_gpus, get_device_for_party
 from models.gnn import GNN
+from results.save_results import build_save_dir, save_seed_result
 import logging
 import utils
 import copy
@@ -29,6 +30,7 @@ class GNNMixinManager:
         logger.info("="*80)
 
         self._prep_parties_data()
+        self.save_dir = build_save_dir(self, hyperparameters)
 
         for seed in range(seeds):
             seed_value = seed + 1
@@ -39,6 +41,8 @@ class GNNMixinManager:
 
             results_by_seed[seed_value] = self._train(
                 hyperparameters, copy.deepcopy(laundering_values_vali), copy.deepcopy(laundering_values_test))
+
+            save_seed_result(self.save_dir, seed_value, results_by_seed[seed_value], self)
 
             logger.info("Seed %d complete - F1: %.4f, ROC-AUC: %.4f, PR-AUC: %.4f",
                        seed_value,
