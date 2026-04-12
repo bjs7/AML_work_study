@@ -74,6 +74,32 @@ class BoosterMixinManager:
             json.dump(hp, f, indent=4)
         logger.info("Saved full_info tuned hyperparameters to %s", path)
 
+    def _save_top_n_hp(self, ranked_list, model=None):
+        """Save top N HP configs with validation F1 scores for manual inspection.
+
+        Writes to <size>_<ir>_top<n>.json alongside the normal best-HP file.
+        Each entry has rank, vali_f1, and the full hyperparameter dict so the
+        user can compare num_rounds vs F1 and pick a feasible config.
+
+        Args:
+            ranked_list: list of (hp_dict, f1) tuples, sorted best first.
+            model: model name override (passed through to get_full_info_hp_path).
+        """
+        if not ranked_list:
+            return
+        n = len(ranked_list)
+        path = get_full_info_hp_path(self.args, model=model)
+        stem, ext = os.path.splitext(path)
+        top_n_path = f"{stem}_top{n}{ext}"
+        Path(top_n_path).parent.mkdir(parents=True, exist_ok=True)
+        data = [
+            {'rank': i + 1, 'vali_f1': round(float(f1), 6), 'hyperparameters': hp}
+            for i, (hp, f1) in enumerate(ranked_list)
+        ]
+        with open(top_n_path, 'w') as f:
+            json.dump(data, f, indent=4)
+        logger.info("Saved top %d HP configs to %s", n, top_n_path)
+
     def _load_tuned_hp(self, model=None):
         """Load tuned hyperparameters saved by the full_info scenario.
 
@@ -125,14 +151,28 @@ class BoosterMixinManager:
             for bid, party in self.iter_parties(include_test=include_test):
                 party.model = Booster(hyperparams, nthread=nthread)
 
-    def tune(self, party, laundering_values):
+    def tune(self, party, laundering_values, top_n=1):
+        """Run SHA tuning and return the best HP config (or top N configs with scores).
 
+        Args:
+            party: the party whose data is used for tuning.
+            laundering_values: dict with 'true_y' for the validation split.
+            top_n: if 1 (default), returns the single best HP dict (backward
+                   compatible). If > 1, returns a list of (hp_dict, vali_f1)
+                   tuples from the final SHA round, sorted best first, capped
+                   at min(top_n, survivors).
+
+        Returns:
+            best HP dict (top_n==1) or list of (hp, f1) tuples (top_n>1).
+        """
         frac_not_reached = True
         model_hyper_params, x_0, eta, r_0 = self.init_hyperparams()
 
         total_cpus = utils.get_cpu_count()
         vali_x = party.procs_data['vali_data']['x']
         vali_y = laundering_values['true_y']
+
+        final_ranked = []  # populated in the last SHA iteration
 
         while frac_not_reached:
 
@@ -162,9 +202,14 @@ class BoosterMixinManager:
 
             if r_0 >= 1 or x_0 == 1:
                 frac_not_reached = False
+                # params_to_keep is sorted desc by f1; capture surviving configs + scores
+                f1s_kept = [f1s[i] for i in params_to_keep]
+                final_ranked = list(zip(model_hyper_params, f1s_kept))
             r_0 *= eta
 
-        return model_hyper_params[0]
+        if top_n == 1:
+            return model_hyper_params[0]
+        return final_ranked[:top_n]
     
     def tuning(self, laundering_values):
 

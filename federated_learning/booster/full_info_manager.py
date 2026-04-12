@@ -20,7 +20,11 @@ class FullInfoBoosterManager(BoosterMixinManager):
         self._party = party
 
     def _tuning_helper(self, laundering_values, party, bank_id):
-        return self.tune(party, laundering_values)
+        # Request top 10 so setup_parties can save the full ranked list for inspection.
+        ranked = self.tune(party, laundering_values, top_n=10)
+        # Store the ranked list on self so setup_parties can access it after tuning().
+        self._top_n_ranked = ranked
+        return ranked[0][0]  # return best HP dict for backward-compatible results dict
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         logger.info("Setting up Full Info Booster model (single party with complete dataset)")
@@ -31,6 +35,13 @@ class FullInfoBoosterManager(BoosterMixinManager):
             tuned_hp = self.tuning(laundering_values)
             best_hp = tuned_hp[None]['hyperparameters']
             self._save_tuned_hp(best_hp)
+            # Also save full top-10 ranked list with F1 scores for manual inspection
+            if hasattr(self, '_top_n_ranked') and self._top_n_ranked:
+                self._save_top_n_hp(self._top_n_ranked)
+                logger.info(
+                    "Top-10 HP configs saved. Inspect the _top10.json file to choose "
+                    "a config with fewer rounds for SecureBoost."
+                )
         else:
             best_hp = self._load_tuned_hp()
             if best_hp is None:
