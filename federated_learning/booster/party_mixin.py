@@ -123,6 +123,9 @@ class SecureBoostPartyMixin(BoosterMixinParty):
         Returns None if this party has no data for that transaction (triggers
         the node's default routing direction in the tree).
 
+        Uses pre-computed numpy arrays (_feature_arrays) when available for
+        fast O(1) lookup; falls back to pandas iloc otherwise.
+
         Args:
             global_idx: global DataFrame index of the transaction.
             feature: column name in this party's procs_data.
@@ -133,6 +136,10 @@ class SecureBoostPartyMixin(BoosterMixinParty):
         if not hasattr(self, '_global_to_local') or global_idx not in self._global_to_local:
             return None
         mode, local_row = self._global_to_local[global_idx]
+        farr = getattr(self, '_feature_arrays', {}).get(mode, {}).get(feature)
+        if farr is not None:
+            return float(farr[local_row])
+        # Fallback: pandas iloc (used if _feature_arrays not yet built)
         data_key = f'{mode}_data'
         if data_key not in self.procs_data:
             return None
@@ -144,8 +151,9 @@ class SecureBoostPartyMixin(BoosterMixinParty):
     def find_best_split(
         self,
         global_indices: list,
-        g_dict: dict,
-        h_dict: dict,
+        g_arr: np.ndarray,
+        h_arr: np.ndarray,
+        idx_to_pos: dict,
         lambda_reg: float,
         n_bins: int = 32,
     ):
@@ -159,8 +167,9 @@ class SecureBoostPartyMixin(BoosterMixinParty):
         Args:
             global_indices: global transaction indices in this tree node
                             that this party holds data for.
-            g_dict: {global_idx: g_i} first-order gradient values.
-            h_dict: {global_idx: h_i} second-order gradient (Hessian) values.
+            g_arr: first-order gradient array indexed by idx_to_pos.
+            h_arr: second-order gradient (Hessian) array indexed by idx_to_pos.
+            idx_to_pos: {global_idx: position_in_g_arr} mapping.
             lambda_reg: L2 regularisation term.
             n_bins: number of candidate threshold bins per feature.
 
@@ -171,27 +180,38 @@ class SecureBoostPartyMixin(BoosterMixinParty):
         if not global_indices:
             return 0.0, None, None
 
-        # Collect local rows grouped by mode
+        # Collect local rows grouped by mode, preserving order for gradient alignment
         rows_by_mode = {}
         for gidx in global_indices:
             mode, local_row = self._global_to_local[gidx]
             rows_by_mode.setdefault(mode, []).append((gidx, local_row))
 
-        # Build feature matrix and aligned gradient arrays
-        x_parts, g_vals, h_vals = [], [], []
-        for mode, pairs in rows_by_mode.items():
-            x          = self.procs_data[f'{mode}_data']['x']
-            local_rows = [lr for _, lr in pairs]
-            gidxs      = [gi for gi, _ in pairs]
-            x_parts.append(x.iloc[local_rows].reset_index(drop=True))
-            g_vals.extend(g_dict[gi] for gi in gidxs)
-            h_vals.extend(h_dict[gi] for gi in gidxs)
+        # Build feature matrix and aligned gradient slices using numpy arrays
+        x_parts  = []
+        gidx_order = []
+        farrs_cache = getattr(self, '_feature_arrays', {})
 
-        X     = pd.concat(x_parts, ignore_index=True)
-        g_arr = np.array(g_vals)
-        h_arr = np.array(h_vals)
-        G_tot = g_arr.sum()
-        H_tot = h_arr.sum()
+        for mode, pairs in rows_by_mode.items():
+            local_rows_np = np.array([lr for _, lr in pairs])
+            gidxs_part    = [gi for gi, _ in pairs]
+            farr_dict     = farrs_cache.get(mode)
+            if farr_dict:
+                X_mode = pd.DataFrame(
+                    {col: arr[local_rows_np] for col, arr in farr_dict.items()}
+                )
+            else:
+                # Fallback to pandas iloc
+                x = self.procs_data[f'{mode}_data']['x']
+                X_mode = x.iloc[list(local_rows_np)].reset_index(drop=True)
+            x_parts.append(X_mode)
+            gidx_order.extend(gidxs_part)
+
+        X         = pd.concat(x_parts, ignore_index=True)
+        positions = np.array([idx_to_pos[gi] for gi in gidx_order])
+        g_node    = g_arr[positions]
+        h_node    = h_arr[positions]
+        G_tot     = g_node.sum()
+        H_tot     = h_node.sum()
 
         best_gain      = 0.0
         best_feature   = None
@@ -211,10 +231,10 @@ class SecureBoostPartyMixin(BoosterMixinParty):
                 if not left.any() or not right.any():
                     continue
 
-                GL = g_arr[left].sum()
-                GR = g_arr[right].sum()
-                HL = h_arr[left].sum()
-                HR = h_arr[right].sum()
+                GL = g_node[left].sum()
+                GR = g_node[right].sum()
+                HL = h_node[left].sum()
+                HR = h_node[right].sum()
 
                 gain = 0.5 * (
                     GL ** 2 / (HL + lambda_reg)

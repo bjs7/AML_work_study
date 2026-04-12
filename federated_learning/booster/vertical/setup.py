@@ -83,6 +83,17 @@ def build_party_index_maps(manager):
                 # global indices are disjoint across splits so no collision
                 party._global_to_local[global_idx] = (mode, local_row)
 
+        # Fast membership check: set intersection instead of per-element lookup
+        party._global_idx_set = frozenset(party._global_to_local.keys())
+
+        # Pre-computed numpy arrays per feature — replaces slow x.iloc[row][col]
+        party._feature_arrays = {}
+        for mode in ['train', 'vali', 'test']:
+            data_key = f'{mode}_data'
+            if data_key in party.procs_data:
+                x = party.procs_data[data_key]['x']
+                party._feature_arrays[mode] = {col: x[col].values for col in x.columns}
+
 
 def setup_secureboost_post_prep(manager):
     """Complete vertical setup after parties have prepped their data.

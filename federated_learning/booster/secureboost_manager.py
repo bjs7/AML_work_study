@@ -19,6 +19,7 @@ Design notes:
 
 import copy
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
 
 import utils
@@ -26,11 +27,29 @@ from inference import metrics
 from .manager_mixin import BoosterMixinManager
 from .vertical.setup import set_manager_data, setup_secureboost_post_prep
 from data.relevant_banks import load_relevant_banks
-from models.secureboost_tree import SecureBoostEnsemble, SBSplitNode, SBLeafNode, _sigmoid
+from models.secureboost_tree import SecureBoostEnsemble, SBSplitNode, SBLeafNode, _batch_route
 from results.save_results import build_save_dir, save_seed_result
 from sklearn.metrics import f1_score
 
 logger = logging.getLogger(__name__)
+
+
+def _apply_tree(F: np.ndarray, indices: list, tree_root, all_parties: dict,
+                learning_rate: float) -> None:
+    """Batch-route all indices through tree_root and add the leaf values to F in-place.
+
+    Uses _batch_route for cache-friendly traversal rather than per-sample recursion.
+
+    Args:
+        F: running raw-score array (one entry per index, in order).
+        indices: global transaction indices aligned with F.
+        tree_root: root of the newly built tree.
+        all_parties: {bank_id: party} dict.
+        learning_rate: shrinkage to apply to leaf values.
+    """
+    leaf_dict = _batch_route(tree_root, indices, all_parties)
+    for i, idx in enumerate(indices):
+        F[i] += learning_rate * leaf_dict[idx]
 
 
 class SecureBoostManager(BoosterMixinManager):
@@ -194,8 +213,13 @@ class SecureBoostManager(BoosterMixinManager):
         y_vali  = self.data['vali_data']['Is Laundering'].values
         y_test  = self.data['test_data']['Is Laundering'].values
 
-        # Running raw scores for train (updated incrementally)
-        F_train = {idx: self.ensemble.base_score for idx in train_indices}
+        # --- Position mapping: global_idx → array position (built once) ---
+        idx_to_pos = {idx: i for i, idx in enumerate(train_indices)}
+
+        # --- Incremental raw scores (avoids re-predicting all trees each round) ---
+        F_train = np.full(len(train_indices), self.ensemble.base_score)
+        F_vali  = np.full(len(vali_indices),  self.ensemble.base_score)
+        F_test  = np.full(len(test_indices),  self.ensemble.base_score)
 
         sb_override = self.args['data_parser'].sb_num_rounds
         if sb_override is not None:
@@ -205,47 +229,58 @@ class SecureBoostManager(BoosterMixinManager):
         else:
             epochs = self.num_rounds
 
-        best_f1            = -1.0
+        best_f1             = -1.0
         best_ensemble_state = None
+        best_F_test         = None
 
         all_parties = {bank_id: party for bank_id, party in self.iter_parties(include_test=True)}
 
-        for round_num in range(epochs):
+        # Ensure membership sets are built (setup.py does this, guard here too)
+        for party in all_parties.values():
+            if not hasattr(party, '_global_idx_set'):
+                party._global_idx_set = frozenset(party._global_to_local.keys())
 
-            # --- Compute gradients from current predictions ---
-            p_arr   = np.array([_sigmoid(F_train[idx]) for idx in train_indices])
-            g_arr   = p_arr - y_train
-            h_arr   = p_arr * (1.0 - p_arr)
-            g_dict  = {idx: float(g_arr[i]) for i, idx in enumerate(train_indices)}
-            h_dict  = {idx: float(h_arr[i]) for i, idx in enumerate(train_indices)}
+        n_train_parties = sum(1 for _ in self.iter_parties(include_test=False))
+        max_workers = min(utils.get_cpu_count(), n_train_parties)
+        logger.info("SecureBoost: %d rounds, %d parties, %d parallel workers",
+                    epochs, n_train_parties, max_workers)
 
-            # --- Build one tree ---
-            tree_root = self._build_tree(train_indices, g_dict, h_dict, depth=0)
-            self.ensemble.add_tree(tree_root)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            for round_num in range(epochs):
 
-            # --- Update running scores ---
-            for idx in train_indices:
-                from models.secureboost_tree import _route
-                F_train[idx] += self.learning_rate * _route(idx, tree_root, all_parties)
+                # --- Vectorised gradient computation ---
+                p_arr = 1.0 / (1.0 + np.exp(-np.clip(F_train, -500, 500)))
+                g_arr = p_arr - y_train
+                h_arr = p_arr * (1.0 - p_arr)
 
-            # --- Validate ---
-            vali_preds  = self.ensemble.predict_proba(vali_indices, all_parties)
-            vali_probs  = np.array([vali_preds[idx] for idx in vali_indices])
-            vali_binary = (vali_probs > 0.5).astype(int)
-            f1_vali     = f1_score(y_vali, vali_binary, zero_division=0)
+                # --- Build one tree (parallel split-finding inside) ---
+                tree_root = self._build_tree(
+                    train_indices, g_arr, h_arr, idx_to_pos, depth=0, executor=executor
+                )
+                self.ensemble.add_tree(tree_root)
 
-            logger.info("Round %d/%d  Vali F1: %.4f", round_num + 1, epochs, f1_vali)
+                # --- Incremental score updates (one tree pass each, not full ensemble) ---
+                _apply_tree(F_train, train_indices, tree_root, all_parties, self.learning_rate)
+                _apply_tree(F_vali,  vali_indices,  tree_root, all_parties, self.learning_rate)
+                _apply_tree(F_test,  test_indices,  tree_root, all_parties, self.learning_rate)
 
-            if f1_vali > best_f1:
-                best_f1             = f1_vali
-                best_ensemble_state = copy.deepcopy(self.ensemble)
+                # --- Validate ---
+                vali_probs  = 1.0 / (1.0 + np.exp(-np.clip(F_vali, -500, 500)))
+                vali_binary = (vali_probs > 0.5).astype(int)
+                f1_vali     = f1_score(y_vali, vali_binary, zero_division=0)
 
-        # --- Final test evaluation with best ensemble ---
+                logger.info("Round %d/%d  Vali F1: %.4f", round_num + 1, epochs, f1_vali)
+
+                if f1_vali > best_f1:
+                    best_f1             = f1_vali
+                    best_ensemble_state = copy.deepcopy(self.ensemble)
+                    best_F_test         = F_test.copy()
+
+        # --- Final test evaluation using saved scores at best round ---
         assert best_ensemble_state is not None, "No best ensemble found"
         self.ensemble = best_ensemble_state
 
-        test_preds  = self.ensemble.predict_proba(test_indices, all_parties)
-        test_probs  = np.array([test_preds[idx] for idx in test_indices])
+        test_probs  = 1.0 / (1.0 + np.exp(-np.clip(best_F_test, -500, 500)))
         test_binary = (test_probs > 0.5).astype(int)
 
         final_metrics = metrics(y_true=y_test, y_pred_probabilities=test_probs)
@@ -265,54 +300,82 @@ class SecureBoostManager(BoosterMixinManager):
     # Tree building
     # ------------------------------------------------------------------
 
-    def _build_tree(self, node_indices: list, g_dict: dict, h_dict: dict, depth: int):
+    def _build_tree(self, node_indices: list, g_arr: np.ndarray, h_arr: np.ndarray,
+                    idx_to_pos: dict, depth: int, executor=None):
         """Recursively build one CART tree node using gradient histograms from parties.
 
         Args:
             node_indices: global transaction indices routed to this node.
-            g_dict: {global_idx: g_i} for all training transactions.
-            h_dict: {global_idx: h_i} for all training transactions.
+            g_arr: first-order gradient array indexed by idx_to_pos.
+            h_arr: second-order gradient (Hessian) array indexed by idx_to_pos.
+            idx_to_pos: {global_idx: position_in_g_arr} for all training transactions.
             depth: current depth (0 = root).
+            executor: ThreadPoolExecutor for parallel split-finding (None = sequential).
 
         Returns:
             SBLeafNode or SBSplitNode.
         """
-        G_node = sum(g_dict[i] for i in node_indices)
-        H_node = sum(h_dict[i] for i in node_indices)
+        pos        = np.array([idx_to_pos[i] for i in node_indices])
+        G_node     = g_arr[pos].sum()
+        H_node     = h_arr[pos].sum()
         leaf_value = -G_node / (H_node + self.lambda_reg)
 
         # Stopping conditions
         if depth >= self.max_depth or len(node_indices) <= self.min_child_weight:
             return SBLeafNode(value=leaf_value)
 
-        # --- Query every party for their best split candidate ---
+        node_set   = set(node_indices)
         best_gain      = self.min_gain
         best_party_id  = None
         best_feature   = None
         best_threshold = None
 
-        for bank_id, party in self.iter_parties(include_test=False):
-            # Transactions in this node that the party holds
-            party_indices = [i for i in node_indices if i in party._global_to_local]
-            if not party_indices:
-                continue
+        # --- Query every party for their best split candidate ---
+        # Parallel when executor is provided; sequential fallback otherwise.
+        if executor is not None:
+            futures = {}
+            for bank_id, party in self.iter_parties(include_test=False):
+                party_indices = list(node_set & party._global_idx_set)
+                if not party_indices:
+                    continue
+                fut = executor.submit(
+                    party.find_best_split,
+                    party_indices, g_arr, h_arr, idx_to_pos, self.lambda_reg, self.n_bins
+                )
+                futures[fut] = bank_id
 
-            gain, feature, threshold = party.find_best_split(
-                party_indices, g_dict, h_dict, self.lambda_reg, self.n_bins
-            )
-
-            if gain > best_gain:
-                best_gain      = gain
-                best_party_id  = bank_id
-                best_feature   = feature
-                best_threshold = threshold
+            for fut in as_completed(futures):
+                bank_id = futures[fut]
+                try:
+                    gain, feature, threshold = fut.result()
+                except Exception as exc:
+                    logger.warning("Party %s split-find failed: %s", bank_id, exc)
+                    continue
+                if gain > best_gain:
+                    best_gain      = gain
+                    best_party_id  = bank_id
+                    best_feature   = feature
+                    best_threshold = threshold
+        else:
+            for bank_id, party in self.iter_parties(include_test=False):
+                party_indices = list(node_set & party._global_idx_set)
+                if not party_indices:
+                    continue
+                gain, feature, threshold = party.find_best_split(
+                    party_indices, g_arr, h_arr, idx_to_pos, self.lambda_reg, self.n_bins
+                )
+                if gain > best_gain:
+                    best_gain      = gain
+                    best_party_id  = bank_id
+                    best_feature   = feature
+                    best_threshold = threshold
 
         if best_party_id is None:
             return SBLeafNode(value=leaf_value)
 
         # --- Ask winning party to route its transactions ---
         winning_party   = self.parties[best_party_id]
-        party_indices   = [i for i in node_indices if i in winning_party._global_to_local]
+        party_indices   = list(node_set & winning_party._global_idx_set)
         left_p, right_p = winning_party.route_samples(party_indices, best_feature, best_threshold)
         left_set        = set(left_p)
         right_set       = set(right_p)
@@ -320,18 +383,17 @@ class SecureBoostManager(BoosterMixinManager):
         # Transactions not held by the winning party get the default direction.
         # Default: whichever child has the larger total |G| (more gradient signal).
         unresolved = [i for i in node_indices if i not in left_set and i not in right_set]
+        lp_pos = np.array([idx_to_pos[i] for i in left_p])  if left_p  else np.array([], dtype=int)
+        rp_pos = np.array([idx_to_pos[i] for i in right_p]) if right_p else np.array([], dtype=int)
+        G_left       = g_arr[lp_pos].sum() if len(lp_pos) else 0.0
+        G_right      = g_arr[rp_pos].sum() if len(rp_pos) else 0.0
+        default_left = abs(G_left) >= abs(G_right)
+
         if unresolved:
-            G_left  = sum(g_dict[i] for i in left_p)
-            G_right = sum(g_dict[i] for i in right_p)
-            default_left = abs(G_left) >= abs(G_right)
             if default_left:
                 left_set.update(unresolved)
             else:
                 right_set.update(unresolved)
-        else:
-            G_left       = sum(g_dict[i] for i in left_p)
-            G_right      = sum(g_dict[i] for i in right_p)
-            default_left = abs(G_left) >= abs(G_right)
 
         left_indices  = list(left_set)
         right_indices = list(right_set)
@@ -340,8 +402,8 @@ class SecureBoostManager(BoosterMixinManager):
         if not left_indices or not right_indices:
             return SBLeafNode(value=leaf_value)
 
-        left_child  = self._build_tree(left_indices,  g_dict, h_dict, depth + 1)
-        right_child = self._build_tree(right_indices, g_dict, h_dict, depth + 1)
+        left_child  = self._build_tree(left_indices,  g_arr, h_arr, idx_to_pos, depth + 1, executor)
+        right_child = self._build_tree(right_indices, g_arr, h_arr, idx_to_pos, depth + 1, executor)
 
         return SBSplitNode(
             party_id=best_party_id,

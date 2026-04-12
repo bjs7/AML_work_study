@@ -113,3 +113,50 @@ def _route(global_idx: int, node: SBNode, parties: dict) -> float:
         child = node.left if feature_val <= node.threshold else node.right
 
     return _route(global_idx, child, parties)
+
+
+def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
+    """Route all indices through a tree in one pass.
+
+    More cache-friendly than per-sample _route: all samples at a node are
+    processed together, so the feature lookup for a given party/feature is
+    done in a tight loop rather than interleaved across the call stack.
+
+    Returns:
+        {global_idx: leaf_value} for every index in indices.
+    """
+    if isinstance(node, SBLeafNode):
+        return {idx: node.value for idx in indices}
+
+    party = parties.get(node.party_id)
+    left_idxs: list = []
+    right_idxs: list = []
+
+    if party is not None:
+        g2l   = getattr(party, '_global_to_local', {})
+        farrs = getattr(party, '_feature_arrays', {})
+        feat  = node.feature
+        for idx in indices:
+            entry = g2l.get(idx)
+            if entry is not None:
+                mode, local_row = entry
+                arr = farrs.get(mode, {}).get(feat)
+                val = float(arr[local_row]) if arr is not None else None
+            else:
+                val = None
+            if val is None:
+                (left_idxs if node.default_left else right_idxs).append(idx)
+            elif val <= node.threshold:
+                left_idxs.append(idx)
+            else:
+                right_idxs.append(idx)
+    else:
+        default = left_idxs if node.default_left else right_idxs
+        default.extend(indices)
+
+    result: dict = {}
+    if left_idxs:
+        result.update(_batch_route(node.left, left_idxs, parties))
+    if right_idxs:
+        result.update(_batch_route(node.right, right_idxs, parties))
+    return result
