@@ -197,7 +197,13 @@ class SecureBoostManager(BoosterMixinManager):
         # Running raw scores for train (updated incrementally)
         F_train = {idx: self.ensemble.base_score for idx in train_indices}
 
-        epochs = 2 if self.args['data_parser'].testing else self.num_rounds
+        sb_override = self.args['data_parser'].sb_num_rounds
+        if sb_override is not None:
+            epochs = sb_override
+        elif self.args['data_parser'].testing:
+            epochs = 2
+        else:
+            epochs = self.num_rounds
 
         best_f1            = -1.0
         best_ensemble_state = None
