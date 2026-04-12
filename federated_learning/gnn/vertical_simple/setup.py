@@ -11,6 +11,7 @@ No intersects, ownership_mappings, or nodes_to_send are populated.
 import numpy as np
 import torch
 from collections import defaultdict
+from torch_geometric.utils import subgraph
 
 from data.data_utils import GraphData
 from training.parallel import parallel_party_execute
@@ -83,18 +84,22 @@ def setup_simple_batching(manager, mode, batch_size=8192):
 
         def _build_subgraph(bank_id, party):
             party_graph = party.procs_data[f'{mode}_data']['df']
-            mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
-            if mask.sum() == 0:
+            seed_mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+            if seed_mask.sum() == 0:
                 return None
-            matched_edge_index = party_graph.edge_index[:, mask]
-            matched_edge_attr = party_graph.edge_attr[mask]
-            sub_nodes = matched_edge_index.reshape(-1).unique()
-            node_remap = torch.zeros(party_graph.x.shape[0], dtype=torch.long)
-            node_remap[sub_nodes] = torch.arange(len(sub_nodes), dtype=torch.long)
+            # subgraph() returns all edges between seed nodes from the cumulative
+            # party graph, giving historical context for vali/test evaluation.
+            sub_nodes = party_graph.edge_index[:, seed_mask].reshape(-1).unique()
+            final_edge_index, final_edge_attr = subgraph(
+                subset=sub_nodes,
+                edge_index=party_graph.edge_index,
+                edge_attr=party_graph.edge_attr,
+                relabel_nodes=True,
+            )
             party.ctx[mode][batch_num]['graph_data'] = GraphData(
                 x=party_graph.x[sub_nodes],
-                edge_index=node_remap[matched_edge_index],
-                edge_attr=matched_edge_attr,
+                edge_index=final_edge_index,
+                edge_attr=final_edge_attr,
             )
             return bank_id
 
