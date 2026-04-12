@@ -56,10 +56,16 @@ def setup_simple_batching(manager, mode, batch_size=8192):
     """
     mode_parties = manager.get_parties_for_mode(mode)
     max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
-    indices = manager.data[f'{mode}_data'].index.to_numpy().copy()
 
+    # For vali/test, use only the mode-specific rows (not the full cumulative table).
+    # manager.data['vali_data'] and 'test_data' are cumulative (train+vali and
+    # train+vali+test respectively), so without this restriction the batch labels
+    # would contain train-phase transactions during vali/test evaluation.
     if mode == 'train':
+        indices = manager.data['train_data'].index.to_numpy().copy()
         np.random.shuffle(indices)
+    else:
+        indices = manager.indices[mode].to_numpy()
 
     batch_starts = range(0, len(indices), batch_size)
     manager.ctx[mode]['num_batches'] = len(batch_starts)

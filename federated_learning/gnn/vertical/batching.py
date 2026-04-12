@@ -250,10 +250,12 @@ def gen_batch_data_simple(manager, mode, batch_size=8192):
     """
     mode_parties = manager.get_parties_for_mode(mode)
     max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
-    indices = manager.data[f'{mode}_data'].index.to_numpy().copy()
 
     if mode == 'train':
+        indices = manager.data['train_data'].index.to_numpy().copy()
         np.random.shuffle(indices)
+    else:
+        indices = manager.indices[mode].to_numpy()
 
     batch_starts = range(0, len(indices), batch_size)
     manager.ctx[mode]['num_batches'] = len(batch_starts)
