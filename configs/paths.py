@@ -37,17 +37,21 @@ def get_full_info_hp_path(parsers, model=None):
         model: override the model name in the path (e.g. 'xgboost' when
                SecureBoost wants to reuse xgboost-tuned HPs).
 
-    The filename includes an '_ibm' suffix when --ibm_fe is active, so the
-    two feature-engineering regimes store HPs in separate files:
-      standard : small_HI.json  / small_HI_top31.json
-      ibm_fe   : small_HI_ibm.json / small_HI_ibm_top31.json
+    The filename encodes both eval_mode and ibm_fe so all three tuning
+    variants write to distinct files, e.g.:
+      system + standard FE : small_HI_system.json
+      system + ibm FE      : small_HI_system_ibm.json
+      comparable + std FE  : small_HI_comparable.json
     """
     model_name = model or parsers['fl_parser'].model
     size = parsers['data_parser'].size
     ir   = parsers['data_parser'].ir
-    ibm_fe = getattr(parsers['data_parser'], 'ibm_fe', False)
+    eval_mode = getattr(parsers['data_parser'], 'eval_mode', 'system')
+    ibm_fe    = getattr(parsers['data_parser'], 'ibm_fe', False)
 
-    suffix = '_ibm' if ibm_fe else ''
+    suffix = f'_{eval_mode}'
+    if ibm_fe:
+        suffix += '_ibm'
 
     if get_data_path() == '/data/leuven/362/vsc36278':
         base = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuned_hyperparams'
