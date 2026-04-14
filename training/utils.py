@@ -47,7 +47,7 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None):
         device = "cuda" if torch.cuda.is_available() else None
 
         parameters = {
-            "num_rounds": random.randint(10, 1000),
+            "num_rounds": random.randint(10, 150),
             "params": {
                 "objective":  "binary:logistic",
                 #"eval_metric": "auc",
