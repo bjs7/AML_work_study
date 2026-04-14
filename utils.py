@@ -216,6 +216,8 @@ def data_parser():
     parser.add_argument('--testing_seeds', default=4, type=int, help="The amount of seeds tested in the final evaluation of a model")
     parser.add_argument('--sb_num_rounds', default=None, type=int,
                         help='Override SecureBoost num_rounds from tuned HP (useful for timing tests)')
+    parser.add_argument('--tune_max_rounds', default=1000, type=int,
+                        help='Upper bound for num_rounds in HP sampler (default 1000). Included in saved HP filename.')
     #parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
     parser.add_argument('--batchnorm', action='store_true', help="Set to True if BatchNorm should be used in the GNN model")
     parser.add_argument('--replicate_ibm', action='store_true',

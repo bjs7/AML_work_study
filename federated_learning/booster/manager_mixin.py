@@ -126,7 +126,8 @@ class BoosterMixinManager:
 
         _configs = get_tuning_configs(self.args)[self.args['data_parser'].scenario][self.args['data_parser'].size]
         x_0, eta, r_0 = _configs.get('x_0'), _configs.get('eta'), _configs.get('r_0')
-        model_hyper_params = [hyper_sampler(self.args['fl_parser'], None) for _ in range(x_0)]
+        max_rounds = self.args['data_parser'].tune_max_rounds
+        model_hyper_params = [hyper_sampler(self.args['fl_parser'], None, max_rounds=max_rounds) for _ in range(x_0)]
 
         return model_hyper_params, x_0, eta, r_0
 

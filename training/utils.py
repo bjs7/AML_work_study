@@ -40,14 +40,14 @@ def f1_eval(preds, dtrain):
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # function for sampling hyperparameter values for gnn and boosters, used in the tuning phase ---------------------------------------------
 
-def hyper_sampler(args, num_nodes = None, sample_intervals = None):
+def hyper_sampler(args, num_nodes = None, sample_intervals = None, max_rounds=None):
 
     if args.model == 'xgboost':
 
         device = "cuda" if torch.cuda.is_available() else None
 
         parameters = {
-            "num_rounds": random.randint(10, 150),
+            "num_rounds": random.randint(10, max_rounds if max_rounds is not None else 150),
             "params": {
                 "objective":  "binary:logistic",
                 #"eval_metric": "auc",

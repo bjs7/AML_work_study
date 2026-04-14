@@ -46,12 +46,14 @@ def get_full_info_hp_path(parsers, model=None):
     model_name = model or parsers['fl_parser'].model
     size = parsers['data_parser'].size
     ir   = parsers['data_parser'].ir
-    eval_mode = getattr(parsers['data_parser'], 'eval_mode', 'system')
-    ibm_fe    = getattr(parsers['data_parser'], 'ibm_fe', False)
+    eval_mode   = getattr(parsers['data_parser'], 'eval_mode', 'system')
+    ibm_fe      = getattr(parsers['data_parser'], 'ibm_fe', False)
+    max_rounds  = getattr(parsers['data_parser'], 'tune_max_rounds', 1000)
 
     suffix = f'_{eval_mode}'
     if ibm_fe:
         suffix += '_ibm'
+    suffix += f'_r{max_rounds}'
 
     if get_data_path() == '/data/leuven/362/vsc36278':
         base = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuned_hyperparams'
