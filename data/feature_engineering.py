@@ -75,13 +75,27 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     # graph_feature_preprocessing using snapML
 
     # switch the position of graph feature process and the other features? To include those features in graph features processing?
+    # IBM paper: vertex stats use Amount and Timestamp (vertex_stats_cols=[3,4]).
+    # Amount Received is at index 4; without it column 4 doesn't exist and the
+    # first derived feature would also be silently dropped by the [:,5:] slice.
+    if 'Amount Received' in x.columns:
+        gfp_amount = 'Amount Received'
+    elif 'Amount_Received_Normalized' in x.columns:
+        gfp_amount = 'Amount_Received_Normalized'
+    else:
+        gfp_amount = None
+
+    gfp_cols = ['EdgeID', 'from_id', 'to_id', 'Timestamp']
+    if gfp_amount:
+        gfp_cols.append(gfp_amount)
+
     if not scl_enc.get('gfp'):
         scl_enc['gfp'] = GraphFeaturePreprocessor()
         scl_enc['gfp'].set_params(tu.gfpparams)
-        x_gf = scl_enc['gfp'].fit_transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
+        x_gf = scl_enc['gfp'].fit_transform(x[gfp_cols].astype("float64"))
     else:
-        x_gf = scl_enc['gfp'].transform(x[['EdgeID', 'from_id', 'to_id', 'Timestamp']].astype("float64"))
-    x_gf = x_gf[:,5:]
+        x_gf = scl_enc['gfp'].transform(x[gfp_cols].astype("float64"))
+    x_gf = x_gf[:, len(gfp_cols):]  # strip input columns, keep only derived features
     
     # remove EdgeID as it is no longer needed
     x = x.drop('EdgeID', axis='columns')
