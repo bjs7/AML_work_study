@@ -96,6 +96,7 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     else:
         x_gf = scl_enc['gfp'].transform(x[gfp_cols].astype("float64"))
     x_gf = x_gf[:, len(gfp_cols):]  # strip input columns, keep only derived features
+    x_gf = np.nan_to_num(x_gf, nan=0.0, posinf=0.0, neginf=0.0)  # vertex stats (skew/kurtosis) can produce inf for single-transaction nodes
     
     # remove EdgeID as it is no longer needed
     x = x.drop('EdgeID', axis='columns')
@@ -110,7 +111,7 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     # Timestamp: scale to days ------------------------------------------------------------------------------
     x.loc[:, 'Timestamp'] = x.loc[:, 'Timestamp'] / 86400.0
 
-    # Amounts: log transform then standardize (shared scaler for sent & received) ---------------------------
+    # Amounts: log transform then standardize (shared scaler for sent & received)
     x.loc[:,'Amount Sent'] = np.log(x.loc[:,'Amount Sent'])
     x.loc[:,'Amount Received'] = np.log(x.loc[:,'Amount Received'])
 

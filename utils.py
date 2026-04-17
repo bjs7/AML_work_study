@@ -218,6 +218,9 @@ def data_parser():
                         help='Override SecureBoost num_rounds from tuned HP (useful for timing tests)')
     parser.add_argument('--tune_max_rounds', default=1000, type=int,
                         help='Upper bound for num_rounds in HP sampler (default 1000). Included in saved HP filename.')
+    parser.add_argument('--hp_path', default=None, type=str,
+                        help='Path to HP JSON file relative to project root (local) or $VSC_DATA/AML_work_study/AML_work_study (HPC). '
+                             'Overrides the auto-detected path from eval_mode/ibm_fe/tune_max_rounds.')
     #parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
     parser.add_argument('--batchnorm', action='store_true', help="Set to True if BatchNorm should be used in the GNN model")
     parser.add_argument('--replicate_ibm', action='store_true',

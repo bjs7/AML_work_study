@@ -108,8 +108,21 @@ class BoosterMixinManager:
 
         When --testing is set and no file is found, returns simple fallback
         hyperparameters so local test runs skip tuning entirely.
+
+        If --hp_path is set, it overrides the auto-detected path entirely.
+        The path is interpreted relative to the project root on local, or
+        relative to $VSC_DATA/AML_work_study/AML_work_study on HPC.
         """
-        path = get_full_info_hp_path(self.args, model=model)
+        hp_path_override = getattr(self.args['data_parser'], 'hp_path', None)
+        if hp_path_override:
+            from configs.paths import get_data_path
+            base = get_data_path()
+            if base == '/data/leuven/362/vsc36278':
+                path = os.path.join(base, 'AML_work_study', 'AML_work_study', hp_path_override)
+            else:
+                path = hp_path_override
+        else:
+            path = get_full_info_hp_path(self.args, model=model)
         if os.path.exists(path):
             with open(path, 'r') as f:
                 hp = json.load(f)
