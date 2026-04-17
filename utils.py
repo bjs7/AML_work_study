@@ -241,6 +241,10 @@ def data_parser():
                         help="Fraction of data to use when --testing is set (default: 0.10)")
     parser.add_argument("--tqdm", action='store_true', help="Use tqdm logging (when running interactively in terminal)")
     parser.add_argument('--seed', default=1, type=int, help="Set seed for reproducability")
+    parser.add_argument('--run_id', default=None, type=str,
+                        help='Override auto-generated timestamp in experiment directory (use to share a dir across parallel seed jobs)')
+    parser.add_argument('--first_seed', default=1, type=int,
+                        help='First seed number to run (use with --testing_seeds 1 to split seeds across parallel jobs)')
 
     return parser
 

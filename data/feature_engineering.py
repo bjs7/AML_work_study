@@ -106,7 +106,7 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     if data_parser.ibm_fe:
         x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
         x = pd.concat([x, x_gf], axis=1)
-        x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(lower=-1e15, upper=1e15)
         return {'x': x, 'y': y, 'scaler_encoders': scl_enc}
     
     # Timestamp: scale to days ------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
     x = pd.concat([x, x_gf], axis=1)
 
-    x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+    x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(lower=-1e15, upper=1e15)
     return {'x': x, 'y': y, 'scaler_encoders': scl_enc}
 
 

@@ -94,7 +94,7 @@ def build_save_dir(manager, hyperparams):
     """
     save_direc, str_folder, data_folder, model_tuning_configs = _build_path(manager)
 
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_id = getattr(manager.args['data_parser'], 'run_id', None) or datetime.now().strftime("%Y%m%d_%H%M%S")
     folder_path = Path(save_direc) / str_folder / data_folder / run_id
     folder_path.mkdir(parents=True, exist_ok=True)
 

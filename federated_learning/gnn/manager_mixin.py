@@ -6,6 +6,7 @@ from training.parallel import get_available_gpus, get_device_for_party
 from models.gnn import GNN
 from results.save_results import build_save_dir, save_seed_result
 import logging
+import pickle
 import utils
 import copy
 import torch
@@ -32,8 +33,9 @@ class GNNMixinManager:
         self._prep_parties_data()
         self.save_dir = build_save_dir(self, hyperparameters)
 
+        first_seed = getattr(self.args['data_parser'], 'first_seed', 1)
         for seed in range(seeds):
-            seed_value = seed + 1
+            seed_value = seed + first_seed
             logger.info("\n" + "-"*80)
             logger.info("Training with seed %d/%d", seed_value, seeds)
             logger.info("-"*80)
@@ -53,6 +55,15 @@ class GNNMixinManager:
         logger.info("\n" + "="*80)
         logger.info("All seeds completed")
         logger.info("="*80)
+
+        # If a parallel job ran other seeds in the same directory (via --run_id +
+        # --first_seed), load their results so the final aggregation covers all seeds.
+        for pkl_file in sorted(self.save_dir.glob('seed_*/metrics_laundering_values.pkl')):
+            seed_num = int(pkl_file.parent.name.split('_')[1])
+            if seed_num not in results_by_seed:
+                with open(pkl_file, 'rb') as f:
+                    data = pickle.load(f)
+                results_by_seed[seed_num] = {'metrics': data['metrics']}
 
         return results_by_seed
 
