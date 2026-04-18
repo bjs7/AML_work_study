@@ -266,9 +266,10 @@ class BoosterMixinManager:
 
         results_by_seed = {}
         self.save_dir = build_save_dir(self, hyperparameters)
+        first_seed = getattr(self.args['data_parser'], 'first_seed', 1)
 
         for seed in range(seeds):
-            seed_value = seed + 1
+            seed_value = seed + first_seed
             logger.info("\n" + "-"*80)
             logger.info("Training with seed %d/%d", seed_value, seeds)
             logger.info("-"*80)
