@@ -4,10 +4,10 @@ import os
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import training.utils as tr_utils
+import federated_learning.hp_tuning as tr_utils
 import utils
 from models.booster import Booster
-from training.utils import hyper_sampler, f1_eval
+from federated_learning.hp_tuning import hyper_sampler, f1_eval
 from configs.paths import get_tuning_configs, get_full_info_hp_path
 from results.save_results import build_save_dir, save_seed_result
 import xgboost as xgb

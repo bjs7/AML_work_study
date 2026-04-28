@@ -10,7 +10,7 @@ from torch_geometric.utils import subgraph
 from data.data_utils import GraphData
 
 from .ownership import get_ownership_mappings, get_nodes_to_send
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 
 # Silence pyg-lib deprecation warning (show only once)
 #warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")

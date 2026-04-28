@@ -10,7 +10,7 @@ import torch
 import numpy as np
 
 from data.data_utils import GraphData
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
 
 

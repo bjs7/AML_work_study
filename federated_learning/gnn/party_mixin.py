@@ -1,6 +1,6 @@
 """GNN-specific Party mixin providing data preparation and weight updates."""
 
-from models.gnn import add_arange_ids, batching_masker, get_loaders
+from models.gnn_base import add_arange_ids, batching_masker, get_loaders
 from torch_geometric.loader import LinkNeighborLoader
 from data.feature_engineering import feature_engi_graph_data
 from data.data_utils import z_norm
@@ -165,7 +165,7 @@ class GNNMixinParty:
         return preds, ground_truths, pred_ids
 
 
-class GNNMixinPartyIndi(GNNMixinParty):
+class GNNMixinPartyBaseline(GNNMixinParty):
     """Individual/FullInfo party mixin — used by individual and full_info algorithms."""
 
     def _get_loaders(self):
@@ -178,7 +178,7 @@ class GNNMixinPartyIndi(GNNMixinParty):
         vali_data = copy.deepcopy(self.procs_data['vali_data']['df'])
         vali_indices = self.procs_data['vali_data']['pred_indices']
 
-        has_test = 'test_data' in self.procs_data
+        has_test = 'test_data' in self.procs_data and self.mode != 'tuning'
         test_data = copy.deepcopy(self.procs_data['test_data']['df']) if has_test else None
         test_indices = self.procs_data['test_data']['pred_indices'] if has_test else None
 
@@ -311,7 +311,7 @@ class GNNMixinPartyIndi(GNNMixinParty):
                 'best_vali_f1': best_f1}
 
 
-class GNNMixinPartyFL(GNNMixinParty):
+class GNNMixinPartyHorizontal(GNNMixinParty):
     """FL-specific party mixin — used by FedAvg, FedProx, FedGraph."""
 
     def _setup_train_loader(self):
@@ -432,7 +432,7 @@ class GNNMixinPartyFL(GNNMixinParty):
             return self.model.predict_no_batching(self.procs_data[data_key])
 
 
-class GNNMixinPartyVert(GNNMixinPartyFL):
+class GNNMixinPartyVertical(GNNMixinParty):
     """Vertical FL party mixin for FedGraph."""
 
     def set_up_parties(self):

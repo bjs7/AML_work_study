@@ -7,11 +7,11 @@ from inference import metrics, probs_to_binary
 import inference as flin
 from .manager_mixin import BoosterMixinManager
 from data.relevant_banks import get_relevant_banks
-from training.parallel import parallel_party_execute
-from federated_learning.gnn.manager_mixin import GNNMixinManager_Fullinfo_Indi
+from federated_learning.parallel import parallel_party_execute
+from federated_learning.gnn.manager_mixin import GNNMixinManagerBaseline
 import logging
 
-from training.utils import hyper_sampler, f1_eval
+from federated_learning.hp_tuning import hyper_sampler, f1_eval
 from configs.paths import get_tuning_configs
 import xgboost as xgb
 from sklearn.metrics import f1_score

@@ -14,7 +14,7 @@ from collections import defaultdict
 from torch_geometric.utils import subgraph
 
 from data.data_utils import GraphData
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 
 
 def init_context_simple(manager):

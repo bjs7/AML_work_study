@@ -12,13 +12,13 @@ from data.get_indices_type_data import get_booster_data
 import torch
 import numpy as np
 from federated_learning.fl_base import Manager, Party
-import training.utils as tr_utils
+import federated_learning.hp_tuning as tr_utils
 from federated_learning.registry import GNN_REGISTRY
 import configs.configs as configs
 from inference import metrics
 import copy
 import inference as flin
-from models.gnn import GNN
+from models.gnn_base import GNN
 
 
 # -------------------------------------------

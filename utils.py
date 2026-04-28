@@ -262,6 +262,22 @@ def gnn_parser():
 
 
 def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp = None, bank_type='train', superset_merge=True):
+    """Register banks as party objects in the manager for a given split (train/vali/test).
+
+    superset_merge=True (FedGraph / vertical FL):
+        A bank with train-split edges also appears in the validation and test graphs — its
+        transactions don't disappear when the mode changes. After adding vali banks,
+        vali_parties is expanded to include all train banks (superset), and every shared
+        bank_id is pointer-synced so parties[x] is vali_parties[x] is test_parties[x].
+        This means mode changes and weight updates on a party propagate correctly regardless
+        of which dict it is looked up from.
+
+    superset_merge=False (FedAvg / horizontal FL):
+        Banks in the vali/test lists may not fully overlap with train banks — a bank might
+        only have data in one split. For any bank that does appear in multiple splits, the
+        existing party object is reused (not re-created), preserving the same identity
+        guarantee: parties[x] is vali_parties[x] for any bank present in both.
+    """
     # this part here is only used for individual banks settings
     if tuned_hp is not None:
         best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']

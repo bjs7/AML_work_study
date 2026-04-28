@@ -9,12 +9,12 @@ import inference as flin
 from data.relevant_banks import load_relevant_banks, apply_bank_filter
 from .communication import GNNCommunicationMixin
 from .manager_mixin import GNNMixinManager
-from training.utils import ibm_gnn
+from federated_learning.hp_tuning import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 
-from models.gnn import add_arange_ids, batching_masker, get_loaders
+from models.gnn_base import add_arange_ids, batching_masker, get_loaders
 from data.get_indices_type_data import get_indices_bdt
 import pandas as pd
 import numpy as np
@@ -388,7 +388,7 @@ class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
 
 
 # FedAvg
-class FLGNNManager(GNNCommunicationMixin, GNNMixinManager):
+class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis = False):
 

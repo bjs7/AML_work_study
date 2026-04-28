@@ -6,7 +6,7 @@ and what data needs to be exchanged between parties.
 
 import numpy as np
 import torch
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 
 # batch_banks = parties
 # batch_banks = manager.sr_parties.keys()

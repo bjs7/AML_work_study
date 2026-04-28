@@ -36,7 +36,7 @@ import federated_learning.fl_algos
 import models.gnn_models
 from federated_learning.gnn.vertical_simple import batching as simple_bat
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
-from training.utils import ibm_gnn
+from federated_learning.hp_tuning import ibm_gnn
 
 
 # ---------------------------------------------------------------------------

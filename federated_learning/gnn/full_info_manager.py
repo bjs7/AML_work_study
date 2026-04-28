@@ -1,10 +1,10 @@
-from .manager_mixin import GNNMixinManager, GNNMixinManager_Fullinfo_Indi
+from .manager_mixin import GNNMixinManager, GNNMixinManagerBaseline
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class FullInfoGNNManager(GNNMixinManager_Fullinfo_Indi):
+class FullInfoGNNManager(GNNMixinManagerBaseline):
     """Full information GNN Manager - single party with complete dataset."""
 
     def __init__(self, args):

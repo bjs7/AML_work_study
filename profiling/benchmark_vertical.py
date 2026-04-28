@@ -38,7 +38,7 @@ from configs.paths import get_data_path
 from federated_learning.gnn.vertical import batching as bat
 from federated_learning.gnn.vertical import ownership as own
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
-from training.utils import ibm_gnn
+from federated_learning.hp_tuning import ibm_gnn
 
 
 # ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 """Shared GNN Manager functionality for hyperparameter tuning and model initialization."""
 
-from training.utils import ibm_gnn
-import training.utils as tr_utils
-from training.parallel import get_available_gpus, get_device_for_party
-from models.gnn import GNN
+from federated_learning.hp_tuning import ibm_gnn
+import federated_learning.hp_tuning as tr_utils
+from federated_learning.parallel import get_available_gpus, get_device_for_party
+from models.gnn_base import GNN
 from results.save_results import build_save_dir, save_seed_result
 import logging
 import pickle
@@ -141,7 +141,7 @@ class GNNMixinManager:
         return intervals
 
 
-class GNNMixinManager_Fullinfo_Indi(GNNMixinManager):
+class GNNMixinManagerBaseline(GNNMixinManager):
 
     def tuning_loop(self, hyperparameters_tuning, laundering_values, **kwargs):
 

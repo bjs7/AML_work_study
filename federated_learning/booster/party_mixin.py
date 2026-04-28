@@ -90,7 +90,7 @@ class BoosterMixinParty:
             laundering_values_test['pred_probabilities'], laundering_values_test['pred_label'] = 0, 0
 
         laundering_values_test['pred_probabilities'] = preds_test
-        laundering_values_test['pred_labels'] = probs_to_binary(preds_test)
+        laundering_values_test['pred_label'] = probs_to_binary(preds_test)
 
         return {'metrics': perform_metrics,
                 'laundering_values': laundering_values_test,

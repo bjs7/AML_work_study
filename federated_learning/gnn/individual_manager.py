@@ -1,8 +1,8 @@
 """Individual GNN Manager - trains each party independently with separate models."""
 
-from .manager_mixin import GNNMixinManager_Fullinfo_Indi
+from .manager_mixin import GNNMixinManagerBaseline
 from data.relevant_banks import get_relevant_banks
-from training.parallel import parallel_party_execute
+from federated_learning.parallel import parallel_party_execute
 from inference import metrics
 import inference as flin
 import numpy as np
@@ -14,7 +14,7 @@ import copy
 logger = logging.getLogger(__name__)
 
 
-class IndividualGNNManager(GNNMixinManager_Fullinfo_Indi):
+class IndividualGNNManager(GNNMixinManagerBaseline):
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup fr_banks, tune them, then add sr_banks with best hyperparameters."""

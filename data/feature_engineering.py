@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from snapml import GraphFeaturePreprocessor
 #from gp_params import params
 #from training.tuning_utils import gfpparams
-import training.utils as tu
+import federated_learning.hp_tuning as tu
 #from torch_geometric.data import Data
 import data.data_utils as du
 from configs import configs

@@ -3,7 +3,7 @@
 import xgboost as xgb
 import numpy as np
 import logging
-from training.utils import hyper_sampler, f1_eval
+from federated_learning.hp_tuning import hyper_sampler, f1_eval
 
 logger = logging.getLogger(__name__)
 
