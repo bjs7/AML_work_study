@@ -14,7 +14,7 @@
 
     "gnn": {
         "full_info": {
-            "small": {"x_0": 15},
+            "small": {"x_0": 10},
             "medium": {"x_0": 10},
             "large": {"x_0": 10}
         },
