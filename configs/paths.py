@@ -29,19 +29,21 @@ def get_tuning_configs(parsers):
     return model_parameters.get(parsers['fl_parser'].model_type)
 
 
-def get_full_info_hp_path(parsers, model=None):
-    """Return path where full_info tuned booster HPs are saved/loaded.
+def get_full_info_hp_path(parsers, model=None, model_type=None):
+    """Return path where full_info tuned HPs are saved/loaded.
 
     Args:
         parsers: dict with 'data_parser' and 'fl_parser'.
         model: override the model name in the path (e.g. 'xgboost' when
                SecureBoost wants to reuse xgboost-tuned HPs).
+        model_type: override the model type subfolder ('booster' or 'gnn').
+                    Defaults to parsers['fl_parser'].model_type.
 
-    The filename encodes both eval_mode and ibm_fe so all three tuning
-    variants write to distinct files, e.g.:
-      system + standard FE : small_HI_system.json
-      system + ibm FE      : small_HI_system_ibm.json
-      comparable + std FE  : small_HI_comparable.json
+    The filename encodes eval_mode and ibm_fe so tuning variants write to
+    distinct files, e.g.:
+      booster / system + standard FE : small_HI_system_r1000.json
+      booster / system + ibm FE      : small_HI_system_ibm_r1000.json
+      gnn     / system + standard FE : small_HI_system.json
     """
     model_name = model or parsers['fl_parser'].model
     size = parsers['data_parser'].size
@@ -50,14 +52,17 @@ def get_full_info_hp_path(parsers, model=None):
     ibm_fe      = getattr(parsers['data_parser'], 'ibm_fe', False)
     max_rounds  = getattr(parsers['data_parser'], 'tune_max_rounds', 1000)
 
+    mtype = model_type or getattr(parsers['fl_parser'], 'model_type', None) or 'booster'
+
     suffix = f'_{eval_mode}'
     if ibm_fe:
         suffix += '_ibm'
-    suffix += f'_r{max_rounds}'
+    if mtype == 'booster':
+        suffix += f'_r{max_rounds}'
 
     if get_data_path() == '/data/leuven/362/vsc36278':
         base = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study/configs/tuned_hyperparams'
     else:
         base = 'configs/tuned_hyperparams'
 
-    return os.path.join(base, 'booster', model_name, f'{size}_{ir}{suffix}.json')
+    return os.path.join(base, mtype, model_name, f'{size}_{ir}{suffix}.json')

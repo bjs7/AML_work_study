@@ -6,9 +6,9 @@ from pathlib import Path
 import json
 from configs.configs import split_perc
 from configs.paths import get_data_path
-from data.get_indices_type_data import get_bank_indices
-from data.get_indices_type_data import get_indices_bdt, get_booster_data, get_graph_data
-import data.data_functions as dfn
+from data.data_preparation import get_bank_indices
+from data.data_preparation import get_indices_bdt, get_booster_data, get_graph_data
+import data.fl_data_helpers as dfn
 
 
 def filter_banks(parsers):
@@ -148,6 +148,16 @@ def filter_banks(parsers):
 
 def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
 
+    # Baseline coverage of all train_banks before any filtering (denominator for data_pct).
+    # Using this instead of the full dataset size ensures data_pct is expressed as a fraction
+    # of the relevant subset — meaningful for both system (≈full data) and comparable (subset).
+    baseline_indices = set()
+    for bank in train_banks:
+        baseline_indices.update(get_indices_bdt(df, bank=bank)['train_indices'])
+    baseline_overlap = split_data['train_data']['x'].index.isin(baseline_indices)
+    baseline_count = int(baseline_overlap.sum())
+    baseline_laundering = int(split_data['train_data']['x'].loc[baseline_overlap, 'Is Laundering'].sum())
+
     # Bank filter coverage stats for each filter scenario
     bank_filter_stats = {}
     for filter_name in ['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct']:
@@ -158,12 +168,12 @@ def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
         for bank in filtered_train:
             bank_indices = get_indices_bdt(df, bank=bank)
             filtered_indices.extend(bank_indices['train_indices'])
-        
+
         bank_idx = set(filtered_indices)
         overlap = split_data['train_data']['x'].index.isin(bank_idx)
         laundering_counts = int(split_data['train_data']['x'].loc[overlap, 'Is Laundering'].sum())
-        data_pct = float(np.mean(overlap))
-        laundering_pct = laundering_counts / train_laundering
+        data_pct = overlap.sum() / baseline_count if baseline_count > 0 else 0.0
+        laundering_pct = laundering_counts / baseline_laundering if baseline_laundering > 0 else 0.0
         #f_laundering, f_data_pct, f_laundering_pct = count_split_stats(filtered_indices)
         
         bank_filter_stats[filter_name] = {

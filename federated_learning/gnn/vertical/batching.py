@@ -191,7 +191,7 @@ def gen_batch_data(manager, mode, batch_size=8192, sample_neighbors=None):
         df_copy = df_copy.sample(frac=1)
         batch_iter = range(0, df_copy.shape[0], batch_size)
     else:  # 'vali' or 'test'
-        batch_iter = range(min(manager.indices[mode]), max(manager.indices[mode]), batch_size)
+        batch_iter = range(min(manager.indices[mode]), max(manager.indices[mode]) + 1, batch_size) # NOTE I might wanna take another look at this one again, as I am unsure if there is cap/bug in the extration of indices. Previsouly an index/row between vali and test was skipped/missed
 
     manager.ctx[mode]['num_batches'] = len(batch_iter)
 

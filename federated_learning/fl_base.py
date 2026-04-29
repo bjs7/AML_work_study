@@ -71,8 +71,8 @@ class Party(BaseFL):
         """Apply feature engineering to training and evaluation data."""
         pass
 
-from data.get_indices_type_data import get_indices_bdt
-import data.data_functions as dfn
+from data.data_preparation import get_indices_bdt
+import data.fl_data_helpers as dfn
 
 class Manager(BaseFL, ABC):
     REGISTRY = FL_ALGO_REGISTRY_MANAGER

@@ -7,8 +7,8 @@ from typing import Dict, List, Optional, Any
 import utils
 from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
 from federated_learning.registry import regi_algo_manager, regi_algo_party
-from data.get_indices_type_data import get_indices_bdt
-from data.get_indices_type_data import get_booster_data
+from data.data_preparation import get_indices_bdt
+from data.data_preparation import get_booster_data
 import torch
 import numpy as np
 from federated_learning.fl_base import Manager, Party

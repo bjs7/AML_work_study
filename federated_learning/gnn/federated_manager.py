@@ -15,7 +15,7 @@ from sklearn.metrics import f1_score
 from federated_learning.parallel import parallel_party_execute
 
 from models.gnn_base import add_arange_ids, batching_masker, get_loaders
-from data.get_indices_type_data import get_indices_bdt
+from data.data_preparation import get_indices_bdt
 import pandas as pd
 import numpy as np
 
@@ -158,7 +158,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             hyperparameters: Model hyperparameters dict
             laundering_values: Laundering values for evaluation
         """
-        #self.args['fl_parser'].model = 'GINe_vert'
         #if hyperparameters is None:
         #    hyperparameters = self.tuning(laundering_values)[0]
 

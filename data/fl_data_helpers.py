@@ -1,4 +1,4 @@
-from data.get_indices_type_data import get_indices_bdt, get_booster_data, get_graph_data
+from data.data_preparation import get_indices_bdt, get_booster_data, get_graph_data
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 import pandas as pd

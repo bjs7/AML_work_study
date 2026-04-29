@@ -28,7 +28,7 @@ from .manager_mixin import BoosterMixinManager
 from .vertical.setup import set_manager_data, setup_secureboost_post_prep
 from data.relevant_banks import load_relevant_banks
 from models.secureboost_tree import SecureBoostEnsemble, SBSplitNode, SBLeafNode, _batch_route
-from results.save_results import build_save_dir, save_seed_result
+from result_io.save_results import build_save_dir, save_seed_result
 from sklearn.metrics import f1_score
 
 logger = logging.getLogger(__name__)
@@ -138,11 +138,12 @@ class SecureBoostManager(BoosterMixinManager):
 
     def init_models(self, hyperparams, bank_id=None):
         """Initialise the SecureBoost ensemble from a hyperparameter dict."""
-        self.num_rounds    = hyperparams.get('num_rounds', 100)
-        params             = hyperparams.get('params', {})
-        self.max_depth     = int(params.get('max_depth', 6))
-        self.learning_rate = float(params.get('learning_rate', 0.1))
-        self.lambda_reg    = float(params.get('lambda', 1.0))
+        self.num_rounds       = hyperparams.get('num_rounds', 100)
+        params                = hyperparams.get('params', {})
+        self.max_depth        = int(params.get('max_depth', 6))
+        self.learning_rate    = float(params.get('learning_rate', 0.1))
+        self.lambda_reg       = float(params.get('lambda', 1.0))
+        self.scale_pos_weight = float(params.get('scale_pos_weight', 1.0))
 
         # base score: log-odds of 0.5 (neutral prior)
         base_score = 0.5
@@ -173,9 +174,10 @@ class SecureBoostManager(BoosterMixinManager):
         logger.info("=" * 80)
 
         self.save_dir = build_save_dir(self, hyperparameters)
+        first_seed = getattr(self.args['data_parser'], 'first_seed', 1)
 
         for seed in range(seeds):
-            seed_value = seed + 1
+            seed_value = seed + first_seed
             logger.info("-" * 80)
             logger.info("Seed %d/%d", seed_value, seeds)
             logger.info("-" * 80)
@@ -252,6 +254,10 @@ class SecureBoostManager(BoosterMixinManager):
                 p_arr = 1.0 / (1.0 + np.exp(-np.clip(F_train, -500, 500)))
                 g_arr = p_arr - y_train
                 h_arr = p_arr * (1.0 - p_arr)
+                if self.scale_pos_weight != 1.0:
+                    pos_mask = (y_train == 1)
+                    g_arr = np.where(pos_mask, g_arr * self.scale_pos_weight, g_arr)
+                    h_arr = np.where(pos_mask, h_arr * self.scale_pos_weight, h_arr)
 
                 # --- Build one tree (parallel split-finding inside) ---
                 tree_root = self._build_tree(

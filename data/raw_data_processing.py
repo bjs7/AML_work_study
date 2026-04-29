@@ -6,7 +6,7 @@ import torch
 from torch_geometric.data import Data
 import data.data_utils as du
 import data.feature_engineering as fe
-import data.data_functions as dfn
+import data.fl_data_helpers as dfn
 
 from data.relevant_banks import load_relevant_banks
 

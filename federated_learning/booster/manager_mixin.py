@@ -9,7 +9,7 @@ import utils
 from models.booster import Booster
 from federated_learning.hp_tuning import hyper_sampler, f1_eval
 from configs.paths import get_tuning_configs, get_full_info_hp_path
-from results.save_results import build_save_dir, save_seed_result
+from result_io.save_results import build_save_dir, save_seed_result
 import xgboost as xgb
 from sklearn.metrics import f1_score
 from inference import metrics, probs_to_binary
@@ -128,6 +128,7 @@ class BoosterMixinManager:
                 hp = json.load(f)
             logger.info("Loaded full_info tuned hyperparameters from %s", path)
             return hp
+        logger.warning("No saved hyperparameters found at: %s", path)
         if self.args['data_parser'].testing:
             fallback = _FALLBACK_HP.get(self.args['fl_parser'].model)
             if fallback is not None:

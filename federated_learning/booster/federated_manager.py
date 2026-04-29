@@ -8,7 +8,7 @@ import inference as flin
 from .manager_mixin import BoosterMixinManager
 from data.relevant_banks import load_relevant_banks, apply_bank_filter
 from federated_learning.parallel import parallel_party_execute
-from results.save_results import build_save_dir, save_seed_result
+from result_io.save_results import build_save_dir, save_seed_result
 from sklearn.metrics import f1_score
 from inference import probs_to_binary
 import numpy as np

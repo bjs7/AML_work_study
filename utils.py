@@ -9,9 +9,9 @@ import random
 import pandas as pd
 import copy
 
-from data.get_indices_type_data import get_indices_bdt
+from data.data_preparation import get_indices_bdt
 from federated_learning.fl_base import Manager, Party
-import data.data_functions as dfn
+import data.fl_data_helpers as dfn
 from data.raw_data_processing import get_data
 from configs.configs import split_perc
 from configs.paths import get_data_path, get_tuning_configs
@@ -21,7 +21,6 @@ from configs.paths import get_data_path, get_tuning_configs
 
 model_types = {
     'GINe': 'gnn',
-    'GINe_vert': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
     'regression': 'regression'
@@ -47,7 +46,10 @@ def setup_get_data():
     parsers = parser_all()
     set_seed(parsers['data_parser'].seed, True)
 
-    df = pd.read_csv(f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+    csv_path = f"{get_data_path()}/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv"
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Data file not found: {csv_path}")
+    df = pd.read_csv(csv_path)
 
     if parsers['data_parser'].testing:
         # Stratified sample: preserves class ratio (0s and 1s) across the

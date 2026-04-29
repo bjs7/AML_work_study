@@ -20,12 +20,25 @@ class FullInfoGNNManager(GNNMixinManagerBaseline):
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         logger.info("Setting up Full Info model (single party with complete dataset)")
         self._add_party(None, df, parsers, scaler_encoders)
-        
-        logger.info("Starting hyperparameter tuning")
-        tuned_hp = self.tuning(laundering_values)
-        logger.info("Setup complete")
 
-        return tuned_hp[None]['hyperparameters']
+        if parsers['data_parser'].ibm_hp:
+            logger.info("Using IBM hyperparameters")
+            return self.tuning(laundering_values)[None]['hyperparameters']
+
+        if parsers['fl_parser'].tune:
+            logger.info("Starting hyperparameter tuning")
+            tuned_hp = self.tuning(laundering_values)
+            best_hp = tuned_hp[None]['hyperparameters']
+            self._save_tuned_hp(best_hp)
+            return best_hp
+
+        hp = self._load_tuned_hp()
+        if hp is None:
+            raise RuntimeError(
+                "No saved GNN hyperparameters found. Run with --tune first, or pass --ibm_hp to use IBM defaults."
+            )
+        logger.info("Loaded saved hyperparameters — skipping tuning")
+        return hp
 
     def _tuning_helper(self, laundering_values, party, bank_id):
         return self._gnn_tuning(laundering_values)

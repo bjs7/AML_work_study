@@ -4,8 +4,12 @@ from federated_learning.hp_tuning import ibm_gnn
 import federated_learning.hp_tuning as tr_utils
 from federated_learning.parallel import get_available_gpus, get_device_for_party
 from models.gnn_base import GNN
-from results.save_results import build_save_dir, save_seed_result
+from result_io.save_results import build_save_dir, save_seed_result
+from configs.paths import get_full_info_hp_path
+from pathlib import Path
+import json
 import logging
+import os
 import pickle
 import utils
 import copy
@@ -119,7 +123,8 @@ class GNNMixinManager:
         return tuned_hyparameters, f1_score_for_hp
 
 
-    def _get_search_space(self, hyperparameters_tuning):
+    @staticmethod
+    def _get_search_space(hyperparameters_tuning):
 
         intervals = {
             'hid_em_size_interval': [float('inf'), float('-inf')],
@@ -142,6 +147,23 @@ class GNNMixinManager:
 
 
 class GNNMixinManagerBaseline(GNNMixinManager):
+
+    def _save_tuned_hp(self, hp):
+        path = get_full_info_hp_path(self.args)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(hp, f, indent=4)
+        logger.info("Saved full_info GNN hyperparameters to %s", path)
+
+    def _load_tuned_hp(self):
+        path = get_full_info_hp_path(self.args)
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                hp = json.load(f)
+            logger.info("Loaded full_info GNN hyperparameters from %s", path)
+            return hp
+        logger.warning("No saved GNN hyperparameters found at: %s", path)
+        return None
 
     def tuning_loop(self, hyperparameters_tuning, laundering_values, **kwargs):
 
