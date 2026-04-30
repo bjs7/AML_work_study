@@ -69,8 +69,7 @@ def setup_get_data():
 def logger_setup():
     # Setup logging
     log_directory = "logs"
-    if not os.path.exists(log_directory):
-        os.makedirs(log_directory)
+    os.makedirs(log_directory, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)-5.5s] %(filename)-20s:%(lineno)-4d - %(message)s",
