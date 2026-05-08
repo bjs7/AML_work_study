@@ -276,8 +276,21 @@ class BoosterMixinManager:
             logger.info("-"*80)
             utils.set_seed(seed_value)
 
+            # Propagate seed_value into XGBoost params — utils.set_seed alone
+            # only sets numpy/torch seeds; XGBoost uses its own internal seed.
+            seeded_hp = copy.deepcopy(hyperparameters)
+            if isinstance(seeded_hp, dict):
+                if 'params' in seeded_hp:
+                    seeded_hp['params']['seed'] = seed_value
+                    seeded_hp['params']['random_state'] = seed_value
+                else:
+                    for bank_data in seeded_hp.values():
+                        if isinstance(bank_data, dict) and 'hyperparameters' in bank_data:
+                            bank_data['hyperparameters']['params']['seed'] = seed_value
+                            bank_data['hyperparameters']['params']['random_state'] = seed_value
+
             result = self._train(
-                hyperparameters,
+                seeded_hp,
                 copy.deepcopy(laundering_values_vali),
                 copy.deepcopy(laundering_values_test)
             )

@@ -57,7 +57,11 @@ def process_lazy_batch_simple(manager, mode, batch, mode_parties):
         )
         return bank_id
 
-    results = parallel_party_execute(mode_parties, _build_subgraph, max_workers=max_workers)
+    batch_df = manager.ctx[mode][LAZY_BATCH_KEY]['batch_labels']
+    seed_banks = set(batch_df['From Bank'].values) | set(batch_df['To Bank'].values)
+    seed_mode_parties = {k: v for k, v in mode_parties.items() if k in seed_banks}
+
+    results = parallel_party_execute(seed_mode_parties, _build_subgraph, max_workers=max_workers)
     banks_to_use = [bid for bid, result in results.items() if result is not None]
     manager.ctx[mode][LAZY_BATCH_KEY]['batch_parties'] = banks_to_use
     # No get_batch_intersects, get_ownership_mappings, or get_nodes_to_send —

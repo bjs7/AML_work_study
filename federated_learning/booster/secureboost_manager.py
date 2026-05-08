@@ -144,12 +144,12 @@ class SecureBoostManager(BoosterMixinManager):
         self.learning_rate    = float(params.get('learning_rate', 0.1))
         self.lambda_reg       = float(params.get('lambda', 1.0))
         self.scale_pos_weight = float(params.get('scale_pos_weight', 1.0))
+        self.subsample        = float(params.get('subsample', 1.0))
 
-        # base score: log-odds of 0.5 (neutral prior)
-        base_score = 0.5
+        # base_score is overwritten in _run_training once y_train is available
         self.ensemble = SecureBoostEnsemble(
             learning_rate=self.learning_rate,
-            base_score=float(np.log(base_score / (1.0 - base_score))),
+            base_score=0.0,
         )
 
     def _prep_parties_data(self):
@@ -215,13 +215,19 @@ class SecureBoostManager(BoosterMixinManager):
         y_vali  = self.data['vali_data']['Is Laundering'].values
         y_test  = self.data['test_data']['Is Laundering'].values
 
+        # --- Data-estimated base score (mirrors XGBoost 2.x behaviour) ---
+        label_rate = float(np.clip(y_train.mean(), 1e-6, 1.0 - 1e-6))
+        base_score = np.log(label_rate / (1.0 - label_rate))
+        self.ensemble.base_score = base_score
+        logger.info("base_score set to %.4f (label rate %.4f)", base_score, label_rate)
+
         # --- Position mapping: global_idx → array position (built once) ---
         idx_to_pos = {idx: i for i, idx in enumerate(train_indices)}
 
         # --- Incremental raw scores (avoids re-predicting all trees each round) ---
-        F_train = np.full(len(train_indices), self.ensemble.base_score)
-        F_vali  = np.full(len(vali_indices),  self.ensemble.base_score)
-        F_test  = np.full(len(test_indices),  self.ensemble.base_score)
+        F_train = np.full(len(train_indices), base_score)
+        F_vali  = np.full(len(vali_indices),  base_score)
+        F_test  = np.full(len(test_indices),  base_score)
 
         sb_override = self.args['data_parser'].sb_num_rounds
         if sb_override is not None:
@@ -250,18 +256,32 @@ class SecureBoostManager(BoosterMixinManager):
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for round_num in range(epochs):
 
+                # --- Row subsampling (mirrors XGBoost 'subsample' HP) ---
+                if self.subsample < 1.0:
+                    n_sample = max(1, int(len(train_indices) * self.subsample))
+                    sample_pos = np.sort(np.random.choice(len(train_indices), n_sample, replace=False))
+                    round_indices = [train_indices[i] for i in sample_pos]
+                    round_F       = F_train[sample_pos]
+                    round_y       = y_train[sample_pos]
+                    round_idx_to_pos = {idx: i for i, idx in enumerate(round_indices)}
+                else:
+                    round_indices    = train_indices
+                    round_F          = F_train
+                    round_y          = y_train
+                    round_idx_to_pos = idx_to_pos
+
                 # --- Vectorised gradient computation ---
-                p_arr = 1.0 / (1.0 + np.exp(-np.clip(F_train, -500, 500)))
-                g_arr = p_arr - y_train
+                p_arr = 1.0 / (1.0 + np.exp(-np.clip(round_F, -500, 500)))
+                g_arr = p_arr - round_y
                 h_arr = p_arr * (1.0 - p_arr)
                 if self.scale_pos_weight != 1.0:
-                    pos_mask = (y_train == 1)
+                    pos_mask = (round_y == 1)
                     g_arr = np.where(pos_mask, g_arr * self.scale_pos_weight, g_arr)
                     h_arr = np.where(pos_mask, h_arr * self.scale_pos_weight, h_arr)
 
                 # --- Build one tree (parallel split-finding inside) ---
                 tree_root = self._build_tree(
-                    train_indices, g_arr, h_arr, idx_to_pos, depth=0, executor=executor
+                    round_indices, g_arr, h_arr, round_idx_to_pos, depth=0, executor=executor
                 )
                 self.ensemble.add_tree(tree_root)
 
