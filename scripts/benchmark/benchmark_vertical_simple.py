@@ -1,33 +1,43 @@
-"""Benchmark simplified vertical FL batching: timing and memory over 1-2 epochs.
+"""Benchmark simplified vertical FL batching: timing and memory over N epochs.
 
 Unlike the full vertical benchmark, this variant skips get_batch_intersects,
 get_ownership_mappings, and get_nodes_to_send — the simple forward pass does
 not perform per-layer embedding exchange, so none of those are called.
 
-Usage (from project root):
+Usage (training benchmark):
     python -m scripts.benchmark.benchmark_vertical_simple --fl_algo FedGraphSimple --batching \
-        --batching_mode lazy_link_neighbor --size small --ir HI --testing
+        --batching_mode lazy_link_neighbor --size small --ir HI --emlps --ibm_hp \
+        --eval_mode comparable --testing
 
-The --testing flag limits data to 5% and runs 2 epochs. Remove it and set
---n_benchmark_epochs to run more epochs on full data.
+Usage (inference-only with pre-trained weights):
+    python -m scripts.benchmark.benchmark_vertical_simple --fl_algo FedGraphSimple --batching \
+        --batching_mode lazy_link_neighbor --size small --ir HI --emlps --ibm_hp \
+        --eval_mode system --inference_only --load_weights /path/to/seed_1/model.pth
+
+Benchmark-specific flags (not passed to main parsers):
+  --n_benchmark_epochs N   Number of training epochs to time (default: 2)
+  --inference_only         Skip training; load weights and time test inference only
+  --load_weights PATH      Path to model.pth (required with --inference_only)
 
 Reports:
-  - Per-batch timing: subgraph build, total
+  - Per-batch timing: subgraph build, forward pass, backward pass
   - Per-epoch timing
   - Peak RSS memory (tracemalloc)
-  - Extrapolated full-run estimate
+  - Extrapolated full-run estimate (training mode only)
 """
 
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+import argparse
 import time
 import tracemalloc
 import copy
 import logging
 from collections import defaultdict
 import numpy as np
+import torch
 
 import utils
 import data.fl_data_helpers as dfn
@@ -37,6 +47,20 @@ import models.gnn_models
 from federated_learning.gnn.vertical_simple import batching as simple_bat
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
 from federated_learning.hp_tuning import ibm_gnn
+
+
+# ---------------------------------------------------------------------------
+# Benchmark-specific arguments (parsed separately, not passed to main parsers)
+# ---------------------------------------------------------------------------
+
+_bench_parser = argparse.ArgumentParser(add_help=False)
+_bench_parser.add_argument('--n_benchmark_epochs', type=int, default=2,
+                            help='Number of training epochs to time (default: 2)')
+_bench_parser.add_argument('--inference_only', action='store_true',
+                            help='Skip training; load weights and time test inference only')
+_bench_parser.add_argument('--load_weights', type=str, default=None,
+                            help='Path to model.pth to load for --inference_only')
+_bench_args, _ = _bench_parser.parse_known_args()
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +130,7 @@ simple_bat.process_lazy_batch_simple = _fully_timed_process_lazy_batch_simple
 
 def run_benchmark():
     utils.logger_setup()
-    logging.getLogger().setLevel(logging.WARNING)  # suppress info spam
+    logging.getLogger().setLevel(logging.WARNING)
 
     parsers, df, scaler_encoders = utils.setup_get_data()
 
@@ -117,23 +141,54 @@ def run_benchmark():
     manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 
     batching_mode = parsers['data_parser'].batching_mode
-    print(f"\nBenchmarking batching_mode='{batching_mode}', "
+    eval_mode = getattr(parsers['data_parser'], 'eval_mode', 'comparable')
+
+    print(f"\nBenchmarking batching_mode='{batching_mode}', eval_mode='{eval_mode}', "
           f"testing={parsers['data_parser'].testing}, "
-          f"max_workers={parsers['fl_parser'].max_workers}")
+          f"max_workers={parsers['fl_parser'].max_workers}, "
+          f"inference_only={_bench_args.inference_only}")
 
-    # Setup model and vertical structures
     from federated_learning.gnn.vertical_simple import setup
-
     setup.setup_vertical_simple(manager, batching=True, batching_mode=batching_mode)
     manager.setup_model(ibm_gnn, laundering_values_test)
 
-    n_batches = manager.ctx['train']['num_batches']
-    print(f"Batches per epoch (this run): {n_batches}")
+    # -----------------------------------------------------------------------
+    # Inference-only mode: load pre-trained weights, time test evaluation
+    # -----------------------------------------------------------------------
+    if _bench_args.inference_only:
+        if _bench_args.load_weights is None:
+            raise ValueError("--load_weights <path> is required with --inference_only")
 
-    # --- Start memory tracking ---
+        print(f"\nLoading weights from: {_bench_args.load_weights}")
+        state_dict = torch.load(_bench_args.load_weights, map_location=manager.device)
+        manager.model.gnn.load_state_dict(state_dict)
+        manager.model.gnn.eval()
+
+        n_test_batches = manager.ctx['test']['num_batches']
+        print(f"Test batches: {n_test_batches}")
+
+        tracemalloc.start()
+        t_start = time.perf_counter()
+        with timer.section('test_inference'):
+            manager._forward_eval('test', batching=True)
+        t_total = time.perf_counter() - t_start
+        current_mem, peak_mem = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        print(f"\nTest inference time: {t_total:.2f}s  ({t_total/60:.1f} min)")
+        print(f"Memory: current={current_mem/1e6:.1f} MB  peak={peak_mem/1e6:.1f} MB")
+        timer.report()
+        return
+
+    # -----------------------------------------------------------------------
+    # Training benchmark: time forward + backward over N epochs
+    # -----------------------------------------------------------------------
+    n_batches = manager.ctx['train']['num_batches']
+    epochs = _bench_args.n_benchmark_epochs
+    print(f"Batches per epoch: {n_batches}  |  Benchmarking {epochs} epoch(s)")
+
     tracemalloc.start()
 
-    epochs = 2
     for epoch in range(epochs):
         t_epoch = time.perf_counter()
         manager.model.gnn.train()
@@ -143,18 +198,17 @@ def run_benchmark():
             for batch in manager.loaders['train']:
                 simple_bat.process_lazy_batch_simple(manager, 'train', batch, mode_parties)
                 batch_banks = manager.ctx['train'][LAZY_BATCH_KEY]['batch_parties']
-                batch_key = LAZY_BATCH_KEY
-                batch_data = manager.get_batch_data('train', batch_key, batch_banks)
+                batch_data = manager.get_batch_data('train', LAZY_BATCH_KEY, batch_banks)
 
                 manager.optimizer.zero_grad()
                 with timer.section('forward_pass'):
-                    preds, labels = manager.forward_pass('train', batch_key, batch_banks, batch_data)
+                    preds, labels = manager.forward_pass('train', LAZY_BATCH_KEY, batch_banks, batch_data)
                 with timer.section('backward_pass'):
                     loss = manager.loss_fn(preds, labels)
                     loss.backward()
                     manager.optimizer.step()
 
-        else:  # simple / link_neighbor / neighbor_sample — batches pre-computed
+        else:
             for batch_key in range(manager.ctx['train']['num_batches']):
                 batch_banks = manager.ctx['train'][batch_key]['batch_parties']
                 batch_data = manager.get_batch_data('train', batch_key, batch_banks)
@@ -169,25 +223,14 @@ def run_benchmark():
 
         epoch_time = time.perf_counter() - t_epoch
         timer.times['epoch'].append(epoch_time)
-        print(f"  Epoch {epoch+1}/{epochs} — {epoch_time:.1f}s  "
-              f"({n_batches} batches)")
+        print(f"  Epoch {epoch+1}/{epochs} — {epoch_time:.1f}s  ({n_batches} batches)")
 
-    # --- Memory snapshot ---
     current_mem, peak_mem = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     print(f"\nMemory: current={current_mem/1e6:.1f} MB  peak={peak_mem/1e6:.1f} MB")
 
-    # Extrapolate to full run
-    from configs.configs import epochs as full_epochs
-    full_batches_est = n_batches  # already sized to data (testing=5% gives proportional batches)
-    timer.report(n_full_batches=full_batches_est, n_full_epochs=full_epochs)
-
-    # Per-batch breakdown summary
-    if timer.times:
-        total_per_batch = np.mean(timer.times.get('process_lazy_batch_simple', [0]))
-        print(f"\n  process_lazy_batch_simple breakdown (approx):")
-        print(f"    subgraph build:      {total_per_batch*1000:.1f}ms  (no exchange data)")
-        print(f"    total per batch:     {total_per_batch*1000:.1f}ms")
+    num_rounds = parsers['fl_parser'].num_rounds
+    timer.report(n_full_batches=n_batches, n_full_epochs=num_rounds)
 
 
 if __name__ == '__main__':
