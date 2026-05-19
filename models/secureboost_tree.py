@@ -122,6 +122,10 @@ def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
     processed together, so the feature lookup for a given party/feature is
     done in a tight loop rather than interleaved across the call stack.
 
+    Unresolved transactions (not held by the winning party) are first offered
+    to other parties using the same feature+threshold before falling back to
+    the node's default direction.
+
     Returns:
         {global_idx: leaf_value} for every index in indices.
     """
@@ -131,11 +135,14 @@ def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
     party = parties.get(node.party_id)
     left_idxs: list = []
     right_idxs: list = []
+    unresolved: list = []
+
+    feat   = node.feature
+    thresh = node.threshold
 
     if party is not None:
         g2l   = getattr(party, '_global_to_local', {})
         farrs = getattr(party, '_feature_arrays', {})
-        feat  = node.feature
         for idx in indices:
             entry = g2l.get(idx)
             if entry is not None:
@@ -145,14 +152,38 @@ def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
             else:
                 val = None
             if val is None:
-                (left_idxs if node.default_left else right_idxs).append(idx)
-            elif val <= node.threshold:
+                unresolved.append(idx)
+            elif val <= thresh:
                 left_idxs.append(idx)
             else:
                 right_idxs.append(idx)
     else:
-        default = left_idxs if node.default_left else right_idxs
-        default.extend(indices)
+        unresolved = list(indices)
+
+    # Ask other parties to route unresolved transactions using same feature+threshold.
+    if unresolved:
+        unresolved_set = set(unresolved)
+        for other_id, other_party in parties.items():
+            if other_id == node.party_id or not unresolved_set:
+                continue
+            g2l   = getattr(other_party, '_global_to_local', {})
+            farrs = getattr(other_party, '_feature_arrays', {})
+            for idx in list(unresolved_set):
+                entry = g2l.get(idx)
+                if entry is None:
+                    continue
+                mode, local_row = entry
+                arr = farrs.get(mode, {}).get(feat)
+                if arr is None:
+                    continue
+                val = float(arr[local_row])
+                if val <= thresh:
+                    left_idxs.append(idx)
+                else:
+                    right_idxs.append(idx)
+                unresolved_set.discard(idx)
+        # Truly unresolved → default direction
+        (left_idxs if node.default_left else right_idxs).extend(unresolved_set)
 
     result: dict = {}
     if left_idxs:

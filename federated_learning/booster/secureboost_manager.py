@@ -13,8 +13,10 @@ Design notes:
   - Parties are queried sequentially within each node for simplicity.
     Parallelism can be added later via parallel_party_execute.
   - The feature naming convention (graph_feature_1..N) is the same across
-    parties. The tree node's party_id tells the manager exactly which party
-    to ask at inference — no renaming needed.
+    parties. After the winning party routes its transactions, other parties
+    apply the same feature+threshold to the transactions they hold, reducing
+    default-direction routing. Only truly unresolved transactions (held by
+    no party for that feature) fall back to the default direction.
 """
 
 import copy
@@ -406,20 +408,34 @@ class SecureBoostManager(BoosterMixinManager):
         left_set        = set(left_p)
         right_set       = set(right_p)
 
-        # Transactions not held by the winning party get the default direction.
-        # Default: whichever child has the larger total |G| (more gradient signal).
-        unresolved = [i for i in node_indices if i not in left_set and i not in right_set]
-        lp_pos = np.array([idx_to_pos[i] for i in left_p])  if left_p  else np.array([], dtype=int)
-        rp_pos = np.array([idx_to_pos[i] for i in right_p]) if right_p else np.array([], dtype=int)
+        # --- Ask other parties to route unresolved transactions with same feature+threshold ---
+        # Since all parties share the same feature names, other parties can apply the
+        # winning split to transactions they hold that the winning party doesn't.
+        unresolved_set = node_set - left_set - right_set
+        if unresolved_set:
+            for bank_id, party in self.iter_parties(include_test=False):
+                if bank_id == best_party_id or not unresolved_set:
+                    continue
+                party_unresolved = list(unresolved_set & party._global_idx_set)
+                if not party_unresolved:
+                    continue
+                left_p2, right_p2 = party.route_samples(party_unresolved, best_feature, best_threshold)
+                left_set.update(left_p2)
+                right_set.update(right_p2)
+                unresolved_set -= set(left_p2) | set(right_p2)
+
+        # Truly unresolved → default direction based on gradient signal.
+        lp_pos = np.array([idx_to_pos[i] for i in left_set])  if left_set  else np.array([], dtype=int)
+        rp_pos = np.array([idx_to_pos[i] for i in right_set]) if right_set else np.array([], dtype=int)
         G_left       = g_arr[lp_pos].sum() if len(lp_pos) else 0.0
         G_right      = g_arr[rp_pos].sum() if len(rp_pos) else 0.0
         default_left = abs(G_left) >= abs(G_right)
 
-        if unresolved:
+        if unresolved_set:
             if default_left:
-                left_set.update(unresolved)
+                left_set.update(unresolved_set)
             else:
-                right_set.update(unresolved)
+                right_set.update(unresolved_set)
 
         left_indices  = list(left_set)
         right_indices = list(right_set)

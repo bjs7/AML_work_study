@@ -18,7 +18,7 @@ inPath = sys.argv[1]
 size = 'Small'
 lr = 'HI'
 
-inPath = '/home/nam_07/projects/AML_work_study/' + lr + '-' + size + '_Trans.csv'
+inPath = '/home/nam_07/projects/AML_work_study/data/' + lr + '-' + size + '_Trans.csv'
 outPath = os.path.dirname(inPath) + "/formatted_transactions_" + size.lower() + '_' + lr + '.csv'
 #outPath = os.path.dirname(inPath) + "/formatted_transactions_test123.csv"
 
@@ -44,7 +44,7 @@ def get_dict_val(name, collection):
 # Parse patterns file -------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------
 
-inPathPatterns = '/home/nam_07/projects/AML_work_study/' + lr + '-' + size + '_Patterns.txt'
+inPathPatterns = '/home/nam_07/projects/AML_work_study/data/' + lr + '-' + size + '_Patterns.txt'
 
 # Pattern type mapping:
 # 0: NONE (no laundering pattern, Is Laundering=0)
@@ -72,24 +72,31 @@ PATTERN_MAP = {
 # Key: (Timestamp, From Bank, Account_from, To Bank, Account_to,
 #        Amount Received, Receiving Currency, Amount Paid, Payment Currency, Payment Format) -> pattern_id
 pattern_lookup = {}
+attempt_lookup = {}  # same key -> attempt_id (0-based counter per BEGIN block)
 
 current_pattern = None
+current_attempt = -1
+attempt_counter = 0
 with open(inPathPatterns, 'r') as f:
     for line in f:
         line = line.strip()
         if line.startswith('BEGIN LAUNDERING ATTEMPT - '):
             pattern_name = line.replace('BEGIN LAUNDERING ATTEMPT - ', '').split(':')[0].strip()
             current_pattern = PATTERN_MAP.get(pattern_name, 0)
+            current_attempt = attempt_counter
+            attempt_counter += 1
         elif line.startswith('END LAUNDERING ATTEMPT'):
             current_pattern = None
+            current_attempt = -1
         elif current_pattern is not None and line:
             parts = line.split(',')
             if len(parts) == 11:
                 key = (parts[0], parts[1], parts[2], parts[3], parts[4],
                        parts[5], parts[6], parts[7], parts[8], parts[9])
                 pattern_lookup[key] = current_pattern
+                attempt_lookup[key] = current_attempt
 
-print(f"Parsed {len(pattern_lookup)} pattern transactions from {inPathPatterns}")
+print(f"Parsed {len(pattern_lookup)} pattern transactions across {attempt_counter} attempts from {inPathPatterns}")
 
 
 # ---------------------------------------------------------------------------------------
@@ -98,7 +105,7 @@ print(f"Parsed {len(pattern_lookup)} pattern transactions from {inPathPatterns}"
 
 header = "EdgeID,from_id,to_id,Timestamp,\
 Amount Sent,Sent Currency,Amount Received,Received Currency,\
-Payment Format,From Bank,To Bank,Is Laundering,Pattern\n"
+Payment Format,From Bank,To Bank,Is Laundering,Pattern,AttemptID\n"
 
 firstTs = -1
 i = 0
@@ -146,11 +153,12 @@ with open(outPath, 'w') as writer:
                raw[i,"Amount Received"], raw[i,"Receiving Currency"],
                raw[i,"Amount Paid"], raw[i,"Payment Currency"], raw[i,"Payment Format"])
         pattern = pattern_lookup.get(key, 0)
+        attempt_id = attempt_lookup.get(key, -1)  # -1 for non-laundering transactions
         if isl == 1 and pattern == 0:
             pattern = 9
 
-        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d,%d\n' % \
-                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl,pattern)
+        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d,%d,%d\n' % \
+                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl,pattern,attempt_id)
 
         writer.write(line)
 
@@ -178,7 +186,7 @@ formatted.to_csv(outPath)
 # ---------------------------------------------------------------------------------------
 
 
-inPathPatterns = '/home/nam_07/projects/AML_work_study/' + lr + '-' + size + '_Patterns.txt'
+inPathPatterns = '/home/nam_07/projects/AML_work_study/data/' + lr + '-' + size + '_Patterns.txt'
 outPathPatterns = os.path.dirname(inPath) + "/formatted_transactions_withpatterns_" + size.lower() + '_' + lr + '.csv'
 
 # Pattern type mapping:
@@ -208,24 +216,31 @@ PATTERN_MAP = {
 # Key: (Timestamp, From Bank, Account_from, To Bank, Account_to,
 #        Amount Received, Receiving Currency, Amount Paid, Payment Currency, Payment Format) -> pattern_id
 pattern_lookup = {}
+attempt_lookup = {}  # same key -> attempt_id (0-based counter per BEGIN block)
 
 current_pattern = None
+current_attempt = -1
+attempt_counter = 0
 with open(inPathPatterns, 'r') as f:
     for line in f:
         line = line.strip()
         if line.startswith('BEGIN LAUNDERING ATTEMPT - '):
             pattern_name = line.replace('BEGIN LAUNDERING ATTEMPT - ', '').split(':')[0].strip()
             current_pattern = PATTERN_MAP.get(pattern_name, 0)
+            current_attempt = attempt_counter
+            attempt_counter += 1
         elif line.startswith('END LAUNDERING ATTEMPT'):
             current_pattern = None
+            current_attempt = -1
         elif current_pattern is not None and line:
             parts = line.split(',')
             if len(parts) == 11:
                 key = (parts[0], parts[1], parts[2], parts[3], parts[4],
                        parts[5], parts[6], parts[7], parts[8], parts[9])
                 pattern_lookup[key] = current_pattern
+                attempt_lookup[key] = current_attempt
 
-print(f"Parsed {len(pattern_lookup)} pattern transactions from {inPathPatterns}")
+print(f"Parsed {len(pattern_lookup)} pattern transactions across {attempt_counter} attempts from {inPathPatterns}")
 
 
 
@@ -273,7 +288,7 @@ banks = dict()
 
 header = "EdgeID,from_id,to_id,Timestamp,\
 Amount Sent,Sent Currency,Amount Received,Received Currency,\
-Payment Format,From Bank,To Bank,Is Laundering,Pattern\n"
+Payment Format,From Bank,To Bank,Is Laundering,Pattern,AttemptID\n"
 
 firstTs = -1
 
@@ -317,13 +332,14 @@ with open(outPathPatterns, 'w') as writer:
                raw[i,"Amount Received"], raw[i,"Receiving Currency"],
                raw[i,"Amount Paid"], raw[i,"Payment Currency"], raw[i,"Payment Format"])
         pattern = pattern_lookup.get(key, 0)
+        attempt_id = attempt_lookup.get(key, -1)  # -1 for non-laundering transactions
 
         # If laundering but no pattern matched, assign 9 (UNKNOWN)
         if isl == 1 and pattern == 0:
             pattern = 9
 
-        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d,%d\n' % \
-                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl,pattern)
+        line = '%d,%d,%d,%d,%f,%d,%f,%d,%d,%d,%d,%d,%d,%d\n' % \
+                    (i,fromId,toId,ts,amountPaidOrig,cur2,amountReceivedOrig,cur1,fmt,bank_from,bank_to,isl,pattern,attempt_id)
 
         writer.write(line)
 
