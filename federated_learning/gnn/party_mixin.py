@@ -209,6 +209,7 @@ class GNNMixinPartyBaseline(GNNMixinParty):
     def train(self, laundering_values, laundering_values_test=None):
 
         best_model, best_f1 = None, -1
+        consecutive_zero_epochs = 0
         laundering_values['pred_probabilities'], laundering_values['pred_label'] = 0, 0
         if laundering_values_test is not None:
             laundering_values_test['pred_probabilities'], laundering_values_test['pred_label'] = 0, 0
@@ -261,6 +262,15 @@ class GNNMixinPartyBaseline(GNNMixinParty):
                 best_model = copy.deepcopy(self.model.gnn.state_dict())
                 best_f1 = f1_vali
                 logger.debug("New best Vali F1: %.4f at epoch %d", best_f1, epoch + 1)
+
+            if self.mode == 'tuning':
+                if f1_vali == 0:
+                    consecutive_zero_epochs += 1
+                else:
+                    consecutive_zero_epochs = 0
+                if consecutive_zero_epochs >= 20:
+                    logger.info("Early stop at epoch %d/%d — F1=0 for 20 consecutive epochs (tuning)", epoch + 1, epochs)
+                    break
 
         if self.mode == 'tuning':
             return {'f1': best_f1}
