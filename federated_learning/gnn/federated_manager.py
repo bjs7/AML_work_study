@@ -92,7 +92,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             test_banks = fedgraph_banks['test_banks'] if mode == 'training' else None
         
         for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
-            if banks:
+            if banks is not None:  # None = tuning mode (skip test); [] = no new exclusive banks but still run superset merge
                 utils.add_banks_to_manager(self.args, banks, self, df, scaler_encoders, bank_type=bank_type)
 
         self.set_mode(mode)
@@ -400,9 +400,15 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
             vali_banks = fedavg_banks['vali_banks']
             test_banks = fedavg_banks['test_banks']
 
+        self._removed_banks = []
+        self._removed_banks_data = None
         if parsers['data_parser'].bank_filter:
+            original_train_banks = list(train_banks)
             train_banks = apply_bank_filter(
                 train_banks, df, parsers['data_parser'].bank_filter)
+            self._removed_banks = sorted(set(original_train_banks) - set(train_banks))
+            if self._removed_banks:
+                self._removed_banks_data = (df, parsers, scaler_encoders)
 
         if parsers['data_parser'].testing:
             train_banks = train_banks[0:5]
@@ -428,6 +434,44 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         tuned_hp, _ = self.tuning(laundering_values)
 
         return tuned_hp
+
+    def _eval_removed_parties(self, laundering_values_test):
+        """Run test inference for removed (bank-filtered) parties and return their predictions.
+
+        Called after training with the best global model already set. Removed parties are
+        added as test-only, given the global weights, and their predictions are collected
+        into a fresh copy of laundering_values_test (pred_label=0 baseline). In analysis,
+        this can be OR-aggregated with the main laundering_values to get the combined eval.
+        """
+        if not self._removed_banks or self._removed_banks_data is None:
+            return None
+
+        df, parsers, scaler_encoders = self._removed_banks_data
+
+        for bank_id in self._removed_banks:
+            self._add_party(bank_id, df, parsers, copy.deepcopy(scaler_encoders), bank_type='test')
+            party = self.test_parties[bank_id]
+            party.mode = 'training'
+            party.prep_data()
+
+        self.send_global_weights(condition=lambda bid: bid in set(self._removed_banks))
+
+        for bank_id in self._removed_banks:
+            self.test_parties[bank_id]._setup_eval_loader(mode='test')
+
+        lv_removed = laundering_values_test.copy()
+        for col in ['pred_label', 'pred_probabilities', 'num_prob', 'avg_prob', 'max_prob']:
+            lv_removed[col] = 0
+
+        for bank_id in self._removed_banks:
+            flin.update_laundering_values(self.test_parties[bank_id], lv_removed, mode='test')
+
+        logger.info("Removed parties eval — %d banks, combined F1: %.4f",
+                    len(self._removed_banks),
+                    metrics(y_true=lv_removed['true_y'],
+                            y_pred_probabilities=lv_removed['avg_prob'],
+                            y_pred_binary=lv_removed['pred_label'])['f1'])
+        return lv_removed
 
     def tuning(self, laundering_values):
 
@@ -622,6 +666,9 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         if (best_metrics['precision'] == 0 or best_metrics['recall'] == 0):
             logger.warning("Zero precision or recall - Model may not be learning properly")
 
+        removed_lv = self._eval_removed_parties(laundering_values_test)
+
         return {'weights': best_weights, 'metrics': best_metrics, 'laundering_values': laundering_values_test,
-                'best_vali_f1': best_f1, 'party_performance': party_performance}
+                'best_vali_f1': best_f1, 'party_performance': party_performance,
+                'removed_parties_laundering_values': removed_lv}
 

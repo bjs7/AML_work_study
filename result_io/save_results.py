@@ -152,6 +152,9 @@ def save_seed_result(save_dir, seed, result, manager):
                              'best_vali_f1': result.get('best_vali_f1'),
                              'party_performance': result.get('party_performance')}, f)
             torch.save(result['weights'], seed_folder / 'model.pth')
+            if result.get('removed_parties_laundering_values') is not None:
+                with open(seed_folder / 'removed_parties_laundering_values.pkl', 'wb') as f:
+                    pickle.dump(result['removed_parties_laundering_values'], f)
 
     elif model_type == 'booster':
         with open(seed_folder / 'metrics_laundering_values.pkl', 'wb') as f:

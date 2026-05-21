@@ -21,7 +21,7 @@ def filter_banks(parsers):
     parsers['data_parser'].eval_mode = 'system'  # this function generates individual_indices, so comparable filtering would be circular
 
     # data ----------------------------------------------------------------------------------------
-    df_raw = pd.read_csv(get_data_path() + f"/AML_work_study/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+    df_raw = pd.read_csv(get_data_path() + f"/AML_work_study/data/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
     df_length = df_raw.shape[0]
     unique_banks = sorted(pd.concat([df_raw['From Bank'], df_raw['To Bank']]).unique().tolist())
     df, scaler_encoders = get_data(df_raw, parsers['data_parser'], split_perc = split_perc)
@@ -162,7 +162,7 @@ def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
     bank_filter_stats = {}
     for filter_name in ['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct']:
         filtered_train = apply_bank_filter(train_banks, df, filter_name)
-        removed_banks = sorted(set(train_banks) - set(filtered_train))
+        removed_banks = set(train_banks) - set(filtered_train)
 
         filtered_indices = []
         for bank in filtered_train:
@@ -174,17 +174,33 @@ def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
         laundering_counts = int(split_data['train_data']['x'].loc[overlap, 'Is Laundering'].sum())
         data_pct = overlap.sum() / baseline_count if baseline_count > 0 else 0.0
         laundering_pct = laundering_counts / baseline_laundering if baseline_laundering > 0 else 0.0
-        #f_laundering, f_data_pct, f_laundering_pct = count_split_stats(filtered_indices)
-        
+
+        # Unreachable positives: illicit transactions in vali/test where BOTH From Bank and
+        # To Bank are removed — no remaining party can predict these as 1, so they default to 0.
+        unreachable = {}
+        for split_name in ['vali', 'test']:
+            split_df = split_data[f'{split_name}_data']['x']
+            both_removed = (
+                split_df['From Bank'].isin(removed_banks) &
+                split_df['To Bank'].isin(removed_banks)
+            )
+            total_illicit = int(split_df['Is Laundering'].sum())
+            unreachable_illicit = int(split_df.loc[both_removed, 'Is Laundering'].sum())
+            unreachable[f'{split_name}_unreachable_illicit'] = unreachable_illicit
+            unreachable[f'{split_name}_unreachable_illicit_pct'] = (
+                unreachable_illicit / total_illicit if total_illicit > 0 else 0.0
+            )
+
         bank_filter_stats[filter_name] = {
             'train_banks_remaining': len(filtered_train),
             'train_banks_removed': len(removed_banks),
-            'removed_banks': removed_banks,
-            'laundering_counts_left':laundering_counts, 
-            'data_pct_left': data_pct, 
-            'laundering_pct_left': laundering_pct
+            'removed_banks': sorted(removed_banks),
+            'laundering_counts_left': laundering_counts,
+            'data_pct_left': data_pct,
+            'laundering_pct_left': laundering_pct,
+            **unreachable
         }
-    
+
     return bank_filter_stats
 
 

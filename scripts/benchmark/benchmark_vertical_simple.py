@@ -28,7 +28,13 @@ Reports:
 
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Support running from batch_jobs/benchmark/ on HPC or scripts/benchmark/ locally
+_hpc_repo = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study'
+if os.path.exists(_hpc_repo):
+    sys.path.insert(0, _hpc_repo)
+else:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import argparse
 import time
@@ -150,6 +156,7 @@ def run_benchmark():
 
     from federated_learning.gnn.vertical_simple import setup
     setup.setup_vertical_simple(manager, batching=True, batching_mode=batching_mode)
+
     manager.setup_model(ibm_gnn, laundering_values_test)
 
     # -----------------------------------------------------------------------
