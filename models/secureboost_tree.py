@@ -115,16 +115,17 @@ def _route(global_idx: int, node: SBNode, parties: dict) -> float:
     return _route(global_idx, child, parties)
 
 
-def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
+def _batch_route(node: SBNode, indices: list, parties: dict,
+                 txn_party_map: dict = None) -> dict:
     """Route all indices through a tree in one pass.
 
     More cache-friendly than per-sample _route: all samples at a node are
     processed together, so the feature lookup for a given party/feature is
     done in a tight loop rather than interleaved across the call stack.
 
-    Unresolved transactions (not held by the winning party) are first offered
-    to other parties using the same feature+threshold before falling back to
-    the node's default direction.
+    Unresolved transactions (not held by the winning party) are looked up
+    directly in txn_party_map (sender/receiver) before falling back to the
+    node's default direction.
 
     Returns:
         {global_idx: leaf_value} for every index in indices.
@@ -160,34 +161,40 @@ def _batch_route(node: SBNode, indices: list, parties: dict) -> dict:
     else:
         unresolved = list(indices)
 
-    # Ask other parties to route unresolved transactions using same feature+threshold.
+    # Use txn_party_map to route unresolved via sender/receiver directly.
     if unresolved:
-        unresolved_set = set(unresolved)
-        for other_id, other_party in parties.items():
-            if other_id == node.party_id or not unresolved_set:
-                continue
-            g2l   = getattr(other_party, '_global_to_local', {})
-            farrs = getattr(other_party, '_feature_arrays', {})
-            for idx in list(unresolved_set):
-                entry = g2l.get(idx)
-                if entry is None:
-                    continue
-                mode, local_row = entry
-                arr = farrs.get(mode, {}).get(feat)
-                if arr is None:
-                    continue
-                val = float(arr[local_row])
-                if val <= thresh:
-                    left_idxs.append(idx)
-                else:
-                    right_idxs.append(idx)
-                unresolved_set.discard(idx)
-        # Truly unresolved → default direction
-        (left_idxs if node.default_left else right_idxs).extend(unresolved_set)
+        if txn_party_map is not None:
+            truly_unresolved = []
+            for idx in unresolved:
+                routed = False
+                for pid in txn_party_map.get(idx, []):
+                    if pid == node.party_id:
+                        continue
+                    other = parties.get(pid)
+                    if other is None:
+                        continue
+                    g2l   = getattr(other, '_global_to_local', {})
+                    farrs = getattr(other, '_feature_arrays', {})
+                    entry = g2l.get(idx)
+                    if entry is None:
+                        continue
+                    mode, local_row = entry
+                    arr = farrs.get(mode, {}).get(feat)
+                    if arr is None:
+                        continue
+                    val = float(arr[local_row])
+                    (left_idxs if val <= thresh else right_idxs).append(idx)
+                    routed = True
+                    break
+                if not routed:
+                    truly_unresolved.append(idx)
+            (left_idxs if node.default_left else right_idxs).extend(truly_unresolved)
+        else:
+            (left_idxs if node.default_left else right_idxs).extend(unresolved)
 
     result: dict = {}
     if left_idxs:
-        result.update(_batch_route(node.left, left_idxs, parties))
+        result.update(_batch_route(node.left, left_idxs, parties, txn_party_map))
     if right_idxs:
-        result.update(_batch_route(node.right, right_idxs, parties))
+        result.update(_batch_route(node.right, right_idxs, parties, txn_party_map))
     return result

@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 def _apply_tree(F: np.ndarray, indices: list, tree_root, all_parties: dict,
-                learning_rate: float) -> None:
+                learning_rate: float, txn_party_map: dict = None) -> None:
     """Batch-route all indices through tree_root and add the leaf values to F in-place.
 
     Uses _batch_route for cache-friendly traversal rather than per-sample recursion.
@@ -48,8 +48,9 @@ def _apply_tree(F: np.ndarray, indices: list, tree_root, all_parties: dict,
         tree_root: root of the newly built tree.
         all_parties: {bank_id: party} dict.
         learning_rate: shrinkage to apply to leaf values.
+        txn_party_map: {global_idx: [party_ids]} for fast unresolved routing.
     """
-    leaf_dict = _batch_route(tree_root, indices, all_parties)
+    leaf_dict = _batch_route(tree_root, indices, all_parties, txn_party_map)
     for i, idx in enumerate(indices):
         F[i] += learning_rate * leaf_dict[idx]
 
@@ -250,6 +251,13 @@ class SecureBoostManager(BoosterMixinManager):
             if not hasattr(party, '_global_idx_set'):
                 party._global_idx_set = frozenset(party._global_to_local.keys())
 
+        # Precompute {global_idx: [party_ids]} — avoids O(N_parties) scan per node
+        txn_party_list_map = {
+            idx: [pid for pid in (info['sender_party'], info['receiver_party'])
+                  if pid in all_parties]
+            for idx, info in self.txn_party_map.items()
+        }
+
         n_train_parties = sum(1 for _ in self.iter_parties(include_test=False))
         max_workers = min(utils.get_cpu_count(), n_train_parties)
         logger.info("SecureBoost: %d rounds, %d parties, %d parallel workers",
@@ -283,14 +291,15 @@ class SecureBoostManager(BoosterMixinManager):
 
                 # --- Build one tree (parallel split-finding inside) ---
                 tree_root = self._build_tree(
-                    round_indices, g_arr, h_arr, round_idx_to_pos, depth=0, executor=executor
+                    round_indices, g_arr, h_arr, round_idx_to_pos, depth=0,
+                    executor=executor, txn_party_map=txn_party_list_map
                 )
                 self.ensemble.add_tree(tree_root)
 
                 # --- Incremental score updates (one tree pass each, not full ensemble) ---
-                _apply_tree(F_train, train_indices, tree_root, all_parties, self.learning_rate)
-                _apply_tree(F_vali,  vali_indices,  tree_root, all_parties, self.learning_rate)
-                _apply_tree(F_test,  test_indices,  tree_root, all_parties, self.learning_rate)
+                _apply_tree(F_train, train_indices, tree_root, all_parties, self.learning_rate, txn_party_list_map)
+                _apply_tree(F_vali,  vali_indices,  tree_root, all_parties, self.learning_rate, txn_party_list_map)
+                _apply_tree(F_test,  test_indices,  tree_root, all_parties, self.learning_rate, txn_party_list_map)
 
                 # --- Validate ---
                 vali_probs  = 1.0 / (1.0 + np.exp(-np.clip(F_vali, -500, 500)))
@@ -329,7 +338,7 @@ class SecureBoostManager(BoosterMixinManager):
     # ------------------------------------------------------------------
 
     def _build_tree(self, node_indices: list, g_arr: np.ndarray, h_arr: np.ndarray,
-                    idx_to_pos: dict, depth: int, executor=None):
+                    idx_to_pos: dict, depth: int, executor=None, txn_party_map: dict = None):
         """Recursively build one CART tree node using gradient histograms from parties.
 
         Args:
@@ -409,20 +418,22 @@ class SecureBoostManager(BoosterMixinManager):
         right_set       = set(right_p)
 
         # --- Ask other parties to route unresolved transactions with same feature+threshold ---
-        # Since all parties share the same feature names, other parties can apply the
-        # winning split to transactions they hold that the winning party doesn't.
+        # Each transaction is held by at most 2 parties (sender + receiver).
+        # txn_party_map gives a direct lookup, avoiding an O(N_parties) scan.
         unresolved_set = node_set - left_set - right_set
-        if unresolved_set:
-            for bank_id, party in self.iter_parties(include_test=False):
-                if bank_id == best_party_id or not unresolved_set:
-                    continue
-                party_unresolved = list(unresolved_set & party._global_idx_set)
-                if not party_unresolved:
-                    continue
-                left_p2, right_p2 = party.route_samples(party_unresolved, best_feature, best_threshold)
-                left_set.update(left_p2)
-                right_set.update(right_p2)
-                unresolved_set -= set(left_p2) | set(right_p2)
+        if unresolved_set and txn_party_map is not None:
+            for idx in list(unresolved_set):
+                for pid in txn_party_map.get(idx, []):
+                    if pid == best_party_id:
+                        continue
+                    party = self.parties.get(pid)
+                    if party is None:
+                        continue
+                    val = party.get_feature_value(idx, best_feature)
+                    if val is not None:
+                        (left_set if val <= best_threshold else right_set).add(idx)
+                        unresolved_set.discard(idx)
+                        break
 
         # Truly unresolved → default direction based on gradient signal.
         lp_pos = np.array([idx_to_pos[i] for i in left_set])  if left_set  else np.array([], dtype=int)
@@ -444,8 +455,8 @@ class SecureBoostManager(BoosterMixinManager):
         if not left_indices or not right_indices:
             return SBLeafNode(value=leaf_value)
 
-        left_child  = self._build_tree(left_indices,  g_arr, h_arr, idx_to_pos, depth + 1, executor)
-        right_child = self._build_tree(right_indices, g_arr, h_arr, idx_to_pos, depth + 1, executor)
+        left_child  = self._build_tree(left_indices,  g_arr, h_arr, idx_to_pos, depth + 1, executor, txn_party_map)
+        right_child = self._build_tree(right_indices, g_arr, h_arr, idx_to_pos, depth + 1, executor, txn_party_map)
 
         return SBSplitNode(
             party_id=best_party_id,
