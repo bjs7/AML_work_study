@@ -41,6 +41,7 @@ def get_data(df, data_parser, **kwargs):
         else:
             edge_features = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
 
+    df = df.copy()
     df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()
 
     # get timestamps and labels
