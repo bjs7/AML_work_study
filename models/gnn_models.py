@@ -4,18 +4,19 @@ import torch.nn.functional as F
 import torch
 from federated_learning.registry import register_gnn
 
-#############################################################################################
-# IMPORTANT !!!!!!!
-# WHEN ADDING NEW MODELS CHECK IF THEY HAVE MORE/DIFFERENT ARGUMENTS/PARAMETERS THAN THE GINE
-# IF SO THEN THEY NEED TO BE ADDED TO THE SAMPLING OF SAMPLING HYPERPARAMETERS!!
-#############################################################################################
-# ALSO NEED TO CHANGE THE ELIF CONDITION TO MODEL.TYPE
-# Or whether another type of data (holder) for the graph data is needed
+# NOTE: when adding new models, ensure any extra hyperparameters are also added
+# to the HP sampling logic (hp_tuning.py) and that the correct data format is used.
 
 @register_gnn('GINe')
 class GINe(torch.nn.Module):
+    """Graph Isomorphism Network with Edge features (GINe).
 
-    def __init__(self, num_features, num_gnn_layers, n_classes=2,
+    Primary model used across all FL algorithms. Supports optional edge message
+    passing (emlps), residual connections, and BatchNorm/LayerNorm. The mlp_vert
+    head is used exclusively for vertical FL concatenated embeddings.
+    """
+
+    def __init__(self, num_features: int, num_gnn_layers: int, n_classes: int = 2,
                  n_hidden=100, edge_updates=False, residual=True,
                  edge_dim=None, dropout=0.0, final_dropout=0.5, batching=False):
         super().__init__()

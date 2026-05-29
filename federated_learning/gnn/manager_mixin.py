@@ -18,12 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 class GNNMixinManager:
+    """Shared GNN manager logic: model initialisation, HP tuning, and multi-seed training."""
 
-    def _prep_parties_data(self):
+    def _prep_parties_data(self) -> None:
         for _, party in self.parties.items():
             party.prep_data()
 
-    def train(self, hyperparameters, laundering_values_vali, laundering_values_test):
+    def train(self, hyperparameters: dict, laundering_values_vali, laundering_values_test) -> dict:
 
         self.set_mode('training')
         seeds = self.args['data_parser'].testing_seeds
@@ -70,14 +71,14 @@ class GNNMixinManager:
 
         return results_by_seed
 
-    def init_hyperparams(self, sample_intervals = None):
+    def init_hyperparams(self, sample_intervals: dict | None = None) -> list[dict]:
             
         x_0 = tr_utils.get_tuning_configs(self.args)[self.args['data_parser'].scenario][self.args['data_parser'].size]['x_0']
-        hp_list = [tr_utils.hyper_sampler(self.args['fl_parser'], None, sample_intervals) for i in range(x_0)]
+        hp_list = [tr_utils.hyper_sampler(self.args['fl_parser'], None, sample_intervals) for _ in range(x_0)]
 
         return hp_list
     
-    def init_models(self, hyperparams, bank_id=None):
+    def init_models(self, hyperparams: dict, bank_id: int | None = None) -> None:
 
         sample_party = next(iter(self.parties.values()))
         node_features = sample_party.procs_data['train_data']['df'].x.shape[1]
@@ -94,15 +95,12 @@ class GNNMixinManager:
         else:
             #available_gpus = get_available_gpus()
             include_test = self.mode == 'training'
-            for idx, (bank_id, party) in enumerate(self.iter_parties(include_test=include_test)):
+            for _, (bank_id, party) in enumerate(self.iter_parties(include_test=include_test)):
                 if torch.cuda.is_available():
                     gpu_idx = self.bank_device.get(bank_id, 0)
                     device = torch.device(f"cuda:{gpu_idx}")
                     #device = get_device_for_party(idx, available_gpus)
                 party.model = GNN(self, hyperparams, node_features, edge_dim, device=device)
-
-        # need to 'save' parameters from model 1 as starting, or not, because the models will vary
-        # Here get the relevant parameters etc. or it can be placed in get_global_w
 
     def _gnn_tuning(self, laundering_values, **kwargs):
         
@@ -146,6 +144,7 @@ class GNNMixinManager:
 
 
 class GNNMixinManagerBaseline(GNNMixinManager):
+    """Extended manager mixin for individual/full_info baselines with per-bank HP tuning."""
 
     def _save_tuned_hp(self, hp):
         path = get_full_info_hp_path(self.args)

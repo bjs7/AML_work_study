@@ -76,6 +76,7 @@ analysis/
 
 # Local scratch/test files
 main_test.py
+test.py
 test_script.py
 fedvert_new.py
 test_file.py

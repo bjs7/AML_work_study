@@ -128,7 +128,7 @@ class GNNMixinParty:
 
         return results
 
-    def prep_data(self):
+    def prep_data(self) -> None:
 
         if self.mode == 'tuning':
             train_proc, vali_proc = self.feature_engineering(
@@ -143,7 +143,7 @@ class GNNMixinParty:
                 (self.data['test_data'], 'means_test', 'std_test'))
             self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc, 'test_data': test_proc}
 
-    def get_vali_data(self):
+    def get_vali_data(self) -> dict:
         return {'df': self.procs_data['vali_data']['df'],
                 'pred_indices': self.procs_data['vali_data']['pred_indices']}
 
@@ -389,7 +389,7 @@ class GNNMixinPartyHorizontal(GNNMixinParty):
         """
         self.model.set_global_weight_reference()
 
-    def update_local_weights(self, num_local_epochs=1):
+    def update_local_weights(self, num_local_epochs: int = 1) -> float | None:
 
         tr_data = self.procs_data['train_data']['df']
         loss = None
@@ -406,7 +406,7 @@ class GNNMixinPartyHorizontal(GNNMixinParty):
 
         return loss
 
-    def send_local_weights(self, manager):
+    def send_local_weights(self, manager) -> None:
         manager.parties_weights[self.bank_id] = {param: value.data.clone().cpu() for param, value in self.model.gnn.named_parameters()}
 
     def get_predictions(self, mode='vali'):

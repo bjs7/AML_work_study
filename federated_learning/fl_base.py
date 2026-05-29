@@ -1,4 +1,5 @@
-# packages
+"""Base classes for all Federated Learning algorithms — Party and Manager."""
+
 import argparse
 from typing import Dict, Any
 from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY
@@ -14,14 +15,12 @@ class BaseFL:
         self.mode = None
 
 
-
 class Party(BaseFL):
+    """Individual computation node representing a single bank in the FL system."""
 
     REGISTRY = FL_ALGO_REGISTRY_PARTY
 
-    """Individual computation node that can send/receive messages"""
-
-    def __init__(self, args, bank_id, data, indices, manager, scaler_encoders, bank_type='train') -> None:
+    def __init__(self, args: dict, bank_id: int, data: dict, indices: dict, manager: 'Manager', scaler_encoders, bank_type: str = 'train') -> None:
         super().__init__(args)
         self.bank_id = bank_id
         self.indices = indices
@@ -96,7 +95,7 @@ class Manager(BaseFL, ABC):
         base_cls = cls.REGISTRY[algo_class]
         return base_cls.return_class(parsers)
 
-    def add_party(self, party: Party, bank_type = 'train'):
+    def add_party(self, party: Party, bank_type: str = 'train') -> None:
         
         if bank_type == 'train':
             self.parties[party.bank_id] = party
@@ -104,8 +103,6 @@ class Manager(BaseFL, ABC):
             self.vali_parties[party.bank_id] = party
         else:
             self.test_parties[party.bank_id] = party
-
-        #print(f"[Manager] added: party {party.bank_id}" + (" (sr_party)" if is_sr else ""))
 
     def _add_party(self, bank_id, df, parsers, scaler_encoders, bank_type='train'):
         """Create and add a single party to this manager.
@@ -129,7 +126,7 @@ class Manager(BaseFL, ABC):
                             bank_type=bank_type
                             )
 
-    def get_parties_for_mode(self, mode):
+    def get_parties_for_mode(self, mode: str) -> dict[int, Party]:
         if mode == 'train':
             return self.parties
         elif mode == 'vali':
@@ -161,7 +158,7 @@ class Manager(BaseFL, ABC):
                 if bank_id not in seen:
                     yield bank_id, party
 
-    def set_mode(self, mode):
+    def set_mode(self, mode: str) -> None:
         self.mode = mode
         for _, party in self.iter_parties(include_test=True):
             party.mode = mode

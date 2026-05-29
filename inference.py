@@ -1,3 +1,5 @@
+"""Evaluation metrics and laundering-value aggregation for AML predictions."""
+
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, precision_score, recall_score, average_precision_score
 import pandas as pd
 import numpy as np
@@ -5,10 +7,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def probs_to_binary(y_pred_probabilities, threshold = 0.5):
+
+def probs_to_binary(y_pred_probabilities: np.ndarray, threshold: float = 0.5) -> np.ndarray:
     return (y_pred_probabilities > threshold) * 1
 
-def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
+
+def metrics(
+    y_true: np.ndarray,
+    y_pred_probabilities: np.ndarray | None = None,
+    y_pred_binary: np.ndarray | None = None,
+) -> dict[str, float]:
 
     if y_pred_binary is None:
         y_pred_binary = probs_to_binary(y_pred_probabilities)
@@ -55,7 +63,12 @@ def metrics(y_true, y_pred_probabilities = None, y_pred_binary = None):
     return results
 
 
-def update_laundering_values(party, laundering_values, pred_probabilities=None, mode='vali'):
+def update_laundering_values(
+    party,
+    laundering_values: pd.DataFrame,
+    pred_probabilities: np.ndarray | None = None,
+    mode: str = 'vali',
+) -> None:
     """Update laundering values with predictions from a party.
 
     Args:

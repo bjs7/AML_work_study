@@ -1,5 +1,4 @@
-
-# packages for FL
+"""GNN model wrapper and graph utility functions for batching and data loading."""
 
 from abc import ABC
 import logging
@@ -15,8 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 class GNN(ABC):
+    """Wrapper around a PyG GNN model with optimizer, loss, and FedProx support.
 
-    def __init__(self, manager, hyperparams, node_features, edge_dim, device=None):
+    Handles device placement, weight updates, and prediction. Concrete model
+    architectures (e.g. GINe) are looked up via the GNN_REGISTRY.
+    """
+
+    def __init__(self, manager, hyperparams: dict, node_features: int, edge_dim: int, device: torch.device | None = None) -> None:
         super().__init__()
         self.device = device or torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self._get_gnn_loss_optimizer(manager, hyperparams, node_features, edge_dim)
@@ -72,7 +76,7 @@ class GNN(ABC):
         w_ce2 = loss_ratio_override if loss_ratio_override is not None else hyperparams.get('w_ce2')
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([w_ce1, w_ce2]).to(self.device)) 
 
-    def update_weights(self, gd, mask):
+    def update_weights(self, gd, mask: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, float]:
 
         self.gnn.train()
         self.optimizer.zero_grad()
@@ -114,7 +118,7 @@ class GNN(ABC):
         self.optimizer.step()
 
     @torch.no_grad()
-    def predict(self, gd, mask):
+    def predict(self, gd, mask: torch.Tensor) -> torch.Tensor:
 
         self.gnn.eval()
         with torch.no_grad():
@@ -202,7 +206,7 @@ def batching_masker(batch, data, loader, indices, add_missing_edges=True):
     return mask, pred_ids
 
 
-def get_loaders(train_data, eval_data, eval_indices, num_neighbors, batch_size, transform = None):
+def get_loaders(train_data, eval_data, eval_indices, num_neighbors: list[int], batch_size: int, transform=None) -> tuple[LinkNeighborLoader, LinkNeighborLoader]:
 
     train_loader = LinkNeighborLoader(train_data, num_neighbors=num_neighbors, 
                                           edge_label_index = train_data.edge_index,
@@ -240,13 +244,12 @@ class AddEgoIds(BaseTransform):
         
         return data
 
-def add_arange_ids(data_list):
-    '''
-    Add the index as an id to the edge features to find seed edges in training, validation and testing.
+def add_arange_ids(data_list: list) -> None:
+    """Prepend a sequential edge ID column to edge_attr for all graphs in data_list.
 
-    Args:
-    - data_list (str): List of tr_data, val_data and te_data.
-    '''
+    The ID column is used to locate seed edges within a batch during training,
+    validation, and testing.
+    """
     for data in data_list:
         if isinstance(data, HeteroData):
             data['node', 'to', 'node'].edge_attr = torch.cat([torch.arange(data['node', 'to', 'node'].edge_attr.shape[0]).view(-1, 1), data['node', 'to', 'node'].edge_attr], dim=1)

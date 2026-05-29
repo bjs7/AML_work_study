@@ -43,15 +43,11 @@ def update_regular_data(df, bank_indices):
 
 def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
 
-    #df = copy.copy(data)
-    #df = train_data
-
     df = copy.deepcopy(data)
 
     # Guard: return as-is if the split is empty (some parties have no data in a given split)
     if df.get('x') is None or df['x'].shape[0] == 0:
         return df
-    #df = data['df']
 
     scl_enc = {ele: scaler_encoders.get(ele) for ele in 
                ('scaler_amount', 'encoder_currency', 'encoder_payment_format', 'gfp')
@@ -162,7 +158,6 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
 # function to first 'update' data
 def get_updated_bank_indices(bank_indices):
 
-    #bank_indices = copy.copy(bank_indices)
     train_indices = bank_indices.get('train_indices', None)
     vali_indices = bank_indices.get('vali_indices', None)
     test_indices = bank_indices.get('test_indices', None)

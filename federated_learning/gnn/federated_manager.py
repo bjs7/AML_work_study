@@ -72,7 +72,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
     def add_parties_prep_data(self, mode, df, parsers, scaler_encoders):
 
-        #if parsers['data_parser'].ibm_fe:
         self.set_manager_data(df['regular_data'], mode) #TODO need to change this such that it adjust for eval mode
         self.cal_global_sats()
         self.graph = df['graph_data']
@@ -92,8 +91,8 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         self.set_mode(mode)
         parties = self.test_parties if mode == 'training' else self.vali_parties
-        #include_test = mode == 'training'
-        for bank_id, party in parties.items(): #self.iter_parties(include_test): #TODO Needs to only be self.parties when tuning?
+        for _, party in parties.items(): #TODO Needs to only be self.parties when tuning?
+
             party.prep_data()
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
@@ -113,7 +112,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         if not self.args['data_parser'].ibm_hp:
             self.add_parties_prep_data('tuning', df, parsers, scaler_encoders)
-            #self.label_data = laundering_values
             
         tuned_hp, _ = self.tuning(laundering_values)
 
@@ -153,8 +151,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
             hyperparameters: Model hyperparameters dict
             laundering_values: Laundering values for evaluation
         """
-        #if hyperparameters is None:
-        #    hyperparameters = self.tuning(laundering_values)[0]
 
         # Set device
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -381,10 +377,14 @@ class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
             yield None, batch_banks, precomputed_batch_data
 
 
-# FedAvg
 class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
+    """Horizontal Federated Learning Manager (FedAvg / FedProx).
 
-    def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis = False):
+    Each party trains locally on its own bank's graph and contributes weight
+    updates to a global model via weighted averaging each round.
+    """
+
+    def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis: bool = False) -> dict:
 
         if parsers['data_parser'].eval_mode == 'comparable':
             train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
@@ -468,9 +468,8 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
                             y_pred_binary=lv_removed['pred_label'])['f1'])
         return lv_removed
 
-    def tuning(self, laundering_values):
-
-        # --------------------------------
+    def tuning(self, laundering_values) -> tuple[dict, dict | None]:
+        """Run HP tuning or return IBM defaults if --ibm_hp is set."""
 
         if self.args['data_parser'].ibm_hp:
             return ibm_gnn, None
@@ -498,8 +497,6 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
             self.get_global_weights()
             self.send_global_weights_params()
 
-            # if reg or graph epochs is used. Or also is for decision trees, yes?
-            # just update in one, and then another for sending to manager?
             results = self.fl_training(laundering_values)
 
             if results['metrics']['f1'] > best_f1:
@@ -589,7 +586,7 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
             # Clear parties_weights — only sampled parties contribute this round
             self.parties_weights = {}
 
-            def _train_party(bank_id, party):
+            def _train_party(_bank_id, party):
                 if mu > 0:
                     party._set_global_weight_reference()
                 party.update_local_weights(num_local_epochs=num_local_epochs)
@@ -610,7 +607,7 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
                 # Parallel predictions, sequential DataFrame updates
                 vali_parties = dict(self.iter_parties(include_test=False))
                 vali_preds = parallel_party_execute(
-                    vali_parties, lambda bid, p: p.get_predictions(mode='vali'), max_workers=max_workers)
+                    vali_parties, lambda _, p: p.get_predictions(mode='vali'), max_workers=max_workers)
                 for bank_id, party in vali_parties.items():
                     flin.update_laundering_values(party, laundering_values_vali,
                                                   pred_probabilities=vali_preds[bank_id], mode='vali')
