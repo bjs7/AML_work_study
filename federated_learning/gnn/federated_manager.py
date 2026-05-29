@@ -3,7 +3,6 @@
 import copy
 import random
 import utils
-import configs.configs as configs
 from inference import metrics
 import inference as flin
 from data.relevant_banks import load_relevant_banks, apply_bank_filter
@@ -14,14 +13,10 @@ import logging
 from sklearn.metrics import f1_score
 from federated_learning.parallel import parallel_party_execute
 
-from models.gnn_base import add_arange_ids, batching_masker, get_loaders
-from data.data_preparation import get_indices_bdt
+from models.gnn_base import add_arange_ids
 import pandas as pd
 import numpy as np
 
-import torch.nn as nn
-from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RGCNConv, LayerNorm
-import torch.nn.functional as F
 import torch
 
 from .vertical import setup, forward, training_utils

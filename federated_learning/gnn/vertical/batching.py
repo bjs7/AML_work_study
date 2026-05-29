@@ -3,7 +3,6 @@
 import copy
 import numpy as np
 import torch
-import warnings
 from collections import defaultdict
 from torch_geometric.loader import NeighborLoader, LinkNeighborLoader
 from torch_geometric.utils import subgraph

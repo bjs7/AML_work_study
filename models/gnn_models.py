@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, PNAConv, RGCNConv, LayerNorm
+from torch_geometric.nn import GINEConv, BatchNorm, Linear, GATConv, LayerNorm
 import torch.nn.functional as F
 import torch
 from federated_learning.registry import register_gnn

@@ -8,7 +8,7 @@ No raw feature values ever leave a party.
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Union
 import numpy as np
 
 

@@ -1,4 +1,3 @@
-import ast
 import argparse
 import logging
 import os
@@ -9,12 +8,9 @@ import random
 import pandas as pd
 import copy
 
-from data.data_preparation import get_indices_bdt
-from federated_learning.fl_base import Manager, Party
-import data.fl_data_helpers as dfn
 from data.raw_data_processing import get_data
 from configs.configs import split_perc
-from configs.paths import get_data_path, get_tuning_configs
+from configs.paths import get_data_path
 
 # --------------------------------------------------------------------------------------------------
 # dictionary holders

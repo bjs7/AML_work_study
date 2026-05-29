@@ -9,7 +9,6 @@ from snapml import GraphFeaturePreprocessor
 import federated_learning.hp_tuning as tu
 #from torch_geometric.data import Data
 import data.data_utils as du
-from configs import configs
 
 # Function for feature engineering, GNN and Booster --------------------------------------------------------------------------------------------
 

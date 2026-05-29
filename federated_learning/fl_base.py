@@ -1,7 +1,7 @@
 # packages
 import argparse
 from typing import Dict, Any
-from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
+from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY
 from abc import ABC, abstractmethod
 import torch
 

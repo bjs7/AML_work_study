@@ -7,7 +7,6 @@ that are only needed by the per-layer embedding exchange forward pass.
 """
 
 import torch
-import numpy as np
 
 from data.data_utils import GraphData
 from federated_learning.parallel import parallel_party_execute

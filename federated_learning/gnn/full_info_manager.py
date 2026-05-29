@@ -1,4 +1,4 @@
-from .manager_mixin import GNNMixinManager, GNNMixinManagerBaseline
+from .manager_mixin import GNNMixinManagerBaseline
 import logging
 
 logger = logging.getLogger(__name__)

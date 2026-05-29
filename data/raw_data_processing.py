@@ -3,7 +3,6 @@ import numpy as np
 import itertools
 import inspect
 import torch
-from torch_geometric.data import Data
 import data.data_utils as du
 import data.feature_engineering as fe
 import data.fl_data_helpers as dfn

@@ -5,6 +5,6 @@ final edge embeddings to the manager. The manager concatenates the
 from-bank and to-bank embeddings per transaction and classifies.
 """
 
-from . import setup
-from . import forward
-from . import batching
+from . import setup as setup
+from . import forward as forward
+from . import batching as batching

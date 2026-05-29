@@ -2,7 +2,6 @@
 
 from federated_learning.hp_tuning import ibm_gnn
 import federated_learning.hp_tuning as tr_utils
-from federated_learning.parallel import get_available_gpus, get_device_for_party
 from models.gnn_base import GNN
 from result_io.save_results import build_save_dir, save_seed_result
 from configs.paths import get_full_info_hp_path

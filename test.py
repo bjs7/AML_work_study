@@ -6,14 +6,8 @@ import utils
 #from data.get_indices_type_data import get_indices_bdt
 import copy
 import data.fl_data_helpers as dfn
-from federated_learning.registry import FL_ALGO_REGISTRY_MANAGER, FL_ALGO_REGISTRY_PARTY, FL_REG_MODEL_REGISTRY
-from federated_learning.registry import regi_algo_manager, regi_algo_party
-import models.gnn_models
-from federated_learning.fl_base import Manager, Party
-import federated_learning.fl_algos
-import data.feature_engineering as fe
+from federated_learning.fl_base import Manager
 #from results.save_results import save_results
-from data.relevant_banks import get_relevant_banks
 
 # setup -----------------------------------------------
 

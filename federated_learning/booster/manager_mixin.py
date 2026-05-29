@@ -4,15 +4,13 @@ import os
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import federated_learning.hp_tuning as tr_utils
 import utils
 from models.booster import Booster
-from federated_learning.hp_tuning import hyper_sampler, f1_eval
+from federated_learning.hp_tuning import hyper_sampler
 from configs.paths import get_tuning_configs, get_full_info_hp_path
 from result_io.save_results import build_save_dir, save_seed_result
-import xgboost as xgb
 from sklearn.metrics import f1_score
-from inference import metrics, probs_to_binary
+from inference import probs_to_binary
 
 logger = logging.getLogger(__name__)
 
