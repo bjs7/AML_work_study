@@ -71,7 +71,6 @@ class IndividualBoosterManager(BoosterMixinManager):
 
         # Setup: init models and prepare per-party data (sequential)
         party_data = {}
-        #logger.info("Training %d individual banks", len(self.parties))
         for bank_id, party in self.parties.items():
             self.init_models(hyperparameters[bank_id]['hyperparameters'], bank_id)
             party_data[bank_id] = {

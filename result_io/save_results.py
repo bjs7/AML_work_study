@@ -56,7 +56,7 @@ def _build_path(manager):
             if value:
                 str_folder += f'__{key}'
 
-    data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp', 'use_global_stats']
+    data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp']
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
     batching_mode = getattr(manager.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
     if manager.args['data_parser'].batching and batching_mode != 'lazy_link_neighbor':

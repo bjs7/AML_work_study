@@ -20,6 +20,7 @@ from federated_learning.booster.party_mixin import BoosterMixinParty, SecureBoos
 # -------------------------------------------
 
 class FedGraphPartyBase(Party):
+    """Protocol anchor for FedGraph parties — second parent in combiner MRO."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -29,6 +30,7 @@ class FedGraphPartyBase(Party):
 
 
 class FedAvgPartyBase(Party):
+    """Protocol anchor for FedAvg parties — second parent in combiner MRO."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -38,24 +40,28 @@ class FedAvgPartyBase(Party):
 
 
 class FedAvgManagerBase(Manager):
+    """Protocol anchor for FedAvg managers — second parent in combiner MRO."""
 
     def get_adjacency_matrix(self):
         return 0
 
 
 class FedGraphManagerBase(Manager):
+    """Protocol anchor for FedGraph managers — second parent in combiner MRO."""
 
     def get_adjacency_matrix(self):
         return 0
 
 
 class FedProxPartyBase(Party):
+    """Protocol anchor for FedProx parties — second parent in combiner MRO."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
 
 class FedProxManagerBase(Manager):
+    """Protocol anchor for FedProx managers — second parent in combiner MRO."""
 
     def get_adjacency_matrix(self):
         return 0

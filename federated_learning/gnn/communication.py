@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 class GNNCommunicationMixin:
+    """Handles global weight broadcast and aggregation for horizontal FL managers."""
 
     def send_global_weights(self, condition=None):
         include_test = self.mode == 'training'

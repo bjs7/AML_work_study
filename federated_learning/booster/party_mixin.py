@@ -63,13 +63,11 @@ class BoosterMixinParty:
 
     def train(self, hp, laundering_values, laundering_values_test=None):
 
-        # is the model is the right format?
         self.model.fit(X_train = self.procs_data['train_data']['x'],
                        y_train = self.procs_data['train_data']['y'],
                        X_eval = self.procs_data['vali_data']['x'],
                        y_eval = laundering_values['true_y'])
         
-
         # get best f1 on vali data
         preds_vali = self.model.predict(self.procs_data['vali_data']['x'])
         best_vali_f1 = f1_score(laundering_values['true_y'], probs_to_binary(preds_vali))

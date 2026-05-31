@@ -22,7 +22,6 @@ class GNNMixinParty:
         super().__init__(**kwargs)
         self._ibm_fe = self.manager.args['data_parser'].ibm_fe
         self._batching = self.manager.args['data_parser'].batching
-        self._use_global_stats = self.manager.args['data_parser'].use_global_stats
         self._add_missing_edges = not self.manager.args['data_parser'].replicate_ibm
 
     def _get_batch_configs(self):
@@ -61,14 +60,14 @@ class GNNMixinParty:
         """Process multiple data splits with feature engineering.
 
         Args:
-            *data_configs: Tuples of (data_dict, means_key, std_key) for each split.
+            *data_configs: Data dicts for each split (train, vali, test).
         Returns:
             List of processed data dicts, one per input config.
         """
         if self._ibm_fe:
 
             results = []
-            for data_dict, means_key, std_key in data_configs:
+            for data_dict in data_configs:
                 if data_dict['df'] is None:
                     results.append(data_dict)
                     continue
@@ -80,32 +79,23 @@ class GNNMixinParty:
                 else:
                     df.x = torch.tensor([[0.]])
 
-                # Edge features: use global or local statistics for standardization
+                # Edge features: use local statistics (z_norm) — only if enough edges
                 start = self.edge_feat_start
-                is_fedgraph = self.manager.args['fl_parser'].fl_algo == 'FedGraph'
-                if self._use_global_stats or (is_fedgraph and df.edge_attr.shape[0] <= 1):
-                    # Use global statistics from manager (FedGraph)
-                    df_means = self.manager.data[means_key]
-                    df_std = self.manager.data[std_key]
-                    for idx, col in enumerate(['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format'], start):
-                        df.edge_attr[:,idx] = (df.edge_attr[:,idx] - df_means[col]) / df_std[col]
-                elif df.edge_attr.shape[0] > 1:
-                    # Use local statistics (z_norm) — only if enough edges
+                if df.edge_attr.shape[0] > 1:
                     df.edge_attr[:,start:] = z_norm(df.edge_attr[:,start:])
-                # else: skip standardization — too few edges for meaningful local stats
                 results.append(data_dict)
 
             return results
 
         # Non-ibm_fe path
-        train_data = data_configs[0][0]
+        train_data = data_configs[0]
 
         # If train data is insufficient to fit scalers, use global encoders for OHE
         # and fit amount scaler on the first available eval split (eval-only parties)
         if train_data['df'] is None or train_data['df'].edge_attr.shape[0] < 2:
             fitted_encoders = self.scaler_encoders
             results = []
-            for data_dict, _, _ in data_configs:
+            for data_dict in data_configs:
                 if data_dict['df'] is None:
                     results.append(data_dict)
                     continue
@@ -118,7 +108,7 @@ class GNNMixinParty:
         # while amount scalers are fitted per-party on the train split
         processed_train = feature_engi_graph_data(train_data, self.args, self.scaler_encoders, edge_feat_start=self.edge_feat_start)
         results = [processed_train]
-        for data_dict, _, _ in data_configs[1:]:
+        for data_dict in data_configs[1:]:
             if data_dict['df'] is None:
                 results.append(data_dict)
                 continue
@@ -132,15 +122,15 @@ class GNNMixinParty:
 
         if self.mode == 'tuning':
             train_proc, vali_proc = self.feature_engineering(
-                (self.data['train_data'], 'means_tr', 'std_tr'),
-                (self.data['vali_data'], 'means_vali', 'std_vali'))
+                self.data['train_data'],
+                self.data['vali_data'])
             self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc}
             assert 'test_data' not in self.procs_data, "Test data must not be processed during tuning!"
         elif self.mode == 'training':
             train_proc, vali_proc, test_proc = self.feature_engineering(
-                (self.data['train_data'], 'means_tr', 'std_tr'),
-                (self.data['vali_data'], 'means_vali', 'std_vali'),
-                (self.data['test_data'], 'means_test', 'std_test'))
+                self.data['train_data'],
+                self.data['vali_data'],
+                self.data['test_data'])
             self.procs_data = {'train_data': train_proc, 'vali_data': vali_proc, 'test_data': test_proc}
 
     def get_vali_data(self) -> dict:

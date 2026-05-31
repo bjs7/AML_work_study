@@ -93,13 +93,11 @@ class GNNMixinManager:
                 device = torch.device(f"cuda:{gpu_idx}")
             self.parties[bank_id].model = GNN(self, hyperparams, node_features, edge_dim, device=device)
         else:
-            #available_gpus = get_available_gpus()
             include_test = self.mode == 'training'
             for _, (bank_id, party) in enumerate(self.iter_parties(include_test=include_test)):
                 if torch.cuda.is_available():
                     gpu_idx = self.bank_device.get(bank_id, 0)
                     device = torch.device(f"cuda:{gpu_idx}")
-                    #device = get_device_for_party(idx, available_gpus)
                 party.model = GNN(self, hyperparams, node_features, edge_dim, device=device)
 
     def _gnn_tuning(self, laundering_values, **kwargs):

@@ -205,7 +205,7 @@ def data_parser():
                         choices=['neighbor_sample', 'simple', 'link_neighbor', 'lazy_link_neighbor'],
                         help='Batch generation strategy for vertical FL (default: lazy_link_neighbor)')
     parser.add_argument('--batch_size', default=8192, type=int, help='Batch size for LinkNeighborLoader (default: 8192)')
-    parser.add_argument('--use_global_stats', action='store_true', help='Use global statistics for standardization instead of local party statistics')
+
     parser.add_argument('--eval_mode', default='system', type=str, choices=['system', 'comparable'],
                         help="Evaluation mode: 'system' uses full test set; 'comparable' restricts to individual banks' data")
     parser.add_argument('--testing_seeds', default=4, type=int, help="The amount of seeds tested in the final evaluation of a model")
@@ -216,7 +216,7 @@ def data_parser():
     parser.add_argument('--hp_path', default=None, type=str,
                         help='Path to HP JSON file relative to project root (local) or $VSC_DATA/AML_work_study/AML_work_study (HPC). '
                              'Overrides the auto-detected path from eval_mode/ibm_fe/tune_max_rounds.')
-    #parser.add_argument("--add_ids", action='store_true', help="Add ids when batching for vertical learning")
+    
     parser.add_argument('--batchnorm', action='store_true', help="Set to True if BatchNorm should be used in the GNN model")
     parser.add_argument('--replicate_ibm', action='store_true',
                         help="Replicate IBM paper settings: sets full_info, batching, batchnorm, ibm_fe, ibm_hp")

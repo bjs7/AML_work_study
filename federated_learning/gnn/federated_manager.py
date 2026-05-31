@@ -32,21 +32,10 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
     embeddings for cross-bank transactions.
     """
 
-    def cal_global_sats(self):
-
-        # Calculate statistics for normalization
-        cols = ['Timestamp', 'Amount Received', 'Received Currency', 'Payment Format']
-        self.data['means_tr'] = self.data['train_data'][cols].apply(np.mean)
-        self.data['std_tr'] = self.data['train_data'][cols].apply(np.std)
-        self.data['means_vali'] = self.data['vali_data'][cols].apply(np.mean)
-        self.data['std_vali'] = self.data['vali_data'][cols].apply(np.std)
-        if 'test_data' in self.data:
-            self.data['means_test'] = self.data['test_data'][cols].apply(np.mean)
-            self.data['std_test'] = self.data['test_data'][cols].apply(np.std)
-
-
     def set_manager_data(self, reg_df, mode):
-
+        # vali_data and test_data are cumulative (train+vali and train+vali+test).
+        # Vertical FL setup uses the full cumulative DataFrame to locate cross-bank
+        # intersections; self.indices carries the mode-specific slice within each.
         train = reg_df['train_data']['x']
         vali = reg_df['vali_data']['x']
         test = reg_df['test_data']['x']
@@ -69,7 +58,6 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
     def add_parties_prep_data(self, mode, df, parsers, scaler_encoders):
 
         self.set_manager_data(df['regular_data'], mode)
-        self.cal_global_sats()
         self.graph = df['graph_data']
 
         if parsers['data_parser'].eval_mode == 'comparable':
