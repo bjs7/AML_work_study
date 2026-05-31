@@ -10,7 +10,7 @@ import copy
 
 from data.raw_data_processing import get_data
 from configs.configs import split_perc
-from configs.paths import get_data_path
+from configs.paths import get_data_path, get_tuning_configs # noqa: F401
 
 # --------------------------------------------------------------------------------------------------
 # dictionary holders
@@ -19,13 +19,11 @@ model_types = {
     'GINe': 'gnn',
     'xgboost': 'booster',
     'light_gbm': 'booster',
-    'regression': 'regression'
 }
 
 data_types = {
     'gnn': 'graph_data',
     'booster': 'regular_data',
-    'regression': 'regular_data'
 }
 
 file_types = {

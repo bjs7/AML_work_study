@@ -8,11 +8,6 @@ import numpy as np
 import torch
 from federated_learning.parallel import parallel_party_execute
 
-# batch_banks = parties
-# batch_banks = manager.sr_parties.keys()
-# batch_num = None
-# get_ownership_mappings(mode, manager, parties, None)
-
 def get_ownership_mappings(mode, manager, batch_banks, batch_num, max_workers=None):
     """Get ownership mappings for all banks in a batch."""
     df_ids = manager.data[f'{mode}_data']

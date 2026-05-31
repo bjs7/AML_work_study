@@ -7,7 +7,6 @@ that are only needed by the per-layer embedding exchange forward pass.
 """
 
 import torch
-
 from data.data_utils import GraphData
 from federated_learning.parallel import parallel_party_execute
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY

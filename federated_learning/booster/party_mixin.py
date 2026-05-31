@@ -10,8 +10,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
-
 class FedHolder:
 
     def update_local_weights(self, num_local_epochs=1):
@@ -91,12 +89,6 @@ class BoosterMixinParty:
                 'laundering_values': laundering_values_test,
                 'model': best_model_raw,
                 'best_vali_f1': best_vali_f1}
-
-
-
-
-
-
 
 
 class SecureBoostPartyMixin(BoosterMixinParty):
@@ -266,22 +258,3 @@ class SecureBoostPartyMixin(BoosterMixinParty):
                 right.append(gidx)
         return left, right
 
-
-#self = self.parties[0]
-#hp = hyperparameters[bank_id]['hyperparameters']
-# laundering_values = party_data[bank_id]['lv_vali']
-
-
-# run with early stopping here
-#booster_data_train = xgb.DMatrix(self.procs_data['train_data']['x'], self.procs_data['train_data']['y'])
-#booster_data_vali = xgb.DMatrix(self.procs_data['vali_data']['x'], laundering_values['true_y'])
-
-#model = xgb.train(hp['params'], booster_data_train, hp['num_rounds'],
-#            evals = [(booster_data_vali, 'eval')], early_stopping_rounds = 50, verbose_eval=False)
-
-#preds_vali = model.predict(xgb.DMatrix(self.procs_data['vali_data']['x']), iteration_range=(0, model.best_iteration + 1))
-#best_vali_f1 = f1_score(laundering_values['true_y'], probs_to_binary(preds_vali))
-
-# final predictions
-#preds_test = model.predict(xgb.DMatrix(self.procs_data['test_data']['x']), iteration_range=(0, model.best_iteration + 1))
-#perform_metrics = metrics(y_true=laundering_values_test['true_y'], y_pred_probabilities=preds_test)

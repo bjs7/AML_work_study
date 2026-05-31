@@ -6,7 +6,6 @@ and node overlap mappings needed for vertical FL.
 
 import numpy as np
 from collections import defaultdict
-
 from .ownership import get_ownership_mappings, get_nodes_to_send
 
 

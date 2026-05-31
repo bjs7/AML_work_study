@@ -13,10 +13,9 @@ def filter_banks(parsers):
     from data.raw_data_processing import get_data
 
     # set up ----------------------------------------------------------------------------------------
-    #parsers = utils.parser_all()
     parsers['data_parser'].ibm_fe = True
     parsers['data_parser'].scenario = 'individual_banks'
-    parsers['data_parser'].eval_mode = 'system'  # this function generates individual_indices, so comparable filtering would be circular
+    parsers['data_parser'].eval_mode = 'system'
 
     # data ----------------------------------------------------------------------------------------
     df_raw = pd.read_csv(get_data_path() + f"/AML_work_study/data/formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")

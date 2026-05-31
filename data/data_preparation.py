@@ -1,6 +1,7 @@
+"""Functions for splitting and preparing data per bank and model type."""
+
 import data.feature_engineering as fe
 import data.data_utils as du
-#import pandas as pd
 
 
 # --------------------------------------------------------------------------------------------------------------------------
@@ -44,7 +45,6 @@ def get_graph_data(parsers, df, bank_indices = None):
                 data['df'].edge_attr, data['df'].timestamps
                 )
 
-    #args.ports = True
     if parsers['gnn_parser'].ports:
         for data in (train_data, vali_data, test_data):
             data['df'].add_ports()

@@ -1,9 +1,12 @@
-# packages
+"""Entry point for federated learning experiments."""
+
 import utils
 import logging
 import copy
 import data.fl_data_helpers as dfn
 from federated_learning.fl_base import Manager
+import federated_learning.fl_algos  # noqa: F401 — side-effect import, populates FL algorithm registry
+import models.gnn_models  # noqa: F401 — side-effect import, registers GNN architectures
 from result_io.save_results import save_results
 
 

@@ -12,18 +12,14 @@ from federated_learning.hp_tuning import ibm_gnn
 import logging
 from sklearn.metrics import f1_score
 from federated_learning.parallel import parallel_party_execute
-
 from models.gnn_base import add_arange_ids
 import pandas as pd
 import numpy as np
-
 import torch
-
 from .vertical import setup, forward, training_utils
 from .vertical.batching import process_lazy_batch, LAZY_BATCH_KEY
 from .vertical_simple import setup as simple_setup, forward as simple_forward
 from .vertical_simple.batching import process_lazy_batch_simple
-
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +68,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
     def add_parties_prep_data(self, mode, df, parsers, scaler_encoders):
 
-        self.set_manager_data(df['regular_data'], mode) #TODO need to change this such that it adjust for eval mode
+        self.set_manager_data(df['regular_data'], mode)
         self.cal_global_sats()
         self.graph = df['graph_data']
 
@@ -91,8 +87,7 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         self.set_mode(mode)
         parties = self.test_parties if mode == 'training' else self.vali_parties
-        for _, party in parties.items(): #TODO Needs to only be self.parties when tuning?
-
+        for _, party in parties.items():
             party.prep_data()
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):

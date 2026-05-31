@@ -1,8 +1,11 @@
+"""Path resolution for data, configs, and tuned hyperparameters across local and HPC environments."""
+
 import os
 import json
 
 
-def get_data_path():
+def get_data_path() -> str:
+    """Return the root data path for the current environment (local or HPC)."""
     local_path = "/home/nam_07/projects"
     hpc_path = "/data/leuven/362/vsc36278"
 
@@ -14,8 +17,8 @@ def get_data_path():
         raise FileNotFoundError("Neither data path exists: local_path or hpc_path")
 
 
-def get_tuning_configs(parsers):
-
+def get_tuning_configs(parsers) -> dict:
+    """Load and return the tuning config JSON for the current model type."""
     tuning_configs = 'tuning_configs_for_testing' if parsers['data_parser'].testing else 'tuning_configs'
 
     if get_data_path() == '/data/leuven/362/vsc36278':
@@ -29,7 +32,7 @@ def get_tuning_configs(parsers):
     return model_parameters.get(parsers['fl_parser'].model_type)
 
 
-def get_full_info_hp_path(parsers, model=None, model_type=None):
+def get_full_info_hp_path(parsers, model: str | None = None, model_type: str | None = None) -> str:
     """Return path where full_info tuned HPs are saved/loaded.
 
     Args:

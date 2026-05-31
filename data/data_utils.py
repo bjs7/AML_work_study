@@ -1,3 +1,5 @@
+"""Graph data structures and utility functions for node/edge feature processing."""
+
 import torch
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.typing import OptTensor
@@ -21,23 +23,12 @@ def z_norm(data):
 # updating nodes -------------------------------------
 
 def update_nr_nodes(df):
-    """    if df.edge_index.numel() == 0:
-            if df.x is None or df.x.numel() == 0:
-                df.x = torch.ones((1, 1), dtype=torch.float32)
-            return"""
-
     max_n_id = np.array(df.edge_index.max() + 1)
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
     x = torch.tensor(df_nodes.loc[:, ['Feature']].to_numpy()).float()
     df.x = x
 
 def update_nr_nodes_for_gd(df):
-    """    if df.edge_index.numel() == 0:
-            if df.x is None or df.x.numel() == 0:
-                df.x = torch.ones((1, 1), dtype=torch.float32)
-            df.num_nodes = int(df.x.shape[0])
-            return"""
-
     max_n_id = np.array(df.edge_index.max() + 1)
     df_nodes = pd.DataFrame({'NodeID': np.arange(max_n_id), 'Feature': np.ones(max_n_id)})
     x = torch.tensor(df_nodes.loc[:, ['Feature']].to_numpy()).float()
@@ -206,8 +197,7 @@ class HeteroGraphData(HeteroData):
     
 
 
-# The if args.ports here, is that necessary? Need to double check before implementing/using it
-def create_hetero_obj(x,  y,  edge_index,  edge_attr, timestamps):
+def create_hetero_obj(x, y, edge_index, edge_attr, timestamps):
     '''Creates a heterogenous graph object for reverse message passing'''
     data = HeteroGraphData()
 
@@ -216,9 +206,6 @@ def create_hetero_obj(x,  y,  edge_index,  edge_attr, timestamps):
     data['node', 'rev_to', 'node'].edge_index = edge_index.flipud()
     data['node', 'to', 'node'].edge_attr = edge_attr
     data['node', 'rev_to', 'node'].edge_attr = edge_attr
-    #if args.ports:
-        #swap the in- and outgoing port numberings for the reverse edges
-        #data['node', 'rev_to', 'node'].edge_attr[:, [-1, -2]] = data['node', 'rev_to', 'node'].edge_attr[:, [-2, -1]]
     data['node', 'to', 'node'].y = y
     data['node', 'to', 'node'].timestamps = timestamps
     

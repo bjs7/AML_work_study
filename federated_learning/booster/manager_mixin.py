@@ -143,7 +143,6 @@ class BoosterMixinManager:
 
         return model_hyper_params, x_0, eta, r_0
 
-    #hyperparams = hyperparameters[bank_id]['hyperparameters']
     def init_models(self, hyperparams, bank_id=None):
         """Create Booster model(s) for parties.
 
@@ -308,16 +307,3 @@ class BoosterMixinManager:
 
         return results_by_seed
     
-
-
-#booster_data_train = xgb.DMatrix(sliced_data['x'], sliced_data['y'])
-#booster_data_vali = xgb.DMatrix(party.procs_data['vali_data']['x'], laundering_values['true_y'])
-
-#model = xgb.train(hp['params'], booster_data_train, num_boost_round = hp['num_rounds'], 
-#                  evals = [(booster_data_vali, 'eval')], 
-#                  custom_metric = f1_eval,
-#                  maximize=True,
-#                  early_stopping_rounds = 50, verbose_eval=False)
-#preds = model.predict(xgb.DMatrix(party.procs_data['vali_data']['x']), iteration_range=(0, model.best_iteration + 1))
-
-

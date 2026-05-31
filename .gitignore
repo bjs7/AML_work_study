@@ -59,17 +59,19 @@ test_*_quick.py
 # Local-only directories
 examples/
 tests/
+federated_learning/regression/
+models/regression_models.py
 
 # Local notes, docs, and archive (not for GitHub)
 archive/
 
-# Environment files - only environment.yml and post_install_hpc.sh are tracked
+# Environment files - tracked: environment.yml, post_install_local.sh, post_install_hpc.sh
 environments/environment_hpc_export.yml
-environments/post_install_local.sh
 environments/requirements_hpc_freeze.txt
+environments/archive/
 docs/
 notes/
-scripts/
+scripts/benchmark/
 
 # Analysis (local only)
 analysis/

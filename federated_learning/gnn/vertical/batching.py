@@ -7,15 +7,8 @@ from collections import defaultdict
 from torch_geometric.loader import NeighborLoader, LinkNeighborLoader
 from torch_geometric.utils import subgraph
 from data.data_utils import GraphData
-
 from .ownership import get_ownership_mappings, get_nodes_to_send
 from federated_learning.parallel import parallel_party_execute
-
-# Silence pyg-lib deprecation warning (show only once)
-#warnings.filterwarnings('once', message=".*NeighborSampler.*pyg-lib.*")
-
-
-
 
 
 def gen_seed_values(manager, mode, banks_to_sample, df):

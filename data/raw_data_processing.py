@@ -6,10 +6,7 @@ import torch
 import data.data_utils as du
 import data.feature_engineering as fe
 import data.fl_data_helpers as dfn
-
 from data.relevant_banks import load_relevant_banks
-
-#from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 # --------------------------------------------------------------------------------------------------------------------------
 # functions for processing the 'raw' data, splitting it into training, validation, and testing. ----------------------------
@@ -53,12 +50,10 @@ def get_data(df, data_parser, **kwargs):
 
     if not data_parser.testing:
         split_inds, test_perc = split_indices(timestamps, y, **args)
-        #split_inds, test_perc = split_indices(timestamps, y, [0.6, 0.2])
         indices = [np.concatenate(split_inds[i]) for i in range(0,3)]
     else:
         indices = sub_indices(df)
 
-    # need to make sure that indices do not need to be reset etc.
     if data_parser.eval_mode == 'comparable':
 
         individual_indices = load_relevant_banks(data_parser).get('individual').get('indices')
@@ -80,9 +75,6 @@ def get_data(df, data_parser, **kwargs):
 
     return packed_data, scaler_encoders
 
-#import copy
-#indices_holder = copy.deepcopy(indices)
-#df_edges = copy.deepcopy(df)
 
 def sub_indices(sub_df):
     
@@ -97,11 +89,10 @@ def sub_indices(sub_df):
 
 def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
 
-    # Obtained indices for train, validation and testing
     n_days = int(timestamps.max() / (3600 * 24) + 1)
     n_samples = y.shape[0]
 
-    daily_irs, weighted_daily_irs, daily_inds, daily_trans = [], [], [], []  # irs = illicit ratios, inds = indices, trans = transactions
+    daily_irs, weighted_daily_irs, daily_inds, daily_trans = [], [], [], []
     for day in range(n_days):
         l = day * 24 * 3600
         r = (day + 1) * 24 * 3600
@@ -117,36 +108,20 @@ def split_indices(timestamps, y, split_perc = [0.6, 0.2]):
     split_scores = dict()
     test_perc = round(1 - sum(split_perc), 10)
 
-    if test_perc > 0:
-        split_perc.append(test_perc)
+    split_perc.append(test_perc)
 
-        for i, j in itertools.combinations(I, 2):
-            if j >= i:
-                split_totals = [d_ts[:i].sum(), d_ts[i:j].sum(), d_ts[j:].sum()]
-                split_totals_sum = np.sum(split_totals)
-                split_props = [v / split_totals_sum for v in split_totals]
-                split_error = [abs(v - t) / t for v, t in zip(split_props, split_perc)]
-                score = max(split_error)  # - (split_totals_sum/total) + 1
-                split_scores[(i, j)] = score
-            else:
-                continue
-
-        i, j = min(split_scores, key=split_scores.get)
-        # split contains a list for each split (train, validation and test) and each list contains the days that are part of the respective split
-        split = [list(range(i)), list(range(i, j)), list(range(j, len(daily_totals)))]
-
-    else:
-        for i in I:
-            split_totals = [d_ts[:i].sum(), d_ts[i:].sum()]
+    for i, j in itertools.combinations(I, 2):
+        if j >= i:
+            split_totals = [d_ts[:i].sum(), d_ts[i:j].sum(), d_ts[j:].sum()]
             split_totals_sum = np.sum(split_totals)
             split_props = [v / split_totals_sum for v in split_totals]
             split_error = [abs(v - t) / t for v, t in zip(split_props, split_perc)]
-            score = max(split_error)  # - (split_totals_sum/total) + 1
-            split_scores[i] = score
+            score = max(split_error)
+            split_scores[(i, j)] = score
 
-        i = min(split_scores, key=split_scores.get)
-        # split contains a list for each split (train, validation and test) and each list contains the days that are part of the respective split
-        split = [list(range(i)), list(range(i, len(daily_totals)))]
+    i, j = min(split_scores, key=split_scores.get)
+    # split contains a list for each split (train, validation and test) and each list contains the days that are part of the respective split
+    split = [list(range(i)), list(range(i, j)), list(range(j, len(daily_totals)))]
 
 
     split_inds = {k: [] for k in range(len(split_perc))}

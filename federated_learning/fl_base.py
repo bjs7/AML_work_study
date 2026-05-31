@@ -29,7 +29,6 @@ class Party(BaseFL):
         self.scaler_encoders = scaler_encoders
         self.model = None
         self.train_configs = {}
-        self.bank_type = bank_type  # Flag to indicate if this is an sr_party
         self.edge_feat_start = self.manager.edge_feat_start
 
         if self.manager:

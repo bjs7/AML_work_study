@@ -14,16 +14,6 @@ from federated_learning.booster.full_info_manager import FullInfoBoosterManager 
 from federated_learning.booster.secureboost_manager import SecureBoostManager as SecureBoostManagerImpl
 from federated_learning.booster.party_mixin import BoosterMixinParty, SecureBoostPartyMixin
 
-# Regression classes - to be implemented later
-# Placeholder stubs for now
-class RegressionMixinParty:
-    """Regression-specific Party mixin - TODO: move to regression.py"""
-    pass
-
-class RegressionMixinManager:
-    """Regression-specific Manager mixin - TODO: move to regression.py"""
-    pass
-
 
 # -------------------------------------------
 # FL Base Protocol Classes ------------------
@@ -74,27 +64,6 @@ class FedProxManagerBase(Manager):
 # -------------------------------------------
 # Combiners ---------------------------------
 # -------------------------------------------
-
-# Regression ---------------------------------------------------------------
-
-@regi_algo_party('FedAvg_regression')
-class FedAvgRegressionParty(RegressionMixinParty, FedAvgPartyBase):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @staticmethod
-    def return_class(**kwargs):
-        return FedAvgRegressionParty(**kwargs)
-
-
-@regi_algo_manager("FedAvg_regression")
-class FedAvgRegressionManager(RegressionMixinManager, FedAvgManagerBase):
-
-    @staticmethod
-    def return_class(args):
-        return FedAvgRegressionManager(args)
-
 
 # GNN ---------------------------------------------------------------------
 

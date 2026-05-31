@@ -81,9 +81,6 @@ class GINe(torch.nn.Module):
 
 
 
-
-
-
 class GATe(torch.nn.Module):
     def __init__(self, num_features, num_gnn_layers, n_classes=2,
                  n_hidden=100, n_heads=4, edge_updates=False,
@@ -134,9 +131,4 @@ class GATe(torch.nn.Module):
         out = x
 
         return self.mlp(out)
-
-
-
-
-
 

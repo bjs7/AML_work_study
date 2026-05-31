@@ -10,13 +10,7 @@ from data.relevant_banks import get_relevant_banks
 from federated_learning.parallel import parallel_party_execute
 import logging
 
-
-
 logger = logging.getLogger(__name__)
-
-#party_laundering_values = self._helper_party_tuning(party, laundering_values)
-#tuned_hyparameters = self.tune(party, party_laundering_values)
-#tuned_hyparameters, f1_score_for_hp = self._tuning_helper(laundering_values, party, bank_id)
 
 class IndividualBoosterManager(BoosterMixinManager):
 
@@ -125,10 +119,4 @@ class IndividualBoosterManager(BoosterMixinManager):
             'models': models_hyperparameters,
             'party_performance': party_individual_performans
         }
-    
 
-
-
-#booster = xgb.Booster()
-#booster.load_model(bytearray(models_hyperparameters[bank_id]['model']))
-#party.model = booster

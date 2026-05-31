@@ -4,10 +4,7 @@ import pandas as pd
 import torch
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from snapml import GraphFeaturePreprocessor
-#from gp_params import params
-#from training.tuning_utils import gfpparams
 import federated_learning.hp_tuning as tu
-#from torch_geometric.data import Data
 import data.data_utils as du
 
 # Function for feature engineering, GNN and Booster --------------------------------------------------------------------------------------------
@@ -26,8 +23,6 @@ def general_feature_engineering(model_type, train_data, vali_data):
 
 def update_regular_data(df, bank_indices):
     
-    #df = copy.deepcopy(data)
-
     train_data, vali_data, test_data = [        
         {
             'x': df[data_key]['x'].loc[bank_indices[indices_key], :].reset_index(drop=True),
@@ -38,8 +33,6 @@ def update_regular_data(df, bank_indices):
     
     return train_data, vali_data, test_data
 
-
-# For now no update to the from_id and to_id variables, as these are just id's so the value should be irrelevant
 
 def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
 
@@ -69,10 +62,6 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     # GFP -----------------------------------------------------------------------------------------------------------------
     # graph_feature_preprocessing using snapML
 
-    # switch the position of graph feature process and the other features? To include those features in graph features processing?
-    # IBM paper: vertex stats use Amount and Timestamp (vertex_stats_cols=[3,4]).
-    # Amount Received is at index 4; without it column 4 doesn't exist and the
-    # first derived feature would also be silently dropped by the [:,5:] slice.
     if 'Amount Received' in x.columns:
         gfp_amount = 'Amount Received'
     elif 'Amount_Received_Normalized' in x.columns:

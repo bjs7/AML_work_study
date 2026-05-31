@@ -12,7 +12,6 @@ import numpy as np
 import torch
 from collections import defaultdict
 from torch_geometric.utils import subgraph
-
 from data.data_utils import GraphData
 from federated_learning.parallel import parallel_party_execute
 
