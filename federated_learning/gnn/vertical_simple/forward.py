@@ -58,6 +58,14 @@ def forward_pass_simple(manager, mode, batch_num, batch_banks, batch_data):
             party_data.edge_index,
         )
 
+        dp_clip = getattr(manager.args['fl_parser'], 'dp_clip', None)
+        dp_noise_scale = getattr(manager.args['fl_parser'], 'dp_noise_scale', 0.0)
+        if dp_clip is not None:
+            norms = final_embeddings.norm(dim=1, keepdim=True).clamp(min=1e-8)
+            final_embeddings = final_embeddings * (dp_clip / norms.clamp(min=dp_clip))
+        if dp_noise_scale > 0.0:
+            final_embeddings = final_embeddings + torch.randn_like(final_embeddings) * dp_noise_scale
+
         embedding_tensors[bank_id] = final_embeddings
         index_to_position[bank_id] = {
             int(gid): pos for pos, gid in enumerate(party_data.edge_attr[:, 0].cpu())

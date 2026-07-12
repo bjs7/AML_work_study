@@ -186,6 +186,14 @@ def fl_parser():
                              'other scenarios run their own tuning. Without this flag, '
                              'previously saved full_info HPs are loaded instead.')
 
+    # Differential privacy for vertical FL embedding exchange
+    parser.add_argument('--dp_noise_scale', default=0.0, type=float,
+                        help='Std of Gaussian noise added to party embeddings before sending to manager '
+                             '(0.0 = disabled). Vary this to trace the privacy-utility curve.')
+    parser.add_argument('--dp_clip', default=None, type=float,
+                        help='L2 norm clipping threshold applied to embeddings before DP noise '
+                             '(None = no clipping). Required for a formal DP guarantee.')
+
     return parser
 
 # data parser

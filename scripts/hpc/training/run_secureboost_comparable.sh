@@ -5,7 +5,7 @@
 # Each job runs 1 seed with a shared --run_id so both write to the same
 # experiment directory. Run again with --first_seed 3 later to add seeds 3+4.
 #
-# Runtime estimate: ~45-70 min/round × 90 rounds ≈ 67 h per seed
+# Runtime estimate: ~45-70 min/round × 60 rounds ≈ 45-70 h per seed
 #
 # Usage:
 #   bash scripts/run_secureboost_comparable.sh           # seeds 1 and 2
@@ -25,7 +25,7 @@ PYTHON="python \$VSC_DATA/AML_work_study/AML_work_study/main.py"
 
 BASE_FLAGS="--fl_algo SecureBoost --model xgboost --size small --ir HI \
 --eval_mode comparable --testing_seeds 1 \
---hp_path $HP --run_id $RUN_ID --sb_num_rounds 90"
+--hp_path $HP --run_id $RUN_ID --sb_num_rounds 60"
 
 mkdir -p logs
 
