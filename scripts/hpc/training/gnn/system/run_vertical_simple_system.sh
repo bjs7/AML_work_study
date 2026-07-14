@@ -6,8 +6,8 @@
 # experiment directory. Whichever job finishes last picks up the other's
 # saved seed and writes the full aggregated result.
 #
-# Walltime: ~25h/seed on H100 (50 rounds); both seeds run in parallel.
-# Requires H100 + 192G: system eval loads all banks into a single graph.
+# Walltime: ~10h/seed on H100 (20 rounds); both seeds run in parallel.
+# Requires H100 + 182G: system eval loads all banks into a single graph.
 # =============================================================================
 # Usage:
 #   bash scripts/hpc/training/run_vertical_simple_system.sh
@@ -17,7 +17,7 @@ CLUSTER="wice"
 ACCOUNT="lp_aml_work_study"
 PARTITION="gpu_h100"
 CPUS="16"
-MEM="192G"
+MEM="182G"
 GPUS="1"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
@@ -28,7 +28,7 @@ conda activate multignn_hpc"
 
 BASE_FLAGS="--fl_algo FedGraphSimple --model GINe --size small --ir HI \
 --batching --ibm_hp --emlps --eval_mode system \
---max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 50"
+--max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 20"
 
 # Shared run ID so both jobs write to the same experiment directory
 RUN_ID=$(date +%Y%m%d_%H%M%S)

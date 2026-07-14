@@ -30,7 +30,7 @@ BASE_FLAGS="--fl_algo FedGraphSimple --model GINe --size small --ir HI \
 --batching --ibm_hp --emlps --eval_mode comparable \
 --max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 50"
 
-DP_NOISE_LEVELS="0.1 0.5 1.0"
+DP_NOISE_LEVELS="0.1"
 
 mkdir -p logs
 

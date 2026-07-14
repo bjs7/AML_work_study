@@ -139,13 +139,14 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Initialize model on first party and share with all
-        self.init_models(hyperparams=hyperparameters, bank_id=0)
+        first_bank_id = next(iter(self.parties))
+        self.init_models(hyperparams=hyperparameters, bank_id=first_bank_id)
         all_parties = self.test_parties if self.mode == 'training' else self.vali_parties
         for bank_id, party in all_parties.items():
-            if bank_id == 0:
+            if bank_id == first_bank_id:
                 continue
-            party.model = self.parties[0].model
-        self.model = self.parties[0].model
+            party.model = self.parties[first_bank_id].model
+        self.model = self.parties[first_bank_id].model
 
         # Move model to device (all parties share this same model reference)
         self.model.gnn.to(self.device)

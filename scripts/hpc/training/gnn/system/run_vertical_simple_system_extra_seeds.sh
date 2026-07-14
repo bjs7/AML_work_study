@@ -17,7 +17,7 @@ CLUSTER="wice"
 ACCOUNT="lp_aml_work_study"
 PARTITION="gpu_h100"
 CPUS="16"
-MEM="192G"
+MEM="182G"
 GPUS="1"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
@@ -28,7 +28,7 @@ conda activate multignn_hpc"
 
 BASE_FLAGS="--fl_algo FedGraphSimple --model GINe --size small --ir HI \
 --batching --ibm_hp --emlps --eval_mode system \
---max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 50"
+--max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 20"
 
 mkdir -p logs
 
