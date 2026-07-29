@@ -49,15 +49,18 @@ from federated_learning.hp_tuning import ibm_gnn
 # ==================== CONFIGURATION ==========================
 # ==============================================================
 
-_SCRIPT_DIR    = os.path.dirname(os.path.abspath(__file__))
-HPC_OUTPUT_DIR = os.path.join(_SCRIPT_DIR, 'hpc_output')
-os.makedirs(HPC_OUTPUT_DIR, exist_ok=True)
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-BATCH_INDICES           = [0, 1, 5]
+BATCH_INDICES           = [1, 3]
 SEED_MUST_BE_LAUNDERING = True
 SEED_PICK               = 3
-SEED_OVERRIDE           = {}     # {batch_idx: global_txn_id} — pin a specific transaction
+SEED_OVERRIDE           = {1: 430559}  # {batch_idx: global_txn_id} — pin a specific transaction
 _K_HOPS                 = 2
+
+_EVAL_MODE = 'comparable'  # 'comparable' | 'system' — drives output subdir + _ARGS
+
+HPC_OUTPUT_DIR = os.path.join(_SCRIPT_DIR, 'hpc_output', _EVAL_MODE)
+os.makedirs(HPC_OUTPUT_DIR, exist_ok=True)
 
 OUTPUT_SUFFIX = '_hpc'
 OUTPUT_DIR    = HPC_OUTPUT_DIR
@@ -81,7 +84,7 @@ _ARGS = [
     '--batching_mode', 'lazy_link_neighbor',
     '--ibm_hp',
     '--emlps',
-    '--eval_mode',     'comparable',
+    '--eval_mode',     _EVAL_MODE,
 ]
 
 sys.argv = ['batch_viz_hpc'] + _ARGS
@@ -818,7 +821,8 @@ for ax, bd in zip(axes, _batches):
     )
     ax.axis('off')
 fig.suptitle(
-    f'Cell 4: {_K_HOPS}-hop MP cone — red = edge pair carries ≥1 laundering tx',
+    f'Cell 4: {_K_HOPS}-hop MP cone — red = edge pair carries ≥1 laundering tx '
+    f'(not necessarily same scheme as seed)',
     fontsize=17,
 )
 plt.tight_layout()

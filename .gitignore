@@ -24,9 +24,11 @@ checkpoints/
 *.ckpt
 *.h5
 
-# Logs
+# Logs and HPC outputs
 logs/
 *.log
+*.err
+hpc_output/
 
 # Data files (uncomment if you don't want to track data)
 # data/*.csv

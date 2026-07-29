@@ -45,12 +45,15 @@ from federated_learning.hp_tuning import ibm_gnn
 # ==================== CONFIGURATION ==========================
 # ==============================================================
 
-_SCRIPT_DIR    = os.path.dirname(os.path.abspath(__file__))
-HPC_OUTPUT_DIR = os.path.join(_SCRIPT_DIR, 'hpc_output')
-os.makedirs(HPC_OUTPUT_DIR, exist_ok=True)
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 N_BATCHES         = None   # None = all batches
 N_CONE_SAMPLE_MAX = None   # None = all seed edges; set to int to cap
+
+_EVAL_MODE = 'comparable'  # 'comparable' | 'system' — drives output subdir + _ARGS
+
+HPC_OUTPUT_DIR = os.path.join(_SCRIPT_DIR, 'hpc_output', _EVAL_MODE)
+os.makedirs(HPC_OUTPUT_DIR, exist_ok=True)
 
 OUTPUT_BASE = os.path.join(HPC_OUTPUT_DIR, 'batch_stats')
 _TABLE_DIR  = HPC_OUTPUT_DIR
@@ -64,7 +67,7 @@ _ARGS = [
     '--batching_mode', 'lazy_link_neighbor',
     '--ibm_hp',
     '--emlps',
-    '--eval_mode',     'comparable',
+    '--eval_mode',     _EVAL_MODE,
 ]
 
 sys.argv = ['batch_tables_hpc'] + _ARGS
