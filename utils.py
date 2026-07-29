@@ -286,7 +286,12 @@ def add_banks_to_manager(parsers, banks, manager, df, scaler_encoders, tuned_hp 
         best_tuned_hp = max(tuned_hp.values(), key=lambda x: x['f1_score'])['hyperparameters']
         tuned_hp = {bank_id: entry['hyperparameters'] for bank_id, entry in tuned_hp.items()}
 
-    for bank in banks:
+    verbose = getattr(manager, 'verbose_setup', False)
+    n_banks = len(banks)
+    for i, bank in enumerate(banks):
+        if verbose and (i == 0 or (i + 1) % 10 == 0 or i + 1 == n_banks):
+            print(f"  [{bank_type}] adding party {i + 1}/{n_banks} (bank {bank})", flush=True)
+
         # For non-superset scenarios (e.g. FedAvg): reuse existing party objects for overlapping banks
         existing_party = None
         if not superset_merge and bank_type != 'train':

@@ -75,8 +75,16 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
         self.set_mode(mode)
         parties = self.test_parties if mode == 'training' else self.vali_parties
-        for _, party in parties.items():
+        verbose = getattr(self, 'verbose_setup', False)
+        n_parties = len(parties)
+        for i, (bank_id, party) in enumerate(parties.items()):
+            if verbose:
+                import time as _time
+                _t = _time.perf_counter()
             party.prep_data()
+            if verbose:
+                elapsed = _time.perf_counter() - _t
+                print(f"  [prep_data] party {i + 1}/{n_parties} (bank {bank_id}) — {elapsed:.1f}s", flush=True)
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
         """Setup parties for vertical FL.

@@ -71,8 +71,6 @@ environments/requirements_hpc_freeze.txt
 environments/archive/
 docs/
 notes/
-scripts/benchmark/
-
 # Analysis (local only)
 analysis/
 
