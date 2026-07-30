@@ -39,6 +39,7 @@ import federated_learning.fl_algos
 import models.gnn_models
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
 from federated_learning.hp_tuning import ibm_gnn
+from configs.paths import get_data_path
 
 
 # ==============================================================
@@ -48,7 +49,7 @@ from federated_learning.hp_tuning import ibm_gnn
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 N_BATCHES         = None   # None = all batches
-N_CONE_SAMPLE_MAX = None   # None = all seed edges; set to int to cap
+N_CONE_SAMPLE_MAX = 200    # cone BFS samples per batch; None = all seed edges (very slow)
 
 _EVAL_MODE = 'comparable'  # 'comparable' | 'system' — drives output subdir + _ARGS
 
@@ -95,16 +96,33 @@ from federated_learning.gnn.vertical_simple import setup
 setup.setup_vertical_simple(manager, batching=True, batching_mode='lazy_link_neighbor')
 manager.setup_model(ibm_gnn, laundering_values_test)
 
+# --- Attempt metadata (keyed by DataFrame row index, same as batch.edge_label) ---
+_csv_path = (f"{get_data_path()}/AML_work_study/"
+             f"formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
+_raw_meta   = pd.read_csv(_csv_path, usecols=['AttemptID', 'Pattern'])
+_train_eids = set(manager.ctx['train']['df_labels'].index)
+_valid_att  = _raw_meta[_raw_meta.index.isin(_train_eids) & (_raw_meta['AttemptID'] >= 0)]
+_attempt_to_train_eids = (
+    _valid_att.groupby('AttemptID').apply(lambda g: set(g.index)).to_dict()
+)
+print(f"Attempt metadata loaded: {len(_attempt_to_train_eids)} unique attempts in train split.")
+
 
 # ==============================================================
 # =================== BATCH SAMPLING ==========================
 # ==============================================================
 
+def _nanmean(lst):
+    """nanmean that returns nan without warning when all values are nan."""
+    valid = [v for v in lst if not np.isnan(v)]
+    return float(np.mean(valid)) if valid else float('nan')
+
 mode         = 'train'
 mode_parties = manager.get_parties_for_mode(mode)
 
-batch_records = []
-party_records = []
+batch_records   = []
+party_records   = []
+attempt_records = []
 
 _t0 = time.time()
 print(f"Sampling batches from '{mode}' loader (N_BATCHES={N_BATCHES}, "
@@ -131,6 +149,7 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
 
     seed_ids_tensor  = torch.tensor(seed_global_ids, dtype=torch.long)
     batch_global_ids = torch.cat([batch.edge_attr[:, 0].long(), seed_ids_tensor]).unique()
+    _batch_egids_set = set(batch_global_ids.tolist())
 
     n_active = 0
     for bank_id, party in seed_mode_parties.items():
@@ -171,7 +190,9 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
     _egid_s = batch.edge_attr[:, 0].long().numpy().tolist()
     for _s, _d in zip(_esrc_s, _edst_s):
         _radj_s[_d].add(_s)
-    _e2g_s = {(_s, _d): _g for _s, _d, _g in zip(_esrc_s, _edst_s, _egid_s)}
+    _e2g_s = defaultdict(set)
+    for _s, _d, _g in zip(_esrc_s, _edst_s, _egid_s):
+        _e2g_s[(_s, _d)].add(_g)
 
     _adj_s_u = defaultdict(set)
     for _s, _d in zip(_esrc_s, _edst_s):
@@ -186,6 +207,24 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
 
     _rng_cone    = np.random.default_rng(seed=batch_idx)
     _cone_idx    = _rng_cone.choice(n_seed_edges, _N_CONE_SAMPLE, replace=False)
+
+    _unique_seed_nodes = (set(batch.edge_label_index[0, _cone_idx].tolist()) |
+                          set(batch.edge_label_index[1, _cone_idx].tolist()))
+    _bfs_cone_cache = {}
+    for _node in _unique_seed_nodes:
+        _fr, _vi = {_node}, {_node}
+        for _ in range(_K_CONE):
+            _nxt = {_nb for _n in _fr for _nb in _radj_s[_n] if _nb not in _vi}
+            _vi |= _nxt; _fr = _nxt
+        _bfs_cone_cache[_node] = _vi
+    _bfs_neigh_cache = {}
+    for _node in _unique_seed_nodes:
+        _fr_u, _vi_u = {_node}, {_node}
+        for _ in range(_K_CONE):
+            _nxt_u = {_nb for _n in _fr_u for _nb in _adj_s_u[_n] if _nb not in _vi_u}
+            _vi_u |= _nxt_u; _fr_u = _nxt_u
+        _bfs_neigh_cache[_node] = _vi_u
+
     _all_lbl_idx = set(manager.ctx[mode]['df_labels'].index)
     _df_lbls     = manager.ctx[mode]['df_labels']
 
@@ -214,19 +253,13 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         _cr = _df_lbls.loc[_cgid]
         _ca, _cb = _cr['From Bank'], _cr['To Bank']
 
-        _fr, _vi = {_csrc, _cdst}, {_csrc, _cdst}
-        for _ in range(_K_CONE):
-            _nxt = {_nb for _n in _fr for _nb in _radj_s[_n] if _nb not in _vi}
-            _vi |= _nxt; _fr = _nxt
-
-        _fr_u, _vi_u = {_csrc, _cdst}, {_csrc, _cdst}
-        for _ in range(_K_CONE):
-            _nxt_u = {_nb for _n in _fr_u for _nb in _adj_s_u[_n] if _nb not in _vi_u}
-            _vi_u |= _nxt_u; _fr_u = _nxt_u
+        _vi   = _bfs_cone_cache[_csrc] | _bfs_cone_cache[_cdst]
+        _vi_u = _bfs_neigh_cache[_csrc] | _bfs_neigh_cache[_cdst]
         _neigh_n_edges_i = sum(1 for _s, _d in zip(_esrc_s, _edst_s) if _s in _vi_u and _d in _vi_u)
 
-        _cgids = {_e2g_s[(_s, _d)] for _s, _d in zip(_esrc_s, _edst_s)
-                  if _s in _vi and _d in _vi and (_s, _d) in _e2g_s}
+        _cgids = {_g for _s, _d in zip(_esrc_s, _edst_s)
+                  if _s in _vi and _d in _vi and (_s, _d) in _e2g_s
+                  for _g in _e2g_s[(_s, _d)]}
         if not _cgids:
             continue
 
@@ -275,8 +308,52 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
             _neigh_n_edges_il.append(_neigh_n_edges_i)
             _cone_asymmetry_il.append(abs(_from_i - _to_i))
 
-    _mean_nesting = float(np.nanmean(_cone_nesting_idx))      if _cone_nesting_idx      else float('nan')
-    _mean_l_laund = float(np.nanmean(_cone_laund_frac_laund)) if _cone_laund_frac_laund else float('nan')
+    # --- attempt pattern coverage (all illicit seeds, deduplicated by AttemptID) ---
+    _seen_attempts = set()
+    for _gid in seed_global_ids:
+        _gid_i = int(_gid)
+        if _gid_i not in _all_lbl_idx or _gid_i >= len(_raw_meta):
+            continue
+        _aid = int(_raw_meta.at[_gid_i, 'AttemptID'])
+        if _aid < 0 or _aid in _seen_attempts:
+            continue
+        _seen_attempts.add(_aid)
+        _pat = int(_raw_meta.at[_gid_i, 'Pattern'])
+
+        _attempt_eids   = _attempt_to_train_eids.get(_aid, set())
+        _n_total        = len(_attempt_eids)
+        _att_in_batch   = _attempt_eids & _batch_egids_set
+        _n_in_batch     = len(_att_in_batch)
+        _att_batch_frac = _n_in_batch / _n_total if _n_total > 0 else float('nan')
+
+        _cr_a = _df_lbls.loc[_gid_i]
+        _ca_a, _cb_a = _cr_a['From Bank'], _cr_a['To Bank']
+        _ga_a = _pgids_s.get(_ca_a, set())
+        _gb_a = _pgids_s.get(_cb_a, set())
+
+        if _n_in_batch > 0:
+            _att_from  = len(_att_in_batch & _ga_a) / _n_in_batch
+            _att_to    = len(_att_in_batch & _gb_a) / _n_in_batch
+            _att_union = len(_att_in_batch & (_ga_a | _gb_a)) / _n_in_batch
+            _att_neith = len(_att_in_batch - _ga_a - _gb_a) / _n_in_batch
+        else:
+            _att_from = _att_to = _att_union = _att_neith = float('nan')
+
+        attempt_records.append({
+            'batch_idx':            batch_idx,
+            'attempt_id':           _aid,
+            'pattern':              _pat,
+            'n_attempt_train':      _n_total,
+            'n_attempt_in_batch':   _n_in_batch,
+            'attempt_batch_frac':   _att_batch_frac,
+            'attempt_from_cov':     _att_from,
+            'attempt_to_cov':       _att_to,
+            'attempt_union_cov':    _att_union,
+            'attempt_neither_frac': _att_neith,
+        })
+
+    _mean_nesting = _nanmean(_cone_nesting_idx)
+    _mean_l_laund = _nanmean(_cone_laund_frac_laund)
     batch_records.append({
         'batch_idx':             batch_idx,
         'n_batch_edges':         n_batch_edges,
@@ -285,6 +362,7 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         'n_seed_used':           n_seed_used,
         'seed_laundering_rate':  seed_laundering_rate,
         'n_active_parties':      n_active,
+        'n_unique_attempts':     len(_seen_attempts),
         'batch_edge_laund_rate': _batch_edge_laund_rate,
         'cone_from_cov':         float(np.mean(_cone_from_cov))    if _cone_from_cov    else float('nan'),
         'cone_to_cov':           float(np.mean(_cone_to_cov))      if _cone_to_cov      else float('nan'),
@@ -294,7 +372,7 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         'cone_unique_to':        float(np.mean(_cone_unique_to))   if _cone_unique_to   else float('nan'),
         'cone_overlap_cov':      float(np.mean(_cone_overlap_cov)) if _cone_overlap_cov else float('nan'),
         'cone_nesting_idx':      _mean_nesting,
-        'cone_laund_frac':       float(np.nanmean(_cone_laund_frac_all)) if _cone_laund_frac_all else float('nan'),
+        'cone_laund_frac':       _nanmean(_cone_laund_frac_all),
         'cone_laund_frac_laund': _mean_l_laund,
         'cone_laund_enrichment': (_mean_l_laund / _batch_edge_laund_rate
                                   if not (np.isnan(_mean_l_laund) or np.isnan(_batch_edge_laund_rate) or _batch_edge_laund_rate == 0)
@@ -314,7 +392,7 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         'cone_overlap_cov_il':   float(np.mean(_cone_overlap_cov_il))    if _cone_overlap_cov_il   else float('nan'),
         'cone_unique_from_il':   float(np.mean(_cone_unique_from_il))    if _cone_unique_from_il   else float('nan'),
         'cone_unique_to_il':     float(np.mean(_cone_unique_to_il))      if _cone_unique_to_il     else float('nan'),
-        'cone_nesting_idx_il':   float(np.nanmean(_cone_nesting_idx_il)) if _cone_nesting_idx_il   else float('nan'),
+        'cone_nesting_idx_il':   _nanmean(_cone_nesting_idx_il),
         'cone_n_nodes_il':       float(np.mean(_cone_n_nodes_il))        if _cone_n_nodes_il       else float('nan'),
         'cone_n_edges_il':       float(np.mean(_cone_n_edges_il))        if _cone_n_edges_il       else float('nan'),
         'neigh_n_nodes_il':      float(np.mean(_neigh_n_nodes_il))       if _neigh_n_nodes_il      else float('nan'),
@@ -326,15 +404,18 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         _elapsed = time.time() - _t0
         print(f"  {batch_idx + 1} batches in {_elapsed:.0f}s  ({_elapsed / (batch_idx + 1):.1f}s/batch)")
 
-batch_df = pd.DataFrame(batch_records)
-party_df = pd.DataFrame(party_records)
+batch_df   = pd.DataFrame(batch_records)
+party_df   = pd.DataFrame(party_records)
+attempt_df = pd.DataFrame(attempt_records)
 _elapsed_total = time.time() - _t0
 print(f"Sampling done: {len(batch_df)} batches in {_elapsed_total:.0f}s")
 
 batch_df.to_csv(f'{OUTPUT_BASE}_batch.csv', index=False)
 party_df.to_csv(f'{OUTPUT_BASE}_party.csv', index=False)
+attempt_df.to_csv(f'{OUTPUT_BASE}_attempt.csv', index=False)
 print(f"Saved: {OUTPUT_BASE}_batch.csv")
 print(f"Saved: {OUTPUT_BASE}_party.csv")
+print(f"Saved: {OUTPUT_BASE}_attempt.csv")
 
 
 # ==============================================================
@@ -424,6 +505,35 @@ _party_summary.to_csv(os.path.join(_TABLE_DIR, 'party_batch_coverage_summary.csv
  .rename(columns=lambda c: c.replace('_', r'\_'))
  .to_latex(os.path.join(_TABLE_DIR, 'party_batch_coverage_summary.tex'), escape=False))
 print("Saved party coverage table.")
+
+
+# ==============================================================
+# ===== TABLE 3: ATTEMPT PATTERN COVERAGE =====================
+# ==============================================================
+
+_att_cols = [
+    'attempt_batch_frac',
+    'attempt_from_cov', 'attempt_to_cov', 'attempt_union_cov', 'attempt_neither_frac',
+]
+
+if not attempt_df.empty:
+    _att_overall = attempt_df[_att_cols].agg(['mean', 'std']).round(4)
+    _att_overall.to_csv(os.path.join(_TABLE_DIR, 'attempt_coverage_overall.csv'))
+
+    _att_by_pattern = (
+        attempt_df.groupby('pattern')[_att_cols]
+        .agg(['mean', 'std'])
+        .round(4)
+    )
+    _att_by_pattern.to_csv(os.path.join(_TABLE_DIR, 'attempt_coverage_by_pattern.csv'))
+
+    (_att_overall
+     .rename(columns=lambda c: c.replace('_', r'\_'))
+     .to_latex(os.path.join(_TABLE_DIR, 'attempt_coverage_overall.tex'), escape=False))
+
+    print("Saved attempt coverage tables.")
+else:
+    print("No attempt records collected — attempt tables skipped.")
 
 
 # ==============================================================

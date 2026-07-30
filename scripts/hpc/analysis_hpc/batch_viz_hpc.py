@@ -353,8 +353,21 @@ for _bi_enum, _batch_idx in enumerate(BATCH_INDICES):
         'cone_edges':    _cone_edges,
     })
 
+# Assign consistent party labels across batches (order of first appearance).
+# Same bank always gets the same letter, so readers can track parties across panels.
+_all_banks = []
+for bd in _batches:
+    for _b in [bd['pa'], bd['pb']]:
+        if _b not in _all_banks:
+            _all_banks.append(_b)
+_bank_labels = {b: f'Party {chr(65 + i)}' for i, b in enumerate(_all_banks)}
+for bd in _batches:
+    bd['pa_label'] = _bank_labels[bd['pa']]
+    bd['pb_label'] = _bank_labels[bd['pb']]
+
 _N = len(_batches)
 print(f"\nAll {_N} batches loaded and pre-computed ({time.time() - _t0:.0f}s).")
+print("Party label mapping:", {v: k for k, v in _bank_labels.items()})
 
 
 # ==============================================================
