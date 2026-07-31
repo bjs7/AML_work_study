@@ -387,6 +387,8 @@ def universal_features_restructure(df):
                'From Bank', 'To Bank', 'Is Laundering']
     if 'Pattern' in df.columns:
         columns.append('Pattern')
+    if 'AttemptID' in df.columns:
+        columns.append('AttemptID')
 
     df = df[columns]
     return df

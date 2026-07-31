@@ -39,7 +39,6 @@ import federated_learning.fl_algos
 import models.gnn_models
 from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
 from federated_learning.hp_tuning import ibm_gnn
-from configs.paths import get_data_path
 
 
 # ==============================================================
@@ -96,12 +95,10 @@ from federated_learning.gnn.vertical_simple import setup
 setup.setup_vertical_simple(manager, batching=True, batching_mode='lazy_link_neighbor')
 manager.setup_model(ibm_gnn, laundering_values_test)
 
-# --- Attempt metadata (keyed by DataFrame row index, same as batch.edge_label) ---
-_csv_path = (f"{get_data_path()}/AML_work_study/"
-             f"formatted_transactions_{parsers['data_parser'].size}_{parsers['data_parser'].ir}.csv")
-_raw_meta   = pd.read_csv(_csv_path, usecols=['AttemptID', 'Pattern'])
-_train_eids = set(manager.ctx['train']['df_labels'].index)
-_valid_att  = _raw_meta[_raw_meta.index.isin(_train_eids) & (_raw_meta['AttemptID'] >= 0)]
+# --- Attempt metadata — index matches seed_global_ids (universal_features_restructure passes AttemptID through) ---
+_train_df = manager.data['train_data']
+_raw_meta  = _train_df[['AttemptID', 'Pattern']]
+_valid_att = _raw_meta[_raw_meta['AttemptID'] >= 0]
 _attempt_to_train_eids = (
     _valid_att.groupby('AttemptID').apply(lambda g: set(g.index)).to_dict()
 )
@@ -308,48 +305,51 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
             _neigh_n_edges_il.append(_neigh_n_edges_i)
             _cone_asymmetry_il.append(abs(_from_i - _to_i))
 
-    # --- attempt pattern coverage (all illicit seeds, deduplicated by AttemptID) ---
-    _seen_attempts = set()
+    # --- attempt pattern coverage (union of all banks across every seed of the attempt) ---
+    # Two-pass: collect all banks per attempt first, then compute coverage.
+    # This avoids the arbitrary first-seed dependence.
+    _att_seeds = {}  # aid -> {'pat': int, 'banks': set, 'n_seeds': int}
     for _gid in seed_global_ids:
         _gid_i = int(_gid)
         if _gid_i not in _all_lbl_idx or _gid_i >= len(_raw_meta):
             continue
         _aid = int(_raw_meta.at[_gid_i, 'AttemptID'])
-        if _aid < 0 or _aid in _seen_attempts:
+        if _aid < 0:
             continue
-        _seen_attempts.add(_aid)
-        _pat = int(_raw_meta.at[_gid_i, 'Pattern'])
+        _cr_a = _df_lbls.loc[_gid_i]
+        if _aid not in _att_seeds:
+            _att_seeds[_aid] = {'pat': int(_raw_meta.at[_gid_i, 'Pattern']), 'banks': set(), 'n_seeds': 0}
+        _att_seeds[_aid]['banks'].add(_cr_a['From Bank'])
+        _att_seeds[_aid]['banks'].add(_cr_a['To Bank'])
+        _att_seeds[_aid]['n_seeds'] += 1
 
+    for _aid, _info in _att_seeds.items():
         _attempt_eids   = _attempt_to_train_eids.get(_aid, set())
         _n_total        = len(_attempt_eids)
         _att_in_batch   = _attempt_eids & _batch_egids_set
         _n_in_batch     = len(_att_in_batch)
         _att_batch_frac = _n_in_batch / _n_total if _n_total > 0 else float('nan')
 
-        _cr_a = _df_lbls.loc[_gid_i]
-        _ca_a, _cb_a = _cr_a['From Bank'], _cr_a['To Bank']
-        _ga_a = _pgids_s.get(_ca_a, set())
-        _gb_a = _pgids_s.get(_cb_a, set())
+        _all_bank_gids = set()
+        for _bk in _info['banks']:
+            _all_bank_gids |= _pgids_s.get(_bk, set())
 
         if _n_in_batch > 0:
-            _att_from  = len(_att_in_batch & _ga_a) / _n_in_batch
-            _att_to    = len(_att_in_batch & _gb_a) / _n_in_batch
-            _att_union = len(_att_in_batch & (_ga_a | _gb_a)) / _n_in_batch
-            _att_neith = len(_att_in_batch - _ga_a - _gb_a) / _n_in_batch
+            _att_union = len(_att_in_batch & _all_bank_gids) / _n_in_batch
+            _att_neith = len(_att_in_batch - _all_bank_gids) / _n_in_batch
         else:
-            _att_from = _att_to = _att_union = _att_neith = float('nan')
+            _att_union = _att_neith = float('nan')
 
         attempt_records.append({
-            'batch_idx':            batch_idx,
-            'attempt_id':           _aid,
-            'pattern':              _pat,
-            'n_attempt_train':      _n_total,
-            'n_attempt_in_batch':   _n_in_batch,
-            'attempt_batch_frac':   _att_batch_frac,
-            'attempt_from_cov':     _att_from,
-            'attempt_to_cov':       _att_to,
-            'attempt_union_cov':    _att_union,
-            'attempt_neither_frac': _att_neith,
+            'batch_idx':                batch_idx,
+            'attempt_id':               _aid,
+            'pattern':                  _info['pat'],
+            'n_attempt_train':          _n_total,
+            'n_attempt_in_batch':       _n_in_batch,
+            'n_attempt_seeds_in_batch': _info['n_seeds'],
+            'attempt_batch_frac':       _att_batch_frac,
+            'attempt_union_cov':        _att_union,
+            'attempt_neither_frac':     _att_neith,
         })
 
     _mean_nesting = _nanmean(_cone_nesting_idx)
@@ -362,7 +362,7 @@ for batch_idx, batch in enumerate(manager.loaders[mode]):
         'n_seed_used':           n_seed_used,
         'seed_laundering_rate':  seed_laundering_rate,
         'n_active_parties':      n_active,
-        'n_unique_attempts':     len(_seen_attempts),
+        'n_unique_attempts':     len(_att_seeds),
         'batch_edge_laund_rate': _batch_edge_laund_rate,
         'cone_from_cov':         float(np.mean(_cone_from_cov))    if _cone_from_cov    else float('nan'),
         'cone_to_cov':           float(np.mean(_cone_to_cov))      if _cone_to_cov      else float('nan'),
@@ -512,8 +512,8 @@ print("Saved party coverage table.")
 # ==============================================================
 
 _att_cols = [
-    'attempt_batch_frac',
-    'attempt_from_cov', 'attempt_to_cov', 'attempt_union_cov', 'attempt_neither_frac',
+    'attempt_batch_frac', 'n_attempt_seeds_in_batch',
+    'attempt_union_cov', 'attempt_neither_frac',
 ]
 
 if not attempt_df.empty:
