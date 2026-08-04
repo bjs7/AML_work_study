@@ -704,7 +704,8 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
         if torch.cuda.is_available() and torch.cuda.device_count() > 1:
             self.assign_device_to_party()
 
-        return self.tuning(laundering_values)
+        tuned_hp, _ = self.tuning(laundering_values)
+        return tuned_hp
 
     def tuning(self, laundering_values):
         """Return IBM defaults; full HP tuning is not supported for two-phase training."""
