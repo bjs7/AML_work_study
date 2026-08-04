@@ -3,7 +3,7 @@
 from .party_mixin import GNNMixinParty, GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical
 from .manager_mixin import GNNMixinManager
 from .communication import GNNCommunicationMixin
-from .federated_manager import FLGNNManagerHorizontal, FLGNNManagerVertical, FLGNNManagerVerticalSimple
+from .federated_manager import FLGNNManagerHorizontal, FLGNNManagerVertical, FLGNNManagerVerticalSimple, FLGNNManagerHybrid
 from .individual_manager import IndividualGNNManager
 from .full_info_manager import FullInfoGNNManager
 
@@ -17,6 +17,7 @@ __all__ = [
     'FLGNNManagerHorizontal',
     'FLGNNManagerVertical',
     'FLGNNManagerVerticalSimple',
+    'FLGNNManagerHybrid',
     'IndividualGNNManager',
     'FullInfoGNNManager',
 ]

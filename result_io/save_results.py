@@ -38,6 +38,16 @@ def _build_path(manager):
         validate_every = getattr(fl_p, 'validate_every', 1)
         if validate_every != 1:
             algo_subfolder += f'_ve{validate_every}'
+    elif fl_algo == 'FedGraphHybrid':
+        fl_p = manager.args['fl_parser']
+        C = getattr(fl_p, 'client_fraction', 1.0)
+        E = getattr(fl_p, 'num_local_epochs', 1)
+        mu = getattr(fl_p, 'mu', 0.0)
+        R1 = getattr(fl_p, 'num_rounds', 100)
+        R2 = getattr(fl_p, 'num_phase2_rounds', None) or R1
+        algo_subfolder = f'C{C}_E{E}_R1-{R1}_R2-{R2}'
+        if mu > 0:
+            algo_subfolder += f'_mu{mu}'
     else:
         algo_subfolder = ''
 

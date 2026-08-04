@@ -177,6 +177,9 @@ def fl_parser():
                         help='Aggregation weighting: proportional (by dataset size) or uniform (1/K)')
     parser.add_argument('--num_rounds', default=100, type=int,
                         help='Number of FL communication rounds (default: 100)')
+    parser.add_argument('--num_phase2_rounds', default=None, type=int,
+                        help='Number of rounds for Phase 2 (vertical head) in FedGraphHybrid. '
+                             'Defaults to --num_rounds if not set.')
     parser.add_argument('--max_workers', default=4, type=int,
                         help='Number of parallel workers for party training (default: number of CPUs)')
     parser.add_argument('--validate_every', default=1, type=int,

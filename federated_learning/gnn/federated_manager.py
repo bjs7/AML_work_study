@@ -656,3 +656,112 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
                 'best_vali_f1': best_f1, 'party_performance': party_performance,
                 'removed_parties_laundering_values': removed_lv}
 
+
+class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
+    """Two-phase hybrid: FedAvg trains shared GNN weights; vertical MLP trains on frozen embeddings.
+
+    Phase 1: All parties train locally (FedAvg) — separate per-party models, best global
+    weights selected on vali F1.
+    Phase 2: One shared model with GNN frozen; manager trains mlp_vert on concatenated
+    From/To final embeddings via vertical forward pass.
+
+    This lets the GNN learn from distributed local graphs (FedAvg) and then the
+    classification head specialise on the cross-bank view (vertical FL), without
+    requiring parties to share raw data or intermediate embeddings during Phase 1.
+    """
+
+    # Borrow FedAvg round machinery from horizontal manager
+    fl_training = FLGNNManagerHorizontal.fl_training
+    _compute_party_weights = FLGNNManagerHorizontal._compute_party_weights
+    _eval_removed_parties = FLGNNManagerHorizontal._eval_removed_parties
+
+    def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis=False):
+        if parsers['data_parser'].eval_mode == 'comparable':
+            train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
+            vali_banks, test_banks = [], []
+        else:
+            fedavg_banks = load_relevant_banks(parsers['data_parser']).get('FedAvg')
+            train_banks = fedavg_banks['train_banks']
+            vali_banks = fedavg_banks['vali_banks']
+            test_banks = fedavg_banks['test_banks']
+
+        self._removed_banks = []
+        self._removed_banks_data = None
+
+        if parsers['data_parser'].testing:
+            train_banks = train_banks[:5]
+            vali_banks = vali_banks[:5] if vali_banks else []
+            test_banks = test_banks[:5] if test_banks else []
+
+        # Use superset_merge=True so test_parties accumulates all banks — required for
+        # Phase 2's vertical forward pass which iterates over the full test_parties dict.
+        for banks, bank_type in zip([train_banks, vali_banks, test_banks], ['train', 'vali', 'test']):
+            utils.add_banks_to_manager(parsers, banks, self, df, scaler_encoders,
+                                       bank_type=bank_type, superset_merge=True)
+
+        self._stored_df = df
+
+        if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+            self.assign_device_to_party()
+
+        return self.tuning(laundering_values)
+
+    def tuning(self, laundering_values):
+        """Return IBM defaults; full HP tuning is not supported for two-phase training."""
+        return ibm_gnn, None
+
+    def _prep_parties_data(self):
+        for _, party in self.iter_parties(include_test=True):
+            party.prep_data()
+
+    def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
+
+        # --- Phase 1: FedAvg — each party gets its own model, trains locally ---
+        logger.info("FedGraphHybrid Phase 1: FedAvg GNN training")
+        self.init_models(hyperparameters)
+        self.get_global_weights()
+        self.send_global_weights_params()
+        # Pass a copy so fl_training's test-eval writes don't pollute laundering_values_test
+        self.fl_training(laundering_values_vali, copy.deepcopy(laundering_values_test))
+        # After fl_training: self.global_weights = best FedAvg weights, sent to all parties
+
+        # --- Transition: share best FedAvg model across all parties ---
+        logger.info("FedGraphHybrid: sharing best FedAvg model across all parties for Phase 2")
+        # Use self.parties (FedAvg train participants) — they are explicitly guaranteed to have
+        # received send_global_weights(). With superset_merge, self.parties[bank_id] is the same
+        # object as self.test_parties[bank_id], so assigning shared_model covers all parties.
+        first_party = next(iter(self.parties.values()))
+        shared_model = first_party.model
+        for party in self.test_parties.values():
+            party.model = shared_model
+        self.model = shared_model
+
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.model.gnn.to(self.device)
+
+        # Freeze all GNN parameters, then unfreeze only the vertical classification head
+        for param in self.model.gnn.parameters():
+            param.requires_grad = False
+        for param in self.model.gnn.mlp_vert.parameters():
+            param.requires_grad = True
+
+        self.optimizer = torch.optim.Adam(
+            self.model.gnn.mlp_vert.parameters(),
+            lr=hyperparameters.get('learning_rate')
+        )
+        self.loss_fn = torch.nn.CrossEntropyLoss(
+            weight=torch.FloatTensor([
+                hyperparameters.get('w_ce1'),
+                hyperparameters.get('w_ce2')
+            ]).to(self.device)
+        )
+
+        # --- Phase 2: set up vertical batching context and train mlp_vert ---
+        phase2_rounds = getattr(self.args['fl_parser'], 'num_phase2_rounds', None) or self.args['fl_parser'].num_rounds
+        logger.info("FedGraphHybrid Phase 2: training mlp_vert on frozen GNN embeddings (%d rounds)", phase2_rounds)
+        self.set_manager_data(self._stored_df['regular_data'], 'training')
+        batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
+        self.setup_vertical(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
+
+        return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching,
+                                   epochs=phase2_rounds)
