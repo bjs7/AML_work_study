@@ -113,6 +113,9 @@ def filter_banks(parsers):
     bank_filter_stats_system = _compute_bank_filter_stats(df, split_data, fedavg_train_banks, train_laundering)
     bank_filter_stats_comparable = _compute_bank_filter_stats(df, split_data, individual_banks, train_laundering)
 
+    cb_comp = _compute_cross_bank_comparable(df_raw, individual_banks, sorted(set(all_indices_individual)))
+    cb_comp_laundering, cb_comp_data_pct, cb_comp_laundering_pct = count_split_stats([cb_comp['indices']])
+
     relevant_banks = {
         'total_observations': df_length, 'total_laundering': total_laundering,
         'train_laundering': train_laundering, 'vali_laundering': vali_laundering, 'test_laundering': test_laundering,
@@ -125,6 +128,17 @@ def filter_banks(parsers):
                    'percentage': obs_available_for_FedAvg_banks/df_length,
                    **fedavg_laundering, **fedavg_data_pct, **fedavg_laundering_pct},
         'FedGraph': {'train_banks': vert_train_banks, 'vali_banks': vert_vali_banks, 'test_banks': vert_test_banks},
+        'cross_bank_comparable': {
+            'banks': cb_comp['banks'],
+            'n_banks': cb_comp['n_banks'],
+            'banks_removed_from_comparable': cb_comp['banks_removed'],
+            'n_iterations': cb_comp['n_iterations'],
+            'converged': cb_comp['converged'],
+            'obs_ava': len(cb_comp['indices']),
+            'percentage': len(cb_comp['indices']) / df_length,
+            **cb_comp_laundering, **cb_comp_data_pct, **cb_comp_laundering_pct,
+            'indices': cb_comp['indices'],
+        },
         'bank_filter_system': bank_filter_stats_system,
         'bank_filter_comparable': bank_filter_stats_comparable
     }
@@ -142,6 +156,55 @@ def filter_banks(parsers):
     return relevant_banks
 
 #relevant_banks['individual']['train_data_pct']
+
+def _compute_cross_bank_comparable(df_raw, individual_banks, all_indices):
+    """Cascade filter from comparable: keep only transactions where both parties are in the bank set.
+
+    Iteratively removes transactions where one party is no longer in the bank set, then
+    removes banks that no longer appear in any remaining transaction, until the set
+    stabilises (fixed point) or empties out.
+
+    Returns a dict with the converged bank set, indices, and diagnostic info.
+    """
+    bank_set = set(individual_banks)
+    txn_df = df_raw.loc[all_indices, ['From Bank', 'To Bank']]
+
+    n_iterations = 0
+    while True:
+        n_iterations += 1
+        mask = txn_df['From Bank'].isin(bank_set) & txn_df['To Bank'].isin(bank_set)
+        valid_txns = txn_df[mask]
+
+        if valid_txns.empty:
+            return {
+                'banks': [], 'n_banks': 0,
+                'banks_removed': sorted(individual_banks),
+                'n_iterations': n_iterations, 'converged': False,
+                'indices': [],
+            }
+
+        active_banks = (
+            set(valid_txns['From Bank'].unique()) |
+            set(valid_txns['To Bank'].unique())
+        )
+        new_bank_set = bank_set & active_banks
+
+        if new_bank_set == bank_set:
+            break
+
+        bank_set = new_bank_set
+        txn_df = valid_txns
+
+    final_indices = sorted(valid_txns.index.tolist())
+    return {
+        'banks': sorted(bank_set),
+        'n_banks': len(bank_set),
+        'banks_removed': sorted(set(individual_banks) - bank_set),
+        'n_iterations': n_iterations,
+        'converged': True,
+        'indices': final_indices,
+    }
+
 
 def _compute_bank_filter_stats(df, split_data, train_banks, train_laundering):
 

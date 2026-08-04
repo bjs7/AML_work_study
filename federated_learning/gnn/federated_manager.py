@@ -726,6 +726,17 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
         self.fl_training(laundering_values_vali, copy.deepcopy(laundering_values_test))
         # After fl_training: self.global_weights = best FedAvg weights, sent to all parties
 
+        # PyG's Data.to(device) is in-place — small parties that fall below the batching
+        # threshold train without a loader and the no-batching path passes procs_data['df']
+        # directly to update_weights_no_batching(), which calls gd.to(self.device) and
+        # permanently moves those tensors to CUDA. Phase 2's process_lazy_batch_simple
+        # reads from procs_data and expects CPU tensors. Reset everything to CPU here.
+        for _, party in self.iter_parties(include_test=True):
+            for split_key in ('train_data', 'vali_data', 'test_data'):
+                df = party.procs_data.get(split_key, {}).get('df')
+                if df is not None:
+                    df.to('cpu')
+
         # --- Transition: share best FedAvg model across all parties ---
         logger.info("FedGraphHybrid: sharing best FedAvg model across all parties for Phase 2")
         # Use self.parties (FedAvg train participants) — they are explicitly guaranteed to have
