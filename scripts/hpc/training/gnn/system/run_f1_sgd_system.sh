@@ -12,7 +12,7 @@
 CLUSTER="genius"
 ACCOUNT="lp_aml_work_study"
 PARTITION="gpu_v100"
-TIME="12:00:00"
+TIME="16:00:00"
 CPUS="4"
 MEM="82G"
 GPUS="1"

@@ -537,7 +537,7 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         total = sum(dataset_sizes.values())
         return {bank_id: n_k / total for bank_id, n_k in dataset_sizes.items()}
 
-    def fl_training(self, laundering_values_vali, laundering_values_test, max_workers=None):
+    def fl_training(self, laundering_values_vali, laundering_values_test=None, max_workers=None):
 
         best_weights = None
         best_f1 = -1
@@ -627,6 +627,11 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         assert best_weights is not None, "No best weights found — model selection on vali never succeeded!"
         self.global_weights = best_weights
         self.send_global_weights()
+
+        # Tuning mode: no test data — return vali F1 so tuning_loop can compare candidates
+        if laundering_values_test is None:
+            return {'weights': best_weights, 'metrics': {'f1': best_f1}, 'best_vali_f1': best_f1,
+                    'party_performance': {}, 'removed_parties_laundering_values': None}
 
         for bank_id, party in self.iter_parties(include_test=True):
             party._setup_eval_loader(mode='test')
