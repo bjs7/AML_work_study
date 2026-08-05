@@ -1,6 +1,6 @@
 """GNN-specific federated learning implementations."""
 
-from .party_mixin import GNNMixinParty, GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical
+from .party_mixin import GNNMixinParty, GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical, GNNMixinPartyHybrid
 from .manager_mixin import GNNMixinManager
 from .communication import GNNCommunicationMixin
 from .federated_manager import FLGNNManagerHorizontal, FLGNNManagerVertical, FLGNNManagerVerticalSimple, FLGNNManagerHybrid
@@ -12,6 +12,7 @@ __all__ = [
     'GNNMixinPartyHorizontal',
     'GNNMixinPartyBaseline',
     'GNNMixinPartyVertical',
+    'GNNMixinPartyHybrid',
     'GNNMixinManager',
     'GNNCommunicationMixin',
     'FLGNNManagerHorizontal',

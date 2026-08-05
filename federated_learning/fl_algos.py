@@ -3,7 +3,7 @@
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
 from federated_learning.gnn import (
-    GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical,
+    GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical, GNNMixinPartyHybrid,
     FLGNNManagerHorizontal, FLGNNManagerVertical, FLGNNManagerVerticalSimple, FLGNNManagerHybrid,
     IndividualGNNManager as IndividualGNNManagerImpl,
     FullInfoGNNManager as FullInfoGNNManagerImpl,
@@ -194,7 +194,7 @@ class FedGraphSimpleGNNManager(FLGNNManagerVerticalSimple, FedGraphManagerBase):
 
 
 @regi_algo_party("FedGraphHybrid_gnn")
-class FedGraphHybridGNNParty(GNNMixinPartyHorizontal, FedAvgPartyBase):
+class FedGraphHybridGNNParty(GNNMixinPartyHybrid, FedAvgPartyBase):
     """Party for hybrid FL — uses horizontal mixin for Phase 1 FedAvg local training."""
 
     def __init__(self, **kwargs):

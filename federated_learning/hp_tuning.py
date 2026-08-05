@@ -113,7 +113,8 @@ def hyper_sampler(args, num_nodes = None, sample_intervals = None, max_rounds=No
 
         if not sample_intervals:
             hid_em_size_interval = [16, 72]
-            lr_interval = [0.005, 0.05]
+            optimizer = getattr(args, 'optimizer', 'adam')
+            lr_interval = [0.01, 0.5] if optimizer == 'sgd' else [0.005, 0.05]
             gnn_layer_interval = [2, 5]
             dropout_interval = [0, 0.5]
             final_dropout_interval = [0, 0.5]

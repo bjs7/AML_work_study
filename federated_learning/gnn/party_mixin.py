@@ -430,6 +430,108 @@ class GNNMixinPartyHorizontal(GNNMixinParty):
             return self.model.predict_no_batching(self.procs_data[data_key])
 
 
+class GNNMixinPartyHybrid(GNNMixinPartyHorizontal):
+    """Hybrid FL party: vertical data format (global ID at col 0) with horizontal Phase 1 training.
+
+    procs_data[...]['df'].edge_attr has N+1 cols [global_id, f1, ..., fN] (edge_feat_start=1).
+    Phase 1 (FedAvg) strips the global ID before passing edge_attr to the model, which was
+    initialized with edge_dim=N.  Loaders use local sequential IDs for batching_masker.
+    Phase 2's vertical forward pass reads global_id from col 0 directly.
+    """
+
+    def _setup_train_loader(self):
+        self._get_batch_configs()
+        if not self.train_configs['use_batching']:
+            self._train_loader = None
+            return
+
+        tr_data = copy.deepcopy(self.procs_data['train_data']['df'])
+        # Strip global ID at col 0, then add local arange IDs for batching_masker.
+        tr_data.edge_attr = tr_data.edge_attr[:, 1:]
+        add_arange_ids([tr_data])
+
+        self._train_loader_data = tr_data
+        self._train_indices = self.procs_data['train_data']['pred_indices']
+        self._train_loader = LinkNeighborLoader(
+            tr_data,
+            num_neighbors=self.train_configs['num_neighbors'],
+            edge_label_index=tr_data.edge_index,
+            edge_label=tr_data.y,
+            batch_size=self.train_configs['batch_size'],
+            shuffle=True
+        )
+
+    def _setup_eval_loader(self, mode='vali'):
+        data_key = 'test_data' if mode == 'test' else 'vali_data'
+        loader_attr = f'_{mode}_loader'
+        data_attr = f'_{mode}_loader_data'
+        indices_attr = f'_{mode}_pred_indices'
+
+        if not self.train_configs.get('use_batching'):
+            setattr(self, loader_attr, None)
+            setattr(self, data_attr, None)
+            setattr(self, indices_attr, None)
+            return
+
+        data_copy = copy.deepcopy(self.procs_data[data_key]['df'])
+        pred_indices = self.procs_data[data_key]['pred_indices']
+        # Strip global ID at col 0, then add local arange IDs for batching_masker.
+        data_copy.edge_attr = data_copy.edge_attr[:, 1:]
+        add_arange_ids([data_copy])
+
+        setattr(self, data_attr, data_copy)
+        setattr(self, indices_attr, pred_indices)
+        setattr(self, loader_attr, LinkNeighborLoader(
+            data_copy,
+            num_neighbors=self.train_configs['num_neighbors'],
+            edge_label_index=data_copy.edge_index[:, pred_indices],
+            edge_label=data_copy.y[pred_indices],
+            batch_size=self.train_configs['batch_size'],
+            shuffle=False
+        ))
+
+    def update_local_weights(self, num_local_epochs: int = 1) -> float | None:
+        loss = None
+        if self.train_configs.get('use_batching'):
+            for epoch in range(num_local_epochs):
+                for batch in self._train_loader:
+                    mask, _ = batching_masker(batch, self._train_loader_data,
+                                              self._train_loader, self._train_indices,
+                                              add_missing_edges=self._add_missing_edges)
+                    _, _, loss = self.model.update_weights(batch, mask)
+        else:
+            # No-batching: strip global ID temporarily so model sees N features.
+            # PyG Data.to(device) is in-place — restore edge_attr after each epoch so
+            # procs_data keeps the global ID column intact for Phase 2.
+            tr_data = self.procs_data['train_data']['df']
+            orig_ea = tr_data.edge_attr
+            tr_data.edge_attr = orig_ea[:, 1:]
+            for epoch in range(num_local_epochs):
+                loss = self.model.update_weights_no_batching(tr_data)
+            tr_data.edge_attr = orig_ea
+        return loss
+
+    def get_predictions(self, mode='vali'):
+        loader = getattr(self, f'_{mode}_loader', None)
+        if loader is not None:
+            data_copy = getattr(self, f'_{mode}_loader_data')
+            pred_indices = getattr(self, f'_{mode}_pred_indices')
+            preds, _, pred_ids = self._eval_on_loader(loader, data_copy, pred_indices, "")
+            pred_indices_np = pred_indices.numpy() if isinstance(pred_indices, torch.Tensor) else np.array(pred_indices)
+            pred_map = dict(zip(pred_ids.astype(int).tolist(), preds.tolist()))
+            return np.array([pred_map[int(pi)] for pi in pred_indices_np])
+        else:
+            # No-batching: strip global ID temporarily so model sees N features.
+            data_key = 'test_data' if mode == 'test' else 'vali_data'
+            procs = self.procs_data[data_key]
+            df = procs['df']
+            orig_ea = df.edge_attr
+            df.edge_attr = orig_ea[:, 1:]
+            result = self.model.predict_no_batching(procs)
+            df.edge_attr = orig_ea
+            return result
+
+
 class GNNMixinPartyVertical(GNNMixinParty):
     """Vertical FL party mixin for FedGraph."""
 
