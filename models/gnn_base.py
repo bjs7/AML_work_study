@@ -68,7 +68,12 @@ class GNN(ABC):
     def _get_gnn_loss_optimizer(self, manager, hyperparams, node_features, edge_dim):
         self.gnn = self._create_gnn_model(manager, hyperparams, node_features, edge_dim)
         self.gnn.to(self.device)
-        self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=hyperparams.get('learning_rate'))
+        lr = hyperparams.get('learning_rate')
+        opt_name = getattr(manager.args['fl_parser'], 'optimizer', 'adam')
+        if opt_name == 'sgd':
+            self.optimizer = torch.optim.SGD(self.gnn.parameters(), lr=lr)
+        else:
+            self.optimizer = torch.optim.Adam(self.gnn.parameters(), lr=lr)
 
         # Use loss_ratio override if set, otherwise use hyperparameters
         w_ce1 = hyperparams.get('w_ce1')

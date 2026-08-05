@@ -676,6 +676,17 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
     _eval_removed_parties = FLGNNManagerHorizontal._eval_removed_parties
 
     def setup_parties(self, df, parsers, scaler_encoders, laundering_values, analysis=False):
+        # Phase 2 uses the vertical forward pass which reads global IDs from
+        # procs_data[...]['df'].edge_attr[:, 0].  Those IDs must be present in the
+        # raw party data (party.data) at construction time, so add_arange_ids must
+        # be called here — before _add_party — exactly as FLGNNManagerVertical does.
+        # Setting edge_feat_start=1 now ensures parties inherit the correct value
+        # so that feature_engi_graph_data keeps col 0 as the global ID.
+        self.edge_feat_start = 1
+        add_arange_ids([df['graph_data']['train_data']['df'],
+                        df['graph_data']['vali_data']['df'],
+                        df['graph_data']['test_data']['df']])
+
         if parsers['data_parser'].eval_mode == 'comparable':
             train_banks = load_relevant_banks(parsers['data_parser']).get('individual').get('banks')
             vali_banks, test_banks = [], []

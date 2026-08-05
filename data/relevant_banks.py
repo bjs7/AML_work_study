@@ -11,6 +11,8 @@ from data.data_preparation import get_indices_bdt, get_booster_data
 
 def filter_banks(parsers):
     from data.raw_data_processing import get_data
+    #import utils
+    #parsers = utils.parser_all()
 
     # set up ----------------------------------------------------------------------------------------
     parsers['data_parser'].ibm_fe = True
@@ -155,7 +157,6 @@ def filter_banks(parsers):
 
     return relevant_banks
 
-#relevant_banks['individual']['train_data_pct']
 
 def _compute_cross_bank_comparable(df_raw, individual_banks, all_indices):
     """Cascade filter from comparable: keep only transactions where both parties are in the bank set.

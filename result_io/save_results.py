@@ -51,6 +51,11 @@ def _build_path(manager):
     else:
         algo_subfolder = ''
 
+    opt_name = getattr(manager.args['fl_parser'], 'optimizer', 'adam')
+    if opt_name != 'adam':
+        suffix = f'_{opt_name}'
+        algo_subfolder = (algo_subfolder + suffix) if algo_subfolder else opt_name
+
     eval_mode = getattr(manager.args['data_parser'], 'eval_mode', 'system')
 
     save_direc = os.path.join(config.save_direc_training, str_testing,

@@ -189,6 +189,10 @@ def fl_parser():
                              'other scenarios run their own tuning. Without this flag, '
                              'previously saved full_info HPs are loaded instead.')
 
+    # Optimizer
+    parser.add_argument('--optimizer', default='adam', type=str, choices=['adam', 'sgd'],
+                        help='Optimizer for GNN training (default: adam)')
+
     # Differential privacy for vertical FL embedding exchange
     parser.add_argument('--dp_noise_scale', default=0.0, type=float,
                         help='Std of Gaussian noise added to party embeddings before sending to manager '
