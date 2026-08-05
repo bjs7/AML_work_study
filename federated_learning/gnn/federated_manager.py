@@ -461,9 +461,18 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         return lv_removed
 
     def tuning(self, laundering_values) -> tuple[dict, dict | None]:
-        """Run HP tuning or return IBM defaults if --ibm_hp is set."""
+        """Run HP tuning or return IBM defaults if --ibm_hp is set.
 
+        Special case: --ibm_hp + --optimizer sgd runs a LR-only search so that
+        all IBM architectural HPs are reused but the Adam-tuned LR is replaced
+        with one appropriate for SGD.
+        """
         if self.args['data_parser'].ibm_hp:
+            if getattr(self.args['fl_parser'], 'optimizer', 'adam') == 'sgd':
+                self.set_mode('tuning')
+                for bank_id, party in self.iter_parties(include_test=False):
+                    party.prep_data()
+                return self._gnn_tuning_lr_only(laundering_values)
             return ibm_gnn, None
 
         self.set_mode('tuning')

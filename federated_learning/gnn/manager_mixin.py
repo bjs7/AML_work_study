@@ -101,7 +101,7 @@ class GNNMixinManager:
                 party.model = GNN(self, hyperparams, node_features, edge_dim, device=device)
 
     def _gnn_tuning(self, laundering_values, **kwargs):
-        
+
         # first loop
         hyperparameters_tuning = self.init_hyperparams()
         _, scores, _ = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
@@ -116,6 +116,32 @@ class GNNMixinManager:
         tuned_hyparameters, _, f1_score_for_hp = self.tuning_loop(hyperparameters_tuning, laundering_values, **kwargs)
 
         return tuned_hyparameters, f1_score_for_hp
+
+    def _gnn_tuning_lr_only(self, laundering_values, **kwargs):
+        """Log-scale grid search over the SGD learning rate; all other HPs fixed at IBM defaults.
+
+        7 candidates evenly spaced on a log scale from 0.01 to 0.5.
+        All candidates are always evaluated — the grid is small enough that early
+        exit would risk missing the good range (low LRs fail for SGD too, so
+        3 zeros at the bottom of the grid tells you nothing about 0.1–0.5).
+        """
+        # 7 points: 0.01, ~0.019, ~0.036, ~0.071, ~0.134, ~0.259, 0.5
+        lrs = [0.01 * (50 ** (i / 6)) for i in range(7)]
+
+        best_hp, best_f1 = None, -1.0
+
+        for lr in lrs:
+            hp = {**ibm_gnn, 'learning_rate': lr}
+            _, _, f1 = self.tuning_loop([hp], laundering_values, **kwargs)
+            logger.info("SGD LR grid: lr=%.5f → vali F1=%.4f", lr, f1)
+
+            if f1 > best_f1:
+                best_hp, best_f1 = hp, f1
+
+        if best_f1 == 0.0:
+            logger.warning("SGD LR grid: no LR produced F1 > 0; training will use lr=%.5f", best_hp['learning_rate'])
+
+        return best_hp, best_f1
 
 
     @staticmethod

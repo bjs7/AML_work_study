@@ -48,6 +48,6 @@ CUDA_VISIBLE_DEVICES=0 $PYTHON_CMD \
     --fl_algo FedAvg --model GINe --size small --ir HI \
     --ibm_hp --emlps --batching --eval_mode comparable \
     --num_local_epochs 5 --client_fraction 0.1 --max_workers 1 \
-    --optimizer sgd"
+    --optimizer sgd --testing_seeds 1"
 
 echo "Done."
