@@ -219,11 +219,17 @@ class GNNMixinManagerBaseline(GNNMixinManager):
         self.set_mode('tuning')
 
         if self.args['data_parser'].ibm_hp:
-            logger.info("Using IBM hyperparameters (skipping tuning)")
-            tuned_hyparameters, f1_score_for_hp = ibm_gnn, 1
-
-            for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
-                results[bank_id] = {'hyperparameters': tuned_hyparameters, 'f1_score': f1_score_for_hp}
+            if getattr(self.args['fl_parser'], 'optimizer', 'adam') == 'sgd':
+                logger.info("SGD + IBM HPs: running LR-only grid search")
+                for bank_id, party in self.parties.items():
+                    party.prep_data()
+                    tuned_hp, f1 = self._gnn_tuning_lr_only(laundering_values, bank_id=bank_id)
+                    results[bank_id] = {'hyperparameters': tuned_hp, 'f1_score': f1}
+            else:
+                logger.info("Using IBM hyperparameters (skipping tuning)")
+                tuned_hyparameters, f1_score_for_hp = ibm_gnn, 1
+                for idx, (bank_id, party) in enumerate(self.parties.items(), 1):
+                    results[bank_id] = {'hyperparameters': tuned_hyparameters, 'f1_score': f1_score_for_hp}
         
         else:
             bank_str = f'{len(self.parties)} banks' if self.args['fl_parser'].fl_algo != 'full_info' else 'full info'

@@ -128,7 +128,7 @@ def setup_splitfed(manager, batching=True, batching_mode='simple'):
     if not batching:
         setup_non_batching_simple(manager)
     elif batching_mode == 'lazy_link_neighbor':
-        from federated_learning.gnn.vertical.batching import setup_lazy_batch_loader
+        from federated_learning.gnn.fedgraph.batching import setup_lazy_batch_loader
         batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:
             setup_lazy_batch_loader(manager, mode, batch_size=batch_size)
