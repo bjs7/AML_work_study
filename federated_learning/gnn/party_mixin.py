@@ -430,7 +430,7 @@ class GNNMixinPartyHorizontal(GNNMixinParty):
             return self.model.predict_no_batching(self.procs_data[data_key])
 
 
-class GNNMixinPartyHybrid(GNNMixinPartyHorizontal):
+class GNNMixinPartyFedAvgSplit(GNNMixinPartyHorizontal):
     """Hybrid FL party: vertical data format (global ID at col 0) with horizontal Phase 1 training.
 
     procs_data[...]['df'].edge_attr has N+1 cols [global_id, f1, ..., fN] (edge_feat_start=1).
@@ -530,10 +530,3 @@ class GNNMixinPartyHybrid(GNNMixinPartyHorizontal):
             result = self.model.predict_no_batching(procs)
             df.edge_attr = orig_ea
             return result
-
-
-class GNNMixinPartyVertical(GNNMixinParty):
-    """Vertical FL party mixin for FedGraph."""
-
-    def set_up_parties(self):
-        pass

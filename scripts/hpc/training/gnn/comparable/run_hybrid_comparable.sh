@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Submit FedGraphHybrid (comparable, single seed) for an initial timing estimate.
+# Submit FedAvgSplit (comparable, single seed) for an initial timing estimate.
 #
 # Two-phase algorithm:
 #   Phase 1 — FedProx (mu=0.1): separate per-party models, --num_rounds FedAvg rounds.
@@ -33,7 +33,7 @@ CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
 conda activate multignn_hpc"
 
-BASE_FLAGS="--fl_algo FedGraphHybrid --model GINe --size small --ir HI \
+BASE_FLAGS="--fl_algo FedAvgSplit --model GINe --size small --ir HI \
 --batching --batching_mode lazy_link_neighbor \
 --ibm_hp --emlps \
 --eval_mode comparable \
@@ -66,7 +66,7 @@ sbatch \
 echo '======================================================================'
 echo 'Job started at: \$(date)'
 echo 'Job ID: \$SLURM_JOB_ID  Node: \$SLURM_NODELIST'
-echo 'FedGraphHybrid comparable — seed 1 (run_id=$RUN_ID)'
+echo 'FedAvgSplit comparable — seed 1 (run_id=$RUN_ID)'
 echo 'Phase 1: FedProx mu=0.1, 100 rounds'
 echo 'Phase 2: frozen GNN, vertical mlp_vert, 50 rounds'
 echo '======================================================================'
@@ -77,6 +77,6 @@ echo '======================================================================'
 "
 
 echo ""
-echo "Submitted FedGraphHybrid comparable timing run (run_id=$RUN_ID)."
+echo "Submitted FedAvgSplit comparable timing run (run_id=$RUN_ID)."
 echo "Check logs/${JOB_NAME}_<jobid>.log for 'Phase 1'/'Phase 2' timestamps"
 echo "to see how long each phase takes before scaling up to more seeds."

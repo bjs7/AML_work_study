@@ -5,6 +5,13 @@ import io
 import re
 from pathlib import Path
 
+# Maps new algorithm names → old folder names for backward-compat with HPC results
+# saved before the rename. load_experiment and find_experiments check both locations.
+ALGO_NAME_ALIASES = {
+    'SplitFed': 'FedGraphSimple',
+    'FedAvgSplit': 'FedGraphHybrid',
+}
+
 # Custom unpickler to force all PyTorch objects to CPU
 class CPU_Unpickler(pickle.Unpickler):
     def find_class(self, module, name):
@@ -62,6 +69,20 @@ def _resolve_run_folder(exp_path, run_id=None):
     return run_folders[-1]
 
 
+def _resolve_algo_alias(exp_path):
+    """If exp_path doesn't exist, try substituting a known old algo folder name."""
+    if exp_path.exists():
+        return exp_path
+    for new_name, old_name in ALGO_NAME_ALIASES.items():
+        parts = exp_path.parts
+        for i, part in enumerate(parts):
+            if part == new_name:
+                alias_path = Path(*parts[:i]) / old_name / Path(*parts[i+1:]) if i + 1 < len(parts) else Path(*parts[:i]) / old_name
+                if alias_path.exists():
+                    return alias_path
+    return exp_path  # Return original even if not found; caller handles missing path
+
+
 def load_experiment(experiment_path, run_id=None):
     """Load all results from an experiment directory.
 
@@ -76,7 +97,7 @@ def load_experiment(experiment_path, run_id=None):
         results = load_experiment('/path/to/experiments/.../GINe/default')
         results = load_experiment('/path/to/...', run_id='20260208_143022')
     """
-    exp_path = Path(experiment_path)
+    exp_path = _resolve_algo_alias(Path(experiment_path))
     exp_path = _resolve_run_folder(exp_path, run_id)
     results = ExperimentResults(str(exp_path))
     

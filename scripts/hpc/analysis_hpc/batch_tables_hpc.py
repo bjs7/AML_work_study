@@ -37,7 +37,7 @@ import data.fl_data_helpers as dfn
 from federated_learning.fl_base import Manager
 import federated_learning.fl_algos
 import models.gnn_models
-from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
+from federated_learning.gnn.fedgraph.batching import LAZY_BATCH_KEY
 from federated_learning.hp_tuning import ibm_gnn
 
 
@@ -59,7 +59,7 @@ OUTPUT_BASE = os.path.join(HPC_OUTPUT_DIR, 'batch_stats')
 _TABLE_DIR  = HPC_OUTPUT_DIR
 
 _ARGS = [
-    '--fl_algo',       'FedGraphSimple',
+    '--fl_algo',       'SplitFed',
     '--model',         'GINe',
     '--size',          'small',
     '--ir',            'HI',
@@ -91,8 +91,8 @@ print("Setting up parties...")
 manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 print("Party setup complete.")
 
-from federated_learning.gnn.vertical_simple import setup
-setup.setup_vertical_simple(manager, batching=True, batching_mode='lazy_link_neighbor')
+from federated_learning.gnn.splitfed import setup
+setup.setup_splitfed(manager, batching=True, batching_mode='lazy_link_neighbor')
 manager.setup_model(ibm_gnn, laundering_values_test)
 
 # --- Attempt metadata — index matches seed_global_ids (universal_features_restructure passes AttemptID through) ---

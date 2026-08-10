@@ -79,7 +79,7 @@ _C4_LAUND = '#c0392b'
 _C4_LEGIT = '#aab7b8'
 
 _ARGS = [
-    '--fl_algo',       'FedGraphSimple',
+    '--fl_algo',       'SplitFed',
     '--model',         'GINe',
     '--size',          'small',
     '--ir',            'HI',
@@ -111,8 +111,8 @@ print("Setting up parties...")
 manager.setup_parties(df, parsers, scaler_encoders, laundering_values_vali)
 print("Party setup complete.")
 
-from federated_learning.gnn.vertical_simple import setup
-setup.setup_vertical_simple(manager, batching=True, batching_mode='lazy_link_neighbor')
+from federated_learning.gnn.splitfed import setup
+setup.setup_splitfed(manager, batching=True, batching_mode='lazy_link_neighbor')
 manager.setup_model(ibm_gnn, laundering_values_test)
 
 

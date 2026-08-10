@@ -178,7 +178,7 @@ def fl_parser():
     parser.add_argument('--num_rounds', default=100, type=int,
                         help='Number of FL communication rounds (default: 100)')
     parser.add_argument('--num_phase2_rounds', default=None, type=int,
-                        help='Number of rounds for Phase 2 (vertical head) in FedGraphHybrid. '
+                        help='Number of rounds for Phase 2 (SplitFed head) in FedAvgSplit. '
                              'Defaults to --num_rounds if not set.')
     parser.add_argument('--max_workers', default=4, type=int,
                         help='Number of parallel workers for party training (default: number of CPUs)')

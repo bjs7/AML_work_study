@@ -16,16 +16,16 @@ from models.gnn_base import add_arange_ids
 import pandas as pd
 import numpy as np
 import torch
-from .vertical import setup, forward, training_utils
-from .vertical.batching import process_lazy_batch, LAZY_BATCH_KEY
-from .vertical_simple import setup as simple_setup, forward as simple_forward
-from .vertical_simple.batching import process_lazy_batch_simple
+from .fedgraph import setup, forward, training_utils
+from .fedgraph.batching import process_lazy_batch, LAZY_BATCH_KEY
+from .splitfed import setup as simple_setup, forward as simple_forward
+from .splitfed.batching import process_lazy_batch_simple
 
 logger = logging.getLogger(__name__)
 
 
-class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
-    """Vertical Federated Learning Manager.
+class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
+    """FedGraph Federated Learning Manager.
 
     Coordinates training across parties using embedding exchange rather than
     weight aggregation. All parties share a single model and exchange
@@ -330,21 +330,21 @@ class FLGNNManagerVertical(GNNCommunicationMixin, GNNMixinManager):
 
 
 
-class FLGNNManagerVerticalSimple(FLGNNManagerVertical):
-    """Vertical FL manager with no per-layer embedding exchange.
+class FLGNNManagerSplitFed(FLGNNManagerFedGraph):
+    """SplitFed FL manager with no per-layer embedding exchange.
 
     Each party runs all GNN layers locally on its own graph and provides
     only final per-edge embeddings. The manager concatenates the from-bank
     and to-bank embeddings per transaction and classifies via mlp_vert.
 
-    Simpler and cheaper than FLGNNManagerVertical (O(1) communication rounds
+    Simpler and cheaper than FLGNNManagerFedGraph (O(1) communication rounds
     per epoch vs O(num_gnn_layers)), at the cost of no cross-bank context
     during message passing.
     """
 
     def setup_vertical(self, batching=True, batching_mode='simple'):
         """Set up simplified vertical FL (no intersection tracking)."""
-        simple_setup.setup_vertical_simple(self, batching=batching, batching_mode=batching_mode)
+        simple_setup.setup_splitfed(self, batching=batching, batching_mode=batching_mode)
 
     def forward_pass(self, mode, batch_num, batch_banks, batch_data):
         """Run full local GNN per party, collect and concatenate final embeddings."""
@@ -671,16 +671,16 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
                 'removed_parties_laundering_values': removed_lv}
 
 
-class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
-    """Two-phase hybrid: FedAvg trains shared GNN weights; vertical MLP trains on frozen embeddings.
+class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
+    """Two-phase FedAvgSplit: FedAvg trains shared GNN weights; SplitFed-style MLP trains on frozen embeddings.
 
     Phase 1: All parties train locally (FedAvg) — separate per-party models, best global
     weights selected on vali F1.
     Phase 2: One shared model with GNN frozen; manager trains mlp_vert on concatenated
-    From/To final embeddings via vertical forward pass.
+    From/To final embeddings via SplitFed forward pass.
 
     This lets the GNN learn from distributed local graphs (FedAvg) and then the
-    classification head specialise on the cross-bank view (vertical FL), without
+    classification head specialise on the cross-bank view (SplitFed), without
     requiring parties to share raw data or intermediate embeddings during Phase 1.
     """
 
@@ -693,7 +693,7 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
         # Phase 2 uses the vertical forward pass which reads global IDs from
         # procs_data[...]['df'].edge_attr[:, 0].  Those IDs must be present in the
         # raw party data (party.data) at construction time, so add_arange_ids must
-        # be called here — before _add_party — exactly as FLGNNManagerVertical does.
+        # be called here — before _add_party — exactly as FLGNNManagerFedGraph does.
         # Setting edge_feat_start=1 now ensures parties inherit the correct value
         # so that feature_engi_graph_data keeps col 0 as the global ID.
         self.edge_feat_start = 1
@@ -743,7 +743,7 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
 
         # --- Phase 1: FedAvg — each party gets its own model, trains locally ---
-        logger.info("FedGraphHybrid Phase 1: FedAvg GNN training")
+        logger.info("FedAvgSplit Phase 1: FedAvg GNN training")
         self.init_models(hyperparameters)
         self.get_global_weights()
         self.send_global_weights_params()
@@ -763,7 +763,7 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
                     df.to('cpu')
 
         # --- Transition: share best FedAvg model across all parties ---
-        logger.info("FedGraphHybrid: sharing best FedAvg model across all parties for Phase 2")
+        logger.info("FedAvgSplit: sharing best FedAvg model across all parties for Phase 2")
         # Use self.parties (FedAvg train participants) — they are explicitly guaranteed to have
         # received send_global_weights(). With superset_merge, self.parties[bank_id] is the same
         # object as self.test_parties[bank_id], so assigning shared_model covers all parties.
@@ -795,7 +795,7 @@ class FLGNNManagerHybrid(FLGNNManagerVerticalSimple):
 
         # --- Phase 2: set up vertical batching context and train mlp_vert ---
         phase2_rounds = getattr(self.args['fl_parser'], 'num_phase2_rounds', None) or self.args['fl_parser'].num_rounds
-        logger.info("FedGraphHybrid Phase 2: training mlp_vert on frozen GNN embeddings (%d rounds)", phase2_rounds)
+        logger.info("FedAvgSplit Phase 2: training mlp_vert on frozen GNN embeddings (%d rounds)", phase2_rounds)
         self.set_manager_data(self._stored_df['regular_data'], 'training')
         batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
         self.setup_vertical(batching=self.args['data_parser'].batching, batching_mode=batching_mode)

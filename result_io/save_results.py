@@ -38,7 +38,7 @@ def _build_path(manager):
         validate_every = getattr(fl_p, 'validate_every', 1)
         if validate_every != 1:
             algo_subfolder += f'_ve{validate_every}'
-    elif fl_algo == 'FedGraphHybrid':
+    elif fl_algo == 'FedAvgSplit':
         fl_p = manager.args['fl_parser']
         C = getattr(fl_p, 'client_fraction', 1.0)
         E = getattr(fl_p, 'num_local_epochs', 1)
@@ -160,7 +160,7 @@ def save_seed_result(save_dir, seed, result, manager):
                              'laundering_values': result['laundering_values'],
                              'best_vali_f1': result.get('best_vali_f1')}, f)
             torch.save(result['model'], seed_folder / 'model.pth')
-        else:  # FedAvg, FedProx, FedGraph, FedGraphSimple, etc.
+        else:  # FedAvg, FedProx, FedGraph, SplitFed, etc.
             with open(seed_folder / 'metrics_laundering_values.pkl', 'wb') as f:
                 pickle.dump({'metrics': result['metrics'],
                              'laundering_values': result['laundering_values'],

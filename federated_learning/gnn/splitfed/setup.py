@@ -107,7 +107,7 @@ def setup_simple_batching(manager, mode, batch_size=8192):
         manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
 
 
-def setup_vertical_simple(manager, batching=True, batching_mode='simple'):
+def setup_splitfed(manager, batching=True, batching_mode='simple'):
     """Set up simplified vertical FL — no intersection tracking or ownership mapping.
 
     Supported batching_mode values:

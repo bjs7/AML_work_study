@@ -5,12 +5,12 @@ get_ownership_mappings, and get_nodes_to_send — the simple forward pass does
 not perform per-layer embedding exchange, so none of those are called.
 
 Usage (training benchmark):
-    python -m scripts.benchmark.benchmark_vertical_simple --fl_algo FedGraphSimple --batching \
+    python -m scripts.benchmark.benchmark_vertical_simple --fl_algo SplitFed --batching \
         --batching_mode lazy_link_neighbor --size small --ir HI --emlps --ibm_hp \
         --eval_mode comparable --testing
 
 Usage (inference-only with pre-trained weights):
-    python -m scripts.benchmark.benchmark_vertical_simple --fl_algo FedGraphSimple --batching \
+    python -m scripts.benchmark.benchmark_vertical_simple --fl_algo SplitFed --batching \
         --batching_mode lazy_link_neighbor --size small --ir HI --emlps --ibm_hp \
         --eval_mode system --inference_only --load_weights /path/to/seed_1/model.pth
 
@@ -50,8 +50,8 @@ import data.fl_data_helpers as dfn
 from federated_learning.fl_base import Manager
 import federated_learning.fl_algos
 import models.gnn_models
-from federated_learning.gnn.vertical_simple import batching as simple_bat
-from federated_learning.gnn.vertical.batching import LAZY_BATCH_KEY
+from federated_learning.gnn.splitfed import batching as simple_bat
+from federated_learning.gnn.fedgraph.batching import LAZY_BATCH_KEY
 from federated_learning.hp_tuning import ibm_gnn
 
 
@@ -154,8 +154,8 @@ def run_benchmark():
           f"max_workers={parsers['fl_parser'].max_workers}, "
           f"inference_only={_bench_args.inference_only}")
 
-    from federated_learning.gnn.vertical_simple import setup
-    setup.setup_vertical_simple(manager, batching=True, batching_mode=batching_mode)
+    from federated_learning.gnn.splitfed import setup
+    setup.setup_splitfed(manager, batching=True, batching_mode=batching_mode)
 
     manager.setup_model(ibm_gnn, laundering_values_test)
 

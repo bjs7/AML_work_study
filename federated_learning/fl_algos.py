@@ -3,8 +3,8 @@
 from federated_learning.fl_base import Manager, Party
 from federated_learning.registry import regi_algo_manager, regi_algo_party
 from federated_learning.gnn import (
-    GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyVertical, GNNMixinPartyHybrid,
-    FLGNNManagerHorizontal, FLGNNManagerVertical, FLGNNManagerVerticalSimple, FLGNNManagerHybrid,
+    GNNMixinParty, GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyFedAvgSplit,
+    FLGNNManagerHorizontal, FLGNNManagerFedGraph, FLGNNManagerSplitFed, FLGNNManagerFedAvgSplit,
     IndividualGNNManager as IndividualGNNManagerImpl,
     FullInfoGNNManager as FullInfoGNNManagerImpl,
 )
@@ -120,7 +120,7 @@ class FedProxGNNParty(GNNMixinPartyHorizontal, FedProxPartyBase):
 
 
 @regi_algo_party("FedGraph_gnn")
-class FedGraphGNNParty(GNNMixinPartyVertical, FedGraphPartyBase):
+class FedGraphGNNParty(GNNMixinParty, FedGraphPartyBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -130,16 +130,16 @@ class FedGraphGNNParty(GNNMixinPartyVertical, FedGraphPartyBase):
         return FedGraphGNNParty(**kwargs)
 
 
-@regi_algo_party("FedGraphSimple_gnn")
-class FedGraphSimpleGNNParty(GNNMixinPartyVertical, FedGraphPartyBase):
-    """Party for simplified vertical FL — same data prep as FedGraph."""
+@regi_algo_party("SplitFed_gnn")
+class SplitFedGNNParty(GNNMixinParty, FedGraphPartyBase):
+    """Party for SplitFed — same data prep as FedGraph."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @staticmethod
     def return_class(**kwargs):
-        return FedGraphSimpleGNNParty(**kwargs)
+        return SplitFedGNNParty(**kwargs)
 
 
 # Manager --------------------------
@@ -177,41 +177,41 @@ class FedProxGNNManager(FLGNNManagerHorizontal, FedProxManagerBase):
 
 
 @regi_algo_manager("FedGraph_gnn")
-class FedGraphGNNManager(FLGNNManagerVertical, FedGraphManagerBase):
+class FedGraphGNNManager(FLGNNManagerFedGraph, FedGraphManagerBase):
 
     @staticmethod
     def return_class(args):
         return FedGraphGNNManager(args)
 
 
-@regi_algo_manager("FedGraphSimple_gnn")
-class FedGraphSimpleGNNManager(FLGNNManagerVerticalSimple, FedGraphManagerBase):
-    """Manager for simplified vertical FL (no per-layer embedding exchange)."""
+@regi_algo_manager("SplitFed_gnn")
+class SplitFedGNNManager(FLGNNManagerSplitFed, FedGraphManagerBase):
+    """Manager for SplitFed (no per-layer embedding exchange)."""
 
     @staticmethod
     def return_class(args):
-        return FedGraphSimpleGNNManager(args)
+        return SplitFedGNNManager(args)
 
 
-@regi_algo_party("FedGraphHybrid_gnn")
-class FedGraphHybridGNNParty(GNNMixinPartyHybrid, FedAvgPartyBase):
-    """Party for hybrid FL — uses horizontal mixin for Phase 1 FedAvg local training."""
+@regi_algo_party("FedAvgSplit_gnn")
+class FedAvgSplitGNNParty(GNNMixinPartyFedAvgSplit, FedAvgPartyBase):
+    """Party for FedAvgSplit — uses horizontal mixin for Phase 1 FedAvg local training."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @staticmethod
     def return_class(**kwargs):
-        return FedGraphHybridGNNParty(**kwargs)
+        return FedAvgSplitGNNParty(**kwargs)
 
 
-@regi_algo_manager("FedGraphHybrid_gnn")
-class FedGraphHybridGNNManager(FLGNNManagerHybrid, FedAvgManagerBase):
-    """Manager for two-phase hybrid FL: FedAvg GNN training then vertical MLP training."""
+@regi_algo_manager("FedAvgSplit_gnn")
+class FedAvgSplitGNNManager(FLGNNManagerFedAvgSplit, FedAvgManagerBase):
+    """Manager for FedAvgSplit: FedAvg GNN training then SplitFed-style MLP training."""
 
     @staticmethod
     def return_class(args):
-        return FedGraphHybridGNNManager(args)
+        return FedAvgSplitGNNManager(args)
 
 
 # Booster -------------------------------------------------------------------------------------------
