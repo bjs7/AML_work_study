@@ -57,8 +57,10 @@ def _build_path(manager):
         algo_subfolder = (algo_subfolder + suffix) if algo_subfolder else opt_name
 
     eval_mode = getattr(manager.args['data_parser'], 'eval_mode', 'system')
+    tune_run = getattr(manager.args['fl_parser'], 'tune_run', False)
+    base = os.path.join(config.save_direc_training, 'tuning' if tune_run else '', str_testing)
 
-    save_direc = os.path.join(config.save_direc_training, str_testing,
+    save_direc = os.path.join(base,
                               manager.args['data_parser'].size + '_' + manager.args['data_parser'].ir,
                               f'split_{config.split_perc[0]}_{config.split_perc[1]}',
                               eval_mode, fl_algo, algo_subfolder)

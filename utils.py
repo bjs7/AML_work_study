@@ -192,6 +192,22 @@ def fl_parser():
     # Optimizer
     parser.add_argument('--optimizer', default='adam', type=str, choices=['adam', 'sgd'],
                         help='Optimizer for GNN training (default: adam)')
+    parser.add_argument('--lr_override', default=None, type=float,
+                        help='Fixed SGD learning rate — skips the LR grid search when '
+                             '--ibm_hp --optimizer sgd is set. Ignored for Adam.')
+    parser.add_argument('--lr_lower', default=0.01, type=float,
+                        help='Lower bound of the SGD LR grid (default 0.01)')
+    parser.add_argument('--lr_upper', default=0.5, type=float,
+                        help='Upper bound of the SGD LR grid (default 0.5)')
+    parser.add_argument('--patience', default=None, type=int,
+                        help='Early-stopping patience in rounds: stop a training run if '
+                             'validation F1 does not improve for this many consecutive rounds. '
+                             'Applies to both tuning candidates and final training. '
+                             'None (default) = no early stopping.')
+    parser.add_argument('--tune_run', action='store_true',
+                        help='Save results under experiments/tuning/ instead of experiments/. '
+                             'Pass this flag in tuning scripts to keep tuning artifacts '
+                             'separate from proper training results.')
 
     # Differential privacy for vertical FL embedding exchange
     parser.add_argument('--dp_noise_scale', default=0.0, type=float,

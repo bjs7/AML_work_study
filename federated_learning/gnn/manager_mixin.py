@@ -120,13 +120,17 @@ class GNNMixinManager:
     def _gnn_tuning_lr_only(self, laundering_values, **kwargs):
         """Log-scale grid search over the SGD learning rate; all other HPs fixed at IBM defaults.
 
-        7 candidates evenly spaced on a log scale from 0.01 to 0.5.
-        All candidates are always evaluated — the grid is small enough that early
-        exit would risk missing the good range (low LRs fail for SGD too, so
-        3 zeros at the bottom of the grid tells you nothing about 0.1–0.5).
+        7 candidates evenly spaced on a log scale from lr_lower to lr_upper.
+        Both bounds are controlled via --lr_lower / --lr_upper (defaults: 0.01 / 0.5).
+        All candidates are always evaluated.
         """
-        # 7 points: 0.01, ~0.019, ~0.036, ~0.071, ~0.134, ~0.259, 0.5
-        lrs = [0.01 * (50 ** (i / 6)) for i in range(7)]
+        lr_lower = getattr(self.args['fl_parser'], 'lr_lower', 0.01)
+        lr_upper = getattr(self.args['fl_parser'], 'lr_upper', 0.5)
+        ratio = lr_upper / lr_lower
+        lrs = [lr_lower * (ratio ** (i / 6)) for i in range(7)]
+        logger.info("SGD LR grid: %.5f → %.5f (%d points): %s",
+                    lr_lower, lr_upper, len(lrs),
+                    ", ".join(f"{lr:.4f}" for lr in lrs))
 
         best_hp, best_f1 = None, -1.0
 

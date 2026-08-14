@@ -469,6 +469,10 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
         """
         if self.args['data_parser'].ibm_hp:
             if getattr(self.args['fl_parser'], 'optimizer', 'adam') == 'sgd':
+                lr_override = getattr(self.args['fl_parser'], 'lr_override', None)
+                if lr_override is not None:
+                    logger.info("SGD fixed LR=%.5f (--lr_override; skipping grid search)", lr_override)
+                    return {**ibm_gnn, 'learning_rate': lr_override}, None
                 self.set_mode('tuning')
                 for bank_id, party in self.iter_parties(include_test=False):
                     party.prep_data()
@@ -541,8 +545,10 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
 
         best_weights = None
         best_f1 = -1
+        no_improve_count = 0
 
         epochs = 20 if self.args['data_parser'].testing else self.args['fl_parser'].num_rounds
+        patience = getattr(self.args['fl_parser'], 'patience', None)
 
         # Read FL config
         fl_parser = self.args['fl_parser']
@@ -618,6 +624,13 @@ class FLGNNManagerHorizontal(GNNCommunicationMixin, GNNMixinManager):
                 if f1_vali > best_f1:
                     best_weights = copy.deepcopy(self.global_weights)
                     best_f1 = f1_vali
+                    no_improve_count = 0
+                else:
+                    no_improve_count += 1
+                    if patience is not None and no_improve_count >= patience:
+                        logger.info("Epoch %d/%d - Vali F1: %.4f — early stopping (patience=%d)",
+                                    epoch + 1, epochs, f1_vali, patience)
+                        break
 
                 logger.info("Epoch %d/%d - Vali F1: %.4f", epoch + 1, epochs, f1_vali)
             else:
