@@ -25,7 +25,7 @@ PARTITION="gpu_v100"
 CPUS="4"
 MEM="82G"
 GPUS="1"
-TIME="48:00:00"
+TIME="64:00:00"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
 
