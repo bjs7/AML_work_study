@@ -208,6 +208,11 @@ def fl_parser():
                         help='Save results under experiments/tuning/ instead of experiments/. '
                              'Pass this flag in tuning scripts to keep tuning artifacts '
                              'separate from proper training results.')
+    parser.add_argument('--profile_timing', action='store_true',
+                        help='Collect per-batch and per-epoch wall-clock timing during '
+                             'train_vertical and save to timing_profile.json in the '
+                             'experiment directory. Adds CUDA syncs around each timed '
+                             'region so GPU time is measured correctly.')
 
     # Differential privacy for vertical FL embedding exchange
     parser.add_argument('--dp_noise_scale', default=0.0, type=float,

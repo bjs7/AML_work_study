@@ -1,6 +1,8 @@
 """Federated GNN Manager - coordinates training across all parties with weight aggregation."""
 
 import copy
+import json
+import time
 import random
 import utils
 from inference import metrics
@@ -247,6 +249,11 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
             else:
                 epochs = self.args['fl_parser'].num_rounds
 
+        profile = getattr(self.args['fl_parser'], 'profile_timing', False)
+        _sync = (lambda: torch.cuda.synchronize()) if (profile and torch.cuda.is_available()) else (lambda: None)
+        timing_batches: list[dict] = []
+        timing_epochs:  list[dict] = []
+
         best_f1 = -1
         best_model_state = None
 
@@ -257,29 +264,68 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
 
         for epoch in range(epochs):
 
+            if profile:
+                t_epoch = time.perf_counter()
+
             # Training phase
             self.model.gnn.train()
             train_loss = 0
             all_preds, all_labels = [], []
+            n_batches_this_epoch = 0
 
             for batch_key, batch_banks, batch_data in \
                     self._iter_batches('train', batching, batch_data_train if not batching else None):
                 self.optimizer.zero_grad()
+
+                if profile:
+                    _sync(); t_fwd = time.perf_counter()
                 preds, labels = self.forward_pass('train', batch_key, batch_banks, batch_data)
+                if profile:
+                    _sync(); dt_fwd = time.perf_counter() - t_fwd
+
                 all_preds.append(preds)
                 all_labels.append(labels)
-
                 loss = self.loss_fn(preds, labels)
+
+                if profile:
+                    _sync(); t_bwd = time.perf_counter()
                 loss.backward()
+                if profile:
+                    _sync(); dt_bwd = time.perf_counter() - t_bwd
+                    t_opt = time.perf_counter()
                 self.optimizer.step()
+                if profile:
+                    _sync(); dt_opt = time.perf_counter() - t_opt
+                    timing_batches.append({
+                        'epoch': epoch,
+                        'n_parties': len(batch_banks),
+                        'forward_s':   round(dt_fwd, 6),
+                        'backward_s':  round(dt_bwd, 6),
+                        'optimizer_s': round(dt_opt, 6),
+                    })
+                    n_batches_this_epoch += 1
+
                 train_loss += loss.item()
 
             training_utils.log_train_performance(all_labels, all_preds, train_loss, epoch, epochs)
 
             # Validation phase (model selection)
+            if profile:
+                _sync(); t_train_end = time.perf_counter()
             self.model.gnn.eval()
             labels_np, preds_probs, preds_binary = self._forward_eval(
                 'vali', batching, batch_data_vali if not batching else None)
+            if profile:
+                _sync()
+                dt_vali = time.perf_counter() - t_train_end
+                dt_train = t_train_end - t_epoch
+                timing_epochs.append({
+                    'epoch':     epoch,
+                    'n_batches': n_batches_this_epoch,
+                    'train_s':   round(dt_train, 3),
+                    'vali_s':    round(dt_vali, 3),
+                    'total_s':   round(time.perf_counter() - t_epoch, 3),
+                })
 
             f1_vali = f1_score(labels_np, preds_binary)
             logger.info(f'Vali F1: {f1_vali}')
@@ -321,6 +367,21 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
         laundering_values['pred_probabilities'] = preds_probs
         laundering_values['pred_label'] = preds_binary
         best_model = best_model_state['best_model']
+
+        if profile and timing_batches:
+            timing_data = {
+                'algo':    self.args['fl_parser'].fl_algo,
+                'device':  str(self.device),
+                'batches': timing_batches,
+                'epochs':  timing_epochs,
+            }
+            save_dir = getattr(self, 'save_dir', None)
+            if save_dir is not None:
+                with open(save_dir / 'timing_profile.json', 'w') as f:
+                    json.dump(timing_data, f, indent=2)
+                logger.info("Timing profile saved to %s/timing_profile.json", save_dir)
+            else:
+                logger.info("Timing profile (no save_dir): %s", json.dumps(timing_data))
 
         return {
             'weights': best_model,
