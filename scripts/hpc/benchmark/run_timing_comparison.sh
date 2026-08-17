@@ -44,7 +44,7 @@ JOB_NAME="aml_timing_bench"
 
 mkdir -p logs
 
-echo "Submitting $JOB_NAME (FedGraph + FedAvgSplit, V100, genius) ..."
+echo "Submitting $JOB_NAME (FedGraph + SplitFed, V100, genius) ..."
 
 sbatch \
     -M "$CLUSTER" \
@@ -66,7 +66,7 @@ echo '======================================================================'
 echo 'Timing benchmark started at: \$(date)'
 echo 'Job ID: \$SLURM_JOB_ID  Node: \$SLURM_NODELIST'
 echo '======================================================================'
-CUDA_VISIBLE_DEVICES=0 python \$PYTHON_SCRIPT $FLAGS
+CUDA_VISIBLE_DEVICES=0 python $PYTHON_SCRIPT $FLAGS
 echo '======================================================================'
 echo 'Timing benchmark finished at: \$(date)'
 echo '======================================================================'

@@ -46,7 +46,7 @@ Usage
       --batching --batching_mode lazy_link_neighbor --eval_mode system \\
       --n_benchmark_epochs 5
 
-  # Both algorithms in one run:
+  # Both algorithms in one run (FedGraph + SplitFed):
   python scripts/hpc/benchmark/benchmark_timing_comparison.py \\
       --fl_algo all --size small --ir HI --ibm_hp --emlps \\
       --batching --batching_mode lazy_link_neighbor --eval_mode system \\
@@ -55,7 +55,7 @@ Usage
 Benchmark-only flags (not forwarded to main parsers):
   --n_benchmark_epochs N    training epochs to time  (default: 5)
   --n_explicit_batches N    batches for explicit-backward mini-benchmark
-                            (default: 20; set 0 to skip)
+                            (default: 20; set 0 to skip; SplitFed only)
 """
 
 import sys
@@ -94,8 +94,8 @@ from federated_learning.gnn.fedgraph.batching import LAZY_BATCH_KEY
 _bench_parser = argparse.ArgumentParser(add_help=False)
 _bench_parser.add_argument('--n_benchmark_epochs',  type=int, default=5)
 _bench_parser.add_argument('--n_explicit_batches',  type=int, default=20)
-_bench_parser.add_argument('--fl_algo', default='FedAvgSplit',
-                            help='FedGraph | FedAvgSplit | all')
+_bench_parser.add_argument('--fl_algo', default='SplitFed',
+                            help='FedGraph | SplitFed | all')
 _bench_args, _ = _bench_parser.parse_known_args()
 
 
@@ -525,7 +525,7 @@ def main():
         parsers['data_parser'], {'regular_data': copy.deepcopy(df['regular_data'])})
 
     fl_algo = _bench_args.fl_algo
-    algos   = ['FedGraph', 'FedAvgSplit'] if fl_algo == 'all' else [fl_algo]
+    algos   = ['FedGraph', 'SplitFed'] if fl_algo == 'all' else [fl_algo]
 
     for algo in algos:
         print(f"\n{'#'*74}")
