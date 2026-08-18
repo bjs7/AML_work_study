@@ -61,6 +61,7 @@ test_*_quick.py
 # Local-only directories
 examples/
 tests/
+!scripts/hpc/tests/
 federated_learning/regression/
 models/regression_models.py
 
