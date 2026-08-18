@@ -28,7 +28,7 @@ GPUS="1"
 CPUS="4"
 MEM="82G"
 
-PYTHON_SCRIPT="$VSC_DATA/AML_work_study/AML_work_study/scripts/hpc/benchmark/benchmark_timing_comparison.py"
+PYTHON_SCRIPT="$VSC_DATA/AML_work_study/AML_work_study/scripts/hpc/benchmark/gnn/benchmark_timing_comparison.py"
 
 CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
