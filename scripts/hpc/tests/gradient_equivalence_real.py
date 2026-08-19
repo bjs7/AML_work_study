@@ -1,20 +1,25 @@
 """
-Empirical gradient equivalence test — real AML data, multiple bank pairs.
+SplitFed gradient equivalence — real AML data, multi-party batches.
 
 Verifies that the explicit multi-party backward pass (detach at embedding
-boundary, manager sends ∂L/∂emb back, each party backpropagates locally)
-produces identical GNN parameter gradients to the joint PyTorch backward pass.
+boundary, manager sends ∂L/∂emb back, each party accumulates gradients
+and calls emb.backward once) produces identical GNN parameter gradients
+to the joint PyTorch backward pass (single computation graph, loss.backward).
 
-Runs one batch per bank pair, using the top N pairs by number of A→B
-transactions. Each pair uses genuinely different data, so results are
-independent across rows.
+Mirrors forward_pass_simple exactly:
+- Each batch is a random sample of N_BATCH transactions from all banks.
+- Party subgraphs are built once upfront for all banks.
+- from_embeds / to_embeds are filled per bank; intra-bank to_embeds = 0.
+- N_TESTS independent batches are run with different random seeds.
 
-Saves results to gradient_equivalence_results.csv in the same directory
-as this script.
+Runs on CPU (GPU scatter_add is non-deterministic; test requires exact
+floating-point reproducibility).
+
+Output: gradient_equivalence_results.csv in the same directory as this script.
 
 Usage:
   python scripts/hpc/tests/gradient_equivalence_real.py
-  python scripts/hpc/tests/gradient_equivalence_real.py --n_pairs 10 --n_batch 500
+  python scripts/hpc/tests/gradient_equivalence_real.py --n_tests 10 --n_batch 500
 """
 
 import sys
@@ -48,7 +53,7 @@ def load_csv(size, ir, n_rows):
                         f'formatted_transactions_{size}_{ir}.csv')
     if not os.path.exists(path):
         raise FileNotFoundError(f"CSV not found: {path}")
-    df = pd.read_csv(path, nrows=n_rows)
+    df = pd.read_csv(path, nrows=(n_rows if n_rows > 0 else None))
     df['Timestamp'] = df['Timestamp'] - df['Timestamp'].min()
     return df
 
@@ -83,17 +88,15 @@ def extract_party_subgraph(full_graph, edge_mask):
                 edge_attr=sub_edge_attr, y=sub_y)
 
 
-def select_top_bank_pairs(df, n_pairs, min_edges=200):
-    """Return the top n_pairs cross-bank pairs by number of A→B transactions."""
-    bank_sizes = pd.concat([df['From Bank'], df['To Bank']]).value_counts()
-    valid = set(bank_sizes[bank_sizes >= min_edges].index)
-    ab = df[(df['From Bank'] != df['To Bank']) &
-            df['From Bank'].isin(valid) & df['To Bank'].isin(valid)]
-    if ab.empty:
-        raise ValueError(f"No cross-party edges between banks with >= {min_edges} edges.")
-    counts = ab.groupby(['From Bank', 'To Bank']).size().sort_values(ascending=False)
-    top = counts.head(n_pairs)
-    return [(int(a), int(b), int(n)) for (a, b), n in top.items()]
+def build_all_party_subgraphs(full_graph, from_arr, to_arr):
+    """Build one subgraph per bank — done once, reused across all test batches."""
+    all_banks    = np.unique(np.concatenate([from_arr, to_arr]))
+    party_graphs = {}
+    for bank_id in all_banks:
+        mask = (from_arr == bank_id) | (to_arr == bank_id)
+        if mask.sum() > 0:
+            party_graphs[int(bank_id)] = extract_party_subgraph(full_graph, mask)
+    return party_graphs
 
 
 def run_gnn(gnn, graph):
@@ -103,45 +106,100 @@ def run_gnn(gnn, graph):
     return gnn.prep_nodes_edges(emb['nodes'], emb['edges'], graph.edge_index)
 
 
-def run_batch_test(gnn, graph_A, graph_B, batch_df, atol, rtol):
-    labels  = torch.tensor(batch_df['Is Laundering'].values, dtype=torch.long)
-    n       = len(batch_df)
-    loss_fn = torch.nn.CrossEntropyLoss(reduction='sum')
+def run_batch_test(gnn, party_graphs, batch_df, from_arr_full, to_arr_full, atol, rtol):
+    """
+    Test gradient equivalence for one random multi-party batch.
 
-    ip_A = {int(gid): pos for pos, gid in enumerate(graph_A.edge_attr[:, 0].cpu())}
-    ip_B = {int(gid): pos for pos, gid in enumerate(graph_B.edge_attr[:, 0].cpu())}
+    Mirrors forward_pass_simple: from_embeds / to_embeds filled per bank;
+    intra-bank transactions keep to_embeds = 0. Gradients are accumulated
+    per bank before calling backward once per bank.
+    """
+    n          = len(batch_df)
+    indices    = batch_df.index.values.astype(int)
+    from_banks = from_arr_full[indices]
+    to_banks   = to_arr_full[indices]
+    labels     = torch.tensor(batch_df['Is Laundering'].values, dtype=torch.long)
+    loss_fn    = torch.nn.CrossEntropyLoss(reduction='sum')
+    intra_mask = from_banks == to_banks
 
-    indices     = batch_df.index.values.astype(int)
-    A_positions = [ip_A[gid] for gid in indices]
-    B_positions = [ip_B[gid] for gid in indices]
+    active_banks = [b for b in np.unique(np.concatenate([from_banks, to_banks]))
+                    if b in party_graphs]
+    ip = {b: {int(gid): pos for pos, gid in enumerate(party_graphs[b].edge_attr[:, 0].cpu())}
+          for b in active_banks}
 
     # ── Joint path ────────────────────────────────────────────────────────────
     gnn.zero_grad()
-    emb_A_j  = run_gnn(gnn, graph_A)
-    emb_B_j  = run_gnn(gnn, graph_B)
-    logits_j = gnn.mlp_vert(torch.cat([emb_A_j[A_positions], emb_B_j[B_positions]], dim=1))
+    emb       = {b: run_gnn(gnn, party_graphs[b]) for b in active_banks}
+    embed_dim = next(iter(emb.values())).shape[1]
+
+    from_embeds = torch.zeros(n, embed_dim)
+    to_embeds   = torch.zeros(n, embed_dim)
+
+    for bank in np.unique(from_banks):
+        if bank not in ip: continue
+        mask = from_banks == bank
+        pos  = [ip[bank][idx] for idx in indices[mask]]
+        from_embeds[mask] = emb[bank][pos]
+
+    for bank in np.unique(to_banks):
+        if bank not in ip: continue
+        mask = (to_banks == bank) & ~intra_mask
+        if not mask.any(): continue
+        pos = [ip[bank][idx] for idx in indices[mask]]
+        to_embeds[mask] = emb[bank][pos]
+    # intra-bank rows: to_embeds stays 0 (matches forward_pass_simple)
+
+    logits_j = gnn.mlp_vert(torch.cat([from_embeds, to_embeds], dim=1))
     (loss_fn(logits_j, labels) / n).backward()
     grad_joint = {nm: (p.grad.clone() if p.grad is not None else torch.zeros_like(p))
                   for nm, p in gnn.named_parameters()}
 
     # ── Manual path ───────────────────────────────────────────────────────────
     gnn.zero_grad()
-    emb_A_m    = run_gnn(gnn, graph_A)
-    emb_B_m    = run_gnn(gnn, graph_B)
-    from_proxy = emb_A_m[A_positions].detach().requires_grad_(True)
-    to_proxy   = emb_B_m[B_positions].detach().requires_grad_(True)
-    logits_m   = gnn.mlp_vert(torch.cat([from_proxy, to_proxy], dim=1))
+    emb_m = {b: run_gnn(gnn, party_graphs[b]) for b in active_banks}
+
+    from_proxy = torch.zeros(n, embed_dim)
+    to_proxy   = torch.zeros(n, embed_dim)
+
+    for bank in np.unique(from_banks):
+        if bank not in ip: continue
+        mask = from_banks == bank
+        pos  = [ip[bank][idx] for idx in indices[mask]]
+        from_proxy[mask] = emb_m[bank][pos].detach()
+
+    for bank in np.unique(to_banks):
+        if bank not in ip: continue
+        mask = (to_banks == bank) & ~intra_mask
+        if not mask.any(): continue
+        pos = [ip[bank][idx] for idx in indices[mask]]
+        to_proxy[mask] = emb_m[bank][pos].detach()
+
+    from_proxy.requires_grad_(True)
+    to_proxy.requires_grad_(True)
+
+    logits_m = gnn.mlp_vert(torch.cat([from_proxy, to_proxy], dim=1))
     (loss_fn(logits_m, labels) / n).backward()
 
-    grad_A = torch.zeros_like(emb_A_m)
-    for i, pos in enumerate(A_positions):
-        grad_A[pos] += from_proxy.grad[i]
-    emb_A_m.backward(grad_A)
+    # Accumulate from + to gradients per bank, then backward once per bank
+    grad_per_bank = {b: torch.zeros_like(emb_m[b]) for b in active_banks}
 
-    grad_B = torch.zeros_like(emb_B_m)
-    for i, pos in enumerate(B_positions):
-        grad_B[pos] += to_proxy.grad[i]
-    emb_B_m.backward(grad_B)
+    for bank in np.unique(from_banks):
+        if bank not in ip: continue
+        mask = from_banks == bank
+        pos  = [ip[bank][idx] for idx in indices[mask]]
+        for i, p in zip(np.where(mask)[0], pos):
+            grad_per_bank[bank][p] += from_proxy.grad[i]
+
+    for bank in np.unique(to_banks):
+        if bank not in ip: continue
+        mask = (to_banks == bank) & ~intra_mask
+        if not mask.any(): continue
+        pos = [ip[bank][idx] for idx in indices[mask]]
+        for i, p in zip(np.where(mask)[0], pos):
+            grad_per_bank[bank][p] += to_proxy.grad[i]
+
+    for bank, grad in grad_per_bank.items():
+        emb_m[bank].backward(grad)
 
     grad_manual = {nm: (p.grad.clone() if p.grad is not None else torch.zeros_like(p))
                    for nm, p in gnn.named_parameters()}
@@ -155,43 +213,44 @@ def run_batch_test(gnn, graph_A, graph_B, batch_df, atol, rtol):
         if not torch.allclose(grad_joint[nm], grad_manual[nm], atol=atol, rtol=rtol):
             all_pass = False
 
-    return all_pass, max_diffs
+    n_cross = int((~intra_mask).sum())
+    return all_pass, max_diffs, n_cross
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="SplitFed gradient equivalence — real AML data, top bank pairs"
+        description="SplitFed gradient equivalence — real AML data, multi-party batches"
     )
-    parser.add_argument('--size',     default='small', choices=['small', 'medium', 'large'])
-    parser.add_argument('--ir',       default='HI',    choices=['HI', 'LO'])
-    parser.add_argument('--n_rows',   default=0,       type=int,
+    parser.add_argument('--size',    default='small', choices=['small', 'medium', 'large'])
+    parser.add_argument('--ir',      default='HI',    choices=['HI', 'LO'])
+    parser.add_argument('--n_rows',  default=0,       type=int,
                         help='CSV rows to load (0 = full file)')
-    parser.add_argument('--n_pairs',  default=10,      type=int,
-                        help='Number of bank pairs to test (top by A→B transaction count)')
-    parser.add_argument('--n_batch',  default=500,     type=int,
-                        help='Max transactions per batch (capped at available A→B per pair)')
-    parser.add_argument('--atol',     default=1e-5,    type=float)
-    parser.add_argument('--rtol',     default=1e-4,    type=float)
+    parser.add_argument('--n_tests', default=10,      type=int,
+                        help='Number of independent random batches to test')
+    parser.add_argument('--n_batch', default=500,     type=int,
+                        help='Transactions per batch')
+    parser.add_argument('--atol',    default=1e-5,    type=float)
+    parser.add_argument('--rtol',    default=1e-4,    type=float)
     args = parser.parse_args()
 
     torch.manual_seed(0)
     np.random.seed(0)
 
-    n_rows = args.n_rows if args.n_rows > 0 else None
-    print(f"Loading {n_rows or 'all'} rows from "
+    print(f"Loading {args.n_rows or 'all'} rows from "
           f"formatted_transactions_{args.size}_{args.ir}.csv …")
-    df       = load_csv(args.size, args.ir, n_rows)
+    df       = load_csv(args.size, args.ir, args.n_rows)
     df_train = df.head(int(len(df) * 0.6)).reset_index(drop=True)
     print(f"  Train rows: {len(df_train):,}")
 
-    pairs = select_top_bank_pairs(df_train, args.n_pairs)
-    print(f"  Top {len(pairs)} bank pairs selected")
+    from_arr = df_train['From Bank'].values.astype(int)
+    to_arr   = df_train['To Bank'].values.astype(int)
 
     print("  Building full graph and applying ibm_fe normalisation …")
     full_graph = apply_ibm_fe(build_full_graph(df_train))
 
-    from_arr = df_train['From Bank'].values
-    to_arr   = df_train['To Bank'].values
+    print("  Building party subgraphs …")
+    party_graphs = build_all_party_subgraphs(full_graph, from_arr, to_arr)
+    print(f"  {len(party_graphs)} party subgraphs built\n")
 
     node_dim = 1
     edge_dim = full_graph.edge_attr.shape[1] - 1
@@ -209,33 +268,26 @@ def main():
     )
     gnn.eval()
 
-    print(f"\nGINe: node_dim={node_dim}, edge_dim={edge_dim}, "
+    print(f"GINe: node_dim={node_dim}, edge_dim={edge_dim}, "
           f"n_hidden={IBM_N_HIDDEN}, n_layers={IBM_N_LAYERS}")
-    print(f"Running one batch per pair (max {args.n_batch} transactions each) …\n")
+    print(f"Running {args.n_tests} random batches of {args.n_batch} transactions …\n")
 
     rows        = []
     overall_max = {}
 
-    for i, (bank_A, bank_B, ab_count) in enumerate(pairs):
-        mask_A  = (from_arr == bank_A) | (to_arr == bank_A)
-        mask_B  = (from_arr == bank_B) | (to_arr == bank_B)
-        graph_A = extract_party_subgraph(full_graph, mask_A)
-        graph_B = extract_party_subgraph(full_graph, mask_B)
-
-        ab_mask = (from_arr == bank_A) & (to_arr == bank_B)
-        ab_df   = df_train[ab_mask]
-
-        n_batch = min(args.n_batch, len(ab_df))
-        batch_df = ab_df.sample(n=n_batch, random_state=0)
-
-        ok, max_diffs = run_batch_test(gnn, graph_A, graph_B, batch_df, args.atol, args.rtol)
+    for t in range(args.n_tests):
+        batch_df = df_train.sample(n=args.n_batch, random_state=t)
+        ok, max_diffs, n_cross = run_batch_test(
+            gnn, party_graphs, batch_df, from_arr, to_arr, args.atol, args.rtol)
         worst  = max(max_diffs.values())
         status = 'PASS' if ok else 'FAIL'
-        print(f"  Pair {i+1:2d}  A={bank_A:3d} → B={bank_B:3d}  "
-              f"n={n_batch:5d}  {status}  max|Δg|={worst:.2e}")
+        n_banks = len(set(batch_df['From Bank'].tolist() + batch_df['To Bank'].tolist()))
+        print(f"  Batch {t+1:2d}  banks={n_banks:2d}  cross-party={n_cross:4d}  "
+              f"{status}  max|Δg|={worst:.2e}")
 
-        rows.append({'pair': i + 1, 'bank_A': bank_A, 'bank_B': bank_B,
-                     'n_transactions': n_batch, 'max_abs_diff': worst, 'result': status})
+        rows.append({'batch': t + 1, 'transactions': args.n_batch,
+                     'n_banks': n_banks, 'n_cross_party': n_cross,
+                     'max_abs_diff': worst, 'result': status})
         for nm, d in max_diffs.items():
             overall_max[nm] = max(overall_max.get(nm, 0.0), d)
 
@@ -243,7 +295,7 @@ def main():
     worst_global = max(overall_max.values())
 
     print(f"\nOverall: {'ALL PASS' if overall_pass else 'SOME FAILURES'}")
-    print(f"Worst max |Δg| across all pairs and parameters: {worst_global:.2e}")
+    print(f"Worst max |Δg| across all batches and parameters: {worst_global:.2e}")
     print(f"atol={args.atol}, rtol={args.rtol}")
 
     out_dir  = os.path.dirname(os.path.abspath(__file__))

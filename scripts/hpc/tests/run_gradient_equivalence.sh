@@ -11,8 +11,8 @@
 #
 # Output: gradient_equivalence_results.csv in scripts/hpc/tests/
 #
-# Cluster: genius
-# Walltime: 2 h (full small/HI dataset, 10 batches of 8192 transactions)
+# Cluster: wice
+# Walltime: 2 h (full small/HI dataset, 10 batches of 500 transactions)
 # =============================================================================
 # Usage:
 #   bash scripts/hpc/tests/run_gradient_equivalence.sh
@@ -31,13 +31,13 @@ CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
 conda activate multignn_hpc"
 
-FLAGS="--size small --ir HI --n_rows 0 --n_pairs 10 --n_batch 500"
+FLAGS="--size small --ir HI --n_rows 0 --n_tests 10 --n_batch 500"
 
 JOB_NAME="aml_grad_equiv_test"
 
 mkdir -p logs
 
-echo "Submitting $JOB_NAME (CPU, full small/HI dataset, 10 × 8192 batches) ..."
+echo "Submitting $JOB_NAME (CPU, full small/HI dataset, 10 × 500-txn batches) ..."
 
 sbatch \
     -M "$CLUSTER" \
