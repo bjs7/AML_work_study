@@ -31,7 +31,7 @@ CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
 conda activate multignn_hpc"
 
-FLAGS="--size small --ir HI --n_rows 0 --n_batch 8192 --n_batches 10"
+FLAGS="--size small --ir HI --n_rows 0 --n_pairs 10 --n_batch 500"
 
 JOB_NAME="aml_grad_equiv_test"
 

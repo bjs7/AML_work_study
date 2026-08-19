@@ -1,16 +1,20 @@
 """
-Empirical gradient equivalence test — real AML data, full dataset.
+Empirical gradient equivalence test — real AML data, multiple bank pairs.
 
 Verifies that the explicit multi-party backward pass (detach at embedding
 boundary, manager sends ∂L/∂emb back, each party backpropagates locally)
 produces identical GNN parameter gradients to the joint PyTorch backward pass.
 
-Saves per-batch results to gradient_equivalence_results.csv in the same
-directory as this script.
+Runs one batch per bank pair, using the top N pairs by number of A→B
+transactions. Each pair uses genuinely different data, so results are
+independent across rows.
+
+Saves results to gradient_equivalence_results.csv in the same directory
+as this script.
 
 Usage:
   python scripts/hpc/tests/gradient_equivalence_real.py
-  python scripts/hpc/tests/gradient_equivalence_real.py --size small --ir HI --n_batches 10
+  python scripts/hpc/tests/gradient_equivalence_real.py --n_pairs 10 --n_batch 500
 """
 
 import sys
@@ -79,15 +83,17 @@ def extract_party_subgraph(full_graph, edge_mask):
                 edge_attr=sub_edge_attr, y=sub_y)
 
 
-def select_bank_pair(df, min_edges=200):
+def select_top_bank_pairs(df, n_pairs, min_edges=200):
+    """Return the top n_pairs cross-bank pairs by number of A→B transactions."""
     bank_sizes = pd.concat([df['From Bank'], df['To Bank']]).value_counts()
     valid = set(bank_sizes[bank_sizes >= min_edges].index)
     ab = df[(df['From Bank'] != df['To Bank']) &
             df['From Bank'].isin(valid) & df['To Bank'].isin(valid)]
     if ab.empty:
         raise ValueError(f"No cross-party edges between banks with >= {min_edges} edges.")
-    pair = ab.groupby(['From Bank', 'To Bank']).size().idxmax()
-    return int(pair[0]), int(pair[1])
+    counts = ab.groupby(['From Bank', 'To Bank']).size().sort_values(ascending=False)
+    top = counts.head(n_pairs)
+    return [(int(a), int(b), int(n)) for (a, b), n in top.items()]
 
 
 def run_gnn(gnn, graph):
@@ -154,18 +160,18 @@ def run_batch_test(gnn, graph_A, graph_B, batch_df, atol, rtol):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="SplitFed gradient equivalence — real AML data, full dataset"
+        description="SplitFed gradient equivalence — real AML data, top bank pairs"
     )
-    parser.add_argument('--size',      default='small', choices=['small', 'medium', 'large'])
-    parser.add_argument('--ir',        default='HI',    choices=['HI', 'LO'])
-    parser.add_argument('--n_rows',    default=0,       type=int,
+    parser.add_argument('--size',     default='small', choices=['small', 'medium', 'large'])
+    parser.add_argument('--ir',       default='HI',    choices=['HI', 'LO'])
+    parser.add_argument('--n_rows',   default=0,       type=int,
                         help='CSV rows to load (0 = full file)')
-    parser.add_argument('--n_batch',   default=8192,    type=int,
-                        help='Transactions per test batch (default: 8192, matches training)')
-    parser.add_argument('--n_batches', default=10,      type=int,
-                        help='Number of random batches to test')
-    parser.add_argument('--atol',      default=1e-5,    type=float)
-    parser.add_argument('--rtol',      default=1e-4,    type=float)
+    parser.add_argument('--n_pairs',  default=10,      type=int,
+                        help='Number of bank pairs to test (top by A→B transaction count)')
+    parser.add_argument('--n_batch',  default=500,     type=int,
+                        help='Max transactions per batch (capped at available A→B per pair)')
+    parser.add_argument('--atol',     default=1e-5,    type=float)
+    parser.add_argument('--rtol',     default=1e-4,    type=float)
     args = parser.parse_args()
 
     torch.manual_seed(0)
@@ -178,30 +184,17 @@ def main():
     df_train = df.head(int(len(df) * 0.6)).reset_index(drop=True)
     print(f"  Train rows: {len(df_train):,}")
 
-    bank_A, bank_B = select_bank_pair(df_train)
-    print(f"  Selected banks: A={bank_A}, B={bank_B}")
+    pairs = select_top_bank_pairs(df_train, args.n_pairs)
+    print(f"  Top {len(pairs)} bank pairs selected")
 
+    print("  Building full graph and applying ibm_fe normalisation …")
     full_graph = apply_ibm_fe(build_full_graph(df_train))
 
     from_arr = df_train['From Bank'].values
     to_arr   = df_train['To Bank'].values
-    mask_A   = (from_arr == bank_A) | (to_arr == bank_A)
-    mask_B   = (from_arr == bank_B) | (to_arr == bank_B)
-    graph_A  = extract_party_subgraph(full_graph, mask_A)
-    graph_B  = extract_party_subgraph(full_graph, mask_B)
 
-    ab_mask = (from_arr == bank_A) & (to_arr == bank_B)
-    ab_df   = df_train[ab_mask]
-    print(f"  Party A edges: {graph_A.edge_attr.shape[0]:,}  nodes: {graph_A.x.shape[0]:,}")
-    print(f"  Party B edges: {graph_B.edge_attr.shape[0]:,}  nodes: {graph_B.x.shape[0]:,}")
-    print(f"  A→B transactions available: {len(ab_df):,}")
-
-    n_batch = min(args.n_batch, len(ab_df))
-    if n_batch < args.n_batch:
-        print(f"  Warning: only {len(ab_df)} A→B transactions — capping n_batch at {n_batch}")
-
-    node_dim = graph_A.x.shape[1]
-    edge_dim = graph_A.edge_attr.shape[1] - 1
+    node_dim = 1
+    edge_dim = full_graph.edge_attr.shape[1] - 1
 
     gnn = GINe(
         num_features  =node_dim,
@@ -218,39 +211,50 @@ def main():
 
     print(f"\nGINe: node_dim={node_dim}, edge_dim={edge_dim}, "
           f"n_hidden={IBM_N_HIDDEN}, n_layers={IBM_N_LAYERS}")
-    print(f"Running {args.n_batches} batch(es) of {n_batch} A→B transactions …\n")
+    print(f"Running one batch per pair (max {args.n_batch} transactions each) …\n")
 
-    batch_rows  = []
+    rows        = []
     overall_max = {}
 
-    for b in range(args.n_batches):
-        batch_df = ab_df.sample(n=n_batch, random_state=b)
+    for i, (bank_A, bank_B, ab_count) in enumerate(pairs):
+        mask_A  = (from_arr == bank_A) | (to_arr == bank_A)
+        mask_B  = (from_arr == bank_B) | (to_arr == bank_B)
+        graph_A = extract_party_subgraph(full_graph, mask_A)
+        graph_B = extract_party_subgraph(full_graph, mask_B)
+
+        ab_mask = (from_arr == bank_A) & (to_arr == bank_B)
+        ab_df   = df_train[ab_mask]
+
+        n_batch = min(args.n_batch, len(ab_df))
+        batch_df = ab_df.sample(n=n_batch, random_state=0)
+
         ok, max_diffs = run_batch_test(gnn, graph_A, graph_B, batch_df, args.atol, args.rtol)
         worst  = max(max_diffs.values())
         status = 'PASS' if ok else 'FAIL'
-        print(f"  Batch {b+1}: {status}  worst |diff| = {worst:.2e}")
-        batch_rows.append({'batch': b + 1, 'n_transactions': n_batch,
-                           'max_abs_diff': worst, 'result': status})
+        print(f"  Pair {i+1:2d}  A={bank_A:3d} → B={bank_B:3d}  "
+              f"n={n_batch:5d}  {status}  max|Δg|={worst:.2e}")
+
+        rows.append({'pair': i + 1, 'bank_A': bank_A, 'bank_B': bank_B,
+                     'n_transactions': n_batch, 'max_abs_diff': worst, 'result': status})
         for nm, d in max_diffs.items():
             overall_max[nm] = max(overall_max.get(nm, 0.0), d)
 
-    overall_pass = all(r['result'] == 'PASS' for r in batch_rows)
+    overall_pass = all(r['result'] == 'PASS' for r in rows)
     worst_global = max(overall_max.values())
 
     print(f"\nOverall: {'ALL PASS' if overall_pass else 'SOME FAILURES'}")
-    print(f"Worst max |diff| across all batches and parameters: {worst_global:.2e}")
+    print(f"Worst max |Δg| across all pairs and parameters: {worst_global:.2e}")
     print(f"atol={args.atol}, rtol={args.rtol}")
 
-    # ── Save CSV ───────────────────────────────────────────────────────────────
-    out_dir = os.path.dirname(os.path.abspath(__file__))
+    out_dir  = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(out_dir, 'gradient_equivalence_results.csv')
-    df_out = pd.DataFrame(batch_rows)
+    df_out   = pd.DataFrame(rows)
     df_out['worst_global'] = worst_global
     df_out['overall_pass'] = overall_pass
-    df_out['size'] = args.size
-    df_out['ir']   = args.ir
-    df_out['atol'] = args.atol
-    df_out['rtol'] = args.rtol
+    df_out['size']         = args.size
+    df_out['ir']           = args.ir
+    df_out['atol']         = args.atol
+    df_out['rtol']         = args.rtol
     df_out.to_csv(csv_path, index=False)
     print(f"\nResults saved to {csv_path}")
 
