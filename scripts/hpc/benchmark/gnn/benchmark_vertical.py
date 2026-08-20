@@ -156,7 +156,7 @@ def run_benchmark():
     from federated_learning.gnn.vertical import setup
 
     batching_mode = parsers['data_parser'].batching_mode
-    setup.setup_vertical(manager, batching=True, batching_mode=batching_mode)
+    setup.setup_fedgraph(manager, batching=True, batching_mode=batching_mode)
     manager.setup_model(ibm_gnn, laundering_values_test)
 
     n_batches = manager.ctx['train']['num_batches']

@@ -129,7 +129,7 @@ def setup_non_batching_data(manager):
         manager.ctx['test'][None]['batch_parties'] = manager.get_parties_for_mode('test').keys()
 
 
-def setup_vertical(manager, batching=True, batching_mode='neighbor_sample'):
+def setup_fedgraph(manager, batching=True, batching_mode='neighbor_sample'):
     """Complete setup for vertical federated learning.
 
     Args:

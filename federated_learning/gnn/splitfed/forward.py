@@ -15,7 +15,7 @@ import numpy as np
 import torch
 
 
-def forward_pass_simple(manager, mode, batch_num, batch_banks, batch_data):
+def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data):
     """Run full local GNN per party, collect embeddings, concatenate, predict.
 
     Args:

@@ -4,20 +4,20 @@
 #
 # Two independent jobs submitted separately (one for FedAvg, one for FedProx).
 # Each job:
-#   1. Runs the LR grid search (7 log-spaced candidates, 0.3 → 3.0).
-#      Grid (approx): 0.300, 0.440, 0.645, 0.947, 1.389, 2.038, 2.990
-#   2. Each candidate trains until no validation F1 improvement for 20
-#      consecutive rounds (--patience 20), then moves to the next candidate.
+#   1. Runs the LR grid search (15 log-spaced candidates, 0.1 → 5.0).
+#      Grid (approx): 0.100, 0.130, 0.169, 0.219, 0.285, 0.370, 0.481,
+#                     0.707, 0.919, 1.194, 1.552, 2.017, 2.620, 3.405, 5.000
+#   2. Each candidate trains until no validation F1 improvement for 50
+#      consecutive rounds (--patience 50), then moves to the next candidate.
 #   3. Best LR is used for a single-seed final training run (--testing_seeds 1).
 #
-# Why expanded range? The original narrow grid (0.01–0.5) found LR=0.5 as
-# the best — the top of that range. The new range starts at 0.3 and goes to
-# 3.0 to explore whether higher LRs improve further.
+# Why expanded range? The previous grid (0.3–3.0) found LR near the top;
+# expanding to 0.1–5.0 with 15 points gives finer coverage across a wider range.
 #
 # Cluster: genius (Cascadelake GPU, gpu_v100)
 # Node specs: 8× V100 32GB, 36 cores, 768 GB RAM
 # Per-job policy: 1 GPU, 4 CPUs, 82 GiB
-# Walltime: 36 h (7 candidates × patience-capped + 1-seed training)
+# Walltime: 36 h (15 candidates × patience-capped + 1-seed training)
 # =============================================================================
 # Usage:
 #   bash scripts/hpc/tuning/gnn/system/run_f1_p2_sgd_tuning_system.sh
@@ -44,8 +44,8 @@ RUN_ID="$(date +%Y%m%d_%H%M%S)"
 COMMON="--model GINe --size small --ir HI \
 --ibm_hp --emlps --batching --eval_mode system \
 --num_local_epochs 5 --client_fraction 0.1 --max_workers $CPUS \
---optimizer sgd --lr_lower 0.3 --lr_upper 3.0 \
---patience 20 --testing_seeds 1 --tune_run"
+--optimizer sgd --lr_lower 0.1 --lr_upper 5.0 \
+--patience 50 --testing_seeds 1 --tune_run"
 
 # --- Job 1: FedAvg SGD ---
 JOB_F1="aml_f1_sgd_tune_system"

@@ -1,6 +1,6 @@
 """Lazy batch processing for simplified vertical FL.
 
-process_lazy_batch_simple is identical to process_lazy_batch from
+process_lazy_batch_splitfed is identical to process_lazy_batch from
 vertical/batching.py, but omits the three exchange-data setup calls
 (get_batch_intersects, get_ownership_mappings, get_nodes_to_send)
 that are only needed by the per-layer embedding exchange forward pass.
@@ -12,7 +12,7 @@ from federated_learning.parallel import parallel_party_execute
 from federated_learning.gnn.fedgraph.batching import LAZY_BATCH_KEY
 
 
-def process_lazy_batch_simple(manager, mode, batch, mode_parties):
+def process_lazy_batch_splitfed(manager, mode, batch, mode_parties):
     """Process one loader batch — subgraph extraction only, no exchange data.
 
     Called per batch per epoch in the training loop. Overwrites the previous

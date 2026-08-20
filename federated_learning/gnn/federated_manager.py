@@ -21,7 +21,7 @@ import torch
 from .fedgraph import setup, forward, training_utils
 from .fedgraph.batching import process_lazy_batch, LAZY_BATCH_KEY
 from .splitfed import setup as simple_setup, forward as simple_forward
-from .splitfed.batching import process_lazy_batch_simple
+from .splitfed.batching import process_lazy_batch_splitfed
 
 logger = logging.getLogger(__name__)
 
@@ -125,14 +125,14 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
         #    party.prep_data()
         #return 0 #self._gnn_tuning(laundering_values)
 
-    def setup_vertical(self, batching=True, batching_mode='neighbor_sample'):
-        """Set up vertical FL structures (intersects, mappings, batches).
+    def setup(self, batching=True, batching_mode='neighbor_sample'):
+        """Set up FedGraph training structures (intersects, mappings, batches).
 
         Args:
             batching: Whether to use batching (True) or process all data at once (False)
             batching_mode: 'neighbor_sample' | 'simple' | 'link_neighbor'
         """
-        setup.setup_vertical(self, batching=batching, batching_mode=batching_mode)
+        setup.setup_fedgraph(self, batching=batching, batching_mode=batching_mode)
 
     def _prep_parties_data(self):
         pass  # Parties already prepped in add_parties_prep_data()
@@ -184,9 +184,9 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
     
     def _train(self, hyperparameters, laundering_values_vali, laundering_values_test):
         batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'neighbor_sample')
-        self.setup_vertical(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
+        self.setup(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
         self.setup_model(hyperparameters, laundering_values_test)
-        return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching)
+        return self.train(laundering_values_test, batching=self.args['data_parser'].batching)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
         """Yield (batch_key, batch_banks, batch_data) for any batching mode.
@@ -232,7 +232,7 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
         self._last_eval_global_ids = all_global_ids
         return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
-    def train_vertical(self, laundering_values, epochs=None, batching=True):
+    def train(self, laundering_values, epochs=None, batching=True):
         """Train the vertical FL model.
 
         Args:
@@ -403,20 +403,20 @@ class FLGNNManagerSplitFed(FLGNNManagerFedGraph):
     during message passing.
     """
 
-    def setup_vertical(self, batching=True, batching_mode='simple'):
-        """Set up simplified vertical FL (no intersection tracking)."""
+    def setup(self, batching=True, batching_mode='simple'):
+        """Set up SplitFed training structures (no intersection tracking)."""
         simple_setup.setup_splitfed(self, batching=batching, batching_mode=batching_mode)
 
     def forward_pass(self, mode, batch_num, batch_banks, batch_data):
         """Run full local GNN per party, collect and concatenate final embeddings."""
-        return simple_forward.forward_pass_simple(self, mode, batch_num, batch_banks, batch_data)
+        return simple_forward.forward_pass_splitfed(self, mode, batch_num, batch_banks, batch_data)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
-        """Same as parent but uses process_lazy_batch_simple for lazy mode."""
+        """Same as parent but uses process_lazy_batch_splitfed for lazy mode."""
         if hasattr(self, 'loaders') and mode in self.loaders:
             mode_parties = self.get_parties_for_mode(mode)
             for batch in self.loaders[mode]:
-                process_lazy_batch_simple(self, mode, batch, mode_parties)
+                process_lazy_batch_splitfed(self, mode, batch, mode_parties)
                 batch_banks = self.ctx[mode][LAZY_BATCH_KEY]['batch_parties']
                 batch_data = self.get_batch_data(mode, LAZY_BATCH_KEY, batch_banks)
                 yield LAZY_BATCH_KEY, batch_banks, batch_data
@@ -828,7 +828,7 @@ class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
         # PyG's Data.to(device) is in-place — small parties that fall below the batching
         # threshold train without a loader and the no-batching path passes procs_data['df']
         # directly to update_weights_no_batching(), which calls gd.to(self.device) and
-        # permanently moves those tensors to CUDA. Phase 2's process_lazy_batch_simple
+        # permanently moves those tensors to CUDA. Phase 2's process_lazy_batch_splitfed
         # reads from procs_data and expects CPU tensors. Reset everything to CPU here.
         for _, party in self.iter_parties(include_test=True):
             for split_key in ('train_data', 'vali_data', 'test_data'):
@@ -872,7 +872,7 @@ class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
         logger.info("FedAvgSplit Phase 2: training mlp_vert on frozen GNN embeddings (%d rounds)", phase2_rounds)
         self.set_manager_data(self._stored_df['regular_data'], 'training')
         batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
-        self.setup_vertical(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
+        self.setup(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
 
-        return self.train_vertical(laundering_values_test, batching=self.args['data_parser'].batching,
+        return self.train(laundering_values_test, batching=self.args['data_parser'].batching,
                                    epochs=phase2_rounds)

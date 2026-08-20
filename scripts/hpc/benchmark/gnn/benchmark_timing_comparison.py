@@ -142,12 +142,10 @@ import federated_learning.gnn.federated_manager  as _mgr_mod
 _orig_emed     = GINe.emed_features
 _orig_apply    = GINe.apply_gnn_layer
 _orig_prep     = GINe.prep_nodes_edges
-_orig_mlp      = GINe.mlp
-_orig_mlp_vert = GINe.mlp_vert
 _orig_fg_fwd   = _fg_fwd_mod.forward_pass
-_orig_fs_fwd   = _fs_fwd_mod.forward_pass_simple
+_orig_fs_fwd   = _fs_fwd_mod.forward_pass_splitfed
 _orig_fg_bat   = _fg_bat_mod.process_lazy_batch
-_orig_fs_bat   = _fs_bat_mod.process_lazy_batch_simple
+_orig_fs_bat   = _fs_bat_mod.process_lazy_batch_splitfed
 
 
 def _t_emed(self, *a, **kw):
@@ -164,16 +162,6 @@ def _t_prep(self, *a, **kw):
     t = _active_timer
     if t is None: return _orig_prep(self, *a, **kw)
     with t.section('party_gnn'): return _orig_prep(self, *a, **kw)
-
-def _t_mlp(self, *a, **kw):
-    t = _active_timer
-    if t is None: return _orig_mlp(self, *a, **kw)
-    with t.section('manager_head'): return _orig_mlp(self, *a, **kw)
-
-def _t_mlp_vert(self, *a, **kw):
-    t = _active_timer
-    if t is None: return _orig_mlp_vert(self, *a, **kw)
-    with t.section('manager_head'): return _orig_mlp_vert(self, *a, **kw)
 
 def _t_fg_fwd(manager, mode, batch_num, batch_banks, batch_data):
     t = _active_timer
@@ -201,21 +189,48 @@ def _t_fs_bat(manager, mode, batch, mode_parties):
 GINe.emed_features    = _t_emed
 GINe.apply_gnn_layer  = _t_apply
 GINe.prep_nodes_edges = _t_prep
-GINe.mlp              = _t_mlp
-GINe.mlp_vert         = _t_mlp_vert
 
 _fg_fwd_mod.forward_pass              = _t_fg_fwd
-_fs_fwd_mod.forward_pass_simple       = _t_fs_fwd
+_fs_fwd_mod.forward_pass_splitfed       = _t_fs_fwd
 _fg_bat_mod.process_lazy_batch        = _t_fg_bat
-_fs_bat_mod.process_lazy_batch_simple = _t_fs_bat
+_fs_bat_mod.process_lazy_batch_splitfed = _t_fs_bat
 # Patch names referenced inside _iter_batches in federated_manager's namespace
 _mgr_mod.process_lazy_batch        = _t_fg_bat
-_mgr_mod.process_lazy_batch_simple = _t_fs_bat
+_mgr_mod.process_lazy_batch_splitfed = _t_fs_bat
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _register_mlp_hooks(gnn) -> list:
+    """Register forward hooks on gnn.mlp and gnn.mlp_vert to time manager_head.
+
+    mlp/mlp_vert are nn.Sequential instance attributes (not class methods), so
+    they cannot be monkey-patched at the class level — hooks are the correct approach.
+    Returns the hook handles so the caller can remove them if needed.
+    """
+    _t_starts: dict[int, float] = {}
+
+    def _pre(module, _input):
+        if _active_timer is not None:
+            _t_starts[id(module)] = time.perf_counter()
+
+    def _post(module, _input, _output):
+        t = _active_timer
+        if t is not None:
+            start = _t_starts.pop(id(module), None)
+            if start is not None:
+                t.times['manager_head'].append(time.perf_counter() - start)
+
+    handles = []
+    for attr in ('mlp', 'mlp_vert'):
+        m = getattr(gnn, attr, None)
+        if m is not None:
+            handles.append(m.register_forward_pre_hook(_pre))
+            handles.append(m.register_forward_hook(_post))
+    return handles
+
 
 def _cuda_sync():
     if torch.cuda.is_available():
@@ -230,6 +245,7 @@ def run_epochs(manager, timer: SectionTimer, n_epochs: int) -> int:
     """Run N training epochs with timing. Returns batches-per-epoch."""
     global _active_timer
     _active_timer = timer
+    _register_mlp_hooks(manager.model.gnn)
     batches_per_epoch = 0
 
     for epoch in range(n_epochs):
@@ -281,7 +297,7 @@ def run_explicit_backward_benchmark(manager, n_batches: int) -> dict:
       manager_bwd_ms   — Phase 2: loss.backward() through mlp_vert only
       party_gnn_bwd_ms — Phase 3: emb.backward(grad) through one party's GNN
     """
-    from federated_learning.gnn.splitfed.batching import process_lazy_batch_simple
+    from federated_learning.gnn.splitfed.batching import process_lazy_batch_splitfed
 
     manager.model.gnn.train()
     manager_bwd_times   = []
@@ -503,7 +519,7 @@ def setup_manager(parsers, df, scaler_encoders, laundering_values_vali,
     manager.setup_parties(df, p, scaler_encoders,
                           copy.deepcopy(laundering_values_vali))
     batching_mode = p['data_parser'].batching_mode
-    manager.setup_vertical(batching=True, batching_mode=batching_mode)
+    manager.setup(batching=True, batching_mode=batching_mode)
     manager.setup_model(ibm_gnn, laundering_values_test)
     return manager, p
 

@@ -16,7 +16,7 @@ from data.data_utils import GraphData
 from federated_learning.parallel import parallel_party_execute
 
 
-def init_context_simple(manager):
+def init_context_splitfed(manager):
     """Initialize context structures for manager and all parties."""
     modes = ['train', 'vali', 'test'] if 'test_data' in manager.data else ['train', 'vali']
     manager.ctx = {mode: defaultdict(lambda: defaultdict(dict)) for mode in modes}
@@ -26,7 +26,7 @@ def init_context_simple(manager):
         party.ctx = {mode: defaultdict(lambda: defaultdict(dict)) for mode in modes}
 
 
-def setup_non_batching_simple(manager):
+def setup_non_batching_splitfed(manager):
     """Set up batch labels and parties for non-batching mode.
 
     Mirrors setup_non_batching_data from vertical/setup.py.
@@ -47,7 +47,7 @@ def setup_non_batching_simple(manager):
         manager.ctx['test'][None]['batch_parties'] = list(manager.get_parties_for_mode('test').keys())
 
 
-def setup_simple_batching(manager, mode, batch_size=8192):
+def setup_splitfed_batching(manager, mode, batch_size=8192):
     """Generate batch subgraphs for each mode — no exchange setup.
 
     Mirrors gen_batch_data_simple from vertical/batching.py but skips
@@ -123,10 +123,10 @@ def setup_splitfed(manager, batching=True, batching_mode='simple'):
     """
     all_modes = ['train', 'vali', 'test'] if 'test_data' in manager.data else ['train', 'vali']
 
-    init_context_simple(manager)
+    init_context_splitfed(manager)
 
     if not batching:
-        setup_non_batching_simple(manager)
+        setup_non_batching_splitfed(manager)
     elif batching_mode == 'lazy_link_neighbor':
         from federated_learning.gnn.fedgraph.batching import setup_lazy_batch_loader
         batch_size = manager.args['data_parser'].batch_size
@@ -136,4 +136,4 @@ def setup_splitfed(manager, batching=True, batching_mode='simple'):
         # 'simple' or any other value: index-based batching without exchange
         batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:
-            setup_simple_batching(manager, mode, batch_size=batch_size)
+            setup_splitfed_batching(manager, mode, batch_size=batch_size)

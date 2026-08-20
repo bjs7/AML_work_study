@@ -98,8 +98,8 @@ class SectionTimer:
                   f"mean={arr.mean()*1000:7.1f}ms  "
                   f"std={arr.std()*1000:6.1f}ms  "
                   f"total={arr.sum():.2f}s")
-        if n_full_batches and 'process_lazy_batch_simple' in self.times:
-            per_batch = np.mean(self.times['process_lazy_batch_simple'])
+        if n_full_batches and 'process_lazy_batch_splitfed' in self.times:
+            per_batch = np.mean(self.times['process_lazy_batch_splitfed'])
             print(f"\n  Extrapolated full run:")
             print(f"    Batches per epoch (full): {n_full_batches}")
             if n_full_epochs:
@@ -119,15 +119,15 @@ timer = SectionTimer()
 # Monkey-patch key functions with timing wrappers
 # ---------------------------------------------------------------------------
 
-_real_process_lazy_batch_simple = simple_bat.process_lazy_batch_simple
+_real_process_lazy_batch_splitfed = simple_bat.process_lazy_batch_splitfed
 
 
-def _fully_timed_process_lazy_batch_simple(manager, mode, batch, mode_parties):
-    with timer.section('process_lazy_batch_simple'):
-        _real_process_lazy_batch_simple(manager, mode, batch, mode_parties)
+def _fully_timed_process_lazy_batch_splitfed(manager, mode, batch, mode_parties):
+    with timer.section('process_lazy_batch_splitfed'):
+        _real_process_lazy_batch_splitfed(manager, mode, batch, mode_parties)
 
 
-simple_bat.process_lazy_batch_simple = _fully_timed_process_lazy_batch_simple
+simple_bat.process_lazy_batch_splitfed = _fully_timed_process_lazy_batch_splitfed
 
 
 # ---------------------------------------------------------------------------
@@ -203,7 +203,7 @@ def run_benchmark():
         if batching_mode == 'lazy_link_neighbor':
             mode_parties = manager.get_parties_for_mode('train')
             for batch in manager.loaders['train']:
-                simple_bat.process_lazy_batch_simple(manager, 'train', batch, mode_parties)
+                simple_bat.process_lazy_batch_splitfed(manager, 'train', batch, mode_parties)
                 batch_banks = manager.ctx['train'][LAZY_BATCH_KEY]['batch_parties']
                 batch_data = manager.get_batch_data('train', LAZY_BATCH_KEY, batch_banks)
 
