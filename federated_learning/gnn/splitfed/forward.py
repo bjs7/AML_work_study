@@ -9,31 +9,36 @@ stays as zeros (pre-allocated). The model learns that zeros = absent party.
 
 Communication cost: O(1) rounds per epoch (only final embeddings sent),
 vs O(num_gnn_layers) rounds in the standard vertical FL approach.
+
+GNN forward approaches
+----------------------
+_collect_embeddings_sequential: original path, one GPU kernel per party.
+_collect_embeddings_batched:    merges all party subgraphs into one PyG
+    Batch (disconnected union — no cross-party message passing) and runs
+    a single GNN kernel for all parties at once.
+
+BatchNorm note: in train mode BatchNorm computes per-batch statistics.
+Sequential mode normalises per-party; batched mode normalises across all
+parties combined. In eval mode both are identical (running stats used).
+The vertical forward pass is inference, so the model should be in eval
+mode during these calls; the test enforces this explicitly.
 """
 
 import numpy as np
 import torch
+from torch_geometric.data import Data, Batch
 
 
-def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data):
-    """Run full local GNN per party, collect embeddings, concatenate, predict.
-
-    Args:
-        manager: The FL manager instance.
-        mode: 'train', 'vali', or 'test'.
-        batch_num: Batch key (int, None, or LAZY_BATCH_KEY).
-        batch_banks: List of bank IDs participating in this batch.
-        batch_data: Dict mapping bank_id -> (party, graph_data).
+def _collect_embeddings_sequential(batch_banks, batch_data, device, dp_clip, dp_noise_scale):
+    """Run GNN forward pass per party sequentially — one GPU call per party.
 
     Returns:
-        preds_tensor: [n_samples, n_classes] logits.
-        true_y_tensor: [n_samples] ground-truth labels.
+        embedding_tensors: {bank_id: [num_edges, embed_dim]}
+        index_to_position: {bank_id: {global_id: edge_position}}
     """
-    device = manager.device
-    embedding_tensors = {}  # bank_id -> [num_edges, embed_dim] tensor
-    index_to_position = {}  # bank_id -> {global_id: position in embedding tensor}
+    embedding_tensors = {}
+    index_to_position = {}
 
-    # --- Step 1: each party runs the full GNN locally (no exchange) ---
     for bank_id in batch_banks:
         party, party_data = batch_data[bank_id]
 
@@ -41,25 +46,15 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data):
         party_data.edge_attr = party_data.edge_attr.to(device)
         party_data.edge_index = party_data.edge_index.to(device)
 
-        # Skip the global-ID column ([:,0]) when embedding edge features
         embeddings = party.model.gnn.emed_features(party_data.x, party_data.edge_attr[:, 1:])
-
         for layer_idx in range(party.model.gnn.num_gnn_layers):
             embeddings = party.model.gnn.apply_gnn_layer(
-                embeddings['nodes'],
-                embeddings['edges'],
-                party_data.edge_index,
-                layer_idx,
+                embeddings['nodes'], embeddings['edges'], party_data.edge_index, layer_idx
             )
-
         final_embeddings = party.model.gnn.prep_nodes_edges(
-            embeddings['nodes'],
-            embeddings['edges'],
-            party_data.edge_index,
+            embeddings['nodes'], embeddings['edges'], party_data.edge_index
         )
 
-        dp_clip = getattr(manager.args['fl_parser'], 'dp_clip', None)
-        dp_noise_scale = getattr(manager.args['fl_parser'], 'dp_noise_scale', 0.0)
         if dp_clip is not None:
             norms = final_embeddings.norm(dim=1, keepdim=True).clamp(min=1e-8)
             final_embeddings = final_embeddings * (dp_clip / norms.clamp(min=dp_clip))
@@ -70,6 +65,106 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data):
         index_to_position[bank_id] = {
             int(gid): pos for pos, gid in enumerate(party_data.edge_attr[:, 0].cpu())
         }
+
+    return embedding_tensors, index_to_position
+
+
+def _collect_embeddings_batched(batch_banks, batch_data, device, dp_clip, dp_noise_scale):
+    """Run all party GNN forward passes in one batched GPU call.
+
+    Merges per-party subgraphs into a disconnected PyG Batch so that message
+    passing stays within each party's subgraph (no cross-party information
+    leak). One GNN call replaces N sequential calls.
+
+    DP clipping is applied to the combined tensor before splitting
+    (deterministic, equivalent to per-party clipping). DP noise is applied
+    per-party after splitting to preserve independent noise per party.
+
+    All parties must share the same GNN weights (true after FedAvg sync).
+    The first party's model is used for the forward pass.
+
+    Returns:
+        embedding_tensors: {bank_id: [num_edges, embed_dim]}
+        index_to_position: {bank_id: {global_id: edge_position}}
+    """
+    embedding_tensors = {}
+    index_to_position = {}
+    gnn_inputs = []
+    edge_counts = []
+
+    for bank_id in batch_banks:
+        _, party_data = batch_data[bank_id]
+
+        index_to_position[bank_id] = {
+            int(gid): pos for pos, gid in enumerate(party_data.edge_attr[:, 0].cpu())
+        }
+
+        # Strip global-ID col 0 — GNN only sees real edge features
+        gnn_inputs.append(Data(
+            x=party_data.x,
+            edge_index=party_data.edge_index,
+            edge_attr=party_data.edge_attr[:, 1:],
+        ))
+        edge_counts.append(party_data.num_edges)
+
+    # Assemble on CPU then transfer once — cheaper than N individual transfers
+    combined = Batch.from_data_list(gnn_inputs).to(device)
+
+    # All parties share synced GNN weights; use first party's model
+    gnn = batch_data[batch_banks[0]][0].model.gnn
+    embeddings = gnn.emed_features(combined.x, combined.edge_attr)
+    for layer_idx in range(gnn.num_gnn_layers):
+        embeddings = gnn.apply_gnn_layer(
+            embeddings['nodes'], embeddings['edges'], combined.edge_index, layer_idx
+        )
+    final_embeddings = gnn.prep_nodes_edges(
+        embeddings['nodes'], embeddings['edges'], combined.edge_index
+    )
+
+    if dp_clip is not None:
+        norms = final_embeddings.norm(dim=1, keepdim=True).clamp(min=1e-8)
+        final_embeddings = final_embeddings * (dp_clip / norms.clamp(min=dp_clip))
+
+    # Split back per party — Batch preserves insertion order
+    per_party = torch.split(final_embeddings, edge_counts)
+
+    for idx, bank_id in enumerate(batch_banks):
+        emb = per_party[idx]
+        if dp_noise_scale > 0.0:
+            emb = emb + torch.randn_like(emb) * dp_noise_scale
+        embedding_tensors[bank_id] = emb
+
+    return embedding_tensors, index_to_position
+
+
+def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use_batched=True):
+    """Run full local GNN per party, collect embeddings, concatenate, predict.
+
+    Args:
+        manager: The FL manager instance.
+        mode: 'train', 'vali', or 'test'.
+        batch_num: Batch key (int, None, or LAZY_BATCH_KEY).
+        batch_banks: List of bank IDs participating in this batch.
+        batch_data: Dict mapping bank_id -> (party, graph_data).
+        use_batched: If True (default), use the batched GPU forward pass.
+            Set False to fall back to the sequential approach (for testing).
+
+    Returns:
+        preds_tensor: [n_samples, n_classes] logits.
+        true_y_tensor: [n_samples] ground-truth labels.
+    """
+    device = manager.device
+    dp_clip = getattr(manager.args['fl_parser'], 'dp_clip', None)
+    dp_noise_scale = getattr(manager.args['fl_parser'], 'dp_noise_scale', 0.0)
+
+    if use_batched:
+        embedding_tensors, index_to_position = _collect_embeddings_batched(
+            batch_banks, batch_data, device, dp_clip, dp_noise_scale
+        )
+    else:
+        embedding_tensors, index_to_position = _collect_embeddings_sequential(
+            batch_banks, batch_data, device, dp_clip, dp_noise_scale
+        )
 
     # --- Step 2: build per-transaction prediction tensors ---
     batch_df = manager.ctx[mode][batch_num]['batch_labels']
