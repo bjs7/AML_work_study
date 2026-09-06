@@ -29,7 +29,7 @@ CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
 conda activate multignn_hpc"
 
-BASE_FLAGS="--fl_algo FedGraphSimple --model GINe --size small --ir HI \
+BASE_FLAGS="--fl_algo SplitFed --model GINe --size small --ir HI \
 --batching --ibm_hp --emlps --eval_mode comparable \
 --max_workers $CPUS --testing_seeds 1 --batching_mode lazy_link_neighbor --num_rounds 50"
 
