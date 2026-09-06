@@ -186,7 +186,7 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
         batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'neighbor_sample')
         self.setup(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
         self.setup_model(hyperparameters, laundering_values_test)
-        return self.train(laundering_values_test, batching=self.args['data_parser'].batching)
+        return self._vertical_train_loop(laundering_values_test, batching=self.args['data_parser'].batching)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
         """Yield (batch_key, batch_banks, batch_data) for any batching mode.
@@ -232,8 +232,12 @@ class FLGNNManagerFedGraph(GNNCommunicationMixin, GNNMixinManager):
         self._last_eval_global_ids = all_global_ids
         return training_utils.prep_eval_preds_labels(all_labels, all_preds)
 
-    def train(self, laundering_values, epochs=None, batching=True):
-        """Train the vertical FL model.
+    def _vertical_train_loop(self, laundering_values, epochs=None, batching=True):
+        """Epoch training loop for vertical FL.
+
+        Called by _train (and by FedAvgSplit._train for Phase 2). Not intended
+        to be called directly from main.py — use the GNNMixinManager.train
+        outer seed loop instead.
 
         Args:
             laundering_values: Test laundering values for final evaluation
@@ -874,5 +878,5 @@ class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
         batching_mode = getattr(self.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
         self.setup(batching=self.args['data_parser'].batching, batching_mode=batching_mode)
 
-        return self.train(laundering_values_test, batching=self.args['data_parser'].batching,
-                                   epochs=phase2_rounds)
+        return self._vertical_train_loop(laundering_values_test, batching=self.args['data_parser'].batching,
+                                         epochs=phase2_rounds)
