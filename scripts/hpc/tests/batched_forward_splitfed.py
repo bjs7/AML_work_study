@@ -157,7 +157,12 @@ torch.manual_seed(0)
 model = BenchGINe().to(device)
 model.eval()
 
+# Reset seed before each build so both get identical input data.
+# (The sequential call also moves party_data tensors to device in-place,
+# so we need two separate Data objects — same values, different objects.)
+torch.manual_seed(1)
 banks, bd_seq = build_batch_data(model, args.n_parties, args.n_nodes, args.n_edges)
+torch.manual_seed(1)
 _, bd_bat     = build_batch_data(model, args.n_parties, args.n_nodes, args.n_edges)
 
 with torch.no_grad():
