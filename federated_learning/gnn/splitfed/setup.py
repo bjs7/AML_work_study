@@ -11,7 +11,7 @@ No intersects, ownership_mappings, or nodes_to_send are populated.
 import numpy as np
 import torch
 from collections import defaultdict
-from torch_geometric.utils import subgraph
+from torch_geometric.utils import subgraph, k_hop_subgraph
 from data.data_utils import GraphData
 from federated_learning.parallel import parallel_party_execute
 
@@ -107,13 +107,73 @@ def setup_splitfed_batching(manager, mode, batch_size=8192):
         manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
 
 
+def setup_local_neighbor_batching(manager, mode, batch_size=8192, num_hops=2):
+    """Pre-compute local k-hop subgraphs per party per batch.
+
+    Each party expands seed transaction nodes to their k-hop neighborhood
+    strictly within the party's own local graph — no cross-party sampling.
+    This differs from 'lazy_link_neighbor' (global graph sampled → party filter)
+    and 'simple' (induced subgraph on seed nodes only, no expansion).
+
+    num_hops should match num_gnn_layers so the full receptive field is used.
+    """
+    mode_parties = manager.get_parties_for_mode(mode)
+    max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
+
+    if mode == 'train':
+        indices = manager.data['train_data'].index.to_numpy().copy()
+        np.random.shuffle(indices)
+    else:
+        indices = manager.indices[mode].to_numpy()
+
+    batch_starts = range(0, len(indices), batch_size)
+    manager.ctx[mode]['num_batches'] = len(batch_starts)
+
+    df_labels = manager.data[f'{mode}_data'][['From Bank', 'To Bank', 'Is Laundering']]
+    mode_party_set = set(mode_parties.keys())
+
+    for batch_num, start in enumerate(batch_starts):
+        batch_indices = indices[start:start + batch_size]
+        batch_bl = df_labels.loc[batch_indices]
+        manager.ctx[mode][batch_num]['batch_labels'] = batch_bl[
+            batch_bl['From Bank'].isin(mode_party_set) | batch_bl['To Bank'].isin(mode_party_set)]
+
+        batch_global_ids = torch.tensor(batch_indices, dtype=torch.long)
+
+        def _build_local_knn_subgraph(bank_id, party):
+            party_graph = party.procs_data[f'{mode}_data']['df']
+            seed_mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+            if seed_mask.sum() == 0:
+                return None
+            seed_nodes = party_graph.edge_index[:, seed_mask].reshape(-1).unique()
+            subset, sub_edge_index, _, edge_mask = k_hop_subgraph(
+                node_idx=seed_nodes,
+                num_hops=num_hops,
+                edge_index=party_graph.edge_index,
+                relabel_nodes=True,
+                num_nodes=party_graph.x.shape[0],
+            )
+            party.ctx[mode][batch_num]['graph_data'] = GraphData(
+                x=party_graph.x[subset],
+                edge_index=sub_edge_index,
+                edge_attr=party_graph.edge_attr[edge_mask],
+            )
+            return bank_id
+
+        results = parallel_party_execute(mode_parties, _build_local_knn_subgraph, max_workers=max_workers)
+        banks_to_use = [bid for bid, result in results.items() if result is not None]
+        manager.ctx[mode][batch_num]['batch_parties'] = banks_to_use
+
+
 def setup_splitfed(manager, batching=True, batching_mode='simple'):
     """Set up simplified vertical FL — no intersection tracking or ownership mapping.
 
     Supported batching_mode values:
-        'simple' (default): pre-computed batch subgraphs, no exchange setup.
-        'lazy_link_neighbor': LinkNeighborLoader per epoch (memory-efficient),
-            subgraphs computed on-the-fly without exchange data.
+        'simple' (default): pre-computed induced subgraph on seed nodes.
+        'local_neighbor': pre-computed k-hop expansion from seed nodes within
+            each party's local graph (no cross-party sampling).
+        'lazy_link_neighbor': LinkNeighborLoader on the global graph per epoch
+            (memory-efficient), subgraphs computed on-the-fly.
         non-batching (batching=False): full party graph per forward pass.
 
     Args:
@@ -132,6 +192,11 @@ def setup_splitfed(manager, batching=True, batching_mode='simple'):
         batch_size = manager.args['data_parser'].batch_size
         for mode in all_modes:
             setup_lazy_batch_loader(manager, mode, batch_size=batch_size)
+    elif batching_mode == 'local_neighbor':
+        batch_size = manager.args['data_parser'].batch_size
+        num_hops = getattr(manager.args.get('gnn_parser', None), 'num_gnn_layers', 2)
+        for mode in all_modes:
+            setup_local_neighbor_batching(manager, mode, batch_size=batch_size, num_hops=num_hops)
     else:
         # 'simple' or any other value: index-based batching without exchange
         batch_size = manager.args['data_parser'].batch_size

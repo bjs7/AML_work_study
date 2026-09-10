@@ -413,7 +413,11 @@ class FLGNNManagerSplitFed(FLGNNManagerFedGraph):
 
     def forward_pass(self, mode, batch_num, batch_banks, batch_data):
         """Run full local GNN per party, collect and concatenate final embeddings."""
-        return simple_forward.forward_pass_splitfed(self, mode, batch_num, batch_banks, batch_data)
+        # In non-batching mode each party's full local graph is passed — assembling
+        # all 630 full graphs into one Batch would risk OOM, so fall back to sequential.
+        use_batched = self.args['data_parser'].batching
+        return simple_forward.forward_pass_splitfed(
+            self, mode, batch_num, batch_banks, batch_data, use_batched=use_batched)
 
     def _iter_batches(self, mode, batching, precomputed_batch_data=None):
         """Same as parent but uses process_lazy_batch_splitfed for lazy mode."""
