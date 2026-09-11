@@ -1,0 +1,17 @@
+Vis bucket,ID,Scenario,Fan-Out,Fan-In,Cycle,Gather-Scatter,Scatter-Gather,Stack,Random,Bipartite,Overall
+vis=100,S2,"Full-info GNN (R1, LN)",0.972,0.917,0.5,1.0,0.9,1.0,1.0,0.975,0.962
+vis=100,F1,FedAvg (GNN),0.417,0.222,0.5,0.562,0.0,0.05,0.0,0.0,0.263
+vis=100,P2,FedProx (mu=0.1),0.667,0.694,0.5,0.844,0.0,0.2,0.0,0.0,0.462
+vis=100,V1,FedGraphSimple (SplitFed),1.0,0.917,0.75,0.984,1.0,1.0,1.0,1.0,0.979
+vis>=50,S2,"Full-info GNN (R1, LN)",,,1.0,,1.0,,1.0,,1.0
+vis>=50,F1,FedAvg (GNN),,,0.562,,0.7,,0.75,,0.65
+vis>=50,P2,FedProx (mu=0.1),,,1.0,,1.0,,1.0,,1.0
+vis>=50,V1,FedGraphSimple (SplitFed),,,0.938,,1.0,,1.0,,0.975
+vis<50,S2,"Full-info GNN (R1, LN)",,,1.0,,,1.0,0.964,1.0,0.985
+vis<50,F1,FedAvg (GNN),,,0.375,,,0.5,0.393,0.5,0.426
+vis<50,P2,FedProx (mu=0.1),,,0.875,,,1.0,0.857,1.0,0.912
+vis<50,V1,FedGraphSimple (SplitFed),,,1.0,,,1.0,0.964,1.0,0.985
+Overall,S2,"Full-info GNN (R1, LN)",0.972,0.917,0.944,1.0,0.95,1.0,0.979,0.983,0.971
+Overall,F1,FedAvg (GNN),0.417,0.222,0.472,0.562,0.35,0.125,0.292,0.167,0.34
+Overall,P2,FedProx (mu=0.1),0.667,0.694,0.889,0.844,0.5,0.333,0.583,0.333,0.613
+Overall,V1,FedGraphSimple (SplitFed),1.0,0.917,0.944,0.984,1.0,1.0,0.979,1.0,0.98

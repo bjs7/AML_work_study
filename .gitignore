@@ -74,8 +74,6 @@ environments/requirements_hpc_freeze.txt
 environments/archive/
 docs/
 notes/
-# Analysis (local only)
-analysis/
 
 # Local scratch/test files
 main_test.py

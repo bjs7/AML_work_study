@@ -1,0 +1,11 @@
+Group,Metric,Overall,Fan-Out,Fan-In,Cycle,Gather-Scatter,Scatter-Gather,Stack,Random,Bipartite
+System,Attempts,86.0,9.0,9.0,9.0,16.0,10.0,6.0,12.0,15.0
+System,Txns,721.0,78.0,70.0,66.0,259.0,116.0,20.0,66.0,46.0
+System,Txn %,100.0,10.8,9.7,9.2,35.9,16.1,2.8,9.2,6.4
+Comparable,Attempts,86.0,9.0,9.0,9.0,16.0,10.0,6.0,12.0,15.0
+Comparable,Txns,675.0,67.0,62.0,66.0,247.0,111.0,18.0,59.0,45.0
+Comparable,Txn %,93.6,9.3,8.6,9.2,34.3,15.4,2.5,8.2,6.2
+Filter impact,Partial (N),13.0,3.0,2.0,0.0,1.0,1.0,2.0,3.0,1.0
+Filter impact,Partial (%),15.1,33.3,22.2,0.0,6.2,10.0,33.3,25.0,6.7
+Filter impact,Txns lost,46.0,11.0,8.0,0.0,12.0,5.0,2.0,7.0,1.0
+Filter impact,Txns lost (%),6.4,14.1,11.4,0.0,4.6,4.3,10.0,10.6,2.2

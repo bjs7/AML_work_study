@@ -1,0 +1,9 @@
+Pattern,Pattern_name,Txns,WB-single,WB-single (%),WB-multi,WB-multi (%),CB,CB (%)
+1,Fan-Out,120,0,0.0,4,3.3,116,96.7
+2,Fan-In,115,0,0.0,5,4.3,110,95.7
+3,Cycle,98,0,0.0,4,4.1,94,95.9
+4,Gather-Scatter,369,0,0.0,9,2.4,360,97.6
+5,Scatter-Gather,234,0,0.0,4,1.7,230,98.3
+6,Stack,113,0,0.0,3,2.7,110,97.3
+7,Random,76,0,0.0,0,0.0,76,100.0
+8,Bipartite,64,1,1.6,2,3.1,61,95.3
