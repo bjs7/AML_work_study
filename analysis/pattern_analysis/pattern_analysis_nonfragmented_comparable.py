@@ -36,6 +36,8 @@ from lib.analysis_functions import (
     build_attempt_bank_coverage_table,
     build_attempt_visibility_recall,
     build_attempt_visibility_recall_combined,
+    build_attempt_size_recall,
+    build_attempt_size_visibility_crosstab,
     load_comparable_banks,
     df_to_latex_table,
     build_pattern_recall_precision_combined,
@@ -339,6 +341,65 @@ if pivot_vis_any is not None:
     print("\nRecall by visibility bucket (>=1 threshold, non-fragmented):")
     print(pivot_vis_any.to_string(index=False))
 
+
+# %%
+
+# ============================================================================
+# ============ SIZE/VISIBILITY CONFOUND — Stack, Random, Bipartite ==========
+# ============================================================================
+# Feedback comment 23: FedAvg/FedProx recall is higher in the vis<50 bucket than
+# the vis=100 bucket for Stack, Random and Bipartite. These three patterns have no
+# structural degree floor (no "Max N-degree" header), so a size=1 attempt — a
+# single transaction — is always vis=100 by construction (one transaction, one
+# bank). Check whether the vis=100 bucket's low recall is really a visibility
+# effect or just these size=1 singletons, which carry the least relational
+# structure for a message-passing model, dragging the bucket down.
+
+SIZE_CONFOUND_PATTERNS = [6, 7, 8]  # Stack, Random, Bipartite
+
+pivot_size_recall, _ = build_attempt_size_recall(
+    scenarios, scenario_ids, test_nf,
+    out_dir=TABLES_RECALL,
+    out_name='attempt_size_recall_any_comparable_nonfragmented',
+    csv_dir=CSV_DIR,
+    detection_threshold='any',
+    party_banks=comparable_banks,
+    patterns=SIZE_CONFOUND_PATTERNS,
+)
+if pivot_size_recall is not None:
+    print("\nRecall by attempt-size bucket (>=1 threshold, Stack/Random/Bipartite, non-fragmented):")
+    print(pivot_size_recall.to_string(index=False))
+
+# The >=1 threshold gives a larger attempt more chances to count as "detected"
+# (only one of its transactions needs to be flagged), so a size effect there
+# could just be bookkeeping rather than a real per-transaction detection
+# difference. Txn-level recall (denominator = transactions, not attempts)
+# removes that multiple-chances effect and checks whether the size effect
+# survives at the level of an individual transaction.
+pivot_size_recall_txn, _ = build_attempt_size_recall(
+    scenarios, scenario_ids, test_nf,
+    out_dir=TABLES_RECALL,
+    out_name='attempt_size_recall_txn_comparable_nonfragmented',
+    csv_dir=CSV_DIR,
+    detection_threshold='txn',
+    party_banks=comparable_banks,
+    patterns=SIZE_CONFOUND_PATTERNS,
+)
+if pivot_size_recall_txn is not None:
+    print("\nRecall by attempt-size bucket (txn-level, Stack/Random/Bipartite, non-fragmented):")
+    print(pivot_size_recall_txn.to_string(index=False))
+
+size_vis_crosstab = build_attempt_size_visibility_crosstab(
+    test_nf,
+    out_dir=TABLES_VIS,
+    out_name='attempt_size_visibility_crosstab_comparable_nonfragmented',
+    csv_dir=CSV_DIR,
+    party_banks=comparable_banks,
+    patterns=SIZE_CONFOUND_PATTERNS,
+)
+if size_vis_crosstab is not None:
+    print("\nAttempt counts by (size bucket x visibility bucket), Stack/Random/Bipartite:")
+    print(size_vis_crosstab.to_string(index=False))
 
 
 # %%

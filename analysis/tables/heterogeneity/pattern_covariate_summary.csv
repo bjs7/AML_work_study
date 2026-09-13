@@ -1,0 +1,10 @@
+Category,Value,CV
+Pattern,Fan-Out,4.54
+Pattern,Fan-In,4.9
+Pattern,Cycle,3.26
+Pattern,Gather-Scatter,4.65
+Pattern,Scatter-Gather,3.64
+Pattern,Stack,2.48
+Pattern,Random,5.05
+Pattern,Bipartite,2.38
+Pattern,Unknown,5.35

@@ -20,6 +20,7 @@ from plotting import (
     FONTSIZE, savefig, CSV_DIR, TABLES_DIR,
     plot_proportion_heatmap, plot_proportion_stacked_bar,
 )
+from stats import CURRENCY_NAMES, _SPLIT_KEY
 
 UPPER_PERCENTILE = 99  # outlier cutoff for the per-currency amount histograms
 
@@ -49,7 +50,20 @@ def _bank_entropy(stats_df, cols):
     return [entropy(row) for _, row in proportions.iterrows()]
 
 
-def run(stats_df, pattern_cols, currency_cols, payment_cols, parties, data_str='train_data'):
+def run(stats_df, pattern_cols, currency_cols, payment_cols, parties, raw_df, eval_mode,
+        data_str='train_data', filtered_stats_df=None, min_edges=None):
+    """filtered_stats_df: optional bank-size-filtered subset (see
+    quantity_skew.build_filtered_views) — when given, also saves the pattern
+    heatmap restricted to banks with >= min_edges edges, since small/thin
+    banks can dominate the pattern mix in the unfiltered heatmap.
+
+    raw_df/eval_mode: needed for the per-currency amount breakdown below,
+    which (like compute_bank_stats) must read Currency/Amount from the raw
+    transactions CSV via party.indices, not from edge_attr — see stats.py's
+    module docstring for why. Only eval_mode='system' is supported."""
+    if eval_mode != 'system':
+        raise NotImplementedError("pattern_covariate_shift.run only supports eval_mode='system'.")
+    split = _SPLIT_KEY[data_str]
     table = build_pattern_covariate_table(stats_df, pattern_cols, currency_cols, payment_cols)
     print("\nPattern/currency/payment covariate-shift summary (CV across banks):")
     print(table.to_string(index=False))
@@ -57,6 +71,11 @@ def run(stats_df, pattern_cols, currency_cols, payment_cols, parties, data_str='
     # --- Laundering patterns ---
     fig = plot_proportion_heatmap(stats_df, pattern_cols, 'Pattern type')
     savefig('pattern_heatmap.pdf')
+
+    if filtered_stats_df is not None:
+        fig = plot_proportion_heatmap(filtered_stats_df, pattern_cols, 'Pattern type')
+        fig.suptitle(f'Banks with >= {min_edges:,} edges', fontsize=FONTSIZE)
+        savefig('pattern_heatmap_filtered.pdf')
 
     fig = plot_proportion_stacked_bar(stats_df, pattern_cols, legend_title='Pattern', N=50)
     savefig('pattern_stacked_bar.pdf')
@@ -98,17 +117,19 @@ def run(stats_df, pattern_cols, currency_cols, payment_cols, parties, data_str='
     fig = plot_proportion_stacked_bar(stats_df, payment_cols, legend_title='Payment format')
     savefig('payment_stacked_bar.pdf')
 
-    # --- Amount by currency (needs per-party edge_attr, not just stats_df) ---
+    # --- Amount by currency (needs each party's raw transactions, not just
+    # the aggregated stats_df — read from raw_df via party.indices, same as
+    # compute_bank_stats, not from edge_attr) ---
     all_amounts_by_currency = {name: [] for name in currency_cols}
     party_currency_means = []
     for bank_id, party in parties.items():
-        edge_attr = party.data[data_str]['df'].edge_attr.numpy()
+        party_raw = raw_df.loc[party.indices[f'{split}_indices']]
         row = {'bank_id': bank_id}
-        for idx, name in enumerate(currency_cols):
-            mask = edge_attr[:, 2] == idx
-            if mask.any():
-                all_amounts_by_currency[name].extend(edge_attr[mask, 1].tolist())
-                row[name] = edge_attr[mask, 1].mean()
+        for code, name in CURRENCY_NAMES.items():
+            amounts = party_raw.loc[party_raw['Received Currency'] == code, 'Amount Received']
+            if len(amounts) > 0:
+                all_amounts_by_currency[name].extend(amounts.tolist())
+                row[name] = amounts.mean()
             else:
                 row[name] = np.nan
         party_currency_means.append(row)

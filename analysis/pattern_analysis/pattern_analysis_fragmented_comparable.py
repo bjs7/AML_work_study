@@ -39,6 +39,7 @@ from analysis_functions import (
     build_attempt_visibility_recall,
     build_attempt_visibility_recall_combined,
     load_comparable_banks,
+    views_recall_by_pattern,
     FIGS_DIR,
 )
 from scenarios import build_scenario_map, DEFAULT_SCENARIO_IDS
@@ -336,6 +337,27 @@ pivot_cb, agg_cb = cross_bank_recall_analysis(
 )
 print("\nRecall by bank-type (within-bank vs cross-bank illicit transactions):")
 print(pivot_cb.to_string(index=False))
+
+
+# %%
+
+# ============================================================================
+# =================== RECALL BY NUMBER OF VIEWS (1 vs 2) ====================
+# ============================================================================
+# A transaction has 2 views if both From Bank and To Bank are in the comparable
+# bank set; 1 view if only one party is eligible. Shows how partial visibility
+# affects per-pattern recall for S2 (oracle) and V1 (SplitFed).
+
+views_rec = views_recall_by_pattern(
+    scenarios, ["S2", "V1"], test_raw_df,
+    comparable_banks=comparable_banks,
+    out_dir=TABLES_RECALL,
+    out_name='views_recall_by_pattern_comparable_fragmented',
+    csv_dir=CSV_DIR,
+)
+if views_rec is not None:
+    print("\nRecall by number of party views per pattern (S2 vs V1):")
+    print(views_rec.to_string(index=False))
 
 
 # %%

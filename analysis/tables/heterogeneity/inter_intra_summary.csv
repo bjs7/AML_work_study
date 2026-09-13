@@ -1,0 +1,5 @@
+Metric,Mean,Median
+Intra-bank edge share (%),10.97,10.78
+Inter-bank edge share (%),89.03,89.22
+Intra-bank fraud rate (%),0.01,0.0
+Inter-bank fraud rate (%),0.17,0.1

@@ -1,0 +1,4 @@
+Pattern,Pattern_name,"size=1, vis=100","size=1, vis>=50","size=1, vis<50","size>=2, vis=100","size>=2, vis>=50","size>=2, vis<50",vis=100 that are size=1 (%)
+6,Stack,1,0,0,4,0,1,20.0
+7,Random,4,0,0,0,1,7,100.0
+8,Bipartite,10,0,0,0,0,5,100.0

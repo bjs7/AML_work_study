@@ -1,8 +1,9 @@
 """Shared plotting helpers and output-path constants for the heterogeneity
 analysis package (quantity_skew, label_skew, pattern_covariate_shift,
 inter_intra_bank). Figure filenames are unchanged from the old bank_analysis.py
-script — only their directory moved, from analysis/figs/ (flat) to
-analysis/figs/heterogeneity/.
+script. Figures save directly into the writing repo's figs/heterogeneity/
+(same convention as TABLES_DIR below) rather than this repo, since that's
+where they're actually consumed from.
 """
 
 from pathlib import Path
@@ -11,7 +12,7 @@ from matplotlib.ticker import FuncFormatter
 
 FONTSIZE = 11
 
-FIGS_DIR = Path('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/figs/heterogeneity')
+FIGS_DIR = Path('/home/nam_07/projects/AML_work_study/writing/Experimental-Protocol/figs/heterogeneity')
 CSV_DIR = Path('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/tables/heterogeneity')
 TABLES_DIR = Path('/home/nam_07/projects/AML_work_study/writing/Experimental-Protocol/tables/heterogeneity')
 
@@ -32,6 +33,10 @@ def plot_proportion_heatmap(df, cols, xlabel, bank_id_col='bank_id', figsize=(7,
 
     prop_df = df[cols].div(df[cols].sum(axis=1), axis=0)
     prop_df.index = df[bank_id_col]
+    # A proportion of exactly 0 isn't NaN, so it wouldn't otherwise pick up
+    # cmap's "bad" (grey) color — mask it explicitly so "this bank has none of
+    # this category" reads as grey rather than the palest end of the colormap.
+    prop_df = prop_df.mask(prop_df == 0)
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.imshow(prop_df.values, aspect='auto', cmap=cmap, interpolation='nearest')

@@ -1355,11 +1355,19 @@ def views_recall_by_pattern(
     out_name='views_recall_by_pattern',
     csv_dir=None,
 ):
-    """Per-pattern recall and precision split by number of party views (1 or 2).
+    """Per-pattern recall and precision split by number of party views (1 or 2),
+    restricted to cross-bank transactions.
 
-    A transaction's n_views = |{From Bank, To Bank} ∩ comparable_banks|:
-      1 view  — only one party is in the eligible bank set
-      2 views — both parties are eligible
+    Within-bank transactions (From Bank == To Bank) are excluded entirely: there is
+    only one distinct party on such a transaction, so it is not a case of a party
+    being ineligible — V1 zero-pads the missing counterparty slot for these rather
+    than losing a second, independent view. Including them would silently inflate
+    the "2 views" bucket with transactions that never had two views to begin with.
+
+    For the remaining cross-bank transactions, n_views = |{From Bank, To Bank} ∩
+    comparable_banks|:
+      1 view  — only one of the two (distinct) parties is in the eligible bank set
+      2 views — both distinct parties are eligible
 
     Because every transaction has From Bank / To Bank, FP can also be bucketed by
     n_views, giving a views-specific denominator:
@@ -1386,6 +1394,7 @@ def views_recall_by_pattern(
             if lv is None:
                 continue
             lv_full = enrich_lv_with_raw(lv, test_raw_df)
+            lv_full = lv_full[lv_full['From Bank'] != lv_full['To Bank']]
             lv_full['n_views'] = (
                 lv_full['From Bank'].isin(comparable_set).astype(int)
                 + lv_full['To Bank'].isin(comparable_set).astype(int)
@@ -2986,6 +2995,267 @@ def build_attempt_visibility_recall_combined(scenario_map, scenario_ids, test_ra
     ]
     (out_dir / f'{out_name}.tex').write_text('\n'.join(latex_lines))
     return pivot, agg
+
+
+def build_attempt_size_recall(scenario_map, scenario_ids, test_raw_df, raw_df=None,
+                               out_dir='tables', out_name='attempt_size_recall',
+                               csv_dir=None, detection_threshold='any',
+                               party_banks=None, patterns=None):
+    """Recall by attempt-size bucket (size=1 vs size>=2), plus an Overall row group.
+
+    Diagnostic companion to build_attempt_visibility_recall: for patterns with no
+    structural degree floor (Stack, Random, Bipartite), a size=1 attempt is a single
+    transaction seen by whichever one bank is party to it, so it is *always* vis=100
+    by construction. If the vis=100 bucket in the visibility-recall table is showing
+    unexpectedly low recall, this checks whether that is really a visibility effect
+    or just the size=1 singletons — which carry the least relational structure for a
+    message-passing model — dragging that bucket down.
+
+    Row groups: size=1 / size>=2 / Overall.
+    Within each group: one row per scenario.
+    Columns: one per pattern in `patterns` (default: patterns present in the data),
+    plus Overall.
+
+    detection_threshold: same semantics as build_attempt_visibility_recall
+    ('any' / 'half' / 'all' / 'txn').
+    """
+    span_src = raw_df if raw_df is not None else test_raw_df
+    illicit_all = span_src[
+        (span_src['Is Laundering'] == 1) &
+        (span_src['AttemptID'] >= 0) &
+        (span_src['Pattern'] >= 1) &
+        (span_src['Pattern'] <= 8)
+    ].copy()
+    test_attempt_ids = set(
+        test_raw_df.loc[
+            (test_raw_df['Is Laundering'] == 1) &
+            (test_raw_df['AttemptID'] >= 0) &
+            (test_raw_df['Pattern'] >= 1) &
+            (test_raw_df['Pattern'] <= 8),
+            'AttemptID'
+        ].unique()
+    )
+    illicit_all = illicit_all[illicit_all['AttemptID'].isin(test_attempt_ids)]
+    size_df = _compute_attempt_max_visibility(illicit_all, party_banks=party_banks)  # reuses n_txns per attempt
+
+    if patterns is not None:
+        size_df = size_df[size_df['Pattern'].isin(patterns)]
+
+    size_df['size_bucket'] = np.where(size_df['n_txns'] <= 1, 'size=1', 'size>=2')
+    attempt_bucket = size_df.set_index('AttemptID')['size_bucket']
+
+    patterns_present = sorted(size_df['Pattern'].unique())
+    size_buckets = ['size=1', 'size>=2', 'Overall']
+    pat_col_names = {p: PATTERN_NAMES.get(p, f'P{p}') for p in patterns_present}
+
+    use_txn_level = (detection_threshold == 'txn')
+
+    if detection_threshold == 'half':
+        def _is_detected(ag):
+            return (ag['n_det'] >= ag['n_txns'] * 0.5).sum() / len(ag)
+    elif detection_threshold == 'all':
+        def _is_detected(ag):
+            return (ag['n_det'] == ag['n_txns']).sum() / len(ag)
+    else:  # 'any' or 'txn' (txn bypasses this)
+        def _is_detected(ag):
+            return (ag['n_det'] >= 1).sum() / len(ag)
+
+    def _rec(sub, sb):
+        if sb == 'Overall':
+            sub_sb = sub
+        else:
+            mask = sub['AttemptID'].map(lambda a: attempt_bucket.get(a, None) == sb)
+            sub_sb = sub[mask]
+        if len(sub_sb) == 0:
+            return np.nan
+        if use_txn_level:
+            return (sub_sb['pred_label'] == 1).sum() / len(sub_sb)
+        ag = sub_sb.groupby('AttemptID').agg(
+            n_txns=('pred_label', 'count'),
+            n_det=('pred_label', lambda x: (x == 1).sum()),
+        ).reset_index()
+        return _is_detected(ag) if len(ag) else np.nan
+
+    rows = []
+    for sid in scenario_ids:
+        exp = load_experiment(scenario_map[sid]['path'])
+        for seed, seed_data in exp.seed_results.items():
+            lv = seed_data.get('laundering_values')
+            if lv is None:
+                continue
+            lv_e = enrich_lv_with_raw(lv, test_raw_df)
+            if 'Pattern' not in lv_e.columns:
+                continue
+            illicit = lv_e[
+                (lv_e['true_y'] == 1) &
+                lv_e['AttemptID'].notna() &
+                (lv_e['AttemptID'] >= 0) &
+                (lv_e['Pattern'] >= 1) &
+                (lv_e['Pattern'] <= 8)
+            ].copy()
+            if patterns is not None:
+                illicit = illicit[illicit['Pattern'].isin(patterns)]
+
+            row = {'ID': sid, 'Scenario': scenario_map[sid]['name'], 'seed': seed}
+            for sb in size_buckets:
+                for pat in patterns_present:
+                    row[f'{sb}_p{pat}'] = _rec(illicit[illicit['Pattern'] == pat], sb)
+                row[f'{sb}_overall'] = _rec(illicit, sb)
+            rows.append(row)
+
+    raw_rows = pd.DataFrame(rows)
+    agg_spec = {}
+    for sb in size_buckets:
+        for pat in patterns_present:
+            c = f'{sb}_p{pat}'
+            agg_spec[c] = (c, 'mean')
+        agg_spec[f'{sb}_overall'] = (f'{sb}_overall', 'mean')
+
+    agg = (raw_rows.groupby(['ID', 'Scenario'])
+           .agg(**agg_spec)
+           .reset_index())
+    id_order = {sid: i for i, sid in enumerate(scenario_ids)}
+    agg = agg.sort_values('ID', key=lambda s: s.map(id_order)).reset_index(drop=True)
+
+    long_rows = []
+    for sb in size_buckets:
+        for _, row in agg.iterrows():
+            r = {'Size bucket': sb, 'ID': row['ID'], 'Scenario': row['Scenario']}
+            for pat in patterns_present:
+                r[pat_col_names[pat]] = row[f'{sb}_p{pat}']
+            r['Overall'] = row[f'{sb}_overall']
+            long_rows.append(r)
+
+    pivot = pd.DataFrame(long_rows)
+    data_cols = [pat_col_names[p] for p in patterns_present] + ['Overall']
+    for col in data_cols:
+        pivot[col] = pivot[col].round(3)
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = Path(csv_dir) if csv_dir else out_dir
+    csv_path.mkdir(parents=True, exist_ok=True)
+    pivot.to_csv(csv_path / f'{out_name}.csv', index=False)
+
+    n_scen = len(scenario_ids)
+    col_format = 'll' + 'c' * len(data_cols)
+
+    def _tex(s):
+        return (s.replace('%', r'\%')
+                 .replace('>=', r'$\geq$')
+                 .replace('<=', r'$\leq$')
+                 .replace('<', r'$<$')
+                 .replace('>', r'$>$'))
+
+    header = 'Size bucket & Scenario & ' + ' & '.join(_tex(c) for c in data_cols) + r' \\'
+    body_lines = []
+    for b_idx, sb in enumerate(size_buckets):
+        sub = pivot[pivot['Size bucket'] == sb]
+        for s_idx, (_, row) in enumerate(sub.iterrows()):
+            sb_cell = (rf'\multirow{{{n_scen}}}{{*}}{{{_tex(sb)}}}' if s_idx == 0 else '')
+            cells = [sb_cell, str(row['Scenario'])]
+            for col in data_cols:
+                val = row[col]
+                cells.append(_fmt_scaled(val, scale=100, decimals=2, auto_widen=True) if pd.notna(val) else '--')
+            body_lines.append(' & '.join(cells) + r' \\')
+        if b_idx < len(size_buckets) - 1:
+            body_lines.append(r'\midrule')
+
+    latex_lines = [
+        rf'\begin{{tabular}}{{{col_format}}}',
+        r'\toprule',
+        header,
+        r'\midrule',
+    ] + body_lines + [
+        r'\bottomrule',
+        r'\end{tabular}',
+    ]
+    (out_dir / f'{out_name}.tex').write_text('\n'.join(latex_lines))
+    return pivot, agg
+
+
+def build_attempt_size_visibility_crosstab(test_raw_df, raw_df=None, out_dir='tables',
+                                            out_name='attempt_size_visibility_crosstab',
+                                            csv_dir=None, party_banks=None, patterns=None):
+    """Counts attempts by (pattern, size bucket, visibility bucket) to show directly
+    how collinear attempt size and single-bank visibility are for patterns with no
+    structural degree floor. A size=1 attempt is always vis=100 by construction, so
+    this table is expected to show size=1 attempts concentrated entirely in the
+    vis=100 column, and size>=2 attempts spread across the lower buckets.
+
+    Columns: vis=100 | vis>=50 | vis<50, plus a '% of vis=100 that are size=1' summary.
+    """
+    span_src = raw_df if raw_df is not None else test_raw_df
+    illicit_all = span_src[
+        (span_src['Is Laundering'] == 1) &
+        (span_src['AttemptID'] >= 0) &
+        (span_src['Pattern'] >= 1) &
+        (span_src['Pattern'] <= 8)
+    ].copy()
+    test_attempt_ids = set(
+        test_raw_df.loc[
+            (test_raw_df['Is Laundering'] == 1) &
+            (test_raw_df['AttemptID'] >= 0) &
+            (test_raw_df['Pattern'] >= 1) &
+            (test_raw_df['Pattern'] <= 8),
+            'AttemptID'
+        ].unique()
+    )
+    illicit_all = illicit_all[illicit_all['AttemptID'].isin(test_attempt_ids)]
+    vis_df = _compute_attempt_max_visibility(illicit_all, party_banks=party_banks)
+
+    if patterns is not None:
+        vis_df = vis_df[vis_df['Pattern'].isin(patterns)]
+    if vis_df.empty:
+        print("[WARN] No attempts found for size/visibility crosstab.")
+        return None
+
+    def _vis_bucket(v):
+        if v == 1.0:   return 'vis=100'
+        if v >= 0.5:   return 'vis>=50'
+        return 'vis<50'
+    vis_df['vis_bucket']  = vis_df['max_vis'].apply(_vis_bucket)
+    vis_df['size_bucket'] = np.where(vis_df['n_txns'] <= 1, 'size=1', 'size>=2')
+
+    rows = []
+    for pat in sorted(vis_df['Pattern'].unique()):
+        sub = vis_df[vis_df['Pattern'] == pat]
+        counts = sub.groupby(['size_bucket', 'vis_bucket']).size()
+        n_vis100 = int(counts.get(('size=1', 'vis=100'), 0) + counts.get(('size>=2', 'vis=100'), 0))
+        n_vis100_size1 = int(counts.get(('size=1', 'vis=100'), 0))
+        rows.append({
+            'Pattern':      pat,
+            'Pattern_name': PATTERN_NAMES.get(pat, f'P{pat}'),
+            'size=1, vis=100':  int(counts.get(('size=1', 'vis=100'), 0)),
+            'size=1, vis>=50':  int(counts.get(('size=1', 'vis>=50'), 0)),
+            'size=1, vis<50':   int(counts.get(('size=1', 'vis<50'), 0)),
+            'size>=2, vis=100': int(counts.get(('size>=2', 'vis=100'), 0)),
+            'size>=2, vis>=50': int(counts.get(('size>=2', 'vis>=50'), 0)),
+            'size>=2, vis<50':  int(counts.get(('size>=2', 'vis<50'), 0)),
+            'vis=100 that are size=1 (%)': round(100 * n_vis100_size1 / n_vis100, 1) if n_vis100 else float('nan'),
+        })
+
+    df = pd.DataFrame(rows)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = Path(csv_dir) if csv_dir else out_dir
+    csv_path.mkdir(parents=True, exist_ok=True)
+    df.to_csv(csv_path / f'{out_name}.csv', index=False)
+
+    tex_df = df[['Pattern_name', 'size=1, vis=100', 'size=1, vis>=50', 'size=1, vis<50',
+                 'size>=2, vis=100', 'size>=2, vis>=50', 'size>=2, vis<50',
+                 'vis=100 that are size=1 (%)']].rename(columns={
+        'Pattern_name': 'Pattern',
+        'size=1, vis=100':  'size$=$1, vis$=$100',
+        'size=1, vis>=50':  'size$=$1, vis$\\geq$50',
+        'size=1, vis<50':   'size$=$1, vis$<$50',
+        'size>=2, vis=100': 'size$\\geq$2, vis$=$100',
+        'size>=2, vis>=50': 'size$\\geq$2, vis$\\geq$50',
+        'size>=2, vis<50':  'size$\\geq$2, vis$<$50',
+        'vis=100 that are size=1 (%)': 'vis$=$100 that are size$=$1 (\\%)',
+    })
+    df_to_latex_table(tex_df, out_dir / f'{out_name}.tex')
+    return df
 
 
 def build_attempt_visibility_txn_recall(scenario_map, scenario_ids, test_raw_df, raw_df=None,

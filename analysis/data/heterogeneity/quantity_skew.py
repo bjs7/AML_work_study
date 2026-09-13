@@ -14,6 +14,21 @@ from analysis_functions import df_to_latex_table
 
 from plotting import FONTSIZE, thousands_fmt, savefig, CSV_DIR, TABLES_DIR
 
+MIN_EDGES = 1000  # bank-size cutoff used by the "all banks vs. filtered" comparisons
+
+
+def build_filtered_views(stats_df, ii_df, min_edges=MIN_EDGES):
+    """Bank-size-filtered views of stats_df/ii_df, used by the 'all banks vs.
+    banks with >= MIN_EDGES edges' comparisons in label_skew, pattern_covariate_shift,
+    and inter_intra_bank — small/thin-data banks can dominate some plots, so it's
+    worth checking whether the story changes once they're dropped."""
+    filtered_stats_df = stats_df[stats_df['n_edges'] >= min_edges].copy()
+    filtered_ii_df = ii_df[ii_df['n_total'] >= min_edges].copy()
+    print(f"\nMIN_EDGES = {min_edges}")
+    print(f"  Banks kept: {len(filtered_stats_df)} / {len(stats_df)}")
+    print(f"  Banks kept (inter/intra): {len(filtered_ii_df)} / {len(ii_df)}")
+    return filtered_stats_df, filtered_ii_df
+
 
 def print_edge_distribution(edge_counts):
     """Console-only diagnostic: percentile/threshold breakdown of edge counts

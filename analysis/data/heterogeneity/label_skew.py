@@ -39,7 +39,11 @@ def build_label_skew_table(stats_df, out_name='label_skew_summary'):
     return df
 
 
-def run(stats_df):
+def run(stats_df, filtered_stats_df=None, min_edges=None):
+    """filtered_stats_df: optional bank-size-filtered subset (see
+    quantity_skew.build_filtered_views) — when given, adds an "all banks vs.
+    filtered" fraud-rate-scatter comparison, since small/thin banks can
+    dominate the unfiltered scatter."""
     table = build_label_skew_table(stats_df)
     print("\nLabel skew summary (fraud count / fraud rate across banks):")
     print(table.to_string(index=False))
@@ -76,5 +80,22 @@ def run(stats_df):
     ax.set_title('Bubble size = fraud count', fontsize=FONTSIZE)
     plt.tight_layout()
     savefig('fraud_scatter.pdf')
+
+    # All banks vs. banks with >= min_edges edges — does dropping small/thin
+    # banks change the size-vs-fraud-rate story?
+    if filtered_stats_df is not None:
+        fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+        axes[0].scatter(stats_df['n_edges'], stats_df['fraud_rate'], s=stats_df['n_fraud'], alpha=0.6)
+        axes[0].set_xlabel('Number of edges', fontsize=FONTSIZE)
+        axes[0].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+        axes[0].set_title('All banks', fontsize=FONTSIZE)
+        axes[1].scatter(filtered_stats_df['n_edges'], filtered_stats_df['fraud_rate'],
+                         s=filtered_stats_df['n_fraud'], alpha=0.6)
+        axes[1].set_xlabel('Number of edges', fontsize=FONTSIZE)
+        axes[1].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+        axes[1].set_title(f'Banks with >= {min_edges:,} edges', fontsize=FONTSIZE)
+        plt.suptitle('Edges vs fraud rate (bubble size = fraud count)', fontsize=FONTSIZE)
+        plt.tight_layout()
+        savefig('fraud_scatter_filtered_comparison.pdf')
 
     return table
