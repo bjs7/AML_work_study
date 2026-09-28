@@ -372,4 +372,67 @@ axes[1].set_axisbelow(True)
 plt.tight_layout()
 savefig('intra_inter_fraud_comparison_comparable.pdf')
 
+
+# %% ========== 5. Test Split — Summary Tables Only ==========
+# Same population as Sections 1-4 (comparable eval, 630 individual-scenario
+# banks) but their test-period transactions instead of train — checks
+# whether the skew already characterized above persists into the held-out
+# period. Tables only, no figures, mirroring bank_analysis_system.py's
+# Section 5.
+
+ii_df_test = het_stats.compute_inter_intra_stats(test_raw_df, party_banks)
+
+long_df_test = pd.concat([
+    test_raw_df[['From Bank', 'from_id']].rename(columns={'From Bank': 'bank_id', 'from_id': 'node_id'}),
+    test_raw_df[['From Bank', 'to_id']].rename(columns={'From Bank': 'bank_id', 'to_id': 'node_id'}),
+    test_raw_df[['To Bank', 'from_id']].rename(columns={'To Bank': 'bank_id', 'from_id': 'node_id'}),
+    test_raw_df[['To Bank', 'to_id']].rename(columns={'To Bank': 'bank_id', 'to_id': 'node_id'}),
+], ignore_index=True)
+n_nodes_series_test = long_df_test.groupby('bank_id')['node_id'].nunique()
+
+quantity_df_test = ii_df_test[['bank_id', 'n_total']].rename(columns={'n_total': 'n_edges'}).copy()
+quantity_df_test['n_nodes'] = quantity_df_test['bank_id'].map(n_nodes_series_test).fillna(0).astype(int)
+
+quantity_table_test = build_quantity_skew_table(quantity_df_test, out_name='quantity_skew_summary_comparable_test')
+print("\n[TEST] Quantity skew summary:")
+print(quantity_table_test.to_string(index=False))
+
+ii_indexed_test = ii_df_test.set_index('bank_id')
+label_df_test = quantity_df_test.copy()
+label_df_test['n_fraud'] = label_df_test['bank_id'].map(ii_indexed_test['n_fraud'])
+label_df_test['fraud_rate'] = label_df_test['bank_id'].map(ii_indexed_test['fraud_rate'])
+
+label_table_test = build_label_skew_table(label_df_test, out_name='label_skew_summary_comparable_test')
+print("\n[TEST] Label skew summary:")
+print(label_table_test.to_string(index=False))
+
+intra_mask_test = test_raw_df['From Bank'] == test_raw_df['To Bank']
+intra_df_test = test_raw_df[intra_mask_test]
+inter_df_test = test_raw_df[~intra_mask_test]
+
+intra_pattern_test = intra_df_test.groupby(['From Bank', 'Pattern']).size().unstack(fill_value=0)
+inter_pattern_long_test = pd.concat([
+    inter_df_test[['From Bank', 'Pattern']].rename(columns={'From Bank': 'bank_id'}),
+    inter_df_test[['To Bank', 'Pattern']].rename(columns={'To Bank': 'bank_id'}),
+], ignore_index=True)
+inter_pattern_test = inter_pattern_long_test.groupby(['bank_id', 'Pattern']).size().unstack(fill_value=0)
+
+pattern_counts_test = intra_pattern_test.add(inter_pattern_test, fill_value=0)
+pattern_counts_test = pattern_counts_test.reindex(columns=list(PATTERN_NAMES.keys()), fill_value=0)
+pattern_counts_test = pattern_counts_test.rename(columns=PATTERN_NAMES)
+
+pattern_df_test = quantity_df_test[['bank_id', 'n_edges']].copy()
+for col in pattern_cols:
+    pattern_df_test[col] = pattern_df_test['bank_id'].map(pattern_counts_test[col]).fillna(0)
+
+pattern_table_test = build_pattern_covariate_table(pattern_df_test, pattern_cols, [], [], out_name='pattern_covariate_summary_comparable_test')
+print("\n[TEST] Pattern covariate-shift summary:")
+print(pattern_table_test.to_string(index=False))
+
+ii_table_test = build_inter_intra_table(ii_df_test, out_name='inter_intra_summary_comparable_test')
+print("\n[TEST] Inter-bank vs intra-bank summary:")
+print(ii_table_test.to_string(index=False))
+
+# %%
+
 # %%

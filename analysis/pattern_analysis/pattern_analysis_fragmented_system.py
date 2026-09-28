@@ -29,6 +29,7 @@ from analysis_functions import (
     attempt_level_recall_analysis,
     build_pattern_recall_comparison,
     pattern_recall_delta_vs_baseline,
+    build_pattern_recall_precision_combined,
     load_raw_df,
     enrich_raw_df_with_pattern_degree,
     reconstruct_test_raw_df,
@@ -126,6 +127,18 @@ delta_patterns = pattern_recall_delta_vs_baseline(
 )
 print("\nRecall deficit vs S2 (negative = FL worse):")
 print(delta_patterns.to_string(index=False))
+
+# %%
+
+combined_df, _ = build_pattern_recall_precision_combined(
+    scenarios,
+    scenario_ids=scenario_ids,
+    top_k=9,
+    top_by="support_baseline",
+    baseline_id="S2",
+    out_dir=TABLES_RECALL,
+    out_name="pattern_recall_precision_system",
+)
 
 
 # %%
@@ -236,6 +249,20 @@ pivot_txn_class, agg_txn_class = txn_class_recall_analysis(
 if pivot_txn_class is not None:
     print("\nRecall by transaction class (WB-single / WB-multi / CB):")
     print(pivot_txn_class.to_string(index=False))
+
+
+# %%
+
+# ====================================================================
+# ======================= CROSS-BANK STRUCTURE =======================
+# ====================================================================
+
+pivot_cb, agg_cb = cross_bank_recall_analysis(
+    scenarios, scenario_ids, test_raw_df,
+    out_dir=TABLES_RECALL, out_name='cross_bank_recall_S2_F1_P2_system',
+)
+print("\nRecall by bank-type (within-bank vs cross-bank illicit transactions):")
+print(pivot_cb.to_string(index=False))
 
 
 # %%

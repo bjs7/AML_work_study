@@ -1,0 +1,3 @@
+Metric,N banks,Min,Median,Mean,Max,CV
+n_edges,630,73,1192,1841.4,81371,1.98
+n_nodes,630,46,711,980.2,30659,1.48

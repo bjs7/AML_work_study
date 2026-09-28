@@ -24,8 +24,7 @@ Degree meaning per pattern type:
   Stack / Bipartite / Scatter-Gather — transaction count in the attempt
   (no degree specified in the header, so attempt size is used as a proxy).
 
-Scenarios: S2 (full-info oracle), F1 (FedAvg), P2 (FedProx).
-V1 (FedGraphSimple/SplitFed) excluded — no system-eval results.
+Scenarios: S2 (full-info oracle), F1 (FedAvg), P2 (FedProx), V1 (SplitFed).
 """
 
 import sys
@@ -56,7 +55,7 @@ N_BINS = 4  # degree bins per pattern; adjust after seeing the distribution
 
 # %% ========== Scenario definitions ==========
 
-scenario_ids = ["S2", "F1", "P2"]  # V1 (FedGraphSimple/SplitFed) excluded — no system-eval results
+scenario_ids = ["S2", "F1", "P2", "V1"]
 scenarios = build_scenario_map(scenario_ids, eval_mode=EVAL_MODE)
 
 assert_paths_exist(scenarios)

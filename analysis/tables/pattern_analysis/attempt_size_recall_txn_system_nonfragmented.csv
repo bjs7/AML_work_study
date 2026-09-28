@@ -1,0 +1,13 @@
+Size bucket,ID,Scenario,Stack,Random,Bipartite,Overall
+size=1,S2,"Full-info GNN (R1, LN)",,1.0,0.975,0.982
+size=1,F1,FedAvg (GNN),,0.0,0.0,0.0
+size=1,P2,FedProx (mu=0.1),,0.0,0.0,0.0
+size=1,V1,SplitFed,,1.0,1.0,1.0
+size>=2,S2,"Full-info GNN (R1, LN)",0.888,0.883,0.722,0.835
+size>=2,F1,FedAvg (GNN),0.075,0.137,0.194,0.144
+size>=2,P2,FedProx (mu=0.1),0.362,0.444,0.535,0.458
+size>=2,V1,SplitFed,0.825,0.786,0.632,0.746
+Overall,S2,"Full-info GNN (R1, LN)",0.888,0.89,0.777,0.85
+Overall,F1,FedAvg (GNN),0.075,0.129,0.152,0.129
+Overall,P2,FedProx (mu=0.1),0.362,0.417,0.418,0.409
+Overall,V1,SplitFed,0.825,0.799,0.712,0.773

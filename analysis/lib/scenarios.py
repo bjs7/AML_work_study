@@ -51,7 +51,7 @@ SCENARIO_NAMES = {
     "S4": "Individual GNN (full batch)",
     "F1": "FedAvg (GNN)",
     "P2": "FedProx (mu=0.1)",
-    "V1": f"FedGraphSimple ({_ALGO_DISPLAY.get('FedGraphSimple', 'FedGraphSimple')})",
+    "V1": _ALGO_DISPLAY.get('FedGraphSimple', 'FedGraphSimple'),
 }
 
 # --- FedAvg sensitivity (F0, F2-F10; F1 is the shared baseline above) ---

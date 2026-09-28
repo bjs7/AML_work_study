@@ -238,7 +238,7 @@ def data_parser():
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
     parser.add_argument('--batching_mode', default='lazy_link_neighbor', type=str,
-                        choices=['neighbor_sample', 'simple', 'link_neighbor', 'lazy_link_neighbor'],
+                        choices=['neighbor_sample', 'simple', 'link_neighbor', 'lazy_link_neighbor', 'local_neighbor'],
                         help='Batch generation strategy for vertical FL (default: lazy_link_neighbor)')
     parser.add_argument('--batch_size', default=8192, type=int, help='Batch size for LinkNeighborLoader (default: 8192)')
 
