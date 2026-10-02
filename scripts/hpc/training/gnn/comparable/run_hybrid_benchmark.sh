@@ -1,23 +1,24 @@
 #!/bin/bash
 # =============================================================================
-# Submit FedAvgSplit (comparable, single seed).
+# FedAvgSplit Phase 2 CPU timing benchmark.
 #
-# Two-phase algorithm:
-#   Phase 1 — FedProx (mu=0.1): per-party FedAvg GNN training on GPU.
-#   Phase 2 — Vertical MLP: frozen GNN, mlp_vert trains on CPU.
-#             Phase 2 is CPU-bound (lazy subgraph extraction dominates); moving
-#             it to CPU eliminates the GPU→CPU transfer overhead. GPU is still
-#             allocated for Phase 1 — see run_hybrid_benchmark.sh for a short
-#             timing run to verify Phase 2 wall-time before queueing this.
+# Runs a minimal FedAvgSplit job to estimate Phase 2 wall-time on CPU before
+# committing to a full run:
+#   Phase 1 — 3 FedAvg rounds (enough to produce a model, not for quality)
+#   Phase 2 — 2 MLP rounds on CPU
 #
-# Phase 1: --num_rounds 100 (FedAvg rounds, ~8h on V100)
-# Phase 2: --num_phase2_rounds 25 (MLP-only training converges quickly)
+# Check the log for lines like:
+#   "FedAvgSplit Phase 2: training mlp_vert ..."
+#   "Epoch 1/2 - Train Loss: ..."
+#   "Epoch 2/2 - Train Loss: ..."
+# and compare the timestamps to get per-epoch Phase 2 wall-time.
+# Multiply by 25 to estimate the full --num_phase2_rounds 25 cost.
 #
 # Node specs (Cascadelake GPU, gpu_v100): 36 cores, 768 GB RAM, 8× V100 32GB
 # Per-GPU policy limit: 4 cores, 84000 MiB (~82 GiB).
 # =============================================================================
 # Usage:
-#   bash scripts/hpc/training/gnn/comparable/run_hybrid_comparable.sh
+#   bash scripts/hpc/training/gnn/comparable/run_hybrid_benchmark.sh
 # =============================================================================
 
 CLUSTER="genius"
@@ -26,7 +27,7 @@ PARTITION="gpu_v100"
 CPUS="4"
 MEM="82G"
 GPUS="1"
-TIME="64:00:00"
+TIME="6:00:00"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
 
@@ -39,15 +40,15 @@ BASE_FLAGS="--fl_algo FedAvgSplit --model GINe --size small --ir HI \
 --ibm_hp --emlps \
 --eval_mode comparable \
 --mu 0.1 --num_local_epochs 5 --client_fraction 0.1 \
---num_rounds 100 --num_phase2_rounds 25 \
+--num_rounds 3 --num_phase2_rounds 2 \
 --max_workers $CPUS --testing_seeds 1"
 
 RUN_ID=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p logs
 
-JOB_NAME="aml_hybrid_comparable_s1"
-echo "Submitting: $JOB_NAME (seed 1, run_id=$RUN_ID)"
+JOB_NAME="aml_hybrid_bench_s1"
+echo "Submitting: $JOB_NAME (benchmark, run_id=$RUN_ID)"
 sbatch \
     -M "$CLUSTER" \
     --account="$ACCOUNT" \
@@ -67,9 +68,7 @@ sbatch \
 echo '======================================================================'
 echo 'Job started at: \$(date)'
 echo 'Job ID: \$SLURM_JOB_ID  Node: \$SLURM_NODELIST'
-echo 'FedAvgSplit comparable — seed 1 (run_id=$RUN_ID)'
-echo 'Phase 1: FedProx mu=0.1, 100 rounds'
-echo 'Phase 2: frozen GNN, vertical mlp_vert, 50 rounds'
+echo 'FedAvgSplit benchmark — Phase 1: 3 rounds  Phase 2: 2 rounds (run_id=$RUN_ID)'
 echo '======================================================================'
 $PYTHON_CMD $BASE_FLAGS --first_seed 1 --run_id $RUN_ID
 echo '======================================================================'
@@ -78,6 +77,8 @@ echo '======================================================================'
 "
 
 echo ""
-echo "Submitted FedAvgSplit comparable timing run (run_id=$RUN_ID)."
-echo "Check logs/${JOB_NAME}_<jobid>.log for 'Phase 1'/'Phase 2' timestamps"
-echo "to see how long each phase takes before scaling up to more seeds."
+echo "Submitted $JOB_NAME (run_id=$RUN_ID)."
+echo "Once done, check logs/${JOB_NAME}_<jobid>.log:"
+echo "  grep 'Phase 2\|Epoch [12]/2' logs/${JOB_NAME}_<jobid>.log"
+echo "Compare Phase 2 start timestamp to Epoch 2/2 timestamp to get per-epoch time."
+echo "Multiply by 25 to estimate the full run_hybrid_comparable.sh Phase 2 cost."

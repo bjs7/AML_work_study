@@ -75,6 +75,12 @@ environments/archive/
 docs/
 notes/
 
+# Generated analysis outputs (tables, figures) — live in writing repo, not tracked here
+analysis/tables/
+analysis/figs/
+analysis/pattern_analysis/tables/
+analysis/pattern_analysis/figs/
+
 # Local scratch/test files
 main_test.py
 test.py

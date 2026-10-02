@@ -855,7 +855,11 @@ class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
             party.model = shared_model
         self.model = shared_model
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # Phase 2 is CPU-bound: lazy subgraph extraction dominates and the GPU sits
+        # idle at ~1% utilisation. Running Phase 2 on CPU eliminates the CPU→GPU
+        # transfer overhead and lets computation flow continuously.
+        # Phase 1 (FedAvg) already finished on GPU, so nothing is lost here.
+        self.device = torch.device("cpu")
         self.model.gnn.to(self.device)
 
         # Freeze all GNN parameters, then unfreeze only the vertical classification head
