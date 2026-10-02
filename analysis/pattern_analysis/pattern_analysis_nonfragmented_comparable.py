@@ -11,7 +11,6 @@ Scenarios: S2 (full-info oracle), F1 (FedAvg), P2 (FedProx), V1 (SplitFed).
 
 import sys
 import pandas as pd
-import matplotlib.pyplot as plt
 from pathlib import Path
 
 sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study')
@@ -20,18 +19,12 @@ sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study/analysis')
 from lib.analysis_functions import (
     assert_paths_exist,
     build_pattern_stats_wide,
-    build_attempt_bank_span_table,
-    build_attempt_transaction_class_table,
-    txn_class_recall_analysis,
-    attempt_level_recall_analysis,
     build_pattern_recall_comparison,
     pattern_recall_delta_vs_baseline,
     load_raw_df,
     enrich_raw_df_with_pattern_degree,
     reconstruct_test_raw_df,
     reconstruct_train_raw_df,
-    cross_bank_recall_analysis,
-    pattern_cross_bank_profile,
     build_attempt_visibility_table,
     build_attempt_bank_coverage_table,
     build_attempt_visibility_recall,
@@ -41,7 +34,6 @@ from lib.analysis_functions import (
     load_comparable_banks,
     df_to_latex_table,
     build_pattern_recall_precision_combined,
-    views_recall_by_pattern,
     FIGS_DIR,
 )
 from lib.scenarios import build_scenario_map, DEFAULT_SCENARIO_IDS
@@ -442,148 +434,4 @@ if cov_table_corr is not None:
     print("\nBank coverage distribution per pattern (non-fragmented, corrected denominator):")
     print(cov_table_corr.to_string(index=False))
 
-
-
-# %%
-
-# ===================================================================================
-# ===================== TABLE UP UNTIL THIS POINT ARE INCLUDED. =====================
-# ===================== THE FOLLOWING MAY BE ADDED LATER ============================
-# ===================================================================================
-
-
-
-
-
-# %%
-
-# ============================================================================
-# =========================== ATTEMPT-LEVEL RECALL ===========================
-# ============================================================================
-
-pivot_attempt, agg_attempt = attempt_level_recall_analysis(
-    scenarios, scenario_ids, test_nf, raw_df=raw_df,
-    out_dir=TABLES_RECALL,
-    out_name='attempt_level_recall_comparable_nonfragmented',
-)
-if pivot_attempt is not None:
-    print("\nAttempt-level recall (single-bank vs multi-bank, non-fragmented):")
-    print(pivot_attempt.to_string(index=False))
-
-
-# %%
-
-# ====================================================================
-# ======================= CROSS-BANK STRUCTURE =======================
-# ====================================================================
-
-pivot_cb, agg_cb = cross_bank_recall_analysis(
-    scenarios, scenario_ids, test_nf,
-    out_dir=TABLES_RECALL, out_name='cross_bank_recall_S2_F1_P2_comparable_nonfragmented',
-)
-print("\nRecall by bank-type (non-fragmented):")
-print(pivot_cb.to_string(index=False))
-
-
-# %%
-
-# ============================================================================
-# =================== RECALL BY NUMBER OF VIEWS (1 vs 2) ====================
-# ============================================================================
-# A transaction has 2 views if both From Bank and To Bank are in the comparable
-# bank set; 1 view if only one party is eligible. Shows how partial visibility
-# affects per-pattern recall for S2 (oracle) and V1 (SplitFed).
-
-views_rec = views_recall_by_pattern(
-    scenarios, ["S2", "V1"], test_nf,
-    comparable_banks=comparable_banks,
-    filter_indices=nf_illicit_indices,
-    out_dir=TABLES_RECALL,
-    out_name='views_recall_by_pattern_comparable_nonfragmented',
-    csv_dir=CSV_DIR,
-)
-if views_rec is not None:
-    print("\nRecall by number of party views per pattern (S2 vs V1, non-fragmented):")
-    print(views_rec.to_string(index=False))
-
-
-# %%
-
-cb_profile = pattern_cross_bank_profile(
-    test_nf,
-    out_dir=TABLES_STATS,
-    out_name='pattern_cross_bank_profile_comparable_nonfragmented',
-)
-print("\nCross-bank fraction per laundering pattern (non-fragmented):")
-print(cb_profile.to_string(index=False))
-
-if cb_profile is not None and delta_patterns is not None:
-    delta_col = "F1"
-    if delta_col in delta_patterns.columns and "Pattern" in delta_patterns.columns:
-        merged = delta_patterns.merge(
-            cb_profile[['Pattern_name', 'cross_bank_pct']].rename(columns={'Pattern_name': 'Pattern'}),
-            on='Pattern', how='left'
-        )
-        print("\nRecall deficit (F1 vs S2) vs cross-bank fraction per pattern (non-fragmented):")
-        print(merged[['Pattern', delta_col, 'cross_bank_pct']].to_string(index=False))
-
-        fig_dir = FIGS_DIR / 'pattern_analysis'
-        fig_dir.mkdir(parents=True, exist_ok=True)
-        fig, ax = plt.subplots(figsize=(6, 4))
-        for _, row in merged.iterrows():
-            ax.scatter(row['cross_bank_pct'], row[delta_col], s=60, zorder=3)
-            ax.annotate(row.get('Pattern_name', str(row['Pattern'])),
-                        (row['cross_bank_pct'], row[delta_col]),
-                        fontsize=7, ha='left', va='bottom')
-        ax.axhline(0, color='gray', lw=0.8, ls='--')
-        ax.set_xlabel("Cross-bank fraction of illicit transactions (pattern)")
-        ax.set_ylabel("Recall deficit: F1 − S2 (negative = FL worse)")
-        ax.set_title("Recall deficit vs cross-bank structure (non-fragmented)")
-        plt.tight_layout()
-        plt.savefig(fig_dir / 'recall_deficit_vs_cross_bank_pattern_comparable_nonfragmented.pdf')
-        plt.close()
-        print("  Saved scatter plot.")
-
-
-# %%
-
-# ===================================================================
-# ====================== MORE ATTEMPT ANALYSIS ======================
-# ===================================================================
-
-span_df = build_attempt_bank_span_table(
-    test_nf, raw_df=raw_df,
-    out_dir=TABLES_VIS,
-    out_name='attempt_bank_span_comparable_nonfragmented',
-    csv_dir=CSV_DIR,
-    ref_test_raw_df=system_test_nf,
-)
-if span_df is not None:
-    print("\nAttempt bank span per pattern (non-fragmented):")
-    print(span_df.to_string(index=False))
-
-
-# %%
-
-txn_class_df = build_attempt_transaction_class_table(
-    test_nf, raw_df=raw_df,
-    out_dir=TABLES_FRAG,
-    out_name='attempt_txn_class_comparable_nonfragmented',
-    csv_dir=CSV_DIR,
-)
-if txn_class_df is not None:
-    print("\nTransaction class breakdown per pattern (non-fragmented):")
-    print(txn_class_df.to_string(index=False))
-
-
-# %%
-
-pivot_txn_class, agg_txn_class = txn_class_recall_analysis(
-    scenarios, scenario_ids, test_nf, raw_df=raw_df,
-    out_dir=TABLES_RECALL,
-    out_name='txn_class_recall_comparable_nonfragmented',
-)
-if pivot_txn_class is not None:
-    print("\nRecall by transaction class (WB-single / WB-multi / CB, non-fragmented):")
-    print(pivot_txn_class.to_string(index=False))
 
