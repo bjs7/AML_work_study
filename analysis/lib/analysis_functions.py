@@ -150,7 +150,7 @@ def fmt_mean_std(m, s, scale=100.0, decimals=2):
     return f"{m*scale:.{decimals}f} ± {s*scale:.{decimals}f}"
 
 def fmt_int_mean_std(m, s, decimals=1):
-    return f"{m:.{decimals}f} ± {s:.{decimals}f}"
+    return f"{m:,.{decimals}f} ± {s:,.{decimals}f}"
 
 
 # --- core extraction from a loaded ExperimentResults object ---
@@ -345,9 +345,9 @@ def build_scenario_summary_table(scenario_map, out_dir="tables", order=None, out
             r"F1 (\%)": fmt_mean_std(summ.get("f1_mean", 0), summ.get("f1_std", 0)),
             r"Precision (\%)": fmt_mean_std(summ.get("precision_mean", 0), summ.get("precision_std", 0)),
             r"Recall (\%)": fmt_mean_std(summ.get("recall_mean", 0), summ.get("recall_std", 0)),
-            "TP": fmt_int_mean_std(summ.get("tp_mean", 0), summ.get("tp_std", 0)),
-            "FP": fmt_int_mean_std(summ.get("fp_mean", 0), summ.get("fp_std", 0)),
-            "FN": fmt_int_mean_std(summ.get("fn_mean", 0), summ.get("fn_std", 0)),
+            "True Pos.": fmt_int_mean_std(summ.get("tp_mean", 0), summ.get("tp_std", 0)),
+            "False Pos.": fmt_int_mean_std(summ.get("fp_mean", 0), summ.get("fp_std", 0)),
+            "False Neg.": fmt_int_mean_std(summ.get("fn_mean", 0), summ.get("fn_std", 0)),
         })
 
     summary_df = pd.DataFrame(rows)
@@ -440,6 +440,11 @@ PATTERN_NAMES = {
     7: 'Random', 8: 'Bipartite', 9: 'Unknown',
 }
 
+# Display order matching the patterns figure in the data section:
+# Fan-Out, Fan-In, Gather-Scatter, Scatter-Gather, Cycle, Random, Bipartite, Stack, Unknown
+PATTERN_ORDER            = [1, 2, 4, 5, 3, 7, 8, 6, 9]  # all 9 illicit patterns
+PATTERN_ORDER_NO_UNKNOWN = [1, 2, 4, 5, 3, 7, 8, 6]      # patterns 1–8 only
+
 PATTERN_DESCRIPTIONS = {
     0: 'Legitimate transaction (no laundering)',
     1: 'Single source fans out to many destinations (splitting/smurfing)',
@@ -467,7 +472,7 @@ def build_pattern_overview_table(raw_df, out_dir='tables',
     Returns:
         desc_df, stats_df
     """
-    illicit_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    illicit_ids = PATTERN_ORDER
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -496,26 +501,24 @@ def build_pattern_stats_wide(raw_df, out_dir='tables',
                               out_name='pattern_stats_wide', csv_dir=None):
     """Transposed pattern statistics table: pattern names as columns, metrics as rows.
 
-    Layout: 3 data rows (ID, Count, %) x 10 cols (label + 9 pattern names).
-    Pattern names are column headers; ID, Count, % are the row metrics.
+    Layout: 2 data rows (Count, %) x 10 cols (label + 9 pattern names).
+    Pattern names are column headers; Count and % are the row metrics.
 
     Returns:
         df : wide DataFrame with columns ['Metric', *pattern_names].
     """
-    illicit_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    illicit_ids = PATTERN_ORDER
     counts = raw_df[raw_df['Is Laundering'] == 1].groupby('Pattern').size()
     total_illicit = counts.sum()
 
     cell = {pid: {
-        'ID':    pid,
-        'Count': int(counts.get(pid, 0)),
+        'Count': f"{int(counts.get(pid, 0)):,}",
         '%':     round(counts.get(pid, 0) / total_illicit * 100, 1),
     } for pid in illicit_ids}
 
     pnames = [PATTERN_NAMES[pid] for pid in illicit_ids]
 
     rows = [
-        {'Metric': 'ID',    **{PATTERN_NAMES[pid]: cell[pid]['ID']    for pid in illicit_ids}},
         {'Metric': 'Count', **{PATTERN_NAMES[pid]: cell[pid]['Count'] for pid in illicit_ids}},
         {'Metric': '%',     **{PATTERN_NAMES[pid]: cell[pid]['%']     for pid in illicit_ids}},
     ]
@@ -553,7 +556,7 @@ def build_comparable_filter_impact_wide(
     Txns lost (%) is the per-pattern loss rate (lost / system txns for that pattern).
     Partial attempt = an attempt missing ≥1 transaction after comparable filtering.
     """
-    illicit_ids = [1, 2, 3, 4, 5, 6, 7, 8]
+    illicit_ids = PATTERN_ORDER_NO_UNKNOWN
 
     def _illicit(df):
         mask = (

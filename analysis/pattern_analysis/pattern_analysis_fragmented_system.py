@@ -14,8 +14,6 @@ Scenarios: S2 (full-info oracle), F1 (FedAvg), P2 (FedProx), V1 (SplitFed).
 """
 
 import sys
-import matplotlib.pyplot as plt
-from pathlib import Path
 
 sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study')
 sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/lib')
@@ -23,18 +21,12 @@ sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/li
 from analysis_functions import (
     assert_paths_exist,
     build_pattern_stats_wide,
-    build_attempt_bank_span_table,
-    build_attempt_transaction_class_table,
-    txn_class_recall_analysis,
-    attempt_level_recall_analysis,
     build_pattern_recall_comparison,
     pattern_recall_delta_vs_baseline,
     build_pattern_recall_precision_combined,
     load_raw_df,
     enrich_raw_df_with_pattern_degree,
     reconstruct_test_raw_df,
-    cross_bank_recall_analysis,
-    pattern_cross_bank_profile,
     build_attempt_visibility_table,
     build_attempt_bank_coverage_table,
     build_attempt_visibility_recall,
@@ -201,111 +193,3 @@ if pivot_vis_any is not None:
     print("\nRecall by visibility bucket (>=1 threshold, system):")
     print(pivot_vis_any.to_string(index=False))
 
-
-# %%
-
-# ===================================================================
-# ====================== MORE ATTEMPT ANALYSIS ======================
-# ===================================================================
-# Moved here from the now-deleted results_analysis_pattern_system.py, which
-# was the sole source of these three tables (attempt_bank_span_system,
-# attempt_txn_class_system, txn_class_recall_system) — all three are `\input`
-# in mmain_doc.tex.
-
-span_df = build_attempt_bank_span_table(
-    test_raw_df, raw_df=raw_df,
-    out_dir=TABLES_VIS,
-    out_name='attempt_bank_span_system',
-    csv_dir=CSV_DIR,
-)
-if span_df is not None:
-    print("\nAttempt bank span per pattern:")
-    print(span_df.to_string(index=False))
-
-
-# %% ========== Attempt transaction classification ==========
-# Classify each illicit transaction (test split) as WB-single, WB-multi, or CB.
-# Bank span per attempt computed from full raw_df for accuracy.
-
-txn_class_df = build_attempt_transaction_class_table(
-    test_raw_df, raw_df=raw_df,
-    out_dir=TABLES_FRAG,
-    out_name='attempt_txn_class_system',
-    csv_dir=CSV_DIR,
-)
-if txn_class_df is not None:
-    print("\nTransaction class breakdown per pattern:")
-    print(txn_class_df.to_string(index=False))
-
-
-# %% ========== Transaction-class recall ==========
-# Recall per scenario broken down by WB-single / WB-multi / CB.
-
-pivot_txn_class, agg_txn_class = txn_class_recall_analysis(
-    scenarios, scenario_ids, test_raw_df, raw_df=raw_df,
-    out_dir=TABLES_RECALL,
-    out_name='txn_class_recall_system',
-)
-if pivot_txn_class is not None:
-    print("\nRecall by transaction class (WB-single / WB-multi / CB):")
-    print(pivot_txn_class.to_string(index=False))
-
-
-# %%
-
-# ====================================================================
-# ======================= CROSS-BANK STRUCTURE =======================
-# ====================================================================
-
-pivot_cb, agg_cb = cross_bank_recall_analysis(
-    scenarios, scenario_ids, test_raw_df,
-    out_dir=TABLES_RECALL, out_name='cross_bank_recall_S2_F1_P2_system',
-)
-print("\nRecall by bank-type (within-bank vs cross-bank illicit transactions):")
-print(pivot_cb.to_string(index=False))
-
-
-# %%
-
-# ===================================================================================
-# ===================== TABLE UP UNTIL THIS POINT ARE INCLUDED. =====================
-# ===================== THE FOLLOWING MAY BE ADDED LATER ============================
-# ===================================================================================
-
-
-
-
-# %%
-
-# ============================================================================
-# ======= VISIBILITY & COVERAGE — FULL ATTEMPT DENOMINATOR (APPENDIX) ========
-# ============================================================================
-# Visibility denominator = all transactions of the attempt across all splits,
-# so train/vali transactions are included. Shows how much of the full laundering
-# structure any one bank observes — the structural difficulty of detection.
-# Recall tables above stay on the test-split denominator for internal consistency.
-
-vis_table_full, _ = build_attempt_visibility_table(
-    test_raw_df,
-    raw_df=raw_df,
-    out_dir=TABLES_VIS,
-    out_name='attempt_visibility_system_fragmented_full',
-    csv_dir=CSV_DIR,
-)
-if vis_table_full is not None:
-    print("\nMax single-bank visibility per pattern (full-attempt denominator, system):")
-    print(vis_table_full.to_string(index=False))
-
-
-# %%
-
-cov_table_full = build_attempt_bank_coverage_table(
-    test_raw_df,
-    raw_df=raw_df,
-    out_dir=TABLES_VIS,
-    out_name='attempt_bank_coverage_system_fragmented_full',
-    csv_dir=CSV_DIR,
-)
-if cov_table_full is not None:
-    print("\nBank coverage distribution per pattern (full-attempt denominator, system):")
-    print(cov_table_full.to_string(index=False))

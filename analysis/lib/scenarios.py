@@ -50,7 +50,7 @@ SCENARIO_NAMES = {
     "S3": "Individual GNN (batching)",
     "S4": "Individual GNN (full batch)",
     "F1": "FedAvg (GNN)",
-    "P2": "FedProx (mu=0.1)",
+    "P2": r"FedProx ($\mu$=0.1)",
     "V1": _ALGO_DISPLAY.get('FedGraphSimple', 'FedGraphSimple'),
 }
 
@@ -91,7 +91,7 @@ _FEDPROX_MU_KWARGS = {
     "P3": dict(fl_algo="FedProx", model="GINe", batching=True, ibm_hp=True, emlps=True,
                client_fraction=0.1, num_local_epochs=5, mu=1.0),
 }
-_FEDPROX_MU_NAMES = {"P1": "FedProx (mu=0.01)", "P3": "FedProx (mu=1.0)"}
+_FEDPROX_MU_NAMES = {"P1": r"FedProx ($\mu$=0.01)", "P3": r"FedProx ($\mu$=1.0)"}
 
 # --- Heterogeneity experiments (H1-H8), all FedAvg with one factor varied ---
 _HETEROGENEITY_KWARGS = {

@@ -22,11 +22,11 @@ def build_label_skew_table(stats_df, out_name='label_skew_summary'):
     """CV and summary stats for fraud count / fraud rate across banks — the
     numbers the 'Label Distribution Skew' paragraph needs to cite."""
     rows = []
-    for col in ['n_fraud', 'fraud_rate']:
+    for col, name in [('n_fraud', 'Illicit transactions'), ('fraud_rate', 'Illicit rate (%)')]:
         vals = stats_df[col]
         cv = vals.std() / vals.mean() if vals.mean() > 0 else float('nan')
         rows.append({
-            'Metric': col,
+            'Metric': name,
             'Min': round(vals.min(), 2),
             'Median': round(vals.median(), 2),
             'Mean': round(vals.mean(), 2),
@@ -51,10 +51,10 @@ def run(stats_df, filtered_stats_df=None, min_edges=None):
     # Fraud count / fraud rate distribution
     fig, axes = plt.subplots(1, 2, figsize=(7, 3))
     axes[0].hist(stats_df['n_fraud'], bins=50, edgecolor='black')
-    axes[0].set_xlabel('Number of fraud transactions', fontsize=FONTSIZE)
+    axes[0].set_xlabel('Number of illicit transactions', fontsize=FONTSIZE)
     axes[0].set_ylabel('Number of banks', fontsize=FONTSIZE)
     axes[1].hist(stats_df['fraud_rate'], bins=50, edgecolor='black')
-    axes[1].set_xlabel('Fraud rate (%)', fontsize=FONTSIZE)
+    axes[1].set_xlabel('Illicit rate (%)', fontsize=FONTSIZE)
     axes[1].set_ylabel('Number of banks', fontsize=FONTSIZE)
     plt.tight_layout()
     savefig('fraud_hist.pdf')
@@ -65,9 +65,9 @@ def run(stats_df, filtered_stats_df=None, min_edges=None):
     axes[0].bar(range(len(sorted_df)), sorted_df['n_edges'], width=1.0)
     axes[0].set_ylabel('Number of edges', fontsize=FONTSIZE)
     axes[1].bar(range(len(sorted_df)), sorted_df['n_fraud'], width=1.0)
-    axes[1].set_ylabel('Fraud cases', fontsize=FONTSIZE)
+    axes[1].set_ylabel('Illicit transactions', fontsize=FONTSIZE)
     axes[2].bar(range(len(sorted_df)), sorted_df['fraud_rate'], width=1.0)
-    axes[2].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+    axes[2].set_ylabel('Illicit rate (%)', fontsize=FONTSIZE)
     axes[2].set_xlabel('Banks (sorted by edge count)', fontsize=FONTSIZE)
     plt.tight_layout()
     savefig('fraud_sorted_bars.pdf')
@@ -76,8 +76,8 @@ def run(stats_df, filtered_stats_df=None, min_edges=None):
     fig, ax = plt.subplots(figsize=(5, 3.5))
     ax.scatter(stats_df['n_edges'], stats_df['fraud_rate'], s=stats_df['n_fraud'], alpha=0.6)
     ax.set_xlabel('Number of edges', fontsize=FONTSIZE)
-    ax.set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
-    ax.set_title('Bubble size = fraud count', fontsize=FONTSIZE)
+    ax.set_ylabel('Illicit rate (%)', fontsize=FONTSIZE)
+    ax.set_title('Bubble size = number of illicit transactions', fontsize=FONTSIZE)
     plt.tight_layout()
     savefig('fraud_scatter.pdf')
 
@@ -87,14 +87,14 @@ def run(stats_df, filtered_stats_df=None, min_edges=None):
         fig, axes = plt.subplots(1, 2, figsize=(10, 4))
         axes[0].scatter(stats_df['n_edges'], stats_df['fraud_rate'], s=stats_df['n_fraud'], alpha=0.6)
         axes[0].set_xlabel('Number of edges', fontsize=FONTSIZE)
-        axes[0].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+        axes[0].set_ylabel('Illicit rate (%)', fontsize=FONTSIZE)
         axes[0].set_title('All banks', fontsize=FONTSIZE)
         axes[1].scatter(filtered_stats_df['n_edges'], filtered_stats_df['fraud_rate'],
                          s=filtered_stats_df['n_fraud'], alpha=0.6)
         axes[1].set_xlabel('Number of edges', fontsize=FONTSIZE)
-        axes[1].set_ylabel('Fraud rate (%)', fontsize=FONTSIZE)
+        axes[1].set_ylabel('Illicit rate (%)', fontsize=FONTSIZE)
         axes[1].set_title(f'Banks with >= {min_edges:,} edges', fontsize=FONTSIZE)
-        plt.suptitle('Edges vs fraud rate (bubble size = fraud count)', fontsize=FONTSIZE)
+        plt.suptitle('Edges vs illicit rate (bubble size = number of illicit transactions)', fontsize=FONTSIZE)
         plt.tight_layout()
         savefig('fraud_scatter_filtered_comparison.pdf')
 

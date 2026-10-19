@@ -291,7 +291,8 @@ def apply_bank_filter(train_banks, df, bank_filter):
     Args:
         train_banks: List of training bank IDs
         df: Processed data dict containing regular_data with 'From Bank'/'To Bank' columns
-        bank_filter: One of 'no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct'
+        bank_filter: One of 'no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct',
+                     'only_top10', 'only_top20'
 
     Returns:
         Filtered train_banks
@@ -312,6 +313,14 @@ def apply_bank_filter(train_banks, df, bank_filter):
     elif bank_filter == 'no_bottom5pct':
         threshold = np.percentile(edge_counts, 5)
         banks_to_remove = set(edge_counts[edge_counts <= threshold].index)
+    elif bank_filter == 'only_top10':
+        keep = set(edge_counts.nlargest(10).index)
+        return [b for b in train_banks if b in keep]
+    elif bank_filter == 'only_top20':
+        keep = set(edge_counts.nlargest(20).index)
+        return [b for b in train_banks if b in keep]
+    else:
+        raise ValueError(f"Unknown bank_filter: {bank_filter!r}")
 
     return [b for b in train_banks if b not in banks_to_remove]
 

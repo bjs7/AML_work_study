@@ -182,9 +182,11 @@ def v1_embed_bytes(n_batches, t, bs=BATCH_SIZE, ed=EMBED_DIM, bpf=BYTES_PER_FLOA
     return t * n_batches * bs * 2 * ed * bpf * 2
 
 def v1_weight_bytes(k_batch, n_batches, t, w=W_V1_PARTY, bpf=BYTES_PER_FLOAT):
-    """GNN backbone weight exchange in SplitFed — per batch, each participating party uploads
-    delta_w^GNN and downloads updated global w^GNN (W_V1_PARTY params each direction).
-    PyTorch handles this implicitly; cost shown for real distributed setting.
+    """GNN backbone weight exchange in SplitFed — per batch, the batch's parties download the
+    current global w^GNN before it and upload their gradient after it; the manager sums the
+    gradients and takes the optimizer step (W_V1_PARTY params each direction).
+    The implementation shares one model object across parties, so this is implicit there;
+    cost shown for a real distributed setting.
     Total = 2 (up+down) × K_batch × W_V1_PARTY × 4 × n_batches × T."""
     return 2 * k_batch * w * bpf * n_batches * t
 
@@ -221,6 +223,23 @@ for eval_mode, k, n_batches in [
         'Total':        fmt_bytes(total),
         '_total_bytes': total,
     })
+
+# --- Hypothetical: FedAvg / FedProx drawing from SplitFed's system bank pool ---
+# Relaxes FedAvg's participation rule (both classes in local train data) so that any
+# bank with train data is eligible, as in SplitFed. Comparable needs no such row:
+# both methods already draw from the same 630 banks there.
+k_hyp = round(K_V1_SYSTEM * CLIENT_FRACTION)
+total_hyp = fedavg_bytes(k_hyp, T_FEDAVG)
+rows.append({
+    'Scenario':    'FedAvg / FedProx (SplitFed bank pool)',
+    'Eval':        'System',
+    'K':           k_hyp,
+    'T':           T_FEDAVG,
+    'Per-exchange': f'$W \\times 4$ = {fmt_bytes(W_FEDAVG * BYTES_PER_FLOAT)}',
+    'Exchanges':    f'$2 \\cdot K \\cdot T = {2 * k_hyp * T_FEDAVG:,}$',
+    'Total':        fmt_bytes(total_hyp),
+    '_total_bytes': total_hyp,
+})
 
 # --- V1 (SplitFed) ---
 for eval_mode, k, n_batches, t in [
@@ -308,7 +327,7 @@ _TOTAL_ROW = lambda eval_mode, total_b: {
 }
 
 table_rows = []
-table_rows += [r.to_dict() for _, r in df[df['Scenario'] == 'FedAvg / FedProx (F1, P2)'].iterrows()]
+table_rows += [r.to_dict() for _, r in df[df['Scenario'].str.startswith('FedAvg')].iterrows()]
 table_rows += [r.to_dict() for _, r in df[df['Scenario'].str.startswith('SplitFed') & (df['Eval'] == 'Comparable')].iterrows()]
 table_rows.append(_TOTAL_ROW('Comparable', v1_comp_total_bytes))
 table_rows += [r.to_dict() for _, r in df[df['Scenario'].str.startswith('SplitFed') & (df['Eval'] == 'System')].iterrows()]

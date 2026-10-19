@@ -22,6 +22,7 @@ from .fedgraph import setup, forward, training_utils
 from .fedgraph.batching import process_lazy_batch, LAZY_BATCH_KEY
 from .splitfed import setup as simple_setup, forward as simple_forward
 from .splitfed.batching import process_lazy_batch_splitfed
+from .restricted_merge import forward as rm_forward
 
 logger = logging.getLogger(__name__)
 
@@ -888,3 +889,33 @@ class FLGNNManagerFedAvgSplit(FLGNNManagerSplitFed):
 
         return self._vertical_train_loop(laundering_values_test, batching=self.args['data_parser'].batching,
                                          epochs=phase2_rounds)
+
+
+class FLGNNManagerRestrictedMerge(FLGNNManagerSplitFed):
+    """RestrictedMerge FL manager.
+
+    Uses the same per-party restricted subgraph as SplitFed (lazy batching,
+    same party filtering) but merges each (From Bank, To Bank) pair's subgraphs
+    into a single graph and runs ONE shared GNN with cross-party message passing.
+    Classification uses the standard single-view mlp head, not mlp_vert.
+
+    Experiment design
+    -----------------
+    SplitFed:           2 independent GNNs + mlp_vert (2× embed concatenation)
+    RestrictedMerge:    1 GNN on merged subgraph + mlp (standard embed)
+    full_info:          1 GNN on full global graph + mlp
+
+    Comparing RestrictedMerge vs SplitFed isolates the architectural difference
+    (mlp_vert concatenation) from the information difference (restricted views).
+    """
+
+    def setup_parties(self, df, parsers, scaler_encoders, laundering_values):
+        # Needs global edge IDs in edge_attr[:, 0] — same as SplitFed / FedGraph.
+        self.edge_feat_start = 1
+        return super().setup_parties(df, parsers, scaler_encoders, laundering_values)
+
+    def forward_pass(self, mode, batch_num, batch_banks, batch_data):
+        """Merged-pair GNN forward pass with standard mlp classification."""
+        return rm_forward.forward_pass_restricted_merge(
+            self, mode, batch_num, batch_banks, batch_data
+        )

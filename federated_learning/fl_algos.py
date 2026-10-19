@@ -5,6 +5,7 @@ from federated_learning.registry import regi_algo_manager, regi_algo_party
 from federated_learning.gnn import (
     GNNMixinParty, GNNMixinPartyHorizontal, GNNMixinPartyBaseline, GNNMixinPartyFedAvgSplit,
     FLGNNManagerHorizontal, FLGNNManagerFedGraph, FLGNNManagerSplitFed, FLGNNManagerFedAvgSplit,
+    FLGNNManagerRestrictedMerge,
     IndividualGNNManager as IndividualGNNManagerImpl,
     FullInfoGNNManager as FullInfoGNNManagerImpl,
 )
@@ -212,6 +213,27 @@ class FedAvgSplitGNNManager(FLGNNManagerFedAvgSplit, FedAvgManagerBase):
     @staticmethod
     def return_class(args):
         return FedAvgSplitGNNManager(args)
+
+
+@regi_algo_party("RestrictedMerge_gnn")
+class RestrictedMergeGNNParty(GNNMixinParty, FedGraphPartyBase):
+    """Party for RestrictedMerge — same data prep as SplitFed/FedGraph."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def return_class(**kwargs):
+        return RestrictedMergeGNNParty(**kwargs)
+
+
+@regi_algo_manager("RestrictedMerge_gnn")
+class RestrictedMergeGNNManager(FLGNNManagerRestrictedMerge, FedGraphManagerBase):
+    """Manager for RestrictedMerge: merged-pair GNN with standard mlp head."""
+
+    @staticmethod
+    def return_class(args):
+        return RestrictedMergeGNNManager(args)
 
 
 # Booster -------------------------------------------------------------------------------------------

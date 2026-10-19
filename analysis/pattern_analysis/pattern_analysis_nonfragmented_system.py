@@ -11,8 +11,6 @@ Scenarios: S2 (full-info oracle), F1 (FedAvg), P2 (FedProx), V1 (SplitFed).
 
 import sys
 import pandas as pd
-import matplotlib.pyplot as plt
-from pathlib import Path
 
 sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study')
 sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/')
@@ -20,10 +18,6 @@ sys.path.append('/home/nam_07/projects/AML_work_study/AML_work_study/analysis/')
 from lib.analysis_functions import (
     assert_paths_exist,
     build_pattern_stats_wide,
-    build_attempt_bank_span_table,
-    build_attempt_transaction_class_table,
-    txn_class_recall_analysis,
-    attempt_level_recall_analysis,
     build_pattern_recall_comparison,
     pattern_recall_delta_vs_baseline,
     build_pattern_recall_precision_combined,
@@ -31,8 +25,6 @@ from lib.analysis_functions import (
     enrich_raw_df_with_pattern_degree,
     reconstruct_test_raw_df,
     reconstruct_train_raw_df,
-    cross_bank_recall_analysis,
-    pattern_cross_bank_profile,
     build_attempt_visibility_table,
     build_attempt_bank_coverage_table,
     build_attempt_visibility_recall,
@@ -302,10 +294,3 @@ if size_vis_crosstab is not None:
     print("\nAttempt counts by (size bucket x visibility bucket), Stack/Random/Bipartite, system:")
     print(size_vis_crosstab.to_string(index=False))
 
-
-# %%
-
-# ===================================================================================
-# ===================== TABLE UP UNTIL THIS POINT ARE INCLUDED. =====================
-# ===================== THE FOLLOWING MAY BE ADDED LATER ============================
-# ===================================================================================
