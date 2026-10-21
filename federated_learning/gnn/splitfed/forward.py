@@ -153,6 +153,20 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
         preds_tensor: [n_samples, n_classes] logits.
         true_y_tensor: [n_samples] ground-truth labels.
     """
+    views = build_view_embeddings(manager, mode, batch_num, batch_banks, batch_data, use_batched)
+    embeds = torch.cat([views['from_embeds'], views['to_embeds']], dim=1)
+    preds_tensor = manager.model.gnn.mlp_vert(embeds)
+    true_y_tensor = torch.tensor(views['true_y'], dtype=torch.long, device=manager.device)
+    return preds_tensor, true_y_tensor
+
+
+def build_view_embeddings(manager, mode, batch_num, batch_banks, batch_data, use_batched=True):
+    """Per-transaction sender/receiver embeddings, i.e. the two halves of the mlp_vert input.
+
+    Returns a dict with from_embeds, to_embeds ([n_samples, embed_dim]), true_y,
+    from_banks, to_banks, has_from, has_to (whether that party supplied an
+    embedding) and the batch_labels DataFrame (index = global transaction IDs).
+    """
     device = manager.device
     dp_clip = getattr(manager.args['fl_parser'], 'dp_clip', None)
     dp_noise_scale = getattr(manager.args['fl_parser'], 'dp_noise_scale', 0.0)
@@ -177,6 +191,8 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
     embed_dim = list(embedding_tensors.values())[0].shape[1]
     from_embeds = torch.zeros(n_samples, embed_dim, device=device)
     to_embeds = torch.zeros(n_samples, embed_dim, device=device)
+    has_from = np.zeros(n_samples, dtype=bool)
+    has_to = np.zeros(n_samples, dtype=bool)
 
     # Vectorized fill: loop over unique banks (same pattern as vertical/forward.py)
     for bank in np.unique(from_banks):
@@ -185,6 +201,7 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
         mask = from_banks == bank
         positions = [index_to_position[bank][idx] for idx in indices[mask]]
         from_embeds[mask] = embedding_tensors[bank][positions]
+        has_from[mask] = True
 
     for bank in np.unique(to_banks):
         if bank not in index_to_position:
@@ -192,6 +209,7 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
         mask = to_banks == bank
         positions = [index_to_position[bank][idx] for idx in indices[mask]]
         to_embeds[mask] = embedding_tensors[bank][positions]
+        has_to[mask] = True
 
     # Absent party slots remain zero (pre-allocated above).
     # batch_labels filtering guarantees at least one party is present per transaction.
@@ -200,10 +218,10 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
     intra_bank_mask = from_banks == to_banks
     if intra_bank_mask.any():
         to_embeds[intra_bank_mask] = 0
+        has_to[intra_bank_mask] = False
 
-    # Concatenate and classify
-    embeds = torch.cat([from_embeds, to_embeds], dim=1)
-    preds_tensor = manager.model.gnn.mlp_vert(embeds)
-    true_y_tensor = torch.tensor(true_y, dtype=torch.long, device=device)
-
-    return preds_tensor, true_y_tensor
+    return {
+        'from_embeds': from_embeds, 'to_embeds': to_embeds, 'true_y': true_y,
+        'from_banks': from_banks, 'to_banks': to_banks,
+        'has_from': has_from, 'has_to': has_to, 'batch_labels': batch_df,
+    }
