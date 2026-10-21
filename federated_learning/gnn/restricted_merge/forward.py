@@ -21,6 +21,11 @@ whether performance differences from full_info stem from restricted information
 import torch
 from torch_geometric.data import Data, Batch
 
+# Number of merged pair-graphs to process per GPU call.
+# Smaller = less peak memory; larger = faster (more GPU parallelism).
+# 16 is safe for A100-80GB with lazy_link_neighbor subgraphs.
+PAIR_CHUNK_SIZE = 16
+
 
 def _build_merged_graph(gdata_a, gdata_b, seed_gids_set):
     """Merge two party subgraphs via seed-node reconciliation.
@@ -159,7 +164,6 @@ def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_d
 
     # Build one merged graph per pair; record where each seed ends up
     merged_graphs = []
-    edge_offsets = []          # cumulative edge counts; built after all graphs collected
     sample_graph_idx = [-1] * n_samples
     sample_edge_pos = [-1] * n_samples
 
@@ -197,38 +201,47 @@ def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_d
         preds = torch.zeros(n_samples, 2, device=device)
         return preds, torch.tensor(true_y, dtype=torch.long, device=device)
 
-    # Cumulative edge offsets for indexing into the combined Batch
-    offset = 0
-    for g in merged_graphs:
-        edge_offsets.append(offset)
-        offset += g.edge_index.shape[1]
-
-    # Single batched GNN forward pass over all merged graphs
-    combined = Batch.from_data_list(merged_graphs).to(device)
+    # Process merged graphs in chunks to bound peak GPU memory.
+    # With lazy_link_neighbor the merged subgraphs can be very large; batching
+    # all pairs at once OOMs on A100-80GB. Chunking keeps each GPU call small.
     gnn = manager.model.gnn
 
-    embeddings = gnn.emed_features(combined.x, combined.edge_attr)
-    for layer_idx in range(gnn.num_gnn_layers):
-        embeddings = gnn.apply_gnn_layer(
-            embeddings['nodes'], embeddings['edges'], combined.edge_index, layer_idx
-        )
-    # [total_edges_in_batch, 3 * n_hidden]
-    final_embeddings = gnn.prep_nodes_edges(
-        embeddings['nodes'], embeddings['edges'], combined.edge_index
-    )
+    # per_graph_embeds[i] = [n_edges_i, embed_dim] tensor slice (gradient-connected)
+    per_graph_embeds = {}
 
-    # Vectorised extraction of per-sample embeddings
-    embed_dim = final_embeddings.shape[1]
+    for chunk_start in range(0, len(merged_graphs), PAIR_CHUNK_SIZE):
+        chunk = merged_graphs[chunk_start: chunk_start + PAIR_CHUNK_SIZE]
+        combined = Batch.from_data_list(chunk).to(device)
+
+        emb = gnn.emed_features(combined.x, combined.edge_attr)
+        for layer_idx in range(gnn.num_gnn_layers):
+            emb = gnn.apply_gnn_layer(
+                emb['nodes'], emb['edges'], combined.edge_index, layer_idx
+            )
+        # [total_chunk_edges, 3 * n_hidden]
+        final = gnn.prep_nodes_edges(emb['nodes'], emb['edges'], combined.edge_index)
+
+        # Slice per-graph (slice views retain gradient connection)
+        local_offset = 0
+        for j, g in enumerate(chunk):
+            n_e = g.edge_index.shape[1]
+            per_graph_embeds[chunk_start + j] = final[local_offset: local_offset + n_e]
+            local_offset += n_e
+
+    # Gather per-sample embeddings and scatter into sample_embeds
+    valid_samples = [i for i in range(n_samples) if sample_graph_idx[i] >= 0]
+
+    embed_dim = next(iter(per_graph_embeds.values())).shape[1]
     sample_embeds = torch.zeros(n_samples, embed_dim, device=device)
 
-    valid_samples = [i for i in range(n_samples) if sample_graph_idx[i] >= 0]
     if valid_samples:
-        global_positions = torch.tensor(
-            [edge_offsets[sample_graph_idx[i]] + sample_edge_pos[i] for i in valid_samples],
-            dtype=torch.long, device=device,
-        )
         valid_idx = torch.tensor(valid_samples, dtype=torch.long, device=device)
-        sample_embeds[valid_idx] = final_embeddings[global_positions]
+        # stack keeps gradient flow through each per_graph_embeds slice
+        valid_embs = torch.stack([
+            per_graph_embeds[sample_graph_idx[i]][sample_edge_pos[i]]
+            for i in valid_samples
+        ])  # [n_valid, embed_dim]
+        sample_embeds = sample_embeds.index_put((valid_idx,), valid_embs)
 
     preds_tensor = gnn.mlp(sample_embeds)
     true_y_tensor = torch.tensor(true_y, dtype=torch.long, device=device)

@@ -263,8 +263,10 @@ def data_parser():
     parser.add_argument('--normalize_currency', action='store_true',
                         help='Normalize amounts to same currency (heterogeneity experiment, applies to both FE paths)')
     parser.add_argument('--bank_filter', default=None, type=str,
-                        choices=['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct'],
-                        help='Filter banks by edge count: no_top10, no_top1 (outlier), no_bottom10, no_bottom5pct')
+                        choices=['no_top10', 'no_top1', 'no_bottom10', 'no_bottom5pct',
+                                 'only_top10', 'only_top20'],
+                        help='Filter banks by edge count: no_top10/no_top1/no_bottom10/no_bottom5pct remove banks; '
+                             'only_top10/only_top20 keep only the top N banks (for small-scale tests)')
 
     # utils
     parser.add_argument('--testing', action='store_true')

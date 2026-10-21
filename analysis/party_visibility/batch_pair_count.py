@@ -149,3 +149,5 @@ fc, tc, ec = sample_unique_bank_counts(sys_train, BATCH_SIZE, N_SAMPLE_BATCHES)
 print(f"  Unique From Bank  : mean={fc.mean():.0f}  median={np.median(fc):.0f}  max={fc.max()}")
 print(f"  Unique To Bank    : mean={tc.mean():.0f}  median={np.median(tc):.0f}  max={tc.max()}")
 print(f"  Unique either     : mean={ec.mean():.0f}  median={np.median(ec):.0f}  max={ec.max()}")
+
+# %%

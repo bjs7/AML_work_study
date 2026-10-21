@@ -29,6 +29,17 @@ V1 (SplitFed):
   Which simplifies to:
     total = n_train_transactions × T × 2 × embed_dim × 4 × 2
 
+  For GNN weight exchange (per batch), the expected number of unique parties per batch
+  is computed empirically from the actual training-data bank-frequency distribution:
+    E[K_batch] = Σ_i (1 - (1 - f_i/N)^B)
+  where f_i is the number of training transactions in which bank i appears (as
+  From or To Bank), N is the total number of training transactions in the pool,
+  and B is the batch size.  This replaces the birthday-paradox approximation
+  K × (1 - exp(-2B/K)), which assumes uniform bank sampling and severely
+  overestimates K_batch in the system setting where a few hub banks dominate
+  transaction volume (empirical system K_batch ≈ 2,007 vs. birthday ≈ 12,679
+  for K = 30,528 banks).
+
 Note on transaction counts: the 60/20/20 split cuts at end-of-day boundaries, so
 obs_ava × 0.6 is an approximation; actual counts differ by at most a handful of batches.
 
@@ -57,6 +68,7 @@ T_FEDAVG          = 100          # default --num_rounds
 T_V1_COMPARABLE   = 50           # run_vertical_simple_comparable.sh
 T_V1_SYSTEM       = 20           # run_vertical_simple_system.sh
 BYTES_PER_FLOAT   = 4            # float32
+TRAIN_FRAC        = 0.6          # 60/20/20 temporal split
 
 
 # =============================================================================
@@ -150,11 +162,38 @@ print(f"V1 K (all)     — system: {K_V1_SYSTEM:,}, comparable: {K_V1_COMPARABLE
 
 
 # =============================================================================
+# ========= EMPIRICAL BANK-FREQUENCY DISTRIBUTION FROM TRAINING DATA ==========
+# =============================================================================
+# Load the raw transaction CSV to compute per-bank frequencies in the training
+# split.  The CSV is pre-sorted by Timestamp; taking the first 60% of rows
+# approximates the temporal train split (actual split cuts at day boundaries,
+# causing a small discrepancy of < 2.5% in transaction counts).
+
+_CSV_PATH = Path(get_data_path()) / 'AML_work_study/formatted_transactions_small_HI.csv'
+_df_raw = pd.read_csv(_CSV_PATH, usecols=['Timestamp', 'From Bank', 'To Bank'])
+
+_train_cutoff = round(len(_df_raw) * TRAIN_FRAC)
+_df_raw_train = _df_raw.iloc[:_train_cutoff]
+
+_SYSTEM_POOL     = set(rb['FedGraph']['train_banks'])
+_COMPARABLE_POOL = set(rb['individual']['banks'])
+
+# Filter training rows to each eval mode's bank pool (OR: party participates if
+# it appears as either From Bank or To Bank in a transaction).
+_df_train_sys  = _df_raw_train[
+    _df_raw_train['From Bank'].isin(_SYSTEM_POOL) | _df_raw_train['To Bank'].isin(_SYSTEM_POOL)
+]
+_df_train_comp = _df_raw_train[
+    _df_raw_train['From Bank'].isin(_COMPARABLE_POOL) | _df_raw_train['To Bank'].isin(_COMPARABLE_POOL)
+]
+
+print(f"\nEmpirical train rows (CSV 60%): total {_train_cutoff:,} | "
+      f"system {len(_df_train_sys):,} | comparable {len(_df_train_comp):,}")
+
+
+# =============================================================================
 # ================== ESTIMATE TRAINING TRANSACTION COUNTS =====================
 # =============================================================================
-
-# 60% of the transactions associated with the relevant banks are in the train split.
-TRAIN_FRAC = 0.6
 
 # System: ~60% of FedAvg's obs_ava (≈ full dataset)
 # Comparable: ~60% of individual's obs_ava
@@ -190,11 +229,38 @@ def v1_weight_bytes(k_batch, n_batches, t, w=W_V1_PARTY, bpf=BYTES_PER_FLOAT):
     Total = 2 (up+down) × K_batch × W_V1_PARTY × 4 × n_batches × T."""
     return 2 * k_batch * w * bpf * n_batches * t
 
-def v1_k_batch(k):
-    """Expected unique parties per batch: K × (1 - exp(-2B/K)).
-    Approximates birthday-problem coupon-collector for 2×BATCH_SIZE draws from K parties."""
-    import math as _m
-    return k * (1 - _m.exp(-2 * BATCH_SIZE / k))
+def empirical_k_batch(bank_pool_set, df_train, batch_size=BATCH_SIZE):
+    """Expected unique parties per batch, computed from empirical bank-frequency distribution.
+
+    E[K_batch] = Σ_i (1 - (1 - f_i/N)^B) where f_i = training transactions that
+    involve bank i as From Bank OR To Bank (true OR count), N = total training
+    transactions in the pool, B = batch_size.
+
+    f_i is computed as from_count + to_count - intra_bank_count to avoid
+    double-counting intra-bank transactions (From Bank == To Bank).  For the system
+    pool ~20% of transactions are intra-bank, so without this correction the formula
+    overestimates K_batch by ~150 parties.
+
+    This replaces the birthday-paradox formula K × (1 - exp(-2B/K)), which assumes
+    uniform bank sampling and overestimates K_batch when a few hub banks dominate
+    transaction volume (e.g., system mode: empirical ≈ 1,856 vs. birthday ≈ 12,679
+    for K = 30,528 banks).
+    """
+    fc = df_train['From Bank'].value_counts()
+    tc = df_train['To Bank'].value_counts()
+    # Intra-bank transactions (From Bank == To Bank) are counted in both fc and tc;
+    # subtract one occurrence so f_i reflects distinct transactions involving bank i.
+    intra = df_train[df_train['From Bank'] == df_train['To Bank']]['From Bank'].value_counts()
+    N = len(df_train)
+    if N == 0:
+        return 0.0
+    result = 0.0
+    for bank in bank_pool_set:
+        f_i = fc.get(bank, 0) + tc.get(bank, 0) - intra.get(bank, 0)
+        p_i = min(f_i / N, 1.0)
+        result += 1.0 - (1.0 - p_i) ** batch_size
+    return result
+
 
 def fmt_bytes(b):
     if b >= 1e12: return f"{b/1e12:.2f} TB"
@@ -262,12 +328,12 @@ for eval_mode, k, n_batches, t in [
 
 # --- V1 GNN weight exchange (real distributed setting) ---
 # Per batch each participating party uploads delta_w^GNN and downloads updated w^GNN.
-# K_batch estimated as expected unique parties per batch (birthday approximation).
-for eval_mode, k, n_batches, t in [
-    ('Comparable', K_V1_COMPARABLE, N_BATCHES_COMPARABLE, T_V1_COMPARABLE),
-    ('System',     K_V1_SYSTEM,     N_BATCHES_SYSTEM,     T_V1_SYSTEM),
+# K_batch estimated as expected unique parties per batch (empirical bank frequencies).
+for eval_mode, k, n_batches, t, df_train_mode, bank_pool in [
+    ('Comparable', K_V1_COMPARABLE, N_BATCHES_COMPARABLE, T_V1_COMPARABLE, _df_train_comp, _COMPARABLE_POOL),
+    ('System',     K_V1_SYSTEM,     N_BATCHES_SYSTEM,     T_V1_SYSTEM,     _df_train_sys,  _SYSTEM_POOL),
 ]:
-    kb     = round(v1_k_batch(k))
+    kb     = round(empirical_k_batch(bank_pool, df_train_mode))
     per_ex = W_V1_PARTY * BYTES_PER_FLOAT
     n_exch = 2 * kb * n_batches * t          # up + down, per batch, over all epochs
     total  = v1_weight_bytes(kb, n_batches, t)
@@ -306,13 +372,16 @@ def _k_str(val):
     except (ValueError, TypeError):
         return ''
 
+_KB_COMP = round(empirical_k_batch(_COMPARABLE_POOL, _df_train_comp))
+_KB_SYS  = round(empirical_k_batch(_SYSTEM_POOL, _df_train_sys))
+
 v1_comp_total_bytes = (
     v1_embed_bytes(N_BATCHES_COMPARABLE, T_V1_COMPARABLE)
-    + v1_weight_bytes(round(v1_k_batch(K_V1_COMPARABLE)), N_BATCHES_COMPARABLE, T_V1_COMPARABLE)
+    + v1_weight_bytes(_KB_COMP, N_BATCHES_COMPARABLE, T_V1_COMPARABLE)
 )
 v1_sys_total_bytes = (
     v1_embed_bytes(N_BATCHES_SYSTEM, T_V1_SYSTEM)
-    + v1_weight_bytes(round(v1_k_batch(K_V1_SYSTEM)), N_BATCHES_SYSTEM, T_V1_SYSTEM)
+    + v1_weight_bytes(_KB_SYS, N_BATCHES_SYSTEM, T_V1_SYSTEM)
 )
 
 _TOTAL_ROW = lambda eval_mode, total_b: {
