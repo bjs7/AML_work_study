@@ -19,12 +19,22 @@ whether performance differences from full_info stem from restricted information
 """
 
 import torch
+from torch.utils.checkpoint import checkpoint
 from torch_geometric.data import Data, Batch
 
 # Number of merged pair-graphs to process per GPU call.
 # Smaller = less peak memory; larger = faster (more GPU parallelism).
 # 16 is safe for A100-80GB with lazy_link_neighbor subgraphs.
 PAIR_CHUNK_SIZE = 16
+
+
+def _seed_embeddings(gnn, x, edge_attr, edge_index, positions):
+    """Run the GNN on one chunk and return only the seed-edge embeddings."""
+    emb = gnn.emed_features(x, edge_attr)
+    for layer_idx in range(gnn.num_gnn_layers):
+        emb = gnn.apply_gnn_layer(emb['nodes'], emb['edges'], edge_index, layer_idx)
+    final = gnn.prep_nodes_edges(emb['nodes'], emb['edges'], edge_index)
+    return final[positions]
 
 
 def _build_merged_graph(gdata_a, gdata_b, seed_gids_set):
@@ -201,47 +211,47 @@ def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_d
         preds = torch.zeros(n_samples, 2, device=device)
         return preds, torch.tensor(true_y, dtype=torch.long, device=device)
 
-    # Process merged graphs in chunks to bound peak GPU memory.
-    # With lazy_link_neighbor the merged subgraphs can be very large; batching
-    # all pairs at once OOMs on A100-80GB. Chunking keeps each GPU call small.
     gnn = manager.model.gnn
 
-    # per_graph_embeds[i] = [n_edges_i, embed_dim] tensor slice (gradient-connected)
-    per_graph_embeds = {}
+    graph_to_samples = {}
+    for i in range(n_samples):
+        if sample_graph_idx[i] >= 0:
+            graph_to_samples.setdefault(sample_graph_idx[i], []).append(i)
 
+    # Chunked + checkpointed: activations of all chunks would otherwise be held
+    # until backward (merged graphs duplicate hub-bank subgraphs across pairs).
+    # Each chunk keeps only its seed embeddings and is recomputed during backward.
+    chunk_sample_idx, chunk_embs = [], []
     for chunk_start in range(0, len(merged_graphs), PAIR_CHUNK_SIZE):
         chunk = merged_graphs[chunk_start: chunk_start + PAIR_CHUNK_SIZE]
-        combined = Batch.from_data_list(chunk).to(device)
 
-        emb = gnn.emed_features(combined.x, combined.edge_attr)
-        for layer_idx in range(gnn.num_gnn_layers):
-            emb = gnn.apply_gnn_layer(
-                emb['nodes'], emb['edges'], combined.edge_index, layer_idx
-            )
-        # [total_chunk_edges, 3 * n_hidden]
-        final = gnn.prep_nodes_edges(emb['nodes'], emb['edges'], combined.edge_index)
-
-        # Slice per-graph (slice views retain gradient connection)
+        samples, positions = [], []
         local_offset = 0
         for j, g in enumerate(chunk):
-            n_e = g.edge_index.shape[1]
-            per_graph_embeds[chunk_start + j] = final[local_offset: local_offset + n_e]
-            local_offset += n_e
+            for i in graph_to_samples.get(chunk_start + j, []):
+                samples.append(i)
+                positions.append(local_offset + sample_edge_pos[i])
+            local_offset += g.edge_index.shape[1]
+        if not samples:
+            continue
 
-    # Gather per-sample embeddings and scatter into sample_embeds
-    valid_samples = [i for i in range(n_samples) if sample_graph_idx[i] >= 0]
+        combined = Batch.from_data_list(chunk).to(device)
+        pos = torch.tensor(positions, dtype=torch.long, device=device)
+        args = (gnn, combined.x, combined.edge_attr, combined.edge_index, pos)
+        if torch.is_grad_enabled():
+            emb = checkpoint(_seed_embeddings, *args, use_reentrant=False)
+        else:
+            emb = _seed_embeddings(*args)
 
-    embed_dim = next(iter(per_graph_embeds.values())).shape[1]
+        chunk_sample_idx.append(torch.tensor(samples, dtype=torch.long, device=device))
+        chunk_embs.append(emb)
+
+    embed_dim = 3 * gnn.n_hidden
     sample_embeds = torch.zeros(n_samples, embed_dim, device=device)
-
-    if valid_samples:
-        valid_idx = torch.tensor(valid_samples, dtype=torch.long, device=device)
-        # stack keeps gradient flow through each per_graph_embeds slice
-        valid_embs = torch.stack([
-            per_graph_embeds[sample_graph_idx[i]][sample_edge_pos[i]]
-            for i in valid_samples
-        ])  # [n_valid, embed_dim]
-        sample_embeds = sample_embeds.index_put((valid_idx,), valid_embs)
+    if chunk_embs:
+        sample_embeds = sample_embeds.index_put(
+            (torch.cat(chunk_sample_idx),), torch.cat(chunk_embs)
+        )
 
     preds_tensor = gnn.mlp(sample_embeds)
     true_y_tensor = torch.tensor(true_y, dtype=torch.long, device=device)

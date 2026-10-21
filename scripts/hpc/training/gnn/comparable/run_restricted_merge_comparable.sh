@@ -24,13 +24,16 @@ PARTITION="gpu_a100"
 CPUS="16"
 MEM="88G"
 GPUS="1"
-TIME="36:00:00"
+# Capped for an overnight timing probe: read epoch durations from the
+# timestamps on the per-epoch "Vali F1" lines in the log, then decide on a full run.
+TIME="12:00:00"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
 
 CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
-conda activate multignn_hpc"
+conda activate multignn_hpc
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
 
 BASE_FLAGS="--fl_algo RestrictedMerge --model GINe --size small --ir HI \
 --batching --ibm_hp --emlps --eval_mode comparable \
