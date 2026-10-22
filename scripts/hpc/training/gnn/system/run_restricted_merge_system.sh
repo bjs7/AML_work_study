@@ -22,9 +22,8 @@ PARTITION="gpu_h100"
 CPUS="16"
 MEM="182G"
 GPUS="1"
-# Capped for an overnight timing probe: read epoch durations from the
-# timestamps on the per-epoch "Vali F1" lines in the log, then decide on a full run.
-TIME="12:00:00"
+# Measured ~2h26 per epoch (2h05 train + 17 min vali) + ~35 min setup/test → ~50 h for 20 rounds.
+TIME="60:00:00"
 
 PYTHON_CMD="python $VSC_DATA/AML_work_study/AML_work_study/main.py"
 

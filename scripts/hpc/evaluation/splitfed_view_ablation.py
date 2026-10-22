@@ -14,9 +14,16 @@ regular [s | 0] input in every condition and are flagged with is_intra. All thre
 conditions share the same sampled test subgraphs, so differences are purely due
 to the missing view.
 
-Output per seed, kept apart from the training output (seed_k/ is never written to):
-    <run_dir>/evaluation/seed_k/predictions_evalseed{S}.pkl   (DataFrame indexed by global transaction ID)
-    <run_dir>/evaluation/seed_k/eval_config_evalseed{S}.json  (source model, seeds, flags, date)
+Output, in the training format and kept apart from the training output
+(the run's own seed_k/ folders are never written to):
+    <run_dir>/evaluation/experiment_config.json        training-style config + evaluation block
+    <run_dir>/evaluation/aggregated_results.json       {condition: aggregated metrics across seeds}
+    <run_dir>/evaluation/<condition>/aggregated_results.json
+    <run_dir>/evaluation/<condition>/seed_k/metrics_laundering_values.pkl
+Each condition folder can be loaded like a training run; laundering_values has extra
+is_intra / has_sender / has_receiver columns. No hyperparameters, tuning configs or
+model weights are written (they belong to the training run). With --eval_seed S the
+root is evaluation_evalseed{S}/ instead.
 Pass the same model flags as the training run, e.g.
 
     python scripts/hpc/evaluation/splitfed_view_ablation.py \
@@ -56,7 +63,9 @@ from federated_learning.fl_base import Manager
 import federated_learning.fl_algos  # noqa: F401 — registers FL algorithms
 import models.gnn_models  # noqa: F401 — registers GNN architectures
 from federated_learning.gnn.splitfed.forward import build_view_embeddings
+from federated_learning.gnn.fedgraph import training_utils
 from inference import probs_to_binary
+from result_io.save_results import aggregate_seed_results, create_experiment_config
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +139,45 @@ def _summary(df):
     return pd.DataFrame(rows)
 
 
+def _save_seed(seed_dir, cond, preds, laundering_values_test, model_path, seed, eval_seed):
+    """Write one condition's seed result in the training format (metrics_laundering_values.pkl)."""
+    lv = laundering_values_test.copy()
+    if 'indices' in lv.columns:
+        lv = lv.set_index('indices', drop=False).loc[preds.index].reset_index(drop=True)
+    lv['true_y'] = preds['true_y'].values
+    lv['pred_probabilities'] = preds[f'prob_{cond}'].values
+    lv['pred_label'] = preds[f'pred_{cond}'].values
+    for col in ('is_intra', 'has_sender', 'has_receiver'):
+        lv[col] = preds[col].values
+
+    metrics = training_utils.compute_final_metrics_from_preds(
+        preds['true_y'].values, preds[f'prob_{cond}'].values)
+
+    seed_dir.mkdir(parents=True, exist_ok=True)
+    with open(seed_dir / 'metrics_laundering_values.pkl', 'wb') as f:
+        pickle.dump({'metrics': metrics, 'laundering_values': lv, 'condition': cond,
+                     'model_path': str(model_path), 'training_seed': seed, 'eval_seed': eval_seed}, f)
+
+
+def _aggregate(out_root):
+    """(Re)build aggregated_results.json from every seed present, so seeds run as
+    separate jobs are all included by whichever job finishes last."""
+    combined = {}
+    for cond in CONDITIONS:
+        results = {}
+        for pkl in sorted((out_root / cond).glob('seed_*/metrics_laundering_values.pkl')):
+            with open(pkl, 'rb') as f:
+                results[int(pkl.parent.name.split('_')[1])] = {'metrics': pickle.load(f)['metrics']}
+        if not results:
+            continue
+        agg = aggregate_seed_results(results)
+        (out_root / cond / 'aggregated_results.json').write_text(json.dumps(agg, indent=4, default=float))
+        combined[cond] = agg
+        logger.info("%s: mean F1 %.4f (±%.4f) over seeds %s",
+                    cond, agg['f1']['mean'], agg['f1']['std'], sorted(results))
+    (out_root / 'aggregated_results.json').write_text(json.dumps(combined, indent=4, default=float))
+
+
 def main():
     utils.logger_setup()
     run_dir = Path(_args.run_dir)
@@ -149,6 +197,26 @@ def main():
 
     batching_mode = getattr(parsers['data_parser'], 'batching_mode', 'neighbor_sample')
 
+    # A non-default sampling seed gets its own folder so it never overwrites the main evaluation.
+    out_root = run_dir / ('evaluation' if _args.eval_seed is None else f'evaluation_evalseed{_args.eval_seed}')
+    out_root.mkdir(parents=True, exist_ok=True)
+    config = create_experiment_config(manager)
+    config['evaluation'] = {
+        'type': 'test-time view ablation (no training)',
+        'source_run_dir': str(run_dir),
+        'source_models': {s: str(p) for s, p in seed_dirs.items()},
+        'conditions': list(CONDITIONS),
+        'eval_seed': _args.eval_seed if _args.eval_seed is not None else 'training seed',
+        'argv': sys.argv[1:],
+        'created': datetime.now().isoformat(timespec='seconds'),
+    }
+    (out_root / 'experiment_config.json').write_text(json.dumps(config, indent=4, default=str))
+    for cond in CONDITIONS:   # so each condition folder loads like a training run
+        (out_root / cond).mkdir(exist_ok=True)
+        cond_config = copy.deepcopy(config)
+        cond_config['evaluation']['condition'] = cond
+        (out_root / cond / 'experiment_config.json').write_text(json.dumps(cond_config, indent=4, default=str))
+
     for seed, model_path in seed_dirs.items():
         eval_seed = _args.eval_seed if _args.eval_seed is not None else seed
         logger.info("Seed %d: loading %s (eval_seed=%d)", seed, model_path, eval_seed)
@@ -163,27 +231,18 @@ def main():
         preds = _evaluate_views(manager)
         summary = _summary(preds)
 
-        out_dir = run_dir / 'evaluation' / f'seed_{seed}'
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f'predictions_evalseed{eval_seed}.pkl'
-        with open(out_path, 'wb') as f:
-            pickle.dump({'predictions': preds, 'summary': summary,
-                         'model_path': str(model_path), 'eval_seed': eval_seed}, f)
-        (out_dir / f'eval_config_evalseed{eval_seed}.json').write_text(json.dumps({
-            'model_path': str(model_path),
-            'training_seed': seed,
-            'eval_seed': eval_seed,
-            'conditions': list(CONDITIONS),
-            'argv': sys.argv[1:],
-            'created': datetime.now().isoformat(timespec='seconds'),
-        }, indent=4))
+        for cond in CONDITIONS:
+            _save_seed(out_root / cond / f'seed_{seed}', cond, preds, laundering_values_test,
+                       model_path, seed, eval_seed)
 
         original = model_path.parent / 'metrics_laundering_values.pkl'
         if original.exists():
             with open(original, 'rb') as f:
                 logger.info("Seed %d: original test F1 = %s", seed, pickle.load(f)['metrics'].get('f1'))
         logger.info("Seed %d summary:\n%s", seed, summary.to_string(index=False, float_format='%.4f'))
-        logger.info("Saved %s", out_path)
+        logger.info("Seed %d saved under %s/<condition>/seed_%d", seed, out_root, seed)
+
+    _aggregate(out_root)
 
 
 if __name__ == '__main__':

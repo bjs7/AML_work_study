@@ -3,9 +3,10 @@
 # Test-time view ablation for the trained SplitFed system models (evaluation only).
 # Submits one job per seed (1-4) of run 20260712_195549. Each job loads
 # seed_k/model.pth, runs one test pass and scores three conditions
-# (both / sender_only / receiver_only), writing
-#   <RUN_DIR>/evaluation/seed_k/predictions_evalseed{k}.pkl
-#   <RUN_DIR>/evaluation/seed_k/eval_config_evalseed{k}.json
+# (both / sender_only / receiver_only), writing (training format)
+#   <RUN_DIR>/evaluation/<condition>/seed_k/metrics_laundering_values.pkl
+#   <RUN_DIR>/evaluation/<condition>/aggregated_results.json
+#   <RUN_DIR>/evaluation/aggregated_results.json, experiment_config.json
 # =============================================================================
 # Usage:
 #   bash scripts/hpc/evaluation/run_splitfed_view_ablation.sh
@@ -65,4 +66,4 @@ echo '======================================================================'
 done
 
 echo ""
-echo "Submitted ${#SEEDS[@]} jobs. Outputs: $RUN_DIR/evaluation/seed_*/"
+echo "Submitted ${#SEEDS[@]} jobs. Outputs: $RUN_DIR/evaluation/"

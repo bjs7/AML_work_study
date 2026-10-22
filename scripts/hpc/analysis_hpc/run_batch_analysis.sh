@@ -11,7 +11,12 @@
 #
 # To run only one job, comment out the other sbatch block below.
 #
-# Outputs (all in scripts/hpc/analysis_hpc/hpc_output/):
+# Evaluation mode: set EVAL_MODE below or on the command line, e.g.
+#   EVAL_MODE=comparable bash scripts/hpc/analysis_hpc/run_batch_analysis.sh
+# System mode needs its own BATCH_INDICES / SEED_OVERRIDE in batch_viz_hpc.py
+# (_VIZ_PICKS), since batches differ between modes.
+#
+# Outputs (all in scripts/hpc/analysis_hpc/hpc_output/<EVAL_MODE>/):
 #   Tables job:
 #     batch_stats_batch.csv / batch_stats_party.csv   — raw per-batch stats
 #     cone_coverage_combined_{a,b}.{csv,tex}          — Table 1a / 1b
@@ -24,6 +29,7 @@
 #   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh
 # =============================================================================
 
+EVAL_MODE="${EVAL_MODE:-system}"   # comparable | system
 CLUSTER="wice"
 ACCOUNT="lp_aml_work_study"
 PARTITION="batch_icelake"
@@ -41,7 +47,8 @@ mkdir -p "$LOGS"
 
 CONDA_SETUP="export PATH=\$PATH:/data/leuven/362/vsc36278/miniconda3/bin
 source /data/leuven/362/vsc36278/miniconda3/etc/profile.d/conda.sh
-conda activate multignn_hpc"
+conda activate multignn_hpc
+export EVAL_MODE=$EVAL_MODE"
 
 
 # =============================================================================
@@ -49,9 +56,10 @@ conda activate multignn_hpc"
 # Comment out this block to skip the tables job.
 # =============================================================================
 
-JOB_TABLES="aml_batch_tables"
+JOB_TABLES="aml_batch_tables_${EVAL_MODE}"
 SCRIPT_TABLES="$SCRIPT_DIR/batch_tables_hpc.py"
 
+echo "Eval mode:  $EVAL_MODE"
 echo "Submitting tables job: $JOB_TABLES"
 echo "Script:     $SCRIPT_TABLES"
 echo "Resources:  $CPUS_TABLES CPUs · ${MEM} RAM · walltime $TIME_TABLES (CPU only)"
@@ -94,9 +102,10 @@ exit \$EXIT_CODE
 # submitting, or set them from the batch scanner in batch_viz_explore_nb.py.
 # =============================================================================
 
-JOB_VIZ="aml_batch_viz"
+JOB_VIZ="aml_batch_viz_${EVAL_MODE}"
 SCRIPT_VIZ="$SCRIPT_DIR/batch_viz_hpc.py"
 
+echo "Eval mode:  $EVAL_MODE"
 echo "Submitting viz job: $JOB_VIZ"
 echo "Script:     $SCRIPT_VIZ"
 echo "Resources:  $CPUS_VIZ CPUs · ${MEM} RAM · walltime $TIME_VIZ (CPU only)"

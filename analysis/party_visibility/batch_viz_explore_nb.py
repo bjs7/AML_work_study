@@ -792,57 +792,49 @@ print(f"Saved: {_VIZ_CELL2}")
 # ===== CELL 3: MP CONE — PARTY COLOURED =====================
 # ==============================================================
 
+# Sized for the paper: shown at text width (~6.3 in), so the canvas is kept small
+# and fonts large enough to stay readable after scaling.
 _VIZ_CELL3 = os.path.join(OUTPUT_DIR, f'batch_viz_cell3_mp_cone{OUTPUT_SUFFIX}.pdf')
-
-fig, axes = plt.subplots(1, _N, figsize=(13 * _N, 14))
+fig, axes = plt.subplots(1, _N, figsize=(6.5 * _N, 6.5))
 if _N == 1: axes = [axes]
-
 for ax, bd in zip(axes, _batches):
     G_cone   = bd['G_cone']
     pos_cone = bd['pos_cone']
     fill     = bd['fill']
     seed_src = bd['seed_src']
     seed_dst = bd['seed_dst']
-
     _nc, _ns, _nec, _nlw = [], [], [], []
     for _n in G_cone.nodes():
         if _n == seed_src:
-            _nc.append(_C2_SEED); _ns.append(280)
-            _nec.append(_C2_A);   _nlw.append(2.5)
+            _nc.append(_C2_SEED); _ns.append(90)
+            _nec.append(_C2_A);   _nlw.append(1.5)
         elif _n == seed_dst:
-            _nc.append(_C2_SEED); _ns.append(280)
-            _nec.append(_C2_B);   _nlw.append(2.5)
+            _nc.append(_C2_SEED); _ns.append(90)
+            _nec.append(_C2_B);   _nlw.append(1.5)
         else:
-            _nc.append(fill(_n)); _ns.append(130)
-            _nec.append('#2c3e50'); _nlw.append(0.5)
-
+            _nc.append(fill(_n)); _ns.append(35)
+            _nec.append('#2c3e50'); _nlw.append(0.3)
     nx.draw_networkx_nodes(G_cone, pos_cone, ax=ax,
                            node_color=_nc, node_size=_ns,
                            edgecolors=_nec, linewidths=_nlw)
     nx.draw_networkx_edges(G_cone, pos_cone, ax=ax,
-                           edge_color='#5d6d7e', width=2.0,
+                           edge_color='#5d6d7e', width=0.8,
                            arrows=True, alpha=0.8,
-                           connectionstyle='arc3,rad=0.08', arrowsize=20)
-    ax.legend(handles=[
-        mpatches.Patch(color=_C2_A,    label=bd["pa_label"]),
-        mpatches.Patch(color=_C2_B,    label=bd["pb_label"]),
-        mpatches.Patch(color=_C2_BOTH, label='Both parties'),
-        mpatches.Patch(color=_C2_NONE, label='Neither party'),
-        mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_A, linewidth=2,
-                       label=f'Seed src ({bd["pa_label"]})'),
-        mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_B, linewidth=2,
-                       label=f'Seed dst ({bd["pb_label"]})'),
-    ], loc='upper right', fontsize=14, handlelength=2, handleheight=1.2)
+                           connectionstyle='arc3,rad=0.08', arrowsize=8)
     ax.set_title(
-        f'{bd["batch_label"]} — {G_cone.number_of_nodes()} nodes · '
-        f'{G_cone.number_of_edges()} edges\n'
-        f'seed {bd["seed_gid"]}: {bd["pa_label"]} → {bd["pb_label"]}  '
-        f'(laundering={bd["is_laundering"]})',
+        f'{bd["batch_label"]}: {G_cone.number_of_nodes()} accounts, '
+        f'{G_cone.number_of_edges()} transactions',
         fontsize=17,
     )
     ax.axis('off')
-
-fig.suptitle(f'Cell 3: {_K_HOPS}-hop MP cone — party colours', fontsize=17)
+fig.legend(handles=[
+    mpatches.Patch(color=_C2_A,    label='Sender bank'),
+    mpatches.Patch(color=_C2_B,    label='Receiver bank'),
+    mpatches.Patch(color=_C2_BOTH, label='Both banks'),
+    mpatches.Patch(color=_C2_NONE, label='Neither bank'),
+    mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_A, linewidth=1.5, label='Seed sender account'),
+    mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_B, linewidth=1.5, label='Seed receiver account'),
+], loc='lower center', ncol=3, fontsize=15, frameon=False, bbox_to_anchor=(0.5, -0.08))
 plt.tight_layout()
 plt.savefig(_VIZ_CELL3, bbox_inches='tight', dpi=200)
 plt.show()

@@ -50,7 +50,9 @@ _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 N_BATCHES         = None   # None = all batches
 N_CONE_SAMPLE_MAX = 200    # cone BFS samples per batch; None = all seed edges (very slow)
 
-_EVAL_MODE = 'comparable'  # 'comparable' | 'system' — drives output subdir + _ARGS
+# Set from run_batch_analysis.sh via the EVAL_MODE environment variable.
+_EVAL_MODE = os.environ.get('EVAL_MODE', 'comparable')  # 'comparable' | 'system' — drives output subdir + _ARGS
+assert _EVAL_MODE in ('comparable', 'system'), f"EVAL_MODE must be 'comparable' or 'system', got {_EVAL_MODE!r}"
 
 HPC_OUTPUT_DIR = os.path.join(_SCRIPT_DIR, 'hpc_output', _EVAL_MODE)
 os.makedirs(HPC_OUTPUT_DIR, exist_ok=True)
