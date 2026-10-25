@@ -11,8 +11,9 @@
 #
 # To run only one job, comment out the other sbatch block below.
 #
-# Evaluation mode: set EVAL_MODE below or on the command line, e.g.
-#   EVAL_MODE=comparable bash scripts/hpc/analysis_hpc/run_batch_analysis.sh
+# Evaluation mode: pass it as the first argument (default: system), e.g.
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh comparable
 # System mode needs its own BATCH_INDICES / SEED_OVERRIDE in batch_viz_hpc.py
 # (_VIZ_PICKS), since batches differ between modes.
 #
@@ -26,16 +27,31 @@
 #
 # Usage:
 #   cd $VSC_DATA/AML_work_study/AML_work_study
-#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh [system|comparable]
 # =============================================================================
 
-EVAL_MODE="${EVAL_MODE:-system}"   # comparable | system
+EVAL_MODE="${1:-system}"
+if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]]; then
+    echo "Usage: bash run_batch_analysis.sh [system|comparable]  (got: '$EVAL_MODE')" >&2
+    exit 1
+fi
 CLUSTER="wice"
 ACCOUNT="lp_aml_work_study"
-PARTITION="batch_icelake"
-CPUS_TABLES="32"   # tables iterates all batches; more threads helps loader
-CPUS_VIZ="16"     # viz loads a handful of batches; 16 is enough
-MEM="64G"
+if [[ "$EVAL_MODE" == "system" ]]; then
+    # System sets up all ~30.5k banks; at 64G it ran out after ~20k, which scales
+    # to ~100G for the full setup. 160G leaves room for what runs after setup.
+    # Memory on batch_icelake is tied to cores (3400 MiB each): 50 x 3400 MiB ~ 166 GiB.
+    # Max on this partition is a full node (72 cores, ~230G); beyond that use bigmem.
+    PARTITION="batch_icelake"
+    CPUS_TABLES="50"
+    CPUS_VIZ="50"
+    MEM="160G"
+else
+    PARTITION="batch_icelake"
+    CPUS_TABLES="32"   # tables iterates all batches; more threads helps loader
+    CPUS_VIZ="16"     # viz loads a handful of batches; 16 is enough
+    MEM="64G"
+fi
 TIME_TABLES="24:00:00"
 TIME_VIZ="06:00:00"
 
@@ -62,7 +78,7 @@ SCRIPT_TABLES="$SCRIPT_DIR/batch_tables_hpc.py"
 echo "Eval mode:  $EVAL_MODE"
 echo "Submitting tables job: $JOB_TABLES"
 echo "Script:     $SCRIPT_TABLES"
-echo "Resources:  $CPUS_TABLES CPUs · ${MEM} RAM · walltime $TIME_TABLES (CPU only)"
+echo "Resources:  $CPUS_TABLES CPUs · ${MEM} RAM · walltime $TIME_TABLES · partition $PARTITION"
 echo ""
 
 sbatch \
@@ -108,7 +124,7 @@ SCRIPT_VIZ="$SCRIPT_DIR/batch_viz_hpc.py"
 echo "Eval mode:  $EVAL_MODE"
 echo "Submitting viz job: $JOB_VIZ"
 echo "Script:     $SCRIPT_VIZ"
-echo "Resources:  $CPUS_VIZ CPUs · ${MEM} RAM · walltime $TIME_VIZ (CPU only)"
+echo "Resources:  $CPUS_VIZ CPUs · ${MEM} RAM · walltime $TIME_VIZ · partition $PARTITION"
 echo ""
 
 sbatch \
@@ -142,7 +158,7 @@ exit \$EXIT_CODE
 
 
 echo ""
-echo "Both jobs submitted (CPU-only, batch_icelake). Monitor with:"
+echo "Both jobs submitted (CPU-only, $PARTITION). Monitor with:"
 echo "  squeue -u \$USER -M $CLUSTER"
 echo "  tail -f $LOGS/${JOB_TABLES}_<JOBID>.log"
 echo "  tail -f $LOGS/${JOB_VIZ}_<JOBID>.log"

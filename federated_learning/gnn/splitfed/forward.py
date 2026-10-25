@@ -17,11 +17,11 @@ _collect_embeddings_batched:    merges all party subgraphs into one PyG
     Batch (disconnected union — no cross-party message passing) and runs
     a single GNN kernel for all parties at once.
 
-BatchNorm note: in train mode BatchNorm computes per-batch statistics.
-Sequential mode normalises per-party; batched mode normalises across all
-parties combined. In eval mode both are identical (running stats used).
-The vertical forward pass is inference, so the model should be in eval
-mode during these calls; the test enforces this explicitly.
+Normalisation note: GINe uses PyG graph-mode LayerNorm, whose mean/std are
+computed over every node in a call. The batched path passes the Batch's
+graph-membership vector so statistics are computed per party subgraph, which
+makes it equal to the sequential path. Runs trained with the batched path
+before this fix (from 2026-09-01) shared one mean/std across all parties.
 """
 
 import numpy as np
@@ -114,8 +114,11 @@ def _collect_embeddings_batched(batch_banks, batch_data, device, dp_clip, dp_noi
     gnn = batch_data[batch_banks[0]][0].model.gnn
     embeddings = gnn.emed_features(combined.x, combined.edge_attr)
     for layer_idx in range(gnn.num_gnn_layers):
+        # batch=combined.batch: LayerNorm statistics per party subgraph, as in the
+        # sequential path, so no party's normalisation depends on other parties.
         embeddings = gnn.apply_gnn_layer(
-            embeddings['nodes'], embeddings['edges'], combined.edge_index, layer_idx
+            embeddings['nodes'], embeddings['edges'], combined.edge_index, layer_idx,
+            batch=combined.batch,
         )
     final_embeddings = gnn.prep_nodes_edges(
         embeddings['nodes'], embeddings['edges'], combined.edge_index

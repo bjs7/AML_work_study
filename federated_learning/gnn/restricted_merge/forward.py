@@ -37,7 +37,16 @@ def _seed_embeddings(gnn, x, edge_attr, edge_index, positions):
     return final[positions]
 
 
-def _build_merged_graph(gdata_a, gdata_b, seed_gids_set):
+def _seed_index(gdata, batch_seed_gids):
+    """{global edge ID: edge position} for the batch's seed edges in one party subgraph.
+    Built once per party per batch (one vectorised scan), so pairs sharing a party reuse
+    it. Small (seeds only), so per-pair lookups are plain dict gets."""
+    gids = gdata.edge_attr[:, 0].long()
+    pos = torch.isin(gids, batch_seed_gids).nonzero(as_tuple=True)[0]
+    return dict(zip(gids[pos].tolist(), pos.tolist()))
+
+
+def _build_merged_graph(gdata_a, gdata_b, pair_seed_gids, index_a, index_b):
     """Merge two party subgraphs via seed-node reconciliation.
 
     For seed transactions shared by both parties, the sender/receiver accounts
@@ -47,16 +56,17 @@ def _build_merged_graph(gdata_a, gdata_b, seed_gids_set):
     Args:
         gdata_a: Party A's GraphData (edge_attr[:,0] = global edge IDs, local node IDs)
         gdata_b: Party B's GraphData (same format) or None
-        seed_gids_set: set of global edge IDs that are seeds for this (A,B) pair
+        pair_seed_gids: list of global edge IDs that are seeds for this (A,B) pair
+        index_a, index_b: _seed_index of A and B (index_b unused when gdata_b is None)
 
     Returns:
         merged: PyG Data for the GNN (global-ID column already stripped)
         seed_pos: dict {global_edge_id: edge_position_in_merged}
     """
+    pa = [index_a.get(g, -1) for g in pair_seed_gids]
+    seed_pos = {g: p for g, p in zip(pair_seed_gids, pa) if p >= 0}
+
     if gdata_b is None:
-        # Only one party has data: use A's subgraph directly
-        a_gids = gdata_a.edge_attr[:, 0].long().tolist()
-        seed_pos = {gid: pos for pos, gid in enumerate(a_gids) if gid in seed_gids_set}
         return Data(
             x=gdata_a.x,
             edge_index=gdata_a.edge_index,
@@ -66,75 +76,77 @@ def _build_merged_graph(gdata_a, gdata_b, seed_gids_set):
 
     N_A = gdata_a.x.shape[0]
     N_B = gdata_b.x.shape[0]
-
-    a_gids = gdata_a.edge_attr[:, 0].long().tolist()
-    b_gids = gdata_b.edge_attr[:, 0].long().tolist()
-
-    # Locate seed edges in each party's edge list
-    a_seed_pos = {gid: pos for pos, gid in enumerate(a_gids) if gid in seed_gids_set}
-    b_seed_pos = {gid: pos for pos, gid in enumerate(b_gids) if gid in seed_gids_set}
+    pb = [index_b.get(g, -1) for g in pair_seed_gids]
+    shared = [(a, b) for a, b in zip(pa, pb) if a >= 0 and b >= 0]
 
     # Default: each B node is a new node offset by N_A
-    b_to_merged = torch.arange(N_B, dtype=torch.long) + N_A
+    b_to_merged = torch.arange(N_A, N_A + N_B, dtype=torch.long)
+    b_keep_mask = torch.ones(gdata_b.edge_index.shape[1], dtype=torch.bool)
 
-    # Reconcile shared seed nodes: B's src/dst → A's src/dst for the same account.
-    # The sender and receiver accounts of the seed transaction are the same physical
-    # accounts in both parties' graphs, just with different local IDs.
-    for gid in seed_gids_set:
-        if gid in a_seed_pos and gid in b_seed_pos:
-            pa, pb = a_seed_pos[gid], b_seed_pos[gid]
-            src_a = int(gdata_a.edge_index[0, pa])
-            dst_a = int(gdata_a.edge_index[1, pa])
-            src_b = int(gdata_b.edge_index[0, pb])
-            dst_b = int(gdata_b.edge_index[1, pb])
-            b_to_merged[src_b] = src_a
-            b_to_merged[dst_b] = dst_a
+    if shared:
+        sa, sb = (torch.tensor(t, dtype=torch.long) for t in zip(*shared))
+        # Reconcile shared seed nodes: B's src/dst → A's src/dst for the same account.
+        # The sender and receiver accounts of the seed transaction are the same physical
+        # accounts in both parties' graphs, just with different local IDs.
+        b_to_merged[gdata_b.edge_index[0, sb]] = gdata_a.edge_index[0, sa]
+        b_to_merged[gdata_b.edge_index[1, sb]] = gdata_a.edge_index[1, sa]
+        # Skip duplicate seed edges already present in A (A's copy is canonical).
+        b_keep_mask[sb] = False
 
     # Compactify: B nodes still at offset (≥ N_A) are genuinely new — renumber them
     # contiguously starting at N_A.
-    is_new_b = b_to_merged >= N_A
-    new_b_indices = is_new_b.nonzero(as_tuple=True)[0]
+    new_b_indices = (b_to_merged >= N_A).nonzero(as_tuple=True)[0]
     n_new_b = len(new_b_indices)
-    b_to_merged[new_b_indices] = torch.arange(n_new_b, dtype=torch.long) + N_A
+    b_to_merged[new_b_indices] = torch.arange(N_A, N_A + n_new_b, dtype=torch.long)
 
-    # Skip duplicate seed edges already present in A (A's copy is canonical).
-    b_dup_mask = torch.zeros(len(b_gids), dtype=torch.bool)
-    for gid in a_seed_pos:
-        if gid in b_seed_pos:
-            b_dup_mask[b_seed_pos[gid]] = True
-    b_keep_mask = ~b_dup_mask
-
-    # Remap kept B edges to merged node IDs
     b_edge_index_remapped = b_to_merged[gdata_b.edge_index[:, b_keep_mask]]
 
-    merged_edge_index = torch.cat([gdata_a.edge_index, b_edge_index_remapped], dim=1)
-    merged_edge_attr = torch.cat([
-        gdata_a.edge_attr[:, 1:],          # strip global-ID col 0
-        gdata_b.edge_attr[b_keep_mask][:, 1:],
-    ], dim=0)
-    merged_x = torch.cat([gdata_a.x, gdata_b.x[new_b_indices]], dim=0)
-    N_merged = N_A + n_new_b
-
     merged = Data(
-        x=merged_x,
-        edge_index=merged_edge_index,
-        edge_attr=merged_edge_attr,
-        num_nodes=N_merged,
+        x=torch.cat([gdata_a.x, gdata_b.x[new_b_indices]], dim=0),
+        edge_index=torch.cat([gdata_a.edge_index, b_edge_index_remapped], dim=1),
+        edge_attr=torch.cat([
+            gdata_a.edge_attr[:, 1:],          # strip global-ID col 0
+            gdata_b.edge_attr[b_keep_mask][:, 1:],
+        ], dim=0),
+        num_nodes=N_A + n_new_b,
     )
 
-    # Seed edge positions: A's edges occupy positions 0..len(a_gids)-1 in merged.
-    seed_pos = {}
-    n_a_edges = len(a_gids)
-    for gid in seed_gids_set:
-        if gid in a_seed_pos:
-            seed_pos[gid] = a_seed_pos[gid]
-        elif gid in b_seed_pos:
-            # Seed is only in B (rare); find its position among the kept B edges
-            b_pos = b_seed_pos[gid]
-            pos_in_kept_b = int(b_keep_mask[:b_pos].sum().item())
-            seed_pos[gid] = n_a_edges + pos_in_kept_b
+    # Seed edge positions: A's edges come first; a seed only in B (rare) sits at its
+    # rank among the kept B edges, after all of A's edges.
+    only_b = [(g, b) for g, a, b in zip(pair_seed_gids, pa, pb) if a < 0 and b >= 0]
+    if only_b:
+        n_a_edges = gdata_a.edge_index.shape[1]
+        kept_rank = torch.cumsum(b_keep_mask, 0) - 1
+        for g, b in only_b:
+            seed_pos[g] = n_a_edges + int(kept_rank[b])
 
     return merged, seed_pos
+
+
+def _pair_inputs(batch_df, batch_data):
+    """Group batch seeds by (From Bank, To Bank) pair.
+
+    Yields (seed_list, (bank_a, graph_a), (bank_b, graph_b) or None) per pair, where
+    seed_list is [(sample_position, global_edge_id), ...]. Intra-bank pairs and pairs
+    where only one bank has data yield B as None; A is always the bank with data.
+    """
+    from_banks = batch_df['From Bank'].values.astype(int)
+    to_banks = batch_df['To Bank'].values.astype(int)
+    seed_gids = batch_df.index.values.astype(int)
+
+    pair_to_seeds = {}
+    for i, (fb, tb, gid) in enumerate(zip(from_banks, to_banks, seed_gids)):
+        pair_to_seeds.setdefault((int(fb), int(tb)), []).append((i, int(gid)))
+
+    for (bank_a, bank_b), seed_list in pair_to_seeds.items():
+        entry_a = batch_data.get(bank_a)
+        entry_b = batch_data.get(bank_b) if bank_b != bank_a else None
+        if entry_a is None:
+            entry_a, bank_a, entry_b = entry_b, bank_b, None
+        if entry_a is None:
+            continue
+        yield (seed_list, (bank_a, entry_a[1]),
+               (bank_b, entry_b[1]) if entry_b is not None else None)
 
 
 def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_data):
@@ -158,46 +170,27 @@ def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_d
     """
     device = manager.device
     batch_df = manager.ctx[mode][batch_num]['batch_labels']
-    from_banks = batch_df['From Bank'].values.astype(int)
-    to_banks = batch_df['To Bank'].values.astype(int)
     true_y = batch_df['Is Laundering'].values
-    seed_gids = batch_df.index.values.astype(int)
     n_samples = len(batch_df)
-
-    # Group seeds by (from_bank, to_bank) pair
-    pair_to_seeds = {}
-    for i, (fb, tb, gid) in enumerate(zip(from_banks, to_banks, seed_gids)):
-        pair = (int(fb), int(tb))
-        if pair not in pair_to_seeds:
-            pair_to_seeds[pair] = []
-        pair_to_seeds[pair].append((i, int(gid)))
+    batch_seed_gids = torch.as_tensor(batch_df.index.values.astype('int64'))
 
     # Build one merged graph per pair; record where each seed ends up
     merged_graphs = []
     sample_graph_idx = [-1] * n_samples
     sample_edge_pos = [-1] * n_samples
+    seed_indices = {}   # bank -> _seed_index, shared by every pair the bank is in
 
-    for (bank_a, bank_b), seed_list in pair_to_seeds.items():
-        entry_a = batch_data.get(bank_a)
-        entry_b = batch_data.get(bank_b)
+    def index_of(bank, graph):
+        if bank not in seed_indices:
+            seed_indices[bank] = _seed_index(graph, batch_seed_gids)
+        return seed_indices[bank]
 
-        if entry_a is None and entry_b is None:
-            continue
-
-        # Unpack (party, GraphData) tuples
-        raw_a = entry_a[1] if entry_a is not None else None
-        raw_b = entry_b[1] if entry_b is not None else None
-
-        # Intra-bank: sender and receiver are the same party — don't double-count
-        if bank_a == bank_b:
-            raw_b = None
-
-        # Ensure raw_a is the canonical primary subgraph
-        if raw_a is None:
-            raw_a, raw_b = raw_b, None
-
-        seed_gids_set = {gid for _, gid in seed_list}
-        merged, seed_pos = _build_merged_graph(raw_a, raw_b, seed_gids_set)
+    for seed_list, (bank_a, raw_a), b in _pair_inputs(batch_df, batch_data):
+        raw_b = b[1] if b is not None else None
+        index_b = index_of(*b) if b is not None else None
+        pair_seed_gids = [gid for _, gid in seed_list]
+        merged, seed_pos = _build_merged_graph(
+            raw_a, raw_b, pair_seed_gids, index_of(bank_a, raw_a), index_b)
 
         graph_idx = len(merged_graphs)
         merged_graphs.append(merged)

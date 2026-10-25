@@ -52,11 +52,10 @@ Usage
       --batching --batching_mode lazy_link_neighbor --eval_mode system \\
       --n_benchmark_epochs 5
 
-  # SplitFed vs RestrictedMerge, 30 train + 30 vali batches each:
-  python scripts/hpc/benchmark/gnn/benchmark_timing_comparison.py \\
-      --fl_algo SplitFed RestrictedMerge --size small --ir HI --ibm_hp --emlps \\
-      --batching --batching_mode lazy_link_neighbor --eval_mode system \\
-      --n_benchmark_epochs 1 --n_benchmark_batches 30
+This file is also the shared core (timer, timing hooks, epoch loop, report,
+run_benchmark) imported by the per-algorithm entry scripts:
+  benchmark_timing_splitfed.py          + batched-vs-sequential equivalence check
+  benchmark_timing_restricted_merge.py  + merge-graph-build timing
 
 Benchmark-only flags (not forwarded to main parsers):
   --n_benchmark_epochs N    training epochs to time  (default: 5)
@@ -74,12 +73,11 @@ _hpc_repo = '/data/leuven/362/vsc36278/AML_work_study/AML_work_study'
 if os.path.exists(_hpc_repo):
     sys.path.insert(0, _hpc_repo)
 else:
-    sys.path.insert(0, os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    # repo root: scripts/hpc/benchmark/gnn/<this file> -> 4 levels up
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')))
 
 import argparse
 import time
-import tracemalloc
 import copy
 import logging
 from collections import defaultdict
@@ -106,14 +104,10 @@ _bench_parser.add_argument('--n_benchmark_batches', type=int, default=0,
                             help='Time only this many train (and vali) batches per epoch; '
                                  '0 = full epochs. Full-epoch times are extrapolated.')
 _bench_parser.add_argument('--n_explicit_batches',  type=int, default=20)
-_bench_parser.add_argument('--check_norm_coupling', type=int, default=0,
-                            help='SplitFed only: compare batched (LayerNorm stats over all parties) vs '
-                                 'sequential (per-party stats) forward on N vali batches')
-_bench_parser.add_argument('--load_weights', type=str, default=None,
-                            help='model.pth to load before the norm-coupling check (e.g. a trained SplitFed seed)')
 _bench_parser.add_argument('--fl_algo', nargs='+', default=['SplitFed'],
-                            help='One or more of FedGraph, SplitFed, RestrictedMerge, FedAvgSplit; '
-                                 'or "all" (FedGraph + SplitFed)')
+                            help='One or more of FedGraph, SplitFed, FedAvgSplit; or "all" '
+                                 '(FedGraph + SplitFed). For SplitFed / RestrictedMerge breakdowns use '
+                                 'benchmark_timing_splitfed.py / benchmark_timing_restricted_merge.py')
 _bench_args, _ = _bench_parser.parse_known_args()
 
 
@@ -147,7 +141,9 @@ class SectionTimer:
     def per_batch_ms(self, name: str, split: str = 'train') -> float:
         """Total time in a section divided by batches — sections may fire many times per batch."""
         n = self.n_batches[split]
-        return float(np.sum(self.times.get(name, []))) * 1000 / n if n else float('nan')
+        if not n or name not in self.times:   # section never ran (e.g. merge build for SplitFed)
+            return float('nan')
+        return float(np.sum(self.times[name])) * 1000 / n
 
     def n(self, name: str) -> int:
         return len(self.times.get(name, []))
@@ -167,7 +163,6 @@ _phase: str = 'fwd'
 from models.gnn_models import GINe
 import federated_learning.gnn.fedgraph.forward   as _fg_fwd_mod
 import federated_learning.gnn.splitfed.forward   as _fs_fwd_mod
-import federated_learning.gnn.restricted_merge.forward as _rm_fwd_mod
 import federated_learning.gnn.fedgraph.batching  as _fg_bat_mod
 import federated_learning.gnn.splitfed.batching  as _fs_bat_mod
 import federated_learning.gnn.federated_manager  as _mgr_mod
@@ -177,8 +172,6 @@ _orig_apply    = GINe.apply_gnn_layer
 _orig_prep     = GINe.prep_nodes_edges
 _orig_fg_fwd   = _fg_fwd_mod.forward_pass
 _orig_fs_fwd   = _fs_fwd_mod.forward_pass_splitfed
-_orig_rm_fwd   = _rm_fwd_mod.forward_pass_restricted_merge
-_orig_rm_merge = _rm_fwd_mod._build_merged_graph
 _orig_fg_bat   = _fg_bat_mod.process_lazy_batch
 _orig_fs_bat   = _fs_bat_mod.process_lazy_batch_splitfed
 
@@ -200,17 +193,6 @@ def _t_prep(self, *a, **kw):
     t = _active_timer
     if t is None: return _orig_prep(self, *a, **kw)
     with t.section(_gnn_section()): return _orig_prep(self, *a, **kw)
-
-def _t_rm_fwd(manager, mode, batch_num, batch_banks, batch_data):
-    t = _active_timer
-    if t is None: return _orig_rm_fwd(manager, mode, batch_num, batch_banks, batch_data)
-    with t.section('forward_total'):
-        return _orig_rm_fwd(manager, mode, batch_num, batch_banks, batch_data)
-
-def _t_rm_merge(*a, **kw):
-    t = _active_timer
-    if t is None: return _orig_rm_merge(*a, **kw)
-    with t.section('rm_merge_build'): return _orig_rm_merge(*a, **kw)
 
 def _t_fg_fwd(*a, **kw):
     t = _active_timer
@@ -241,8 +223,6 @@ GINe.prep_nodes_edges = _t_prep
 
 _fg_fwd_mod.forward_pass              = _t_fg_fwd
 _fs_fwd_mod.forward_pass_splitfed       = _t_fs_fwd
-_rm_fwd_mod.forward_pass_restricted_merge = _t_rm_fwd
-_rm_fwd_mod._build_merged_graph       = _t_rm_merge
 _fg_bat_mod.process_lazy_batch        = _t_fg_bat
 _fs_bat_mod.process_lazy_batch_splitfed = _t_fs_bat
 # Patch names referenced inside _iter_batches in federated_manager's namespace
@@ -608,56 +588,6 @@ def report(timer: SectionTimer, algo: str, full_train_batches: int, full_vali_ba
 
 
 # ---------------------------------------------------------------------------
-# LayerNorm coupling check (SplitFed)
-#
-# PyG LayerNorm(mode='graph') called without a batch vector normalises over every
-# node in the call. The batched path puts all parties in one call, so each party's
-# normalisation sees the other parties' nodes; the sequential path is per party,
-# which is what a real deployment would compute. Same model, same batches.
-# ---------------------------------------------------------------------------
-
-def run_norm_coupling_check(manager, n_batches: int, load_weights: str | None):
-    from sklearn.metrics import f1_score
-    if load_weights:
-        manager.model.gnn.load_state_dict(torch.load(load_weights, map_location=manager.device))
-    manager.model.gnn.eval()
-    mlp_vert = manager.model.gnn.mlp_vert
-
-    rel_diffs, prob_b, prob_s, labels = [], [], [], []
-    with torch.no_grad():
-        for i, (batch_key, batch_banks, batch_data) in enumerate(manager._iter_batches('vali', batching=True)):
-            if i >= n_batches:
-                break
-            views = {}
-            for use_batched in (True, False):   # batched first: sequential moves party data to device in place
-                v = _fs_fwd_mod.build_view_embeddings(
-                    manager, 'vali', batch_key, batch_banks, batch_data, use_batched)
-                emb = torch.cat([v['from_embeds'], v['to_embeds']], dim=1)
-                views[use_batched] = (emb, torch.softmax(mlp_vert(emb), dim=1)[:, 1])
-            (e_b, p_b), (e_s, p_s) = views[True], views[False]
-            nz = e_s.norm(dim=1) > 0
-            rel_diffs.append(((e_b - e_s).norm(dim=1)[nz] / e_s.norm(dim=1)[nz]).cpu().numpy())
-            prob_b.append(p_b.cpu().numpy()); prob_s.append(p_s.cpu().numpy())
-            labels.append(np.asarray(v['true_y'], dtype=int))
-
-    rel = np.concatenate(rel_diffs); pb = np.concatenate(prob_b); ps = np.concatenate(prob_s)
-    y = np.concatenate(labels)
-    flips = (pb > 0.5) != (ps > 0.5)
-    print(f"\n{'='*74}")
-    print(f"  LayerNorm coupling check — batched (all parties) vs sequential (per party)")
-    print(f"  {len(y)} transactions over {min(n_batches, len(rel_diffs))} vali batches, "
-          f"{int(y.sum())} illicit, weights: {load_weights or 'benchmark-trained'}")
-    print(f"{'='*74}")
-    print(f"  embedding relative diff   mean {rel.mean():.4f}   median {np.median(rel):.4f}   max {rel.max():.4f}")
-    print(f"  probability abs diff      mean {np.abs(pb - ps).mean():.6f}   max {np.abs(pb - ps).max():.6f}")
-    print(f"  predicted label flips     {int(flips.sum())} of {len(y)}  ({flips.mean():.4%}), "
-          f"of which illicit: {int((flips & (y == 1)).sum())}")
-    print(f"  F1 batched {f1_score(y, pb > 0.5, zero_division=0):.4f}   "
-          f"F1 sequential {f1_score(y, ps > 0.5, zero_division=0):.4f}")
-    print(f"{'='*74}\n", flush=True)
-
-
-# ---------------------------------------------------------------------------
 # Setup one manager
 # ---------------------------------------------------------------------------
 
@@ -680,7 +610,9 @@ def setup_manager(parsers, df, scaler_encoders, laundering_values_vali,
 # Main
 # ---------------------------------------------------------------------------
 
-def main():
+def run_benchmark(algos, after_report=None):
+    """Load data once, then time each algorithm. after_report(manager, algo) runs
+    algorithm-specific extras (e.g. the SplitFed equivalence check) after the report."""
     utils.logger_setup()
     logging.getLogger().setLevel(logging.WARNING)
 
@@ -692,7 +624,6 @@ def main():
     lv_vali, lv_test = dfn.prep_laundering_dfs(
         parsers['data_parser'], {'regular_data': copy.deepcopy(df['regular_data'])})
 
-    algos = ['FedGraph', 'SplitFed'] if _bench_args.fl_algo == ['all'] else _bench_args.fl_algo
     max_batches = _bench_args.n_benchmark_batches
 
     for algo in algos:
@@ -711,13 +642,11 @@ def main():
 
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
+        # No tracemalloc here: it records every Python allocation and inflated the
+        # Python-heavy sections (merge build, assembly) several-fold.
         timer = SectionTimer()
-        tracemalloc.start()
         run_epochs(manager, timer, n_epochs, max_batches)
-        current_mem, peak_mem = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
         peak_gpu_gb = torch.cuda.max_memory_allocated() / 1e9 if torch.cuda.is_available() else float('nan')
-        print(f"  Memory — current: {current_mem/1e6:.1f} MB  peak: {peak_mem/1e6:.1f} MB")
 
         # Explicit-backward mini-benchmark (FedAvgSplit only — clean split boundary)
         explicit_bwd = None
@@ -729,12 +658,17 @@ def main():
         report(timer, algo, manager.ctx['train']['num_batches'], manager.ctx['vali']['num_batches'],
                n_epochs, num_rounds, explicit_bwd, peak_gpu_gb)
 
-        if algo == 'SplitFed' and _bench_args.check_norm_coupling > 0:
-            run_norm_coupling_check(manager, _bench_args.check_norm_coupling, _bench_args.load_weights)
+        if after_report is not None:
+            after_report(manager, algo)
 
         del manager
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+
+
+def main():
+    algos = ['FedGraph', 'SplitFed'] if _bench_args.fl_algo == ['all'] else _bench_args.fl_algo
+    run_benchmark(algos)
 
 
 if __name__ == '__main__':

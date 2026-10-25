@@ -49,9 +49,15 @@ class GINe(torch.nn.Module):
         edges = self.edge_emb(edges)
         return {'nodes': nodes, 'edges': edges}
     
-    def apply_gnn_layer(self, nodes, edges, edge_index, layer_idx):
+    def apply_gnn_layer(self, nodes, edges, edge_index, layer_idx, batch=None):
+        """batch: graph-membership vector for several disconnected graphs in one call.
+        Graph-mode LayerNorm then normalises each graph separately; with batch=None
+        all nodes in the call share one mean/std."""
         src, dst = edge_index
-        nodes = (nodes + F.relu(self.batch_norms[layer_idx](self.convs[layer_idx](nodes, edge_index, edges)))) / 2
+        h = self.convs[layer_idx](nodes, edge_index, edges)
+        norm = self.batch_norms[layer_idx]
+        h = norm(h, batch) if isinstance(norm, LayerNorm) else norm(h)
+        nodes = (nodes + F.relu(h)) / 2
         if self.edge_updates:
             edges = edges + self.emlps[layer_idx](torch.cat([nodes[src], nodes[dst], edges], dim=-1)) / 2
         return {'nodes': nodes, 'edges': edges}
