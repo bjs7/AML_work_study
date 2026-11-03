@@ -31,6 +31,10 @@ import federated_learning.gnn.restricted_merge.forward as _rm_fwd_mod
 _parser = argparse.ArgumentParser(add_help=False)
 _parser.add_argument('--check_merge_equivalence', type=int, default=0,
                      help='Check vectorised merge == reference merge on N vali batches, and time both')
+_parser.add_argument('--check_chunk_sizes', type=int, default=0,
+                     help='On N vali batches: check results are identical across PAIR_CHUNK_SIZE '
+                          'values (per-pair LayerNorm) and time train fwd+bwd / peak GPU per size')
+_parser.add_argument('--chunk_sizes', type=int, nargs='+', default=[16, 64, 256, 1024])
 _args, _ = _parser.parse_known_args()
 
 _orig_rm_fwd = _rm_fwd_mod.forward_pass_restricted_merge
@@ -196,9 +200,93 @@ def run_merge_equivalence_check(manager, n_batches: int):
     print(f"{'='*74}\n", flush=True)
 
 
+CHUNK_REL_TOL = 1e-4
+
+
+def run_chunk_size_check(manager, n_batches: int, sizes: list[int]):
+    """Per-pair LayerNorm makes PAIR_CHUNK_SIZE a pure speed/memory setting:
+    embeddings must match across sizes. Also times train forward+backward per size."""
+    gnn = manager.model.gnn
+    captured = {}
+    hook = gnn.mlp.register_forward_hook(lambda m, inp, out: captured.__setitem__('emb', inp[0].detach()))
+    original_size = _rm_fwd_mod.PAIR_CHUNK_SIZE
+    ref_size = sizes[0]
+    stats = {s: {'rel': [], 'time': [], 'peak': 0.0, 'oom': False} for s in sizes}
+
+    batches = []
+    for i, item in enumerate(manager._iter_batches('vali', batching=True)):
+        if i >= n_batches:
+            break
+        batch_key, batch_banks, batch_data = item
+        # Keep each batch's labels: the lazy loader overwrites ctx between batches.
+        batches.append((batch_key, batch_banks, batch_data,
+                        manager.ctx['vali'][batch_key]['batch_labels']))
+
+    for batch_key, batch_banks, batch_data, labels_df in batches:
+        manager.ctx['vali'][batch_key]['batch_labels'] = labels_df
+        ref_emb = None
+        for size in sizes:
+            st = stats[size]
+            if st['oom']:
+                continue
+            _rm_fwd_mod.PAIR_CHUNK_SIZE = size
+            try:
+                gnn.eval()
+                with torch.no_grad():
+                    manager.forward_pass('vali', batch_key, batch_banks, batch_data)
+                emb = captured['emb']
+                if size == ref_size:
+                    ref_emb = emb
+                else:
+                    nz = ref_emb.norm(dim=1) > 0
+                    st['rel'].append(((emb - ref_emb).norm(dim=1)[nz] / ref_emb.norm(dim=1)[nz]).max().item())
+
+                gnn.train()
+                manager.optimizer.zero_grad()
+                if torch.cuda.is_available():
+                    torch.cuda.reset_peak_memory_stats()
+                core._cuda_sync(); t0 = time.perf_counter()
+                preds, labels = manager.forward_pass('vali', batch_key, batch_banks, batch_data)
+                manager.loss_fn(preds, labels).backward()
+                core._cuda_sync(); st['time'].append(time.perf_counter() - t0)
+                if torch.cuda.is_available():
+                    st['peak'] = max(st['peak'], torch.cuda.max_memory_allocated() / 1e9)
+            except torch.OutOfMemoryError:
+                st['oom'] = True
+                manager.optimizer.zero_grad()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+        manager.optimizer.zero_grad()   # no optimizer.step(): the model stays unchanged
+
+    hook.remove()
+    _rm_fwd_mod.PAIR_CHUNK_SIZE = original_size
+    gnn.eval()
+
+    rels = [r for s in sizes[1:] for r in stats[s]['rel']]
+    passed = bool(rels) and max(rels) < CHUNK_REL_TOL
+    print(f"\n{'='*74}")
+    print(f"  Chunk-size check — {'PASS' if passed else 'FAIL'} "
+          f"(embeddings identical across sizes, max rel diff < {CHUNK_REL_TOL:g} vs size {ref_size})")
+    print(f"  {len(batches)} vali batches; train forward+backward timed per size (no optimizer step)")
+    print(f"{'='*74}")
+    print(f"  {'chunk size':>10}  {'max rel diff':>13}  {'fwd+bwd / batch':>16}  {'peak GPU':>9}")
+    for s in sizes:
+        st = stats[s]
+        if st['oom'] and not st['time']:
+            print(f"  {s:>10}  {'':>13}  {'OOM':>16}  {'':>9}")
+            continue
+        rel = '(reference)' if s == ref_size else (f"{max(st['rel']):.2e}" if st['rel'] else 'n/a')
+        t = f"{sum(st['time']) / len(st['time']):.2f} s" if st['time'] else 'n/a'
+        oom = ' (OOM on some batches)' if st['oom'] else ''
+        print(f"  {s:>10}  {rel:>13}  {t:>16}  {st['peak']:>7.1f} GB{oom}")
+    print(f"{'='*74}\n", flush=True)
+
+
 def _after_report(manager, algo):
     if _args.check_merge_equivalence > 0:
         run_merge_equivalence_check(manager, _args.check_merge_equivalence)
+    if _args.check_chunk_sizes > 0:
+        run_chunk_size_check(manager, _args.check_chunk_sizes, _args.chunk_sizes)
 
 
 if __name__ == '__main__':

@@ -16,6 +16,7 @@
 # Results:
 #   grep -A30 'Per train batch'         logs/aml_timing_RestrictedMerge_<jobid>.log
 #   grep -A8  'Merge-graph equivalence' logs/aml_timing_RestrictedMerge_<jobid>.log
+#   grep -A10 'Chunk-size check'        logs/aml_timing_RestrictedMerge_<jobid>.log
 # =============================================================================
 
 CLUSTER="wice"
@@ -27,6 +28,7 @@ GPUS="1"
 TIME="02:00:00"
 N_BATCHES=30
 N_EQUIV_BATCHES=10   # vectorised vs reference merge, exact equality
+N_CHUNK_BATCHES=5    # results identical across PAIR_CHUNK_SIZE values + fwd/bwd time per size
 
 PYTHON_SCRIPT="$VSC_DATA/AML_work_study/AML_work_study/scripts/hpc/benchmark/gnn/benchmark_timing_restricted_merge.py"
 
@@ -40,7 +42,8 @@ FLAGS="--fl_algo RestrictedMerge \
 --ibm_hp --emlps --batching --batching_mode lazy_link_neighbor \
 --eval_mode system --max_workers $CPUS --num_rounds 20 \
 --n_benchmark_epochs 1 --n_benchmark_batches $N_BATCHES --n_explicit_batches 0 \
---check_merge_equivalence $N_EQUIV_BATCHES"
+--check_merge_equivalence $N_EQUIV_BATCHES \
+--check_chunk_sizes $N_CHUNK_BATCHES --chunk_sizes 16 64 256 1024"
 
 mkdir -p logs
 
@@ -71,3 +74,4 @@ echo '======================================================================'
 echo ""
 echo "Timing:      grep -A30 'Per train batch' logs/${JOB_NAME}_<jobid>.log"
 echo "Equivalence: grep -A8 'Merge-graph equivalence' logs/${JOB_NAME}_<jobid>.log"
+echo "Chunk sizes: grep -A10 'Chunk-size check' logs/${JOB_NAME}_<jobid>.log"

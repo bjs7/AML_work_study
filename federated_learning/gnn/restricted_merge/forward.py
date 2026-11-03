@@ -22,17 +22,19 @@ import torch
 from torch.utils.checkpoint import checkpoint
 from torch_geometric.data import Data, Batch
 
-# Number of merged pair-graphs to process per GPU call.
-# Smaller = less peak memory; larger = faster (more GPU parallelism).
-# 16 is safe for A100-80GB with lazy_link_neighbor subgraphs.
+# Number of merged pair-graphs to process per GPU call. Speed/memory only: LayerNorm
+# normalises per pair graph, so results do not depend on it.
+# Smaller = less peak memory; larger = fewer GPU calls.
 PAIR_CHUNK_SIZE = 16
 
 
-def _seed_embeddings(gnn, x, edge_attr, edge_index, positions):
-    """Run the GNN on one chunk and return only the seed-edge embeddings."""
+def _seed_embeddings(gnn, x, edge_attr, edge_index, positions, batch):
+    """Run the GNN on one chunk and return only the seed-edge embeddings.
+    batch maps each node to its pair graph, so LayerNorm normalises per pair graph
+    and results do not depend on PAIR_CHUNK_SIZE."""
     emb = gnn.emed_features(x, edge_attr)
     for layer_idx in range(gnn.num_gnn_layers):
-        emb = gnn.apply_gnn_layer(emb['nodes'], emb['edges'], edge_index, layer_idx)
+        emb = gnn.apply_gnn_layer(emb['nodes'], emb['edges'], edge_index, layer_idx, batch=batch)
     final = gnn.prep_nodes_edges(emb['nodes'], emb['edges'], edge_index)
     return final[positions]
 
@@ -230,7 +232,7 @@ def forward_pass_restricted_merge(manager, mode, batch_num, batch_banks, batch_d
 
         combined = Batch.from_data_list(chunk).to(device)
         pos = torch.tensor(positions, dtype=torch.long, device=device)
-        args = (gnn, combined.x, combined.edge_attr, combined.edge_index, pos)
+        args = (gnn, combined.x, combined.edge_attr, combined.edge_index, pos, combined.batch)
         if torch.is_grad_enabled():
             emb = checkpoint(_seed_embeddings, *args, use_reentrant=False)
         else:
