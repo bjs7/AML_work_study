@@ -24,8 +24,10 @@ from torch_geometric.data import Data, Batch
 
 # Number of merged pair-graphs to process per GPU call. Speed/memory only: LayerNorm
 # normalises per pair graph, so results do not depend on it.
-# Smaller = less peak memory; larger = fewer GPU calls.
-PAIR_CHUNK_SIZE = 16
+# Smaller = less peak memory; larger = fewer GPU calls. Measured on system data (H100,
+# fwd+bwd per batch / peak GPU): 16: 10.7 s / 6.3 GB, 256: 4.7 s / 13.7 GB,
+# 1024: 4.1 s / 34.9 GB. 256 keeps most of the gain with ample memory headroom.
+PAIR_CHUNK_SIZE = 256
 
 
 def _seed_embeddings(gnn, x, edge_attr, edge_index, positions, batch):

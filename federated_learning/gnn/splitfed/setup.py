@@ -189,9 +189,12 @@ def setup_splitfed(manager, batching=True, batching_mode='simple'):
         setup_non_batching_splitfed(manager)
     elif batching_mode == 'lazy_link_neighbor':
         from federated_learning.gnn.fedgraph.batching import setup_lazy_batch_loader
+        from federated_learning.gnn.splitfed.batching import build_edge_lookup
         batch_size = manager.args['data_parser'].batch_size
+        manager.edge_lookup = {}
         for mode in all_modes:
             setup_lazy_batch_loader(manager, mode, batch_size=batch_size)
+            manager.edge_lookup[mode] = build_edge_lookup(manager.get_parties_for_mode(mode), mode)
     elif batching_mode == 'local_neighbor':
         batch_size = manager.args['data_parser'].batch_size
         num_hops = getattr(manager.args.get('gnn_parser', None), 'num_gnn_layers', 2)

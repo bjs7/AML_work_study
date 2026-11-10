@@ -32,9 +32,94 @@ _parser.add_argument('--check_batched_equivalence', type=int, default=0,
                      help='Check batched == sequential forward on N vali batches, and time both')
 _parser.add_argument('--load_weights', type=str, default=None,
                      help='model.pth to load before the equivalence check (e.g. a trained seed)')
+_parser.add_argument('--check_subgraph_equivalence', type=int, default=0,
+                     help='Check the lookup-based party subgraph build == the original isin-based '
+                          'build on N vali batches (exact), and time both')
 _args, _ = _parser.parse_known_args()
 
 EQUIV_REL_TOL = 1e-4
+
+
+# ---------------------------------------------------------------------------
+# Reference: the original party subgraph build (torch.isin over each party's full
+# graph, threaded), kept as the oracle for the subgraph check. Do not optimise.
+# Returns {bank: GraphData} instead of writing party.ctx.
+# ---------------------------------------------------------------------------
+
+def _reference_party_subgraphs(manager, mode, batch, mode_parties):
+    from data.data_utils import GraphData
+    from federated_learning.parallel import parallel_party_execute
+    max_workers = getattr(manager.args['fl_parser'], 'max_workers', None)
+
+    seed_global_ids = batch.edge_label.long().numpy()
+    bl = manager.ctx[mode]['df_labels'].loc[seed_global_ids]
+    mode_party_set = set(mode_parties.keys())
+    batch_df = bl[bl['From Bank'].isin(mode_party_set) | bl['To Bank'].isin(mode_party_set)]
+
+    seed_ids_tensor = torch.tensor(seed_global_ids, dtype=torch.long)
+    batch_global_ids = torch.cat([batch.edge_attr[:, 0].long(), seed_ids_tensor]).unique()
+
+    def _build_subgraph(bank_id, party):
+        party_graph = party.procs_data[f'{mode}_data']['df']
+        mask = torch.isin(party_graph.edge_attr[:, 0].long(), batch_global_ids)
+        if mask.sum() == 0:
+            return None
+        matched_edge_index = party_graph.edge_index[:, mask]
+        matched_edge_attr = party_graph.edge_attr[mask]
+        sub_nodes = matched_edge_index.reshape(-1).unique()
+        node_remap = torch.zeros(party_graph.x.shape[0], dtype=torch.long)
+        node_remap[sub_nodes] = torch.arange(len(sub_nodes), dtype=torch.long)
+        return GraphData(x=party_graph.x[sub_nodes], edge_index=node_remap[matched_edge_index],
+                         edge_attr=matched_edge_attr)
+
+    seed_banks = set(batch_df['From Bank'].values) | set(batch_df['To Bank'].values)
+    seed_mode_parties = {k: v for k, v in mode_parties.items() if k in seed_banks}
+    results = parallel_party_execute(seed_mode_parties, _build_subgraph, max_workers=max_workers)
+    return {bid: g for bid, g in results.items() if g is not None}
+
+
+def run_subgraph_equivalence_check(manager, n_batches: int):
+    mode = 'vali'
+    mode_parties = manager.get_parties_for_mode(mode)
+    n_done = n_parties = 0
+    mismatches = {}
+    t_old = t_new = 0.0
+    for i, batch in enumerate(manager.loaders[mode]):
+        if i >= n_batches:
+            break
+        n_done += 1
+        t0 = time.perf_counter()
+        ref = _reference_party_subgraphs(manager, mode, batch, mode_parties)
+        t_old += time.perf_counter() - t0
+
+        t0 = time.perf_counter()
+        core._orig_fs_bat(manager, mode, batch, mode_parties)
+        t_new += time.perf_counter() - t0
+        new_banks = manager.ctx[mode][core.LAZY_BATCH_KEY]['batch_parties']
+
+        if set(new_banks) != set(ref):
+            mismatches['party set'] = mismatches.get('party set', 0) + 1
+            continue
+        for bank in new_banks:
+            n_parties += 1
+            g_new = mode_parties[bank].ctx[mode][core.LAZY_BATCH_KEY]['graph_data']
+            for field in ('x', 'edge_index', 'edge_attr'):
+                a, b = getattr(ref[bank], field), getattr(g_new, field)
+                if a.shape != b.shape or not torch.equal(a, b):
+                    mismatches[field] = mismatches.get(field, 0) + 1
+                    break
+
+    passed = n_parties > 0 and not mismatches
+    print(f"\n{'='*74}")
+    print(f"  Party subgraph equivalence check — {'PASS' if passed else 'FAIL'} "
+          f"(lookup == isin reference, exact)")
+    print(f"  {n_parties} party subgraphs over {n_done} vali batches")
+    print(f"{'='*74}")
+    if mismatches:
+        print(f"  mismatches by first differing field: {mismatches}")
+    print(f"  subgraph build per batch  reference {t_old / max(n_done, 1) * 1000:9.1f} ms   "
+          f"lookup {t_new / max(n_done, 1) * 1000:9.1f} ms   (×{t_old / max(t_new, 1e-9):.1f})")
+    print(f"{'='*74}\n", flush=True)
 
 
 def run_batched_equivalence_check(manager, n_batches: int, load_weights: str | None):
@@ -88,6 +173,8 @@ def run_batched_equivalence_check(manager, n_batches: int, load_weights: str | N
 
 
 def _after_report(manager, algo):
+    if _args.check_subgraph_equivalence > 0:
+        run_subgraph_equivalence_check(manager, _args.check_subgraph_equivalence)
     if _args.check_batched_equivalence > 0:
         run_batched_equivalence_check(manager, _args.check_batched_equivalence, _args.load_weights)
 

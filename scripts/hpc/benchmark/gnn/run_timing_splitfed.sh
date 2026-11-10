@@ -5,8 +5,10 @@
 #
 # Times N train + N vali batches (benchmark_timing_splitfed.py): loader sampling,
 # party subgraph build, GNN, head, other, backward, peak GPU memory, extrapolated
-# epoch / full-run time. Then checks that the batched forward equals the
-# sequential (per-party) forward on N vali batches and times both paths.
+# epoch / full-run time. Then checks that the lookup-based party subgraph build
+# equals the original isin-based build (exact, 10 vali batches) and times both,
+# and that the batched forward equals the sequential (per-party) forward on N
+# vali batches and times both paths.
 #
 # Same cluster and flags as the training runs (wice gpu_h100, 182G, 16 CPUs).
 # =============================================================================
@@ -15,6 +17,7 @@
 # Results:
 #   grep -A30 'Per train batch'      logs/aml_timing_SplitFed_<jobid>.log
 #   grep -A10 'Batched vs sequential' logs/aml_timing_SplitFed_<jobid>.log
+#   grep -A6  'Party subgraph equivalence' logs/aml_timing_SplitFed_<jobid>.log
 # =============================================================================
 
 CLUSTER="wice"
@@ -39,6 +42,7 @@ FLAGS="--fl_algo SplitFed \
 --ibm_hp --emlps --batching --batching_mode lazy_link_neighbor \
 --eval_mode system --max_workers $CPUS --num_rounds 20 \
 --n_benchmark_epochs 1 --n_benchmark_batches $N_BATCHES --n_explicit_batches 0 \
+--check_subgraph_equivalence 10 \
 --check_batched_equivalence $N_BATCHES --load_weights $SF_MODEL"
 
 mkdir -p logs
@@ -70,3 +74,4 @@ echo '======================================================================'
 echo ""
 echo "Timing:      grep -A30 'Per train batch' logs/${JOB_NAME}_<jobid>.log"
 echo "Equivalence: grep -A10 'Batched vs sequential' logs/${JOB_NAME}_<jobid>.log"
+echo "Subgraphs:   grep -A6 'Party subgraph equivalence' logs/${JOB_NAME}_<jobid>.log"
