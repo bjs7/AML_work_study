@@ -1,15 +1,17 @@
 #!/bin/bash
 # =============================================================================
-# Download batch analysis outputs from the HPC.
+# Download batch analysis outputs from the HPC and copy them into the writing repo.
 #
-# Syncs the hpc_output/ folder from the cluster to the local machine.
+# Syncs hpc_output/<EVAL_MODE>/ from the cluster to the local machine, then
+# copies the figures (*.pdf) to figs/party_visibility/<EVAL_MODE>/ and the
+# tables (*.tex, *.csv) to tables/party_visibility/<EVAL_MODE>/ in the writing repo.
 # Run this from your local machine after the job completes.
 #
 # Usage:
-#   bash scripts/hpc/analysis_hpc/download_results.sh [vsc_login_alias]
+#   bash scripts/download_results/download_batch_results.sh [system|comparable] [vsc_login_alias]
 #
-# The optional argument overrides the default SSH host alias.
-# Default: vsc  (set up in ~/.ssh/config, e.g. Host vsc → login-genius.hpc.kuleuven.be)
+# Defaults: system, and the SSH host alias vsc
+# (set up in ~/.ssh/config, e.g. Host vsc → login-genius.hpc.kuleuven.be).
 #
 # Example ~/.ssh/config entry:
 #   Host vsc
@@ -20,23 +22,54 @@
 
 set -euo pipefail
 
-HOST="${1:-vsc}"
-VSC_USER="vsc36278"
-REMOTE_BASE="\$VSC_DATA/AML_work_study/AML_work_study/scripts/hpc/analysis_hpc"
+EVAL_MODE="${1:-system}"
+HOST="${2:-vsc}"
+if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]]; then
+    echo "Usage: bash download_batch_results.sh [system|comparable] [vsc_login_alias]  (got: '$EVAL_MODE')" >&2
+    exit 1
+fi
+
+# Full path ($VSC_DATA): rsync >= 3.2.4 no longer lets the remote shell expand $VSC_DATA.
+REMOTE_BASE="/data/leuven/362/vsc36278/AML_work_study/AML_work_study/scripts/hpc/analysis_hpc"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_OUT="$SCRIPT_DIR/hpc_output"
 
+WRITING="$HOME/projects/AML_work_study/writing/Experimental-Protocol"
+FIGS_DEST="$WRITING/figs/party_visibility/$EVAL_MODE"
+TABLES_DEST="$WRITING/tables/party_visibility/$EVAL_MODE"
+
 mkdir -p "$LOCAL_OUT"
 
-echo "Downloading from $HOST:$REMOTE_BASE/hpc_output/"
-echo "          → $LOCAL_OUT/"
+echo "Downloading from $HOST:$REMOTE_BASE/hpc_output/$EVAL_MODE/"
+echo "          → $LOCAL_OUT/$EVAL_MODE/"
 echo ""
 
+# No trailing slash on the source, so the files land in $LOCAL_OUT/$EVAL_MODE/.
 rsync -avz --progress \
-    "${HOST}:${REMOTE_BASE}/hpc_output/" \
+    "${HOST}:${REMOTE_BASE}/hpc_output/$EVAL_MODE" \
     "$LOCAL_OUT/"
 
 echo ""
 echo "Download complete. Files:"
-ls -lh "$LOCAL_OUT/"
+ls -lh "$LOCAL_OUT/$EVAL_MODE/"
+
+# --- copy into the writing repo ---
+mkdir -p "$FIGS_DEST" "$TABLES_DEST"
+shopt -s nullglob
+figs=("$LOCAL_OUT/$EVAL_MODE"/*.pdf)
+tables=("$LOCAL_OUT/$EVAL_MODE"/*.tex "$LOCAL_OUT/$EVAL_MODE"/*.csv)
+
+echo ""
+if (( ${#figs[@]} )); then
+    cp "${figs[@]}" "$FIGS_DEST/"
+    echo "Copied ${#figs[@]} figure(s)  → $FIGS_DEST/"
+else
+    echo "No figures found (viz job not run or not finished?)"
+fi
+if (( ${#tables[@]} )); then
+    cp "${tables[@]}" "$TABLES_DEST/"
+    echo "Copied ${#tables[@]} table file(s) → $TABLES_DEST/"
+else
+    echo "No tables found (tables job not run or not finished?)"
+fi

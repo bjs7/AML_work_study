@@ -455,7 +455,7 @@ PATTERN_DESCRIPTIONS = {
     6: 'Sequential linear chain of transfers (layering)',
     7: 'Structurally random transactions mimicking normal activity',
     8: 'Transfers between two disjoint groups of accounts',
-    9: 'Labelled illicit but no matching pattern found in patterns file',
+    9: 'Illicit, but follows none of the eight patterns.',
 }
 
 
@@ -477,7 +477,7 @@ def build_pattern_overview_table(raw_df, out_dir='tables',
     out_dir.mkdir(parents=True, exist_ok=True)
 
     desc_df = pd.DataFrame([
-        {'ID': pid, 'Pattern': PATTERN_NAMES[pid], 'Description': PATTERN_DESCRIPTIONS[pid]}
+        {'Pattern': PATTERN_NAMES[pid], 'Description': PATTERN_DESCRIPTIONS[pid]}
         for pid in illicit_ids
     ])
     desc_df.to_csv(out_dir / f'{out_name_desc}.csv', index=False)
