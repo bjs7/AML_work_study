@@ -64,6 +64,18 @@ _VIZ_PICKS = {
     'system':     dict(batch_indices=[1, 3], seed_override={1: 430559}),
 }
 BATCH_INDICES           = _VIZ_PICKS[_EVAL_MODE]['batch_indices']
+
+# VIZ_TARGET=cone_candidates (set by run_batch_analysis.sh ... cones) draws only the
+# Cell 3 cone figure, once per pair below, into hpc_output/<mode>/cone_candidates/.
+# Use it to choose batches for _VIZ_PICKS. It skips the full-batch layout of Cell 0,
+# the slow part, but keeps the neighbourhood layout, so each candidate looks exactly
+# as it would in the full run.
+VIZ_TARGET = os.environ.get('VIZ_TARGET', 'all')
+assert VIZ_TARGET in ('all', 'cone_candidates'), f"VIZ_TARGET must be 'all' or 'cone_candidates', got {VIZ_TARGET!r}"
+_CONE_ONLY = VIZ_TARGET == 'cone_candidates'
+CONE_CANDIDATE_PAIRS = [(i, i + 1) for i in range(0, 20, 2)]   # batches 0-19, ten figures
+if _CONE_ONLY:
+    BATCH_INDICES = sorted({b for pair in CONE_CANDIDATE_PAIRS for b in pair})
 SEED_MUST_BE_LAUNDERING = True
 SEED_PICK               = 3
 SEED_OVERRIDE           = _VIZ_PICKS[_EVAL_MODE]['seed_override']  # {batch_idx: global_txn_id} — pin a specific transaction
@@ -269,33 +281,37 @@ for _bi_enum, _batch_idx in enumerate(BATCH_INDICES):
         _visited_ov  |= _next_ov
         _frontier_ov  = _next_ov
 
-    # Cell 0: full-batch BFS from all seed nodes (no node cap)
-    _c0_init = set()
-    for _i in range(_n_seeds_total):
-        _c0_init.add(int(_vb.edge_label_index[0, _i]))
-        _c0_init.add(int(_vb.edge_label_index[1, _i]))
-    _frontier_c0 = set(_c0_init)
-    _visited_c0: set = set(_frontier_c0)
-    while _frontier_c0:
-        _next_c0 = set()
-        for _n in _frontier_c0:
-            for _nb in _adj_ov[_n]:
-                if _nb not in _visited_c0:
-                    _next_c0.add(_nb)
-        _visited_c0 |= _next_c0
-        _frontier_c0  = _next_c0
-    _c0_edges = [
-        (int(_s), int(_d)) for _s, _d in zip(_src_ov, _dst_ov)
-        if int(_s) in _visited_c0 and int(_d) in _visited_c0 and int(_s) != int(_d)
-    ]
-    _is_full_c0 = len(_visited_c0) >= _vb.x.shape[0]
-    _c0_label   = 'full batch' if _is_full_c0 else f'{len(_visited_c0)} nodes'
-    _G_c0 = nx.DiGraph()
-    _G_c0.add_nodes_from(_visited_c0)
-    _G_c0.add_edges_from(_c0_edges)
-    print(f"  Cell 0: {len(_visited_c0)}/{_vb.x.shape[0]} nodes  ({_c0_label})")
-    print("  Computing Cell 0 layout...")
-    _pos_c0 = nx.spring_layout(_G_c0, seed=42, k=2, iterations=80)
+    if _CONE_ONLY:
+        _visited_c0, _c0_edges, _is_full_c0, _c0_label = set(), [], False, ''
+        _G_c0, _pos_c0 = None, None
+    else:
+        # Cell 0: full-batch BFS from all seed nodes (no node cap)
+        _c0_init = set()
+        for _i in range(_n_seeds_total):
+            _c0_init.add(int(_vb.edge_label_index[0, _i]))
+            _c0_init.add(int(_vb.edge_label_index[1, _i]))
+        _frontier_c0 = set(_c0_init)
+        _visited_c0: set = set(_frontier_c0)
+        while _frontier_c0:
+            _next_c0 = set()
+            for _n in _frontier_c0:
+                for _nb in _adj_ov[_n]:
+                    if _nb not in _visited_c0:
+                        _next_c0.add(_nb)
+            _visited_c0 |= _next_c0
+            _frontier_c0  = _next_c0
+        _c0_edges = [
+            (int(_s), int(_d)) for _s, _d in zip(_src_ov, _dst_ov)
+            if int(_s) in _visited_c0 and int(_d) in _visited_c0 and int(_s) != int(_d)
+        ]
+        _is_full_c0 = len(_visited_c0) >= _vb.x.shape[0]
+        _c0_label   = 'full batch' if _is_full_c0 else f'{len(_visited_c0)} nodes'
+        _G_c0 = nx.DiGraph()
+        _G_c0.add_nodes_from(_visited_c0)
+        _G_c0.add_edges_from(_c0_edges)
+        print(f"  Cell 0: {len(_visited_c0)}/{_vb.x.shape[0]} nodes  ({_c0_label})")
+        print("  Computing Cell 0 layout...")
+        _pos_c0 = nx.spring_layout(_G_c0, seed=42, k=2, iterations=80)
 
     _ov_edges = [
         (int(_s), int(_d)) for _s, _d in zip(_src_ov, _dst_ov)
@@ -328,7 +344,8 @@ for _bi_enum, _batch_idx in enumerate(BATCH_INDICES):
 
     _batches.append({
         'batch_idx':     _batch_idx,
-        'batch_label':   f'Batch {_bi_enum + 1}',
+        'batch_label':   (f'Batch {_batch_idx}, txn {_seed_gid}' if _CONE_ONLY
+                          else f'Batch {_bi_enum + 1}'),
         'pa_label':      'Party A',
         'pb_label':      'Party B',
         'n_nodes_batch': _vb.x.shape[0],
@@ -378,6 +395,70 @@ for bd in _batches:
 _N = len(_batches)
 print(f"\nAll {_N} batches loaded and pre-computed ({time.time() - _t0:.0f}s).")
 print("Party label mapping:", {v: k for k, v in _bank_labels.items()})
+
+
+def _draw_cone_figure(batches, out_path):
+    """Cell 3: the 2-hop MP cone per batch, accounts coloured by which seed bank sees them.
+
+    Sized for the paper: shown at text width (~6.3 in), so the canvas is kept small
+    and fonts large enough to stay readable after scaling.
+    """
+    n = len(batches)
+    fig, axes = plt.subplots(1, n, figsize=(6.5 * n, 6.5))
+    if n == 1: axes = [axes]
+    for ax, bd in zip(axes, batches):
+        G_cone   = bd['G_cone']
+        pos_cone = bd['pos_cone']
+        fill     = bd['fill']
+        seed_src = bd['seed_src']
+        seed_dst = bd['seed_dst']
+        _nc, _ns, _nec, _nlw = [], [], [], []
+        for _n in G_cone.nodes():
+            if _n == seed_src:
+                _nc.append(_C2_SEED); _ns.append(90)
+                _nec.append(_C2_A);   _nlw.append(1.5)
+            elif _n == seed_dst:
+                _nc.append(_C2_SEED); _ns.append(90)
+                _nec.append(_C2_B);   _nlw.append(1.5)
+            else:
+                _nc.append(fill(_n)); _ns.append(35)
+                _nec.append('#2c3e50'); _nlw.append(0.3)
+        nx.draw_networkx_nodes(G_cone, pos_cone, ax=ax,
+                               node_color=_nc, node_size=_ns,
+                               edgecolors=_nec, linewidths=_nlw)
+        nx.draw_networkx_edges(G_cone, pos_cone, ax=ax,
+                               edge_color='#5d6d7e', width=0.8,
+                               arrows=True, alpha=0.8,
+                               connectionstyle='arc3,rad=0.08', arrowsize=8)
+        ax.set_title(
+            f'{bd["batch_label"]}: {G_cone.number_of_nodes()} accounts, '
+            f'{G_cone.number_of_edges()} transactions',
+            fontsize=17,
+        )
+        ax.axis('off')
+    fig.legend(handles=[
+        mpatches.Patch(color=_C2_A,    label='Sender bank'),
+        mpatches.Patch(color=_C2_B,    label='Receiver bank'),
+        mpatches.Patch(color=_C2_BOTH, label='Both banks'),
+        mpatches.Patch(color=_C2_NONE, label='Neither bank'),
+        mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_A, linewidth=1.5, label='Seed sender account'),
+        mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_B, linewidth=1.5, label='Seed receiver account'),
+    ], loc='lower center', ncol=3, fontsize=15, frameon=False, bbox_to_anchor=(0.5, -0.08))
+    plt.tight_layout()
+    plt.savefig(out_path, bbox_inches='tight', dpi=200)
+    plt.close()
+    print(f"Saved: {out_path}")
+
+
+if _CONE_ONLY:
+    _cand_dir = os.path.join(OUTPUT_DIR, 'cone_candidates')
+    os.makedirs(_cand_dir, exist_ok=True)
+    _by_idx = {bd['batch_idx']: bd for bd in _batches}
+    for _i, _j in CONE_CANDIDATE_PAIRS:
+        _draw_cone_figure([_by_idx[_i], _by_idx[_j]],
+                          os.path.join(_cand_dir, f'batch_viz_cell3_mp_cone{OUTPUT_SUFFIX}_b{_i}_b{_j}.pdf'))
+    print(f"\nCone candidates done ({time.time() - _t0:.0f}s): {_cand_dir}")
+    sys.exit(0)
 
 
 # ==============================================================
@@ -644,53 +725,8 @@ print(f"Saved: {_VIZ_CELL2}")
 # ===== CELL 3: MP CONE — PARTY COLOURED =====================
 # ==============================================================
 
-# Sized for the paper: shown at text width (~6.3 in), so the canvas is kept small
-# and fonts large enough to stay readable after scaling.
 _VIZ_CELL3 = os.path.join(OUTPUT_DIR, f'batch_viz_cell3_mp_cone{OUTPUT_SUFFIX}.pdf')
-fig, axes = plt.subplots(1, _N, figsize=(6.5 * _N, 6.5))
-if _N == 1: axes = [axes]
-for ax, bd in zip(axes, _batches):
-    G_cone   = bd['G_cone']
-    pos_cone = bd['pos_cone']
-    fill     = bd['fill']
-    seed_src = bd['seed_src']
-    seed_dst = bd['seed_dst']
-    _nc, _ns, _nec, _nlw = [], [], [], []
-    for _n in G_cone.nodes():
-        if _n == seed_src:
-            _nc.append(_C2_SEED); _ns.append(90)
-            _nec.append(_C2_A);   _nlw.append(1.5)
-        elif _n == seed_dst:
-            _nc.append(_C2_SEED); _ns.append(90)
-            _nec.append(_C2_B);   _nlw.append(1.5)
-        else:
-            _nc.append(fill(_n)); _ns.append(35)
-            _nec.append('#2c3e50'); _nlw.append(0.3)
-    nx.draw_networkx_nodes(G_cone, pos_cone, ax=ax,
-                           node_color=_nc, node_size=_ns,
-                           edgecolors=_nec, linewidths=_nlw)
-    nx.draw_networkx_edges(G_cone, pos_cone, ax=ax,
-                           edge_color='#5d6d7e', width=0.8,
-                           arrows=True, alpha=0.8,
-                           connectionstyle='arc3,rad=0.08', arrowsize=8)
-    ax.set_title(
-        f'{bd["batch_label"]}: {G_cone.number_of_nodes()} accounts, '
-        f'{G_cone.number_of_edges()} transactions',
-        fontsize=17,
-    )
-    ax.axis('off')
-fig.legend(handles=[
-    mpatches.Patch(color=_C2_A,    label='Sender bank'),
-    mpatches.Patch(color=_C2_B,    label='Receiver bank'),
-    mpatches.Patch(color=_C2_BOTH, label='Both banks'),
-    mpatches.Patch(color=_C2_NONE, label='Neither bank'),
-    mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_A, linewidth=1.5, label='Seed sender account'),
-    mpatches.Patch(facecolor=_C2_SEED, edgecolor=_C2_B, linewidth=1.5, label='Seed receiver account'),
-], loc='lower center', ncol=3, fontsize=15, frameon=False, bbox_to_anchor=(0.5, -0.08))
-plt.tight_layout()
-plt.savefig(_VIZ_CELL3, bbox_inches='tight', dpi=200)
-plt.close()
-print(f"Saved: {_VIZ_CELL3}")
+_draw_cone_figure(_batches, _VIZ_CELL3)
 
 
 # ==============================================================

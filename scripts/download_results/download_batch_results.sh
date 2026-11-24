@@ -8,24 +8,18 @@
 # Run this from your local machine after the job completes.
 #
 # Usage:
-#   bash scripts/download_results/download_batch_results.sh [system|comparable] [vsc_login_alias]
+#   bash scripts/download_results/download_batch_results.sh [system|comparable] [user@host]
 #
-# Defaults: system, and the SSH host alias vsc
-# (set up in ~/.ssh/config, e.g. Host vsc → login-genius.hpc.kuleuven.be).
-#
-# Example ~/.ssh/config entry:
-#   Host vsc
-#       HostName login-genius.hpc.kuleuven.be
-#       User vsc36278
-#       IdentityFile ~/.ssh/id_rsa_vsc
+# Defaults: system, and the host vsc36278@login.hpc.kuleuven.be (same as the other
+# download scripts; uses the login.hpc.kuleuven.be entry in ~/.ssh/config).
 # =============================================================================
 
 set -euo pipefail
 
 EVAL_MODE="${1:-system}"
-HOST="${2:-vsc}"
+HOST="${2:-vsc36278@login.hpc.kuleuven.be}"
 if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]]; then
-    echo "Usage: bash download_batch_results.sh [system|comparable] [vsc_login_alias]  (got: '$EVAL_MODE')" >&2
+    echo "Usage: bash download_batch_results.sh [system|comparable] [user@host]  (got: '$EVAL_MODE')" >&2
     exit 1
 fi
 

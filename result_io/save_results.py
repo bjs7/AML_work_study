@@ -8,6 +8,7 @@ import pickle
 import utils
 from datetime import datetime
 import numpy as np
+from result_io.load_results import ALGO_NAME_ALIASES
 
 logger = logging.getLogger(__name__)
 
@@ -110,23 +111,41 @@ def build_save_dir(manager, hyperparams):
         Path: The created experiment directory.
     """
     save_direc, str_folder, data_folder, model_tuning_configs = _build_path(manager)
+    fl_algo = manager.args['fl_parser'].fl_algo
 
     run_id = getattr(manager.args['data_parser'], 'run_id', None) or datetime.now().strftime("%Y%m%d_%H%M%S")
     folder_path = Path(save_direc) / str_folder / data_folder / run_id
+    if not folder_path.exists():
+        # Extra seeds for a run started before an algorithm rename go into that run's folder.
+        folder_path = _existing_alias_run_folder(folder_path, fl_algo) or folder_path
     folder_path.mkdir(parents=True, exist_ok=True)
 
-    logger.info("Experiment directory created: %s", folder_path)
+    logger.info("Experiment directory: %s", folder_path)
 
-    (folder_path / 'model_tuning_configs.json').write_text(json.dumps(model_tuning_configs, indent=4))
-    (folder_path / 'experiment_config.json').write_text(
-        json.dumps(create_experiment_config(manager), indent=4))
-
-    fl_algo = manager.args['fl_parser'].fl_algo
+    # Written once per run: jobs adding seeds to an existing run keep the original files.
+    static_files = {
+        'model_tuning_configs.json': model_tuning_configs,
+        'experiment_config.json': create_experiment_config(manager),
+    }
     if fl_algo != 'individual':
-        with open(folder_path / 'hyper_parameters.json', 'w') as f:
-            json.dump(hyperparams, f, indent=4)
+        static_files['hyper_parameters.json'] = hyperparams
+    for name, content in static_files.items():
+        path = folder_path / name
+        if not path.exists():
+            path.write_text(json.dumps(content, indent=4))
 
     return folder_path
+
+
+def _existing_alias_run_folder(folder_path, fl_algo):
+    """The same run folder under the algorithm's pre-rename name, if it exists."""
+    old_name = ALGO_NAME_ALIASES.get(fl_algo)
+    parts = list(folder_path.parts)
+    if old_name is None or fl_algo not in parts:
+        return None
+    parts[parts.index(fl_algo)] = old_name
+    alias = Path(*parts)
+    return alias if alias.exists() else None
 
 
 # =============================================================================

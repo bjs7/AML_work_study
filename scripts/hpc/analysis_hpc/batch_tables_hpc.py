@@ -465,30 +465,40 @@ pd.concat({'All seeds': _cone_summary_b,    'Illicit seeds': _il_b}).to_csv(
     os.path.join(_TABLE_DIR, 'cone_coverage_combined_b.csv'))
 
 
-def _grouped_latex(groups, cols):
-    labels = [c.replace('_', r'\_') for c in cols]
-    n = len(cols)
-    out = [r'\begin{tabular}{l' + 'r' * n + '}', r'\hline',
-           '  & ' + ' & '.join(labels) + r' \\', r'\hline']
-    for grp, df_g in groups.items():
-        out.append(r'  \textit{' + grp + '} & ' + ' & '.join([''] * n) + r' \\')
-        for stat in df_g.index:
-            vals = []
-            for c in cols:
-                if c in df_g.columns:
-                    v = df_g.loc[stat, c]
-                    vals.append(f'{v:.4f}' if not pd.isna(v) else '---')
-                else:
-                    vals.append('---')
-            out.append(r'  \quad ' + stat + ' & ' + ' & '.join(vals) + r' \\')
-        out.append(r'  \hline')
-    out.append(r'\end{tabular}')
+# LaTeX tables report each column as mean ± std (std across batches for the cone tables,
+# across all party-batch rows for the party table, across attempt-batch rows for attempts).
+def _mean_std_cell(df_g, col, scale, dec):
+    if col not in df_g.columns or pd.isna(df_g.loc['mean', col]):
+        return '---'
+    return f"{df_g.loc['mean', col] * scale:.{dec}f} $\\pm$ {df_g.loc['std', col] * scale:.{dec}f}"
+
+
+def _mean_std_latex(header, groups, cols):
+    """groups: {row label: DataFrame with 'mean'/'std' rows}; cols: [(column, scale, decimals)]."""
+    out = [r'\begin{tabular}{l' + 'r' * len(cols) + '}', r'\toprule', header, r'\midrule']
+    for label, df_g in groups.items():
+        out.append(f'  {label} & ' + ' & '.join(_mean_std_cell(df_g, c, sc, d) for c, sc, d in cols) + r' \\')
+    out += [r'\bottomrule', r'\end{tabular}', '']
     return '\n'.join(out)
 
+
+_hdr_a = (r'  & \makecell{Sender\\cov.\ (\%)} & \makecell{Receiver\\cov.\ (\%)} & \makecell{Union\\cov.\ (\%)} & '
+          r'\makecell{Unseen\\(\%)} & \makecell{Asymmetry\\(\%)} & $|V_c|$ & $|E_c|$ & $|V_{\mathcal{N}}|$ & $|E_{\mathcal{N}}|$ \\')
+_fmt_a = [('cone_from_cov', 100, 1), ('cone_to_cov', 100, 1), ('cone_union_cov', 100, 1),
+          ('cone_neither_frac', 100, 1), ('cone_asymmetry', 100, 1),
+          ('cone_n_nodes', 1, 1), ('cone_n_edges', 1, 1), ('neigh_n_nodes', 1, 1), ('neigh_n_edges', 1, 1)]
+_hdr_b = (r'  & \makecell{Overlap\\(\%)} & \makecell{Unique\\sender (\%)} & \makecell{Unique\\receiver (\%)} & Nesting & '
+          r'\makecell{Illicit\\frac.\ (\%)} & \makecell{Illicit frac.\\(ill.\ seeds, \%)} & Enrichment \\')
+_fmt_b = [('cone_overlap_cov', 100, 1), ('cone_unique_from', 100, 1), ('cone_unique_to', 100, 1),
+          ('cone_nesting_idx', 1, 2), ('cone_laund_frac', 100, 2), ('cone_laund_frac_laund', 100, 1),
+          ('cone_laund_enrichment', 1, 1)]
+
 with open(os.path.join(_TABLE_DIR, 'cone_coverage_combined_a.tex'), 'w') as _f:
-    _f.write(_grouped_latex({'All seeds': _cone_summary_a, 'Illicit seeds': _il_a}, _cone_cols_a))
+    _f.write(_mean_std_latex(_hdr_a, {r'\textit{All seeds}': _cone_summary_a,
+                                      r'\textit{Illicit seeds}': _il_a}, _fmt_a))
 with open(os.path.join(_TABLE_DIR, 'cone_coverage_combined_b.tex'), 'w') as _f:
-    _f.write(_grouped_latex({'All seeds': _cone_summary_b, 'Illicit seeds': _il_b}, _cone_cols_b))
+    _f.write(_mean_std_latex(_hdr_b, {r'\textit{All seeds}': _cone_summary_b,
+                                      r'\textit{Illicit seeds}': _il_b}, _fmt_b))
 
 print("Saved cone coverage tables.")
 
@@ -503,9 +513,12 @@ _party_cols = [
 ]
 _party_summary = party_df[_party_cols].agg(['mean', 'std']).round(4)
 _party_summary.to_csv(os.path.join(_TABLE_DIR, 'party_batch_coverage_summary.csv'))
-(_party_summary
- .rename(columns=lambda c: c.replace('_', r'\_'))
- .to_latex(os.path.join(_TABLE_DIR, 'party_batch_coverage_summary.tex'), escape=False))
+_hdr_p = (r' & \makecell{Edge\\frac.\ (\%)} & \makecell{Node\\frac.\ (\%)} & \makecell{Seed\\cov.\ (\%)} & '
+          r'$|E|$ & $|V|$ & $|E_s|$ \\')
+_fmt_p = [('party_edge_fraction', 100, 2), ('party_node_fraction', 100, 2), ('party_seed_coverage', 100, 2),
+          ('n_party_edges', 1, 1), ('n_party_nodes', 1, 1), ('n_party_seed_edges', 1, 1)]
+with open(os.path.join(_TABLE_DIR, 'party_batch_coverage_summary.tex'), 'w') as _f:
+    _f.write(_mean_std_latex(_hdr_p, {'Per party': _party_summary}, _fmt_p))
 print("Saved party coverage table.")
 
 
@@ -529,9 +542,12 @@ if not attempt_df.empty:
     )
     _att_by_pattern.to_csv(os.path.join(_TABLE_DIR, 'attempt_coverage_by_pattern.csv'))
 
-    (_att_overall
-     .rename(columns=lambda c: c.replace('_', r'\_'))
-     .to_latex(os.path.join(_TABLE_DIR, 'attempt_coverage_overall.tex'), escape=False))
+    _hdr_att = (r' & \makecell{Attempt in\\batch (\%)} & \makecell{Attempt seeds\\in batch} & '
+                r'\makecell{Union\\cov.\ (\%)} & \makecell{Unseen\\(\%)} \\')
+    _fmt_att = [('attempt_batch_frac', 100, 1), ('n_attempt_seeds_in_batch', 1, 2),
+                ('attempt_union_cov', 100, 1), ('attempt_neither_frac', 100, 1)]
+    with open(os.path.join(_TABLE_DIR, 'attempt_coverage_overall.tex'), 'w') as _f:
+        _f.write(_mean_std_latex(_hdr_att, {'Per attempt': _att_overall}, _fmt_att))
 
     print("Saved attempt coverage tables.")
 else:

@@ -9,11 +9,12 @@
 #      produces full-batch NetworkX visualizations.  GPU-heavy for setup;
 #      CPU-heavy for layout.  Typically 1–3 h.
 #
-# To run only one job, comment out the other sbatch block below.
-#
-# Evaluation mode: pass it as the first argument (default: system), e.g.
-#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system
-#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh comparable
+# Arguments: [system|comparable] [all|tables|viz|cones]  (defaults: system, all)
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system           # both jobs
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system viz       # figures only
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system cones     # cone candidates only
+# 'cones' draws only the Cell 3 cone figure for several pairs of batches
+# (CONE_CANDIDATE_PAIRS in batch_viz_hpc.py), to choose batches for _VIZ_PICKS.
 # System mode needs its own BATCH_INDICES / SEED_OVERRIDE in batch_viz_hpc.py
 # (_VIZ_PICKS), since batches differ between modes.
 #
@@ -24,15 +25,19 @@
 #     party_batch_coverage_summary.{csv,tex}          — Table 2
 #   Viz job:
 #     batch_viz_cell{0a,0b,1,1b,2,3,3b,4}_hpc.pdf    — visualizations
+#   Cones job:
+#     cone_candidates/batch_viz_cell3_mp_cone_hpc_b<i>_b<j>.pdf — one per batch pair
 #
 # Usage:
 #   cd $VSC_DATA/AML_work_study/AML_work_study
-#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh [system|comparable]
+#   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh [system|comparable] [all|tables|viz|cones]
 # =============================================================================
 
 EVAL_MODE="${1:-system}"
-if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]]; then
-    echo "Usage: bash run_batch_analysis.sh [system|comparable]  (got: '$EVAL_MODE')" >&2
+JOBS="${2:-all}"
+if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]] || \
+   [[ ! "$JOBS" =~ ^(all|tables|viz|cones)$ ]]; then
+    echo "Usage: bash run_batch_analysis.sh [system|comparable] [all|tables|viz|cones]  (got: '$EVAL_MODE' '$JOBS')" >&2
     exit 1
 fi
 CLUSTER="wice"
@@ -68,10 +73,10 @@ export EVAL_MODE=$EVAL_MODE"
 
 
 # =============================================================================
-# JOB 1: Tables (all batches, all cone samples)
-# Comment out this block to skip the tables job.
+# JOB 1: Tables (all batches, all cone samples) — JOBS=all|tables
 # =============================================================================
 
+if [[ "$JOBS" == "all" || "$JOBS" == "tables" ]]; then
 JOB_TABLES="aml_batch_tables_${EVAL_MODE}"
 SCRIPT_TABLES="$SCRIPT_DIR/batch_tables_hpc.py"
 
@@ -109,16 +114,23 @@ echo 'Job finished at: \$(date)  exit code: '\$EXIT_CODE
 echo '======================================================================'
 exit \$EXIT_CODE
 "
+fi
 
 
 # =============================================================================
-# JOB 2: Visualizations (selected BATCH_INDICES only)
-# Comment out this block to skip the viz job.
-# Edit BATCH_INDICES / SEED_PICK / SEED_OVERRIDE in batch_viz_hpc.py before
-# submitting, or set them from the batch scanner in batch_viz_explore_nb.py.
+# JOB 2: Visualizations — JOBS=all|viz (all cells, _VIZ_PICKS batches)
+#                         or JOBS=cones (Cell 3 only, CONE_CANDIDATE_PAIRS)
+# Edit _VIZ_PICKS / SEED_PICK / CONE_CANDIDATE_PAIRS in batch_viz_hpc.py before submitting.
 # =============================================================================
 
-JOB_VIZ="aml_batch_viz_${EVAL_MODE}"
+if [[ "$JOBS" != "tables" ]]; then
+if [[ "$JOBS" == "cones" ]]; then
+    VIZ_TARGET="cone_candidates"
+    JOB_VIZ="aml_batch_cones_${EVAL_MODE}"
+else
+    VIZ_TARGET="all"
+    JOB_VIZ="aml_batch_viz_${EVAL_MODE}"
+fi
 SCRIPT_VIZ="$SCRIPT_DIR/batch_viz_hpc.py"
 
 echo "Eval mode:  $EVAL_MODE"
@@ -142,10 +154,11 @@ sbatch \
     --mail-type=END,FAIL \
     --mail-user=bjoern.strandgaard@kuleuven.be \
     --wrap "$CONDA_SETUP
+export VIZ_TARGET=$VIZ_TARGET
 echo '======================================================================'
 echo 'Job started at: \$(date)'
 echo 'Job ID: \$SLURM_JOB_ID  Node: \$SLURM_NODELIST'
-echo 'Viz — BATCH_INDICES from batch_viz_hpc.py'
+echo 'Viz — VIZ_TARGET=$VIZ_TARGET'
 echo '======================================================================'
 cd $REPO
 python $SCRIPT_VIZ
@@ -155,10 +168,10 @@ echo 'Job finished at: \$(date)  exit code: '\$EXIT_CODE
 echo '======================================================================'
 exit \$EXIT_CODE
 "
+fi
 
 
 echo ""
-echo "Both jobs submitted (CPU-only, $PARTITION). Monitor with:"
+echo "Submitted ($JOBS, $EVAL_MODE, partition $PARTITION). Monitor with:"
 echo "  squeue -u \$USER -M $CLUSTER"
-echo "  tail -f $LOGS/${JOB_TABLES}_<JOBID>.log"
-echo "  tail -f $LOGS/${JOB_VIZ}_<JOBID>.log"
+echo "  tail -f $LOGS/<job-name>_<JOBID>.log"
