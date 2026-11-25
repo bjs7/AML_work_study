@@ -74,7 +74,7 @@ def _build_path(manager):
             if value:
                 str_folder += f'__{key}'
 
-    data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp']
+    data_flags = ['batching', 'batchnorm', 'ibm_fe', 'ibm_hp', 'no_gfp']
     data_settings = [flag for flag in data_flags if getattr(manager.args['data_parser'], flag)]
     batching_mode = getattr(manager.args['data_parser'], 'batching_mode', 'lazy_link_neighbor')
     if manager.args['data_parser'].batching and batching_mode != 'lazy_link_neighbor':
@@ -281,6 +281,7 @@ def create_experiment_config(manager):
             "seed": manager.args['data_parser'].seed,
             "ibm_fe": manager.args['data_parser'].ibm_fe,
             "ibm_hp": manager.args['data_parser'].ibm_hp,
+            "no_gfp": getattr(manager.args['data_parser'], 'no_gfp', False),
             "batching": manager.args['data_parser'].batching,
             "batchnorm": manager.args['data_parser'].batchnorm,
             "normalize_currency": manager.args['data_parser'].normalize_currency,

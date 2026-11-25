@@ -60,36 +60,40 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
     y = df['y']
 
     # GFP -----------------------------------------------------------------------------------------------------------------
-    # graph_feature_preprocessing using snapML
+    # graph_feature_preprocessing using snapML. Skipped with --no_gfp (raw transaction
+    # features only: the tabular baseline without any graph information).
 
-    if 'Amount Received' in x.columns:
-        gfp_amount = 'Amount Received'
-    elif 'Amount_Received_Normalized' in x.columns:
-        gfp_amount = 'Amount_Received_Normalized'
-    else:
-        gfp_amount = None
+    x_gf = None
+    if not getattr(data_parser, 'no_gfp', False):
+        if 'Amount Received' in x.columns:
+            gfp_amount = 'Amount Received'
+        elif 'Amount_Received_Normalized' in x.columns:
+            gfp_amount = 'Amount_Received_Normalized'
+        else:
+            gfp_amount = None
 
-    gfp_cols = ['EdgeID', 'from_id', 'to_id', 'Timestamp']
-    if gfp_amount:
-        gfp_cols.append(gfp_amount)
+        gfp_cols = ['EdgeID', 'from_id', 'to_id', 'Timestamp']
+        if gfp_amount:
+            gfp_cols.append(gfp_amount)
 
-    if not scl_enc.get('gfp'):
-        scl_enc['gfp'] = GraphFeaturePreprocessor()
-        scl_enc['gfp'].set_params(tu.gfpparams)
-        x_gf = scl_enc['gfp'].fit_transform(x[gfp_cols].astype("float64"))
-    else:
-        x_gf = scl_enc['gfp'].transform(x[gfp_cols].astype("float64"))
-    x_gf = x_gf[:, len(gfp_cols):]  # strip input columns, keep only derived features
-    x_gf = np.nan_to_num(x_gf, nan=0.0, posinf=0.0, neginf=0.0)  # vertex stats (skew/kurtosis) can produce inf for single-transaction nodes
-    
+        if not scl_enc.get('gfp'):
+            scl_enc['gfp'] = GraphFeaturePreprocessor()
+            scl_enc['gfp'].set_params(tu.gfpparams)
+            x_gf = scl_enc['gfp'].fit_transform(x[gfp_cols].astype("float64"))
+        else:
+            x_gf = scl_enc['gfp'].transform(x[gfp_cols].astype("float64"))
+        x_gf = x_gf[:, len(gfp_cols):]  # strip input columns, keep only derived features
+        x_gf = np.nan_to_num(x_gf, nan=0.0, posinf=0.0, neginf=0.0)  # vertex stats (skew/kurtosis) can produce inf for single-transaction nodes
+        x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
+
     # remove EdgeID as it is no longer needed
     x = x.drop('EdgeID', axis='columns')
     x = x.drop('from_id', axis='columns')
     x = x.drop('to_id', axis='columns')
 
     if data_parser.ibm_fe:
-        x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
-        x = pd.concat([x, x_gf], axis=1)
+        if x_gf is not None:
+            x = pd.concat([x, x_gf], axis=1)
         x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(lower=-1e15, upper=1e15)
         return {'x': x, 'y': y, 'scaler_encoders': scl_enc}
     
@@ -137,8 +141,8 @@ def feature_engi_regular_data(data, data_parser, scaler_encoders = None):
         x = pd.concat([x.drop(columns=[feature]), encoded_df], axis=1)
 
     # finally concat X and the graph features
-    x_gf = pd.DataFrame(x_gf, columns=[f'graph_feature_{i + 1}' for i in range(x_gf.shape[1])])
-    x = pd.concat([x, x_gf], axis=1)
+    if x_gf is not None:
+        x = pd.concat([x, x_gf], axis=1)
 
     x = x.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(lower=-1e15, upper=1e15)
     return {'x': x, 'y': y, 'scaler_encoders': scl_enc}

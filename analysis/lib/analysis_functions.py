@@ -18,7 +18,7 @@ def get_experiment_path(fl_algo, model, data_size='small', ilicit_level='HI',
                         emlps=False, ports=False, tds=False, reverse_mp=False,
                         # Data flags (order must match save_results.py)
                         batching=False, batchnorm=False, ibm_fe=False, ibm_hp=False,
-                        use_global_stats=False, normalize_currency=False,
+                        no_gfp=False, use_global_stats=False, normalize_currency=False,
                         bank_filter=None, loss_ratio=None, batch_size=8192,
                         batching_mode='lazy_link_neighbor',
                         # FedAvg/FedProx params
@@ -57,6 +57,7 @@ def get_experiment_path(fl_algo, model, data_size='small', ilicit_level='HI',
     if batchnorm: data_args.append('batchnorm')
     if ibm_fe: data_args.append('ibm_fe')
     if ibm_hp: data_args.append('ibm_hp')
+    if no_gfp: data_args.append('no_gfp')
     if use_global_stats: data_args.append('use_global_stats')
     if batching and batching_mode != 'lazy_link_neighbor': data_args.append(f'bm_{batching_mode}')
     if normalize_currency: data_args.append('normalize_currency')

@@ -46,6 +46,7 @@ def get_full_info_hp_path(parsers, model: str | None = None, model_type: str | N
     distinct files, e.g.:
       booster / system + standard FE : small_HI_system_r1000.json
       booster / system + ibm FE      : small_HI_system_ibm_r1000.json
+      booster / system + no graph FE : small_HI_system_nogfp_r1000.json
       gnn     / system + standard FE : small_HI_system.json
     """
     model_name = model or parsers['fl_parser'].model
@@ -57,9 +58,13 @@ def get_full_info_hp_path(parsers, model: str | None = None, model_type: str | N
 
     mtype = model_type or getattr(parsers['fl_parser'], 'model_type', None) or 'booster'
 
+    no_gfp      = getattr(parsers['data_parser'], 'no_gfp', False)
+
     suffix = f'_{eval_mode}'
     if ibm_fe:
         suffix += '_ibm'
+    if no_gfp:
+        suffix += '_nogfp'
     if mtype == 'booster':
         suffix += f'_r{max_rounds}'
 

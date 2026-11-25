@@ -136,12 +136,16 @@ BOOST_SCENARIO_KWARGS = {
     "B2": dict(fl_algo="full_info", model="xgboost"),
     "B3": dict(fl_algo="individual", model="xgboost"),
     "B4": dict(fl_algo="SecureBoost", model="xgboost"),
+    "B5": dict(fl_algo="full_info", model="xgboost", no_gfp=True),
+    "B6": dict(fl_algo="individual", model="xgboost", no_gfp=True),
 }
 BOOST_SCENARIO_NAMES = {
     "B1": "XGBoost full-info (R0)",
     "B2": "XGBoost full-info (R1)",
     "B3": "XGBoost individual (std FE)",
     "B4": "SecureBoost",
+    "B5": "XGBoost full-info (raw features, no graph features)",
+    "B6": "XGBoost individual (raw features, no graph features)",
 }
 
 # Flip to True once B-series results are good enough to show by default.

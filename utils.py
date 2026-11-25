@@ -236,6 +236,8 @@ def data_parser():
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--ibm_fe', action='store_true', help='Set to True if the feature engineering should be 1:1 with the IBM paper')
     parser.add_argument('--ibm_hp', action='store_true', help='Set to True if the IBM hyperparameters should be used')
+    parser.add_argument('--no_gfp', action='store_true',
+                        help='Booster only: skip the snapML graph features, so the model sees raw transaction features only')
     parser.add_argument('--batching', action='store_true', help='Set to True if batching should be used during training')
     parser.add_argument('--batching_mode', default='lazy_link_neighbor', type=str,
                         choices=['neighbor_sample', 'simple', 'link_neighbor', 'lazy_link_neighbor', 'local_neighbor'],
