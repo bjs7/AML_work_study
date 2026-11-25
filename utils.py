@@ -222,6 +222,12 @@ def fl_parser():
                         help='L2 norm clipping threshold applied to embeddings before DP noise '
                              '(None = no clipping). Required for a formal DP guarantee.')
 
+    # Single-view SplitFed: the manager only ever receives one bank's embedding
+    parser.add_argument('--view_mode', default='both', type=str,
+                        choices=['both', 'sender_only', 'receiver_only'],
+                        help='SplitFed views given to the manager in training and evaluation: both '
+                             '(default), only the sender bank\'s embedding, or only the receiver bank\'s')
+
     return parser
 
 # data parser

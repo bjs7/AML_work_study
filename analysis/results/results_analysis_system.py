@@ -49,7 +49,7 @@ scenario_map_heterogeneity = build_scenario_map(
 # B4 (SecureBoost) excluded: no system eval results yet. B1-B3 excluded from the
 # table by default too (see scenario_map_all above) but stay listed here as intent.
 order_C = {
-    "gnn_limits": ["S1", "S2", "S3", "S4"],
+    "gnn_limits": ["S2", "S3", "S4"],   # S1 dropped (Tarik: S2, S3, best horizontal, V1)
     "non_gnn":    ["B1", "B2", "B3"],
     "fed_gnn":    ["F1", "P2", "V1"],
 }

@@ -157,10 +157,29 @@ def forward_pass_splitfed(manager, mode, batch_num, batch_banks, batch_data, use
         true_y_tensor: [n_samples] ground-truth labels.
     """
     views = build_view_embeddings(manager, mode, batch_num, batch_banks, batch_data, use_batched)
-    embeds = torch.cat([views['from_embeds'], views['to_embeds']], dim=1)
+    sender, receiver = apply_view_mode(
+        views, getattr(manager.args['fl_parser'], 'view_mode', 'both'))
+    embeds = torch.cat([sender, receiver], dim=1)
     preds_tensor = manager.model.gnn.mlp_vert(embeds)
     true_y_tensor = torch.tensor(views['true_y'], dtype=torch.long, device=manager.device)
     return preds_tensor, true_y_tensor
+
+
+def apply_view_mode(views, view_mode):
+    """Sender and receiver halves of the mlp_vert input for a view mode.
+
+    sender_only: [s | 0]; receiver_only: [0 | r]. An intra-bank transaction has one
+    bank on both sides, and its embedding sits in the sender slot, so for
+    receiver_only it moves to the receiver slot.
+    """
+    sender, receiver = views['from_embeds'], views['to_embeds']
+    if view_mode == 'sender_only':
+        return sender, torch.zeros_like(receiver)
+    if view_mode == 'receiver_only':
+        intra = torch.as_tensor(views['from_banks'] == views['to_banks'], device=sender.device)
+        receiver = torch.where(intra.unsqueeze(1), sender, receiver)
+        return torch.zeros_like(sender), receiver
+    return sender, receiver
 
 
 def build_view_embeddings(manager, mode, batch_num, batch_banks, batch_data, use_batched=True):

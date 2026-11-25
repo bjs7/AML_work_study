@@ -899,9 +899,11 @@ def build_pattern_recall_precision_combined(
 ):
     """Combined recall + precision table with grouped column headers.
 
-    Output LaTeX layout:
+    Output LaTeX layout ({out_name}.tex, means only):
       Pattern | P | <------ Recall ------> | <----- Precision ----->
               |   |  S2   F1   P2   V1     |  S2   F1   P2   V1
+    Also writes {out_name}_recall.tex and {out_name}_precision.tex:
+      Pattern | P | S2  F1  P2  V1   (each cell mean ± SD across seeds)
     """
     pivot_recall, agg = build_pattern_recall_comparison(
         scenario_map, scenario_ids,
@@ -964,6 +966,38 @@ def build_pattern_recall_precision_combined(
     tex_path = out_dir / f"{out_name}.tex"
     tex_path.write_text("\n".join(rows) + "\n")
     print(f"  Combined recall+precision table → {tex_path}")
+
+    # --- Split tables with seed SDs: {out_name}_recall.tex / {out_name}_precision.tex ---
+    # Pattern | P | S2 F1 P2 V1, each cell mean ± SD across seeds (in %).
+    agg_named = agg.copy()
+    agg_named["Pattern_name"] = agg_named["Pattern"].map(PATTERN_NAMES)
+    stats = agg_named.set_index(["Pattern_name", "ID"])
+
+    def _mean_sd(pat, sid, metric):
+        if (pat, sid) not in stats.index:
+            return "---"
+        m, s = stats.loc[(pat, sid), f"{metric}_mean"], stats.loc[(pat, sid), f"{metric}_std"]
+        if pd.isna(m):
+            return "---"
+        mean_str = _fmt_scaled(m, scale=100, decimals=2, auto_widen=True)
+        if pd.isna(s):                     # single seed: no SD
+            return mean_str
+        return f"{mean_str} $\\pm$ {_fmt_scaled(s, scale=100, decimals=2)}"
+
+    for metric in ("recall", "precision"):
+        lines = [
+            r"\begin{tabular}{l" + "r" * (1 + n_sid) + r"}",
+            r"\toprule",
+            f"Pattern & $P$ & {sid_str} \\\\",
+            r"\midrule",
+        ]
+        for _, row in combined.iterrows():
+            cells = " & ".join(_mean_sd(row["Pattern"], s, metric) for s in sid_cols)
+            lines.append(f"{_esc(row['Pattern'])} & {int(row[p_col])} & {cells} \\\\")
+        lines += [r"\bottomrule", r"\end{tabular}"]
+        split_path = out_dir / f"{out_name}_{metric}.tex"
+        split_path.write_text("\n".join(lines) + "\n")
+        print(f"  {metric.capitalize()} table (mean ± SD) → {split_path}")
     return combined, agg
 
 
@@ -1380,9 +1414,11 @@ def views_recall_by_pattern(
     filter_indices (non-fragmented illicit indices) is applied only for TP/P;
     FP are always counted from the full lv so legitimate transactions are included.
 
-    Output LaTeX layout:
-      Pattern | <---------- 1 view ----------> | <---------- 2 views ---------->
-              |  N   R-S2  R-V1  P-S2  P-V1   |  N   R-S2  R-V1  P-S2  P-V1
+    Output: two LaTeX tables, {out_name}_recall.tex and {out_name}_precision.tex,
+    each cell mean ± SD across seeds (in %):
+      Pattern | <------ 1 view ------> | <------ 2 views ------>
+              |  N    S2       V1      |  N    S2       V1
+    The CSV keeps the means and SDs as separate columns.
 
     Returns:
         combined : wide DataFrame (one row per Pattern).
@@ -1444,13 +1480,13 @@ def views_recall_by_pattern(
     agg_rec = (
         pd.DataFrame(recall_rows)
         .groupby(['ID', 'n_views', 'Pattern'])
-        .agg(P=('P', 'mean'), recall_mean=('recall', 'mean'))
+        .agg(P=('P', 'mean'), recall_mean=('recall', 'mean'), recall_std=('recall', 'std'))
         .reset_index()
     )
     agg_prec = (
         pd.DataFrame(prec_rows)
         .groupby(['ID', 'n_views', 'Pattern'])
-        .agg(precision_mean=('precision', 'mean'))
+        .agg(precision_mean=('precision', 'mean'), precision_std=('precision', 'std'))
         .reset_index()
     )
 
@@ -1468,8 +1504,10 @@ def views_recall_by_pattern(
             for sid in scenario_ids:
                 r = sub_r[sub_r['ID'] == sid]
                 p = sub_p[sub_p['ID'] == sid]
-                row[f'{n_v}v_R_{sid}'] = round(float(r['recall_mean'].iloc[0]),    3) if not r.empty else None
-                row[f'{n_v}v_P_{sid}'] = round(float(p['precision_mean'].iloc[0]), 3) if not p.empty else None
+                row[f'{n_v}v_R_{sid}']     = float(r['recall_mean'].iloc[0])    if not r.empty else None
+                row[f'{n_v}v_R_{sid}_std'] = float(r['recall_std'].iloc[0])     if not r.empty else None
+                row[f'{n_v}v_P_{sid}']     = float(p['precision_mean'].iloc[0]) if not p.empty else None
+                row[f'{n_v}v_P_{sid}_std'] = float(p['precision_std'].iloc[0])  if not p.empty else None
         pattern_rows.append(row)
 
     combined = pd.DataFrame(pattern_rows)
@@ -1479,10 +1517,9 @@ def views_recall_by_pattern(
     csv_path.mkdir(parents=True, exist_ok=True)
     combined.to_csv(csv_path / f'{out_name}.csv', index=False)
 
-    # --- LaTeX: two header rows, grouped by views ---
-    # Columns per view group: N + R-sid... + P-sid...
-    n_sid = len(scenario_ids)
-    n_per_view = 1 + 2 * n_sid      # N + recall*n_sid + precision*n_sid
+    # --- LaTeX: one table per metric, two header rows grouped by views ---
+    # Columns per view group: N + one mean ± SD column per scenario.
+    n_per_view = 1 + len(scenario_ids)
     col_fmt = "l" + "r" * (len(views_sorted) * n_per_view)
 
     view_spans = []
@@ -1498,37 +1535,42 @@ def views_recall_by_pattern(
     cmidrule_str = "".join(
         f"\\cmidrule(lr){{{s}-{e}}}" for _, s, e in view_spans
     )
-    rec_labels  = " & ".join(f"R-{s}" for s in scenario_ids)
-    prec_labels = " & ".join(f"P-{s}" for s in scenario_ids)
-    subheaders  = " & ".join(f"$N$ & {rec_labels} & {prec_labels}" for _ in views_sorted)
+    subheaders = " & ".join(
+        "$N$ & " + " & ".join(scenario_ids) for _ in views_sorted
+    )
 
     def _esc(s):
         return str(s).replace("&", r"\&").replace("%", r"\%").replace("_", r"\_")
 
-    latex_lines = [
-        r"\begin{tabular}{" + col_fmt + r"}",
-        r"\toprule",
-        f"Pattern & {multicolumns} \\\\",
-        cmidrule_str,
-        f" & {subheaders} \\\\",
-        r"\midrule",
-    ]
-    for _, row in combined.iterrows():
-        cells = [_esc(row['Pattern'])]
-        for n_v in views_sorted:
-            cells.append(str(row[f'{n_v}v_N']))
-            for sid in scenario_ids:
-                v = row[f'{n_v}v_R_{sid}']
-                cells.append(_fmt_scaled(v, scale=100, decimals=2, auto_widen=True) if v is not None else "---")
-            for sid in scenario_ids:
-                v = row[f'{n_v}v_P_{sid}']
-                cells.append(_fmt_scaled(v, scale=100, decimals=2, auto_widen=True) if v is not None else "---")
-        latex_lines.append(" & ".join(cells) + r" \\")
-    latex_lines += [r"\bottomrule", r"\end{tabular}"]
+    def _mean_sd(m, s):
+        if m is None or pd.isna(m):
+            return "---"
+        mean_str = _fmt_scaled(m, scale=100, decimals=2, auto_widen=True)
+        if s is None or pd.isna(s):        # single seed: no SD
+            return mean_str
+        return f"{mean_str} $\\pm$ {_fmt_scaled(s, scale=100, decimals=2)}"
 
-    tex_path = out_dir_p / f'{out_name}.tex'
-    tex_path.write_text("\n".join(latex_lines) + "\n")
-    print(f"  Views recall+precision table → {tex_path}")
+    for metric, key in (('recall', 'R'), ('precision', 'P')):
+        latex_lines = [
+            r"\begin{tabular}{" + col_fmt + r"}",
+            r"\toprule",
+            f"Pattern & {multicolumns} \\\\",
+            cmidrule_str,
+            f" & {subheaders} \\\\",
+            r"\midrule",
+        ]
+        for _, row in combined.iterrows():
+            cells = [_esc(row['Pattern'])]
+            for n_v in views_sorted:
+                cells.append(str(row[f'{n_v}v_N']))
+                for sid in scenario_ids:
+                    cells.append(_mean_sd(row[f'{n_v}v_{key}_{sid}'], row[f'{n_v}v_{key}_{sid}_std']))
+            latex_lines.append(" & ".join(cells) + r" \\")
+        latex_lines += [r"\bottomrule", r"\end{tabular}"]
+
+        tex_path = out_dir_p / f'{out_name}_{metric}.tex'
+        tex_path.write_text("\n".join(latex_lines) + "\n")
+        print(f"  Views {metric} table → {tex_path}")
     return combined
 
 
@@ -2657,12 +2699,16 @@ def build_attempt_bank_coverage_table(test_raw_df, raw_df=None, out_dir='tables'
 def build_attempt_visibility_recall(scenario_map, scenario_ids, test_raw_df, raw_df=None,
                                      out_dir='tables', out_name='attempt_visibility_recall',
                                      csv_dir=None, detection_threshold='any',
-                                     party_banks=None):
+                                     party_banks=None, show_sd=True, show_counts=True):
     """Recall by visibility bucket, plus an Overall row group.
 
     Row groups: vis=100 / vis>=50 / vis<50 / Overall (all attempts, no vis filter).
     Within each group: one row per scenario.
     Columns: one per laundering pattern present in the test split, plus Overall.
+
+    show_sd     — under each scenario's mean row, a row with the SD across seeds in ().
+    show_counts — first row of each group: the number of attempts in that cell
+                  (transactions instead when detection_threshold='txn').
 
     detection_threshold controls what counts as a detected attempt:
         'any'  — at least 1 transaction predicted positive  (>=1)
@@ -2758,10 +2804,9 @@ def build_attempt_visibility_recall(scenario_map, scenario_ids, test_raw_df, raw
     raw_rows = pd.DataFrame(rows)
     agg_spec = {}
     for vb in vis_buckets:
-        for pat in patterns_present:
-            c = f'{vb}_p{pat}'
+        for c in [f'{vb}_p{pat}' for pat in patterns_present] + [f'{vb}_overall']:
             agg_spec[c] = (c, 'mean')
-        agg_spec[f'{vb}_overall'] = (f'{vb}_overall', 'mean')
+            agg_spec[f'{c}_sd'] = (c, 'std')
 
     agg = (raw_rows.groupby(['ID', 'Scenario'])
            .agg(**agg_spec)
@@ -2775,21 +2820,35 @@ def build_attempt_visibility_recall(scenario_map, scenario_ids, test_raw_df, raw
             r = {'Vis bucket': vb, 'ID': row['ID'], 'Scenario': row['Scenario']}
             for pat in patterns_present:
                 r[pat_col_names[pat]] = row[f'{vb}_p{pat}']
+                r[f'{pat_col_names[pat]}_sd'] = row[f'{vb}_p{pat}_sd']
             r['Overall'] = row[f'{vb}_overall']
+            r['Overall_sd'] = row[f'{vb}_overall_sd']
             long_rows.append(r)
 
     pivot = pd.DataFrame(long_rows)
     data_cols = [pat_col_names[p] for p in patterns_present] + ['Overall']
-    for col in data_cols:
-        pivot[col] = pivot[col].round(3)
+
+    # Number of attempts (or transactions for 'txn') behind each cell; fixed by the data,
+    # so the same for every scenario.
+    counts = {}
+    for vb in vis_buckets:
+        vis_vb = vis_df if vb == 'Overall' else vis_df[vis_df['vis_bucket'] == vb]
+        if use_txn_level:
+            txn_vb = illicit_all[illicit_all['AttemptID'].isin(set(vis_vb['AttemptID']))]
+            per_pat = txn_vb.groupby('Pattern').size()
+        else:
+            per_pat = vis_vb.groupby('Pattern').size()
+        counts[vb] = {pat_col_names[p]: int(per_pat.get(p, 0)) for p in patterns_present}
+        counts[vb]['Overall'] = int(per_pat.sum())
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = Path(csv_dir) if csv_dir else out_dir
     csv_path.mkdir(parents=True, exist_ok=True)
-    pivot.to_csv(csv_path / f'{out_name}.csv', index=False)
+    pivot.round(3).to_csv(csv_path / f'{out_name}.csv', index=False)   # LaTeX uses unrounded values
 
-    n_scen = len(scenario_ids)
+    rows_per_scen = 2 if show_sd else 1
+    n_rows_group = len(scenario_ids) * rows_per_scen + (1 if show_counts else 0)
     col_format = 'll' + 'c' * len(data_cols)
 
     def _tex(s):
@@ -2800,16 +2859,35 @@ def build_attempt_visibility_recall(scenario_map, scenario_ids, test_raw_df, raw
                  .replace('>', r'$>$'))
 
     header = 'Vis. bucket & Scenario & ' + ' & '.join(_tex(c) for c in data_cols) + r' \\'
+    count_label = r'$n$ transactions' if use_txn_level else r'$n$ attempts'
     body_lines = []
     for b_idx, vb in enumerate(vis_buckets):
         sub = pivot[pivot['Vis bucket'] == vb]
-        for s_idx, (_, row) in enumerate(sub.iterrows()):
-            vb_cell = (rf'\multirow{{{n_scen}}}{{*}}{{{_tex(vb)}}}' if s_idx == 0 else '')
-            cells = [vb_cell, str(row['Scenario'])]
+        first = True
+
+        def _vb_cell():
+            nonlocal first
+            cell = rf'\multirow{{{n_rows_group}}}{{*}}{{{_tex(vb)}}}' if first else ''
+            first = False
+            return cell
+
+        if show_counts:
+            cells = [_vb_cell(), rf'\textit{{{count_label}}}']
+            cells += [rf'\textit{{{counts[vb][col]}}}' if counts[vb][col] else '--' for col in data_cols]
+            body_lines.append(' & '.join(cells) + r' \\')
+        for _, row in sub.iterrows():
+            cells = [_vb_cell(), str(row['Scenario'])]
             for col in data_cols:
                 val = row[col]
                 cells.append(_fmt_scaled(val, scale=100, decimals=2, auto_widen=True) if pd.notna(val) else '--')
             body_lines.append(' & '.join(cells) + r' \\')
+            if show_sd:
+                sd_cells = ['', '']
+                for col in data_cols:
+                    sd = row[f'{col}_sd']
+                    sd_cells.append(rf'{{\footnotesize ({_fmt_scaled(sd, scale=100, decimals=2)})}}'
+                                    if pd.notna(row[col]) and pd.notna(sd) else '')
+                body_lines.append(' & '.join(sd_cells) + r' \\')
         if b_idx < len(vis_buckets) - 1:
             body_lines.append(r'\midrule')
 

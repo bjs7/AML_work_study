@@ -34,6 +34,7 @@ from lib.analysis_functions import (
     load_comparable_banks,
     df_to_latex_table,
     build_pattern_recall_precision_combined,
+    views_recall_by_pattern,
     FIGS_DIR,
 )
 from lib.scenarios import build_scenario_map, DEFAULT_SCENARIO_IDS
@@ -197,6 +198,27 @@ combined_df, _ = build_pattern_recall_precision_combined(
     out_name="pattern_recall_precision_comparable_nonfragmented",
     filter_indices=nf_illicit_indices,
 )
+
+
+# %%
+
+# ==============================================================
+# ============ RECALL / PRECISION BY NUMBER OF VIEWS ===========
+# ==============================================================
+# Paper table tab:views_recall_by_pattern_comparable_nonfragmented, written as
+# <out_name>_recall.tex and <out_name>_precision.tex (mean ± SD across seeds).
+
+views_rec_nf = views_recall_by_pattern(
+    scenarios, ["S2", "V1"], test_nf,
+    comparable_banks=comparable_banks,
+    filter_indices=nf_illicit_indices,
+    out_dir=TABLES_RECALL,
+    out_name='views_recall_by_pattern_comparable_nonfragmented',
+    csv_dir=CSV_DIR,
+)
+if views_rec_nf is not None:
+    print("\nRecall/precision by number of party views per pattern (S2 vs V1, non-fragmented):")
+    print(views_rec_nf.to_string(index=False))
 
 
 # %%
@@ -435,3 +457,5 @@ if cov_table_corr is not None:
     print(cov_table_corr.to_string(index=False))
 
 
+
+# %%

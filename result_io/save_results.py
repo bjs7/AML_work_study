@@ -52,6 +52,10 @@ def _build_path(manager):
     else:
         algo_subfolder = ''
 
+    view_mode = getattr(manager.args['fl_parser'], 'view_mode', 'both')
+    if view_mode != 'both':
+        algo_subfolder = f'{algo_subfolder}_view_{view_mode}' if algo_subfolder else f'view_{view_mode}'
+
     opt_name = getattr(manager.args['fl_parser'], 'optimizer', 'adam')
     if opt_name != 'adam':
         suffix = f'_{opt_name}'
@@ -261,6 +265,9 @@ def create_experiment_config(manager):
     if model_type == 'gnn':
         fl_cfg["aggregation"] = manager.args['fl_parser'].aggregation
         fl_cfg["validate_every"] = getattr(manager.args['fl_parser'], 'validate_every', 1)
+        view_mode = getattr(manager.args['fl_parser'], 'view_mode', 'both')
+        if view_mode != 'both':
+            fl_cfg["view_mode"] = view_mode
 
     model_cfg = {
         "model_type": model_type,
