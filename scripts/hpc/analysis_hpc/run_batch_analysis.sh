@@ -13,8 +13,8 @@
 #   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system           # both jobs
 #   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system viz       # figures only
 #   bash scripts/hpc/analysis_hpc/run_batch_analysis.sh system cones     # cone candidates only
-# 'cones' draws only the Cell 3 cone figure for several pairs of batches
-# (CONE_CANDIDATE_PAIRS in batch_viz_hpc.py), to choose batches for _VIZ_PICKS.
+# 'cones' draws only the Cell 3 cone figure: one panel per CONE_CANDIDATE_BATCHES batch
+# in an overview PDF, plus the paper figure for the _VIZ_PICKS batches (batch_viz_hpc.py).
 # System mode needs its own BATCH_INDICES / SEED_OVERRIDE in batch_viz_hpc.py
 # (_VIZ_PICKS), since batches differ between modes.
 #
@@ -26,7 +26,8 @@
 #   Viz job:
 #     batch_viz_cell{0a,0b,1,1b,2,3,3b,4}_hpc.pdf    — visualizations
 #   Cones job:
-#     cone_candidates/batch_viz_cell3_mp_cone_hpc_b<i>_b<j>.pdf — one per batch pair
+#     cone_candidates/cone_candidates_overview.pdf      — one panel per candidate batch
+#     cone_candidates/batch_viz_cell3_mp_cone_hpc.pdf   — paper figure for _VIZ_PICKS
 #
 # Usage:
 #   cd $VSC_DATA/AML_work_study/AML_work_study
@@ -59,6 +60,7 @@ else
 fi
 TIME_TABLES="24:00:00"
 TIME_VIZ="06:00:00"
+TIME_CONES="12:00:00"   # 40 candidate batches by default
 
 REPO="$VSC_DATA/AML_work_study/AML_work_study"
 SCRIPT_DIR="$REPO/scripts/hpc/analysis_hpc"
@@ -119,14 +121,15 @@ fi
 
 # =============================================================================
 # JOB 2: Visualizations — JOBS=all|viz (all cells, _VIZ_PICKS batches)
-#                         or JOBS=cones (Cell 3 only, CONE_CANDIDATE_PAIRS)
-# Edit _VIZ_PICKS / SEED_PICK / CONE_CANDIDATE_PAIRS in batch_viz_hpc.py before submitting.
+#                         or JOBS=cones (Cell 3 only, CONE_CANDIDATE_BATCHES + _VIZ_PICKS)
+# Edit _VIZ_PICKS / SEED_PICK / CONE_CANDIDATE_BATCHES in batch_viz_hpc.py before submitting.
 # =============================================================================
 
 if [[ "$JOBS" != "tables" ]]; then
 if [[ "$JOBS" == "cones" ]]; then
     VIZ_TARGET="cone_candidates"
     JOB_VIZ="aml_batch_cones_${EVAL_MODE}"
+    TIME_VIZ="$TIME_CONES"
 else
     VIZ_TARGET="all"
     JOB_VIZ="aml_batch_viz_${EVAL_MODE}"

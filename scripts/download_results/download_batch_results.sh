@@ -1,25 +1,29 @@
 #!/bin/bash
 # =============================================================================
-# Download batch analysis outputs from the HPC and copy them into the writing repo.
+# Download batch analysis outputs from the HPC.
 #
-# Syncs hpc_output/<EVAL_MODE>/ from the cluster to the local machine, then
-# copies the figures (*.pdf) to figs/party_visibility/<EVAL_MODE>/ and the
-# tables (*.tex, *.csv) to tables/party_visibility/<EVAL_MODE>/ in the writing repo.
+# all   (default): syncs hpc_output/<EVAL_MODE>/ from the cluster, then copies the
+#                  figures (*.pdf) to figs/party_visibility/<EVAL_MODE>/ and the tables
+#                  (*.tex, *.csv) to tables/party_visibility/<EVAL_MODE>/ in the writing repo.
+# cones          : syncs only hpc_output/<EVAL_MODE>/cone_candidates/ and copies nothing
+#                  into the writing repo.
 # Run this from your local machine after the job completes.
 #
 # Usage:
-#   bash scripts/download_results/download_batch_results.sh [system|comparable] [user@host]
+#   bash scripts/download_results/download_batch_results.sh [system|comparable] [all|cones] [user@host]
 #
-# Defaults: system, and the host vsc36278@login.hpc.kuleuven.be (same as the other
+# Defaults: system, all, and the host vsc36278@login.hpc.kuleuven.be (same as the other
 # download scripts; uses the login.hpc.kuleuven.be entry in ~/.ssh/config).
 # =============================================================================
 
 set -euo pipefail
 
 EVAL_MODE="${1:-system}"
-HOST="${2:-vsc36278@login.hpc.kuleuven.be}"
-if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]]; then
-    echo "Usage: bash download_batch_results.sh [system|comparable] [user@host]  (got: '$EVAL_MODE')" >&2
+WHAT="${2:-all}"
+HOST="${3:-vsc36278@login.hpc.kuleuven.be}"
+if [[ "$EVAL_MODE" != "system" && "$EVAL_MODE" != "comparable" ]] || \
+   [[ "$WHAT" != "all" && "$WHAT" != "cones" ]]; then
+    echo "Usage: bash download_batch_results.sh [system|comparable] [all|cones] [user@host]  (got: '$EVAL_MODE' '$WHAT')" >&2
     exit 1
 fi
 
@@ -32,6 +36,21 @@ LOCAL_OUT="$SCRIPT_DIR/hpc_output"
 WRITING="$HOME/projects/AML_work_study/writing/Experimental-Protocol"
 FIGS_DEST="$WRITING/figs/party_visibility/$EVAL_MODE"
 TABLES_DEST="$WRITING/tables/party_visibility/$EVAL_MODE"
+
+# --- cone candidates only ---
+if [[ "$WHAT" == "cones" ]]; then
+    mkdir -p "$LOCAL_OUT/$EVAL_MODE"
+    echo "Downloading from $HOST:$REMOTE_BASE/hpc_output/$EVAL_MODE/cone_candidates/"
+    echo "          → $LOCAL_OUT/$EVAL_MODE/cone_candidates/"
+    echo ""
+    rsync -avz --progress \
+        "${HOST}:${REMOTE_BASE}/hpc_output/$EVAL_MODE/cone_candidates" \
+        "$LOCAL_OUT/$EVAL_MODE/"
+    echo ""
+    echo "Download complete. Files:"
+    ls -lh "$LOCAL_OUT/$EVAL_MODE/cone_candidates/"
+    exit 0
+fi
 
 mkdir -p "$LOCAL_OUT"
 
