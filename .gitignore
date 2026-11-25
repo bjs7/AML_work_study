@@ -80,6 +80,10 @@ analysis/tables/
 analysis/figs/
 analysis/pattern_analysis/tables/
 analysis/pattern_analysis/figs/
+analysis/party_visibility/figs/
+/figs/
+/tables/
+analysis/utils/pasted_output_*.txt
 
 # Local scratch/test files
 main_test.py
